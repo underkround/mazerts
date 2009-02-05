@@ -1,0 +1,3 @@
+this could be useful object for scale measuring purposes
+
+20x20x20 units in size, pivot point placed into center of model

@@ -1,0 +1,10 @@
+  ._____.
+  |     |
+  |     |==========
+  |_____|
+    | |
+  __| |__
+ /       \
+/_________\
+
+place guntower_gun 40 units up from pivot of guntower_base

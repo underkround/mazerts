@@ -1,0 +1,2 @@
+tehdas base is 120x120 max units, roof at 60 units and tip of smokestack at 120 units
+pivot point at center of the base
