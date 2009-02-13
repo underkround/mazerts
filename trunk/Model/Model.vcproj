@@ -204,6 +204,46 @@
 				Name="Common"
 				>
 				<File
+					RelativePath=".\Common\EulerAngles.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\EulerAngles.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\MathUtil.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\MathUtil.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\Matrix4x3.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\Matrix4x3.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\Quaternion.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\Quaternion.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\RotationMatrix.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\RotationMatrix.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Common\Vector3.h"
 					>
 				</File>
