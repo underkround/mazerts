@@ -8,8 +8,10 @@
  * $Id$
  */
 #include "DamageAndDamageHandlerTests.h"
+#include "UnitPositionAndFacingTest.h"
 
 int main(int arcg, char* argv[])
 {
     testDamageAndDamageHandler();
+    testUnitPositionAndFacing();
 }

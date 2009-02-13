@@ -27,7 +27,7 @@ public:
      * @param deltaT Time passed since last update call in seconds
      * @return Boolean, meaning depends on the implementing object
      */
-    virtual bool update(float deltaT) = 0;
+    virtual bool update(const float deltaT) = 0;
 
    
 };

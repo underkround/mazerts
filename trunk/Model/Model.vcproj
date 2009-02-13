@@ -170,40 +170,84 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\Tests\TestsMain.cpp"
+			<Filter
+				Name="Terrain"
 				>
-			</File>
-			<File
-				RelativePath=".\Unit\Unit.cpp"
+			</Filter>
+			<Filter
+				Name="Pathfinding"
 				>
-			</File>
+			</Filter>
+			<Filter
+				Name="Tests"
+				>
+				<File
+					RelativePath=".\Tests\TestsMain.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Unit"
+				>
+				<File
+					RelativePath=".\Unit\Unit.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\Unit\Damage.h"
+			<Filter
+				Name="Common"
 				>
-			</File>
-			<File
-				RelativePath=".\Tests\DamageAndDamageHandlerTests.h"
+				<File
+					RelativePath=".\Common\Vector3.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Tests"
 				>
-			</File>
-			<File
-				RelativePath=".\Unit\DamageHandler.h"
+				<File
+					RelativePath=".\Tests\DamageAndDamageHandlerTests.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Tests\UnitPositionAndFacingTest.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Unit"
 				>
-			</File>
-			<File
-				RelativePath=".\Unit\IUpdatable.h"
+				<File
+					RelativePath=".\Unit\Damage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\DamageHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\IUpdatable.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\Unit.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Pathfinding"
 				>
-			</File>
-			<File
-				RelativePath=".\Unit\Unit.h"
+			</Filter>
+			<Filter
+				Name="Terrain"
 				>
-			</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
