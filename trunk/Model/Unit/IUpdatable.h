@@ -15,8 +15,12 @@ class IUpdatable
 {
 public:
     //Not instantiable
-    IUpdatable(void);
-    virtual ~IUpdatable(void);
+    IUpdatable(void)
+    {
+    }
+    virtual ~IUpdatable(void)
+    {
+    }
 
     /**
      * Updates the object

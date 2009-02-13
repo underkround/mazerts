@@ -1,6 +1,5 @@
-#include "Damage.h"
-#include "DamageHandler.h"
-#include <stdio.h>
+#include "../Unit/Damage.h"
+#include "../Unit/DamageHandler.h"
 #include <assert.h>
 
 void testDamageAndDamageHandler()
@@ -90,7 +89,6 @@ void testDamageAndDamageHandler()
 
     //Check that values are correct
     pResistance = pDmgHandler->getResistance();
-    printf("%.2f %.2f %.2f", pResistance[0], pResistance[1], pResistance[2]);
     assert(pResistance[0] == 0.1f);
     assert(pResistance[1] == 0.2f);
     assert(pResistance[2] == 0.3f);
