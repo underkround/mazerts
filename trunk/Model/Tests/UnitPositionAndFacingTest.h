@@ -61,21 +61,11 @@ void testUnitPositionAndFacing()
     m->transform(*v); // v should now be around [0 -1 0] after rotation
     *uv += *v;
 
-    /*
-    std::cout << v->x <<" "<< v->y <<" "<< v->z <<"\n";
-    std::cout << "\n";
-    std::cout << m->m11 <<" "<< m->m21 <<" "<< m->m31 <<"\n";
-    std::cout << m->m12 <<" "<< m->m22 <<" "<< m->m32 <<"\n";
-    std::cout << m->m13 <<" "<< m->m23 <<" "<< m->m33 <<"\n";
-    std::cout << "\n";
-    std::cout << uv->x <<" "<< uv->y <<" "<< uv->z <<"\n";
-    */
-
     assert(uv->x > -0.01f); // x should be near 0
     assert(uv->x <  0.01f);
 
-    assert(uv->y > -1.01f); // y should be near 1
-    assert(uv->y < -0.99f);
+    assert(uv->y >  0.99f); // y should be near 1
+    assert(uv->y <  1.01f);
 
     assert(uv->z > -0.01f); // z should be near 0
     assert(uv->z <  0.01f);

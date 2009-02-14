@@ -275,6 +275,10 @@
 					RelativePath=".\Tests\UnitPositionAndFacingTest.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Tests\VectorAndMatriceTest.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Unit"

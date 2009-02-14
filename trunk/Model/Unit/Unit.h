@@ -110,6 +110,13 @@ private:
     /**
      * 3D vector representing which way the unit is facing. The z-component
      * might not have meaningful value.
+     *
+     * TODO: should this be just degree value? relative to what? world z axis
+     *      (or whichever axis perpendicular to the terrain plane)?
+     *      In this case the unit would not have facing in the 3d world, it
+     *      could not be going upwards or downwards (possibility of flying
+     *      units etc)..
+     *      The unit could have it's facing represented by euler angles?
      */
     Vector3 m_Direction;
 
