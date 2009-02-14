@@ -173,6 +173,10 @@
 			<Filter
 				Name="Terrain"
 				>
+				<File
+					RelativePath=".\Terrain\Terrain.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Pathfinding"
@@ -256,6 +260,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Tests\TerrainTest.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Tests\UnitPositionAndFacingTest.h"
 					>
 				</File>
@@ -287,6 +295,14 @@
 			<Filter
 				Name="Terrain"
 				>
+				<File
+					RelativePath=".\Terrain\ITerrain.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Terrain\Terrain.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

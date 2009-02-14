@@ -9,9 +9,11 @@
  */
 #include "DamageAndDamageHandlerTests.h"
 #include "UnitPositionAndFacingTest.h"
+#include "TerrainTest.h"
 
 int main(int arcg, char* argv[])
 {
     testDamageAndDamageHandler();
-    testUnitPositionAndFacing();
+    testTerrain();
+    //testUnitPositionAndFacing();
 }
