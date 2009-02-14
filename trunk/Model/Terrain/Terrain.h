@@ -39,6 +39,32 @@ public:
 
 
     /**
+     * Movecost offset, this is the value that is returned
+     * as movecost between tiles at same height
+     */
+    static const short MOVECOST_OFFSET = 100;
+
+    /**
+     * Movecost-threshold: this value is the maximum amount
+     * the movecost can differ from threshold
+     */
+    static const short MOVECOST_THRESHOLD = 10;
+    static const short MOVECOST_MAX = MOVECOST_OFFSET + MOVECOST_THRESHOLD;
+    static const short MOVECOST_MIN = MOVECOST_OFFSET - MOVECOST_THRESHOLD;
+
+    /**
+     * Value returned by getMoveCost, if the move is illegal 
+     * (non-passable)
+     */
+    static const short MOVE_ILLEGAL = 10000;
+
+    /**
+     * Value returned by getMoveCost, if the move would result
+     * to going out of the map
+     */
+    static const short MOVE_OUTOFBOUNDS = -10000;
+
+    /**
      * Creates a new instance with given seed and size, if existing
      * instance is detected, it is first released
      * @param seed Seed-number for map generation
@@ -118,7 +144,9 @@ public:
      * @param y Y-position in the map to move from
      * @param dirX X-direction to move in (-1, 0, 1)
      * @param dirY Y-direction to move in (-1, 0, 1)
-     * @return Movecost between the tile and the neighbour defined by directions, or -1 if bounds are broken
+     * @return Movecost between the tile and the neighbour defined by directions, 
+               or MOVE_OUTOFBOUNDS if bounds are broken, or MOVE_ILLEGAL, if the move
+               is not possible (too big height difference)
      */
     short getMoveCost(const short x, const short y, const signed char dirX, const signed char dirY) const;
 

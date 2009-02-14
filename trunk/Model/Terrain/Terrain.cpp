@@ -91,15 +91,18 @@ short Terrain::getMoveCost(const short x, const short y, const signed char dirX,
     //Bounds check
     if(targetX < 0 ||targetX >= m_Size || targetY < 0 ||targetY >= m_Size)
     {
-        return -1;
+        return MOVE_OUTOFBOUNDS;
     }
     else
     {
-        short moveCost = m_ppTerrainHeightData[targetY][targetX] - m_ppTerrainHeightData[y][x];
-        /*if(moveCost < 0)
+        //Calculate offsetted value
+        short moveCost = m_ppTerrainHeightData[targetY][targetX] - m_ppTerrainHeightData[y][x] + MOVECOST_OFFSET;
+
+        if(moveCost > MOVECOST_MAX || moveCost < MOVECOST_MIN)
         {
-            moveCost = -moveCost;
-        }*/
+            return MOVE_ILLEGAL;
+        }
+
         return moveCost;
     }
 }

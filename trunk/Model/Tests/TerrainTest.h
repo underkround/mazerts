@@ -56,7 +56,8 @@ void testTerrain()
     printf("MoveCost 8,9 -> 8,10: %d\n", terrain.getMoveCost(8,9, 0, 1));
     printf("MoveCost 8,9 -> 9,9: %d\n", terrain.getMoveCost(8,9, 1, 0));
     printf("MoveCost 10,9 -> 9,9: %d\n", terrain.getMoveCost(10,9, -1, 0));
-    
+    assert(terrain.getMoveCost(8,9, 1, 0) == Terrain::MOVE_ILLEGAL);
+    assert(terrain.getMoveCost(0, 0, -1, -1) == Terrain::MOVE_OUTOFBOUNDS);
     
     Terrain::release();
 
