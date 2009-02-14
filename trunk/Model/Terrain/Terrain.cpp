@@ -62,7 +62,7 @@ void Terrain::initialize()
 void Terrain::destroy()
 {
     //Destroy data for vertices
-    for(int i = 0; i < m_Size; i++)
+    for(int i = 0; i < (m_Size + 1); i++)
     {
         delete [] m_ppVertexHeightData[i];
     }
@@ -89,7 +89,7 @@ short Terrain::getMoveCost(const short x, const short y, const signed char dirX,
     short targetY = y + dirY;
     
     //Bounds check
-    if(targetX < 0 ||targetX > m_Size || targetY < 0 ||targetY > m_Size)
+    if(targetX < 0 ||targetX >= m_Size || targetY < 0 ||targetY >= m_Size)
     {
         return -1;
     }
@@ -108,7 +108,7 @@ short Terrain::getMoveCost(const short x, const short y, const signed char dirX,
 void Terrain::setTerrainVertexHeight(const short x, const short y, const unsigned char height)
 {
     //Bounds checking
-    if(x < 0 ||x > m_Size+1 || y < 0 ||y > m_Size+1)
+    if(x < 0 ||x > m_Size || y < 0 ||y > m_Size)
     {
         return;
     }
