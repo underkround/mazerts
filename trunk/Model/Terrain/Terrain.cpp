@@ -151,6 +151,7 @@ void Terrain::destroy()
 
     // destroy array
     delete [] m_ppPassableTile;
+    m_ppPassableTile = NULL;
 
     // destroy data for vertices
     for(int i = 0; i < (m_Size + 1); i++)
@@ -175,6 +176,7 @@ void Terrain::destroy()
 }
 
 
+//TODO: Waterlevel-check
 short Terrain::getMoveCost(const short x, const short y, const signed char dirX, const signed char dirY) const
 {
     short targetX = x + dirX;

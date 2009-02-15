@@ -70,7 +70,6 @@ void testTerrain()
 
     //Print out surrounding tileheights    
     unsigned char value = terrain->getTerrainHeight(8, 9);
-    //printf("%d, %d : %d  ", 8, 9, value);
     printf("%d, %d : %d  ", 9, 9,   terrain->getTerrainHeight(9, 9));
     printf("%d, %d : %d\n", 10, 9,  terrain->getTerrainHeight(10, 9));
     printf("%d, %d : %d  ", 8, 10,  terrain->getTerrainHeight(8, 10));

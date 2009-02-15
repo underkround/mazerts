@@ -292,6 +292,9 @@ protected:
      */
     unsigned char** m_ppVertexHeightData; 
 
+    /**
+     * Tells if the object has been initialized or not
+     */
     bool m_Initialized;
 
     /**

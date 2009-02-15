@@ -7,6 +7,8 @@
  * $Date$
  * $Id$
  */
+//TODO: canPath + path between two arbitrary points, callback?
+//Master-thread
 
 #ifndef __IPATHFINDER_H__
 #define __IPATHFINDER_H__
@@ -48,6 +50,7 @@ public:
 
     }
 
+    //TODO: Move back to using this? (Saves unnecessary sanity-checks from Terrain::getInstance() )
     /**
      * Terrain to use for data in the search
      * @param pTerrain Terrain to use
