@@ -44,6 +44,17 @@ public:
     }
 
     /**
+     * Constructor for setting one type of damage.
+     * @param damageValue amount of damage associated with given type
+     * @param damageType the type of the damage
+     */
+    Damage(int damageValue, DamageType damageType)
+    {
+        ::memset(m_Damage, 0, DAMAGETYPE_AMOUNT * sizeof(int));
+
+    }
+
+    /**
      * Get damage amout of given damage type
      * @param  type the type indicator for damage value to return
      * @return the damage value for type

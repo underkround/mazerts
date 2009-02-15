@@ -33,7 +33,7 @@ public:
         }
     }
 
-/**
+    /**
      * Constructor
      * @param damageFactors Array of floats containing value between 0.0f and 
      *        1.0f for each Damage::DamageType -enumeration

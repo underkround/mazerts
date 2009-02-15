@@ -178,7 +178,7 @@
 				Name="Terrain"
 				>
 				<File
-					RelativePath=".\Terrain\DefaultTerrainGenerator.cpp"
+					RelativePath=".\Terrain\RandomTerrainGenerator.cpp"
 					>
 				</File>
 				<File
@@ -332,11 +332,11 @@
 				Name="Terrain"
 				>
 				<File
-					RelativePath=".\Terrain\DefaultTerrainGenerator.h"
+					RelativePath=".\Terrain\ITerrainGenerator.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Terrain\ITerrainGenerator.h"
+					RelativePath=".\Terrain\RandomTerrainGenerator.h"
 					>
 				</File>
 				<File

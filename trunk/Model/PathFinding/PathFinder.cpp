@@ -2,7 +2,8 @@
 
 PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
 {
-    m_pTerrain = &Terrain::getInstance();
+//    m_pTerrain = &Terrain::getInstance();
+    m_pTerrain = Terrain::getInstance();
     m_pUnit = pUnit;
 
     //Set start and goal positions

@@ -61,7 +61,7 @@ void testDamageAndDamageHandler()
 
     //Set resistances using array
     float damageRes[Damage::DAMAGETYPE_AMOUNT] = {0.1f, 0.2f, 0.3f};
-    pDmgHandler->setResistance(damageRes, Damage::DAMAGETYPE_AMOUNT);
+    pDmgHandler->setResistance(damageRes, 3);
 
     //Test that all values are set correctly
     pResistance = pDmgHandler->getResistance();

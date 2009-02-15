@@ -27,7 +27,7 @@ int main(int arcg, char* argv[])
     testTerrain();
 
     if(VERBOSE) cout << "\n *** Pathfinder ***\n";
-    testPathFinder();
+//    testPathFinder();
 
     if(VERBOSE) cout << "\n *** unit position ***\n";
     testUnitPositionAndFacing();

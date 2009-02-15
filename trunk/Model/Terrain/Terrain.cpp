@@ -1,90 +1,158 @@
 #include "Terrain.h"
-#include "DefaultTerrainGenerator.h"
+//#include "DefaultTerrainGenerator.h"
 
-Terrain* Terrain::pTerrain = NULL;
-ITerrainGenerator* Terrain::pTerrainGenerator = new DefaultTerrainGenerator();
+//Terrain* Terrain::pTerrain = NULL;
+//ITerrainGenerator* Terrain::pTerrainGenerator = new DefaultTerrainGenerator();
 
-Terrain& Terrain::createNew(const int seed, const unsigned short size)
+Terrain* Terrain::getInstance()
 {
-    //Check for existing instance
-    if(pTerrain != NULL)
-    {
-        Terrain::release();
-    }
-
-    Terrain::pTerrain = new Terrain(seed, size);
-
-    return *pTerrain;
+    static Terrain instance;
+    return &instance;
 }
 
-Terrain& Terrain::getInstance()
-{
-    if(!pTerrain)
-    {
-        pTerrain = new Terrain();
-    }
 
-    return *pTerrain;
+Terrain::Terrain()
+{
+    m_Size          = Terrain::DEFAULT_MAPSIZE;
+    m_WaterLevel    = Terrain::DEFAULT_WATERLEVEL;
+    m_pTerrainGenerator = NULL; // no generator by default, results flat
+    m_Initialized = false;
+    initialize(); // initialize flat with defaults
 }
 
-void Terrain::release()
+
+Terrain::~Terrain()
 {
-    if(Terrain::pTerrain)
+    releaseGenerator(); // release and delete the generator
+    if(m_Initialized)
     {
-        delete Terrain::pTerrain;
-        Terrain::pTerrain = NULL;
+        destroy();
     }
 }
+
 
 void Terrain::initialize()
 {
+    // if this is not the first time initializing, cleanup old data
+    if(m_Initialized)
+    {
+        destroy();
+    }
+
+    // if generator is set, get preferred size from it
+    if(m_pTerrainGenerator)
+    {
+        // if the generator passes 0 as preferred size, it means we'll use our size
+        if(m_pTerrainGenerator->getPreferredSize() > 0)
+        {
+            m_Size = m_pTerrainGenerator->getPreferredSize();
+        }
+    }
+
     //Initialize arrays
     m_ppTerrainHeightData = new unsigned char*[m_Size];
     m_ppPassableTile = new bool*[m_Size];
 
-    //Initialize sub-arrays
+    // initialize sub-arrays
     for(int i = 0; i < m_Size; i++)
     {
         m_ppTerrainHeightData[i] = new unsigned char[m_Size];
         m_ppPassableTile[i] = new bool[m_Size];
     }
 
-    //Initialize vertex-height array
+    // initialize vertex-height array
     m_ppVertexHeightData = new unsigned char*[m_Size + 1];
 
-    //Initialize sub-arrays
+    // initialize sub-arrays
     for(int i = 0; i < (m_Size+1); i++)
     {
         m_ppVertexHeightData[i] = new unsigned char[m_Size + 1];
     }
-    
-    int foo = (int)m_ppTerrainHeightData[4];
 
-    //Flatten map and reset values
+    // flatten map and reset values
     flattenMap(DEFAULT_FLATHEIGHT);
 
-    foo = (int)m_ppTerrainHeightData[4];    
-    //Generate the terrain into vertex-data
-    pTerrainGenerator->generateTerrain(m_Seed, m_Size, m_ppVertexHeightData);
-    foo = (int)m_ppTerrainHeightData[4];
+    // give the vertex data to generator, if any
+    if(m_pTerrainGenerator)
+    {
+        m_pTerrainGenerator->generateHeightmap(m_ppVertexHeightData, m_Size);
+    }
 
-    //Calculate tile heights and mark as passable/non-passable
+    // calculate tile heights and mark as passable/non-passable
     calculateHeightMapFromVertices();
-    foo = (int)m_ppTerrainHeightData[4];
+
+    m_Initialized = true; // set the flag
 }
+
+
+void Terrain::initialize(const unsigned short size)
+{
+    if(m_Initialized)
+    {
+        // cleanup before changing members, since destroy uses m_Size
+        // so it cannot be changed before cleanup
+        destroy();
+    }
+    m_Size = size;
+    initialize(); // setup flat
+}
+
+
+void Terrain::initialize(ITerrainGenerator* generator)
+{
+    // delete the previously used generator, if any
+    releaseGenerator();
+    // cleanup before changing members, since destroy uses m_Size
+    // so it cannot be changed before cleanup
+    destroy();
+    // set the new generator
+    m_pTerrainGenerator = generator;
+    // initialize uses the generator if it's set
+    initialize();
+}
+
+
+void Terrain::releaseGenerator()
+{
+    if(m_pTerrainGenerator)
+    {
+        m_pTerrainGenerator->release();
+        delete m_pTerrainGenerator;
+        m_pTerrainGenerator = NULL;
+    }
+}
+
+
+void Terrain::release()
+{
+    // temporarily store the generator so initialization does not use it
+    ITerrainGenerator* gen = m_pTerrainGenerator;
+    m_pTerrainGenerator = NULL;
+    destroy();
+    initialize(1);
+    m_pTerrainGenerator = gen;
+}
+
 
 void Terrain::destroy()
 {
-    //Destroy passable-array
+    // sanity check
+    if(!m_Initialized)
+        return;
+
+    // do NOT destroy generator here, since this is called between the
+    // initializations, and same generator could be used with them
+
+    // destroy passable-array
     for(int i = 0; i < m_Size; i++)
     {
         delete [] m_ppPassableTile[i];
     }
 
-    //Destroy array
+    // destroy array
     delete [] m_ppPassableTile;
 
-    //Destroy data for vertices
+    // destroy data for vertices
     for(int i = 0; i < (m_Size + 1); i++)
     {
         delete [] m_ppVertexHeightData[i];
@@ -93,18 +161,19 @@ void Terrain::destroy()
     m_ppVertexHeightData = NULL;
 
 
-    //Destroy data for heights
+    // destroy data for heights
     for(int i = 0; i < m_Size; i++)
     {
         delete [] m_ppTerrainHeightData[i];
     }
 
-    //Destroy array
+    // destroy array
     delete [] m_ppTerrainHeightData;
     
     m_ppTerrainHeightData = NULL;
-
+    m_Initialized = false;
 }
+
 
 short Terrain::getMoveCost(const short x, const short y, const signed char dirX, const signed char dirY) const
 {
@@ -183,6 +252,7 @@ void Terrain::flattenMap(const unsigned char heightValue)
 
 }
 
+
 void Terrain::calculateHeightMapFromVertices()
 {
     for(int y = 0; y < m_Size; y++)
@@ -193,6 +263,7 @@ void Terrain::calculateHeightMapFromVertices()
         }
     }
 }
+
 
 void Terrain::calculateTileHeight(const short x, const short y)
 {
