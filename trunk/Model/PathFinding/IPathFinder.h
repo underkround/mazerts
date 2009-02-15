@@ -13,7 +13,6 @@
 
 //Forward declarations
 class Unit;
-class Terrain;
 
 class IPathFinder
 {
@@ -53,10 +52,10 @@ public:
      * Terrain to use for data in the search
      * @param pTerrain Terrain to use
      */
-    inline void setTerrain(Terrain* pTerrain)
+    /*inline void setTerrain(Terrain* pTerrain)
     {
         m_pTerrain = pTerrain;
-    }
+    }*/
 
     /**
      * Sets the unit that will get the path once its' done (or told that there is
@@ -73,7 +72,7 @@ protected:
     /**
      * Pointer to terrain to use in the search
      */
-    Terrain* m_pTerrain;
+    //Terrain* m_pTerrain;
 
     /**
      * Pointer to Unit that is asking for the path

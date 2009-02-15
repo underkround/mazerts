@@ -2,8 +2,8 @@
 
 PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
 {
-//    m_pTerrain = &Terrain::getInstance();
-    m_pTerrain = Terrain::getInstance();
+    pStartNode = NULL;
+
     m_pUnit = pUnit;
 
     //Set start and goal positions
@@ -13,9 +13,16 @@ PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
     m_GoalX = goalX;
     m_GoalY = goalY;
 
-    //Create needed arrays
-    unsigned short size = m_pTerrain->getSize();
+    //If goal is unpassable, cancel the search right away
+    if(!Terrain::getInstance()->isPassable(goalX, goalY))
+    {
+        m_Cancelled = true;
+    }
     
+    //Create needed arrays
+    unsigned short size = Terrain::getInstance()->getSize();
+        
+    //TODO: Initial size?
     m_pOpenList = new CHeapTree<PathNode*, int>(size);
 
     m_pppClosedArray = new PathNode**[size];
@@ -43,11 +50,28 @@ PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
         NULL), 0);
 }
 
+#include <stdio.h>
 PathFinder::~PathFinder()
 {
+    //Empty and delete openlist -heaptree   
+    if(!m_pOpenList->IsEmpty())
+    {
+        /*PathNode* pNode = NULL;
+        m_pOpenList->GetTopID(&pNode);
+        m_pOpenList->RemoveTop();
+        delete pNode;*/
+
+        int size = m_pOpenList->GetSize();
+        CHeapTree<PathNode*, int>::_NODE* nodes = m_pOpenList->getDataArray();
+        for(int i = 0; i < size; ++i)
+        {
+            delete nodes[i].id;
+        }
+    }
+
     delete m_pOpenList;
 
-    unsigned short size = m_pTerrain->getSize();
+    unsigned short size = Terrain::getInstance()->getSize();
 
     //Remove pathnodes
     for(int i = 0; i < size; i++)
@@ -84,7 +108,7 @@ bool PathFinder::advance(short steps)
 
     short currentY = 0;
     short currentX = 0;
-    short mapSize = m_pTerrain->getSize();
+    short mapSize = Terrain::getInstance()->getSize();
 
     while(steps)
     {
@@ -106,7 +130,7 @@ bool PathFinder::advance(short steps)
             short adjaX = 0;
             short adjaY = 0;
             int F, G, H;
-
+            
             for(int i = -1; i < 2; i++)
             {
                 for(int j = -1; j < 2; j++)
@@ -114,7 +138,7 @@ bool PathFinder::advance(short steps)
 #ifdef EIGHTWAYSEARCH
                     if(!(i == 0 && j == 0))
 #else
-                    if(i == 0 || j == 0)
+                    if((i == 0 || j == 0) && (!(i == 0 && j == 0))) //Is this correct?
 #endif
                     {
                         adjaX = currentX+i;
@@ -127,19 +151,24 @@ bool PathFinder::advance(short steps)
                             //Path found!
                             buildPath(current);
                             //TODO: INFORM UNIT
+                            
                             return true;
                         }
 
                         //The node must not be in the closed list it has to be passable
-                        if( m_pTerrain->isPassable(adjaX, adjaY) && !m_pppClosedArray[adjaY][adjaX] )
+                        if( Terrain::getInstance()->isPassable(adjaX, adjaY) && !m_pppClosedArray[adjaY][adjaX] )
                         {
+                            //Calculate costs
+                            short cost = Terrain::getInstance()->getMoveCost(currentX, currentY, i, j);
+                            G = current->G + cost;
+
                             //If the node hasn't been in the open list yet, add it there
                             if(!m_ppInOpenList[adjaY][adjaX])
                             {
-                                //Calculate costs
-                                G = m_pTerrain->getMoveCost(currentX, currentY, i, j);
-                                H = abs(m_GoalX - adjaX) + abs(m_GoalY - adjaY);                            
-                                F = current->G + G + H;
+                                
+                                //TODO: Better heuristics?                  
+                                H = 10 * (abs(adjaX - m_GoalX) + abs(adjaY - m_GoalY));
+                                F = G + H;
 
                                 //Add to list and mark InOpenList
                                 m_pOpenList->Insert(new PathNode(adjaX, adjaY,
@@ -148,7 +177,7 @@ bool PathFinder::advance(short steps)
                                 m_ppInOpenList[adjaY][adjaX] = true;
                             }
                             else
-                            {
+                            {                               
                                 //TODO:
                                 /*If it is on the open list already, check to see if this path to that square is better, 
                                 using G cost as the measure. A lower G cost means that this is a better path. 
@@ -180,13 +209,23 @@ void PathFinder::cancel()
     m_Cancelled = true;
 }
 
-#include <stdio.h>
-//TODO: DEBUG-implementation
 void PathFinder::buildPath(PathNode* pCurrent)
 {    
-    while(pCurrent != NULL)
+    while(1)
     {        
-        printf("\n%d:%d", pCurrent->x, pCurrent->y);
-        pCurrent = pCurrent->pParent;
+        //Remove pointer from m_pppClosedArray, so the actual path nodes won't
+        //get deleted along with the array (the ones used by the unit)
+        m_pppClosedArray[pCurrent->y][pCurrent->x] = NULL;
+        
+        if(pCurrent->pParent != NULL)
+        {
+            pCurrent->pParent->pChild = pCurrent;        
+            pCurrent = pCurrent->pParent;
+        }
+        else
+        {
+            pStartNode = pCurrent;
+            return;
+        }        
     }    
 }

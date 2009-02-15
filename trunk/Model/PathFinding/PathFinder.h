@@ -17,38 +17,12 @@
 #include "../Common/HeapTree.h"
 #include "../Common/Vector3.h"
 
-//Uncomment to use 8-way search
+//Comment to use 4-way search
 #define EIGHTWAYSEARCH
 
 class PathFinder : IPathFinder
 {
 public:
-    /**
-     * Constructor
-     * @param pUnit Unit that needs the path
-     * @param goalX X-coordinate of the goal tile
-     * @param goalY Y-coordinate of the goal tile
-     */
-    PathFinder(Unit* pUnit, short goalX, short goalY);
-
-    /**
-     * Destructor
-     */
-    virtual ~PathFinder();
-
-    /**
-     * Advances the search a given number of steps
-     * @param steps Steps to advance
-     * @return true, if search has finished, otherwise false
-     */
-    bool advance(short steps);
-
-    /**
-     * Cancels the search and prepares pathfinder for destruction
-     */
-    void cancel();
-
-private:
 
     /**
      * Nodes stored into openlist
@@ -63,6 +37,7 @@ private:
             this->G = G;
             this->H = H;
             this->pParent = pParent;
+            this->pChild = NULL;
         }
 
         /**
@@ -94,7 +69,46 @@ private:
          * Node parent
          */
         PathNode* pParent;
+
+        /**
+         * Node child
+         */
+        PathNode* pChild;
+
     };
+
+
+    /**
+     * Constructor
+     * @param pUnit Unit that needs the path
+     * @param goalX X-coordinate of the goal tile
+     * @param goalY Y-coordinate of the goal tile
+     */
+    PathFinder(Unit* pUnit, short goalX, short goalY);
+
+    /**
+     * Destructor
+     */
+    virtual ~PathFinder();
+
+    /**
+     * Advances the search a given number of steps
+     * @param steps Steps to advance
+     * @return true, if search has finished, otherwise false
+     */
+    bool advance(short steps);
+
+    /**
+     * Cancels the search and prepares pathfinder for destruction
+     */
+    void cancel();
+
+    inline PathNode* getPath()
+    {
+        return pStartNode;
+    }
+
+private:
 
     /**
      * Use only the parametric constructor
@@ -128,6 +142,11 @@ private:
      * Two-dimensional PathNode-array to use for closed list
      */
     PathNode*** m_pppClosedArray;
+
+    /**
+     * This is the node that will be delivered to unit if path is found
+     */
+    PathNode* pStartNode;
 };
 
 #endif //__PATHFINDER_H__
