@@ -10,6 +10,7 @@
 #include "DamageAndDamageHandlerTests.h"
 #include "UnitPositionAndFacingTest.h"
 #include "TerrainTest.h"
+#include "PathFinderTest.h"
 #include "VectorAndMatriceTest.h"
 
 #include <iostream>
@@ -25,6 +26,9 @@ int main(int arcg, char* argv[])
     if(VERBOSE) cout << "\n *** terrain ***\n";
     testTerrain();
 
+    if(VERBOSE) cout << "\n *** Pathfinder ***\n";
+    testPathFinder();
+
     if(VERBOSE) cout << "\n *** unit position ***\n";
     testUnitPositionAndFacing();
 
@@ -32,3 +36,4 @@ int main(int arcg, char* argv[])
     //testVectorAndMatrice ();
 
 }
+

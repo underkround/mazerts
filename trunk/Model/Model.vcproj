@@ -178,6 +178,10 @@
 				Name="Terrain"
 				>
 				<File
+					RelativePath=".\Terrain\DefaultTerrainGenerator.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Terrain\Terrain.cpp"
 					>
 				</File>
@@ -185,6 +189,10 @@
 			<Filter
 				Name="Pathfinding"
 				>
+				<File
+					RelativePath=".\PathFinding\PathFinder.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Tests"
@@ -221,6 +229,10 @@
 				</File>
 				<File
 					RelativePath=".\Common\EulerAngles.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\HeapTree.h"
 					>
 				</File>
 				<File
@@ -268,6 +280,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Tests\PathFinderTest.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Tests\TerrainTest.h"
 					>
 				</File>
@@ -303,12 +319,24 @@
 			<Filter
 				Name="Pathfinding"
 				>
+				<File
+					RelativePath=".\PathFinding\IPathFinder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PathFinding\PathFinder.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Terrain"
 				>
 				<File
-					RelativePath=".\Terrain\ITerrain.h"
+					RelativePath=".\Terrain\DefaultTerrainGenerator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Terrain\ITerrainGenerator.h"
 					>
 				</File>
 				<File

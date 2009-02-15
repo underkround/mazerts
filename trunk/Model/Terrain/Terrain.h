@@ -14,11 +14,11 @@
 #ifndef __TERRAIN_H__
 #define __TERRAIN_H__
 
-//#include "ITerrain.h"
+#include "ITerrainGenerator.h"
 #include <stdlib.h> //For srand and rand
 #include <time.h>   //For random seed
  
-class Terrain //: public ITerrain
+class Terrain
 {
 public:
 
@@ -42,13 +42,13 @@ public:
      * Movecost offset, this is the value that is returned
      * as movecost between tiles at same height
      */
-    static const short MOVECOST_OFFSET = 100;
+    static const short MOVECOST_OFFSET = 25;
 
     /**
      * Movecost-threshold: this value is the maximum amount
      * the movecost can differ from threshold
      */
-    static const short MOVECOST_THRESHOLD = 10;
+    static const short MOVECOST_THRESHOLD = 25;
     static const short MOVECOST_MAX = MOVECOST_OFFSET + MOVECOST_THRESHOLD;
     static const short MOVECOST_MIN = MOVECOST_OFFSET - MOVECOST_THRESHOLD;
 
@@ -62,7 +62,7 @@ public:
      * Value returned by getMoveCost, if the move would result
      * to going out of the map
      */
-    static const short MOVE_OUTOFBOUNDS = -10000;
+    static const short MOVE_OUTOFBOUNDS = 20000;
 
     /**
      * Creates a new instance with given seed and size, if existing
@@ -71,7 +71,7 @@ public:
      * @param size size for map side
      * @return Reference to created ITerrain-instance
      */
-    static Terrain& createNew(const int seed, const short size);
+    static Terrain& createNew(const int seed, const unsigned short size);
 
     /**
      * Returns the current singleton-instance, if no instance
@@ -111,11 +111,12 @@ public:
 
     /**
      * Returns a two-dimensional unmodifiable array of terrain tile-height -data
+     * First dimension is Y, second dimension is X
      * @return Pointer to two-dimensional array of terrain tile-heights
      */
     inline const unsigned char* const * getTerrainHeightData(void) const
     {
-        return (const unsigned char**)m_ppTerrainHeightData;
+        return (const unsigned char* const *)m_ppTerrainHeightData;
     }
 
     /**
@@ -130,7 +131,8 @@ public:
     }
 
     /**
-     * Returns a two-dimensional unmodifiable array of terrain vertex-height -data
+     * Returns a two-dimensional unmodifiable array of terrain vertex-height -data.
+     * First dimension is Y, second dimension is X
      * @return Pointer to two-dimensional array of terrain vertex-heights
      */
     inline const unsigned char * const * getTerrainVertexHeightData() const
@@ -177,6 +179,40 @@ public:
         return m_WaterLevel;
     }
 
+    /**
+     * Set the terraingenerator to use
+     * @param pTerraGen Pointer to an object implementing ITerrainGenerator
+     */
+    static inline void setTerrainGenerator(ITerrainGenerator* pTerraGen)
+    {
+        //Get rid of old instance, if any
+        if(pTerrainGenerator)
+        {
+            delete pTerrainGenerator;
+        }
+
+        pTerrainGenerator = pTerraGen;
+    }
+
+    /**
+     * Checks if the tile at x, y is passable or not
+     * @param x X-coordinate of the tile
+     * @param y Y-coordinate of the tile
+     * @return True if the tile is passable, otherwise false
+     */
+    inline bool isPassable(short x, short y)
+    {
+        //Bounds checking
+        if(x < 0 || x >= m_Size || y < 0 ||y >= m_Size)
+        {
+            return false;
+        }
+        else
+        {
+            return m_ppPassableTile[y][x];
+        }
+    }
+
 protected:
 
     /**
@@ -196,7 +232,7 @@ protected:
      * @param seed Seed-number to use
      * @param size Size of the map-side, actual cell-amount is (size-1)*(size-1)
      */
-    Terrain(const int seed, const short size)
+    Terrain(const int seed, const unsigned short size)
     {
         m_Seed = seed;
         m_Size = size;
@@ -208,6 +244,11 @@ protected:
      * Static pointer to singleton instance
      */
     static Terrain* pTerrain;
+    
+    /**
+     * Terraingenerator to use
+     */
+    static ITerrainGenerator* pTerrainGenerator;
 
     /**
      * Initializes internal data based on seed and size
@@ -218,11 +259,6 @@ protected:
      * Deallocates internal data and cleans up
      */
     void destroy();
-
-    /**
-     * Generates the heightmap based on size and seed
-     */
-    void generateMap();
 
     /**
      * Sets all heights to given value
@@ -236,7 +272,8 @@ protected:
     void calculateHeightMapFromVertices();
 
     /**
-     * Calculate tileheight from surrounding vertices
+     * Calculate tileheight from surrounding vertices and
+     * mark as passable/non-passable
      * @param x Tile x-location
      * @param y Tile y-location
      */
@@ -244,6 +281,7 @@ protected:
 
     /**
      * Dynamic two-dimensional array of heights
+     * First dimension is Y, second dimension is X
      */
     unsigned char** m_ppTerrainHeightData;
 
@@ -251,8 +289,15 @@ protected:
      * Dynamic two-dimensional array of vertice heights
      * Vertex-height array size is always [size + 1][size + 1], because
      * 4 points are needed to define one tile (quad)
+     * First dimension is Y, second dimension is X
      */
     unsigned char** m_ppVertexHeightData; 
+
+    /**
+     * Quick lookup-table for passable/non-passable squares
+     * First dimension is Y, second dimension is X
+     */
+    bool** m_ppPassableTile;
 
     /**
      * Seed-number used to initialize terrain
@@ -263,12 +308,13 @@ protected:
      * Size of one side of the map, both sides 
      * are always the sam size
      */
-    short m_Size;
+    unsigned short m_Size;
 
     /**
      * The height value at which the water-level is
      */
     unsigned char m_WaterLevel;
+
 };
 
 #endif // __TERRAIN_H__
