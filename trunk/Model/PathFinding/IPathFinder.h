@@ -7,11 +7,13 @@
  * $Date$
  * $Id$
  */
-//TODO: canPath + path between two arbitrary points, callback?
-//Master-thread
 
 #ifndef __IPATHFINDER_H__
 #define __IPATHFINDER_H__
+
+#ifndef NULL
+    #define NULL 0
+#endif
 
 //Forward declarations
 class Unit;
@@ -19,6 +21,74 @@ class Unit;
 class IPathFinder
 {
 public:
+
+    /**
+     * States for PathFinder, returned by advance()
+     */
+    enum PathingState
+    {
+        NOT_FINISHED = 0,
+        NOT_FOUND,
+        CANCELLED,
+        FOUND
+    };
+
+    /**
+     * Nodes making up the path and stored into open- and closed list
+     * during search
+     */
+    struct PathNode
+    {
+        PathNode(short x, short y, int F, int G, int H, PathNode* pParent)
+        {
+            this->x = x;
+            this->y = y;
+            this->F = F;
+            this->G = G;
+            this->H = H;
+            this->pParent = pParent;
+            this->pChild = NULL;
+        }
+
+        /**
+         * Node tile x-position
+         */
+        short x;
+
+        /**
+         * Node tile y-position
+         */
+        short y;
+
+        /**
+         * Node F-cost
+         */
+        int F;
+         
+        /**
+         * Node G-cost
+         */
+        int G;
+
+        /**
+         * Node H-cost
+         */
+        int H;
+
+        /**
+         * Node parent
+         */
+        PathNode* pParent;
+
+        /**
+         * Node child
+         */
+        PathNode* pChild;
+
+    };
+
+
+
     /**
      * Default constructor
      */
@@ -38,9 +108,9 @@ public:
      * Advances the pathfinding by n steps and returns boolean to tell if the search
      * has ended or not
      * @param steps How many steps to advance
-     * @return True, if the search has ended, otherwise false
+     * @return Current search state, see PathingState-enumeration
      */
-    virtual bool advance(short steps) = 0;
+    virtual PathingState advance(short steps) = 0;
 
     /**
      * Cancels the search

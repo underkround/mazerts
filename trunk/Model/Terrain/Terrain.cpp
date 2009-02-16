@@ -204,7 +204,14 @@ short Terrain::getMoveCost(const short x, const short y, const signed char dirX,
                 return MOVE_ILLEGAL;
             }
 
-            return moveCost;
+            if(dirX != 0 && dirY != 0)
+            {
+                return (short)(moveCost * 1.4f);
+            }
+            else
+            {
+                return moveCost;
+            }
         }
     }
 }

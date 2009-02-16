@@ -8,6 +8,10 @@
  * $Id$
  */
 
+//TODO: canPath + path between two arbitrary points to interface, unit-callback?,
+// Master-thread, taking unit-size into account, bi-directional search?, reverse search?
+// (Heaptree-cleanup, low priority)
+
 #ifndef __PATHFINDER_H__
 #define __PATHFINDER_H__
 
@@ -20,63 +24,17 @@
 //Comment to use 4-way search
 #define EIGHTWAYSEARCH
 
-class PathFinder : IPathFinder
+class PathFinder : public IPathFinder
 {
 public:
 
+    //TODO: remove when not needed anymore
+    int DEBUG_steps;
+
     /**
-     * Nodes stored into openlist
+     * Bitshift-factor for Manhattan distance-heuristic coefficient
      */
-    struct PathNode
-    {
-        PathNode(short x, short y, int F, int G, int H, PathNode* pParent)
-        {
-            this->x = x;
-            this->y = y;
-            this->F = F;
-            this->G = G;
-            this->H = H;
-            this->pParent = pParent;
-            this->pChild = NULL;
-        }
-
-        /**
-         * Node tile x-position
-         */
-        short x;
-
-        /**
-         * Node tile y-position
-         */
-        short y;
-
-        /**
-         * Node F-cost
-         */
-        int F;
-         
-        /**
-         * Node G-cost
-         */
-        int G;
-
-        /**
-         * Node H-cost
-         */
-        int H;
-
-        /**
-         * Node parent
-         */
-        PathNode* pParent;
-
-        /**
-         * Node child
-         */
-        PathNode* pChild;
-
-    };
-
+    static const int HEURISTIC_FACTOR = 2;
 
     /**
      * Constructor
@@ -94,9 +52,9 @@ public:
     /**
      * Advances the search a given number of steps
      * @param steps Steps to advance
-     * @return true, if search has finished, otherwise false
+     * @return PathingState, see enumeration
      */
-    bool advance(short steps);
+    PathingState advance(short steps);
 
     /**
      * Cancels the search and prepares pathfinder for destruction
@@ -139,14 +97,16 @@ private:
     bool** m_ppInOpenList;
 
     /**
-     * Two-dimensional PathNode-array to use for closed list
+     * Two-dimensional PathNode-array to use for closed list and cleaning up
+     * unused PathNodes when the path is completed
      */
     PathNode*** m_pppClosedArray;
 
     /**
-     * This is the node that will be delivered to unit if path is found
+     * This is the node which will be delivered to unit if path is found
      */
     PathNode* pStartNode;
+
 };
 
 #endif //__PATHFINDER_H__

@@ -15,19 +15,27 @@ void testPathFinder()
     pConsole->ClearBuffer();
     
     
-    srand(10000);
+    srand(100000);
     
     for(int i = 0; i < 1000; i++)
     {
-        srand(rand());
+        /*srand(rand());
         int len = rand() % 10;
-        int x = rand() % (terrain->getSize() >> 1);
-        int y = rand() % (terrain->getSize() >> 1);
+        int x = rand() % pConsole->swScreenSizeX;
+        int y = rand() % pConsole->swScreenSizeY;
         
         for(int j = 0; j < len; j++)
         {
-            terrain->setTerrainVertexHeight(x++, y, j*10);
-        }
+            terrain->setTerrainVertexHeight(x++, y, j*30 % 255);
+        }*/
+    }
+
+    for(int i = 0; i < 40; i++)
+    {
+        terrain->setTerrainVertexHeight(20, i, i*30 % 255);
+        terrain->setTerrainVertexHeight(i+24, 25, i*30 % 255);
+        terrain->setTerrainVertexHeight(i+44, 25, i*30 % 255);
+        terrain->setTerrainVertexHeight(60, 45-i, i*30 % 255);
     }
     
     for(int i = 0; i < pConsole->swScreenSizeY; i++)
@@ -46,8 +54,10 @@ void testPathFinder()
     timer->Create();
 
     Unit* pUnit = new Unit();
-    char* cCount = new char[100];
-    char* cTime = new char[100];
+    
+    char* strMsg = new char[100];
+    int steps = 0;
+
     for(int k = 0; k < 2000; k++)
     {
         timer->BeginTimer();
@@ -58,10 +68,11 @@ void testPathFinder()
         }
 
         PathFinder::PathNode* pCurrent = pFinder->getPath();    
-                
-        delete pFinder;
-        timer->EndTimer();
+        
+        steps = pFinder->DEBUG_steps;
 
+        delete pFinder;
+        timer->EndTimer();        
 
         pConsole->ClearBuffer();
         for(int i = 0; i < pConsole->swScreenSizeY; i++)
@@ -98,11 +109,16 @@ void testPathFinder()
             }
         }
 
-        sprintf_s(cCount, 100, "%d polkua haettu", k);
-        sprintf_s(cTime, 100, "%.3fms PathFinder luonti, haku, poisto", timer->GetElapsedSeconds());
-        
-        pConsole->writeMessage(5, 44, cCount);
-        pConsole->writeMessage(5, 45, cTime);
+        sprintf_s(strMsg, 100, "%d polkua haettu", k);
+        pConsole->writeMessage(5, 47, strMsg);
+
+        sprintf_s(strMsg, 100, "%.3fms PathFinder luonti, haku, poisto", (timer->GetElapsedSeconds() * 1000.0f));
+        pConsole->writeMessage(5, 48, strMsg);
+
+        sprintf_s(strMsg, 100, "%d askelta haussa", steps);
+        pConsole->writeMessage(5, 49, strMsg);
+
+
         pConsole->DrawScreen();
     }
 

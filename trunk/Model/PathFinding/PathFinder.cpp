@@ -2,6 +2,10 @@
 
 PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
 {
+    //TODO: Remove when not needed anymore
+    DEBUG_steps = 0;
+
+
     pStartNode = NULL;
 
     m_pUnit = pUnit;
@@ -96,14 +100,14 @@ PathFinder::~PathFinder()
 }
 
 
-bool PathFinder::advance(short steps)
+IPathFinder::PathingState PathFinder::advance(short steps)
 {
     //If the search has been cancelled, return true so the 
     //pathfinding-master thread knows to destroy this instance,
     //but do not pass the pathdata to unit
     if(m_Cancelled)
     {
-        return true;
+        return CANCELLED;
     }
 
     short currentY = 0;
@@ -112,6 +116,8 @@ bool PathFinder::advance(short steps)
 
     while(steps)
     {
+        DEBUG_steps++;
+
         if(!m_pOpenList->IsEmpty())
         {
             //Get pathnode with lowest F-score from openlist
@@ -131,6 +137,7 @@ bool PathFinder::advance(short steps)
             short adjaY = 0;
             int F, G, H;
             
+            //TODO OPT: Separate loop contents into method, call repeatedly ("loop unrolling")
             for(int i = -1; i < 2; i++)
             {
                 for(int j = -1; j < 2; j++)
@@ -152,22 +159,22 @@ bool PathFinder::advance(short steps)
                             buildPath(current);
                             //TODO: INFORM UNIT
                             
-                            return true;
+                            return FOUND;
                         }
 
                         //The node must not be in the closed list it has to be passable
                         if( Terrain::getInstance()->isPassable(adjaX, adjaY) && !m_pppClosedArray[adjaY][adjaX] )
                         {
-                            //Calculate costs
-                            short cost = Terrain::getInstance()->getMoveCost(currentX, currentY, i, j);
-                            G = current->G + cost;
-
                             //If the node hasn't been in the open list yet, add it there
                             if(!m_ppInOpenList[adjaY][adjaX])
                             {
-                                
+                                //TODO OPT: getMoveCost? (Maybe not)
+                                //Calculate costs                         
+                                short cost = Terrain::getInstance()->getMoveCost(currentX, currentY, i, j);
+                                G = current->G + cost;
+       
                                 //TODO: Better heuristics?                  
-                                H = 10 * (abs(adjaX - m_GoalX) + abs(adjaY - m_GoalY));
+                                H = (abs(adjaX - m_GoalX) + abs(adjaY - m_GoalY)) << HEURISTIC_FACTOR;
                                 F = G + H;
 
                                 //Add to list and mark InOpenList
@@ -176,9 +183,9 @@ bool PathFinder::advance(short steps)
                                 current), F);
                                 m_ppInOpenList[adjaY][adjaX] = true;
                             }
-                            else
+                            //else
                             {                               
-                                //TODO:
+                                //TODO: (MAY NOT BE NEEDED)
                                 /*If it is on the open list already, check to see if this path to that square is better, 
                                 using G cost as the measure. A lower G cost means that this is a better path. 
                                 If so, change the parent of the square to the current square, and recalculate the G and F
@@ -193,15 +200,15 @@ bool PathFinder::advance(short steps)
         else
         {
             //Openlist is empty, no path
-            //TODO: BUILD PATH, INFORM UNIT
-            return true;
+            //TODO: INFORM UNIT
+            return NOT_FOUND;
         }
 
         --steps;
     }
 
     //Search isn't done yet
-    return false;
+    return NOT_FINISHED;
 }
 
 void PathFinder::cancel()
@@ -209,6 +216,7 @@ void PathFinder::cancel()
     m_Cancelled = true;
 }
 
+//TODO: If path is searched in reverse (goal and start swapped), this becomes much simpler
 void PathFinder::buildPath(PathNode* pCurrent)
 {    
     while(1)
@@ -223,7 +231,7 @@ void PathFinder::buildPath(PathNode* pCurrent)
             pCurrent = pCurrent->pParent;
         }
         else
-        {
+        {            
             pStartNode = pCurrent;
             return;
         }        
