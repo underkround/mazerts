@@ -171,10 +171,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Common\CConsole.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Faction.cpp"
 				>
 			</File>
@@ -221,6 +217,10 @@
 			<Filter
 				Name="Common"
 				>
+				<File
+					RelativePath=".\Common\CConsole.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\Common\EulerAngles.cpp"
 					>
@@ -308,6 +308,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Tests\DebugComponent.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Tests\PathFinderTest.h"
 					>
 				</File>
@@ -317,6 +321,10 @@
 				</File>
 				<File
 					RelativePath=".\Tests\UnitPositionAndFacingTest.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Tests\UnitWithDebugComponent.h"
 					>
 				</File>
 				<File
@@ -333,6 +341,10 @@
 				</File>
 				<File
 					RelativePath=".\Unit\DamageHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\IComponent.h"
 					>
 				</File>
 				<File

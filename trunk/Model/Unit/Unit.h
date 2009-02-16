@@ -16,6 +16,7 @@
 #define __UNIT_H__
 
 #include "IUpdatable.h"
+#include "IComponent.h"
 #include "DamageHandler.h"
 #include "Damage.h"
 #include "../Common/Vector3.h"
@@ -23,6 +24,15 @@
 class Unit : public IUpdatable
 {
 public:
+
+    /**
+     * How many slots to allocate to components.
+     * If there is more components, the array will be expanded by
+     * this value -> set to a value that should be enough for units
+     * in the game so growing is not needed.
+     */
+    const static unsigned short DEFAULT_COMPONENT_ARRAY_SIZE = 5;
+
     /**
      * Default constructor
      */
@@ -36,9 +46,9 @@ public:
     /**
      * //TODO: Update method
      */
-    bool update(const float deltaT);
+    virtual char update(const float deltaT);
 
-    // ========== SETTERS
+// ========== SETTERS
 
     /**
      * Sets the width of the unit (x-tiles)
@@ -75,7 +85,24 @@ public:
             m_Hitpoints = maxHitpoints;
     }
 
-    // ========== GETTERS
+    /**
+     * Add a component to the unit.
+     * The unit will attach the component, and external sources should not
+     * call the unit's attach method but instead use this to add the
+     * component.
+     */
+    bool addComponent(IComponent* component);
+
+    /**
+     * Force the unit to new position.
+     * This method is not for normal moving of the unit.
+     * @param x the x cell of the terrain
+     * @param y the y cell of the terrain
+     * @return false, if the target coordinate is not passable
+     */
+    bool forcePosition(unsigned const short x, unsigned const short y);
+
+// ========== GETTERS
 
     /**
      * Returns the width of the unit (x-tiles)
@@ -96,7 +123,27 @@ public:
     }
 
     /**
+     * @return the unit's cell coordinate x
+     */
+    inline const unsigned short getCellX(void)
+    {
+        return m_CellX;
+    }
+
+    /**
+     * @return the unit's cell coordinate y
+     */
+    inline const unsigned short getCellY(void)
+    {
+        return m_CellY;
+    }
+
+    /**
      * Return pointer to the position of the unit as Vector3 object.
+     *
+     * !NOTE!:  only components are allowed to alter this vector directly!
+     *          otherwise the unit's grid position might not be short
+     *          time out of sync (ok.. until next update call.. but still :)
      * @return position vector of the unit
      */
     inline Vector3* getPosition(void)
@@ -106,6 +153,7 @@ public:
 
     /**
      * Return pointer to the direction of the unit as Vector3 object.
+     * Direction can be altered directly?
      * @return direction vector of the unit
      */
     inline Vector3* getDirection(void)
@@ -146,7 +194,40 @@ public:
         return d->getTotalDamage();
     }
 
+    inline const unsigned short getComponentCount()
+    {
+        return m_ComponentCount;
+    }
+
 private:
+
+// =====
+
+    /**
+     * Grow the component array by default component array size..
+     * Pointers are cheap (?) so it might be best to ensure enough capacity
+     * in the first place :)
+     * But just to be sure..
+     */
+    inline void increaseComponentCapacity()
+    {
+        IComponent** tmpHolder = new IComponent*[m_ComponentCount];
+        // this could possibly be done with some fancy memory copy -function
+        // but i'm the lame java-guy!
+        for(int i=0; i<m_ComponentCount; i++)
+            tmpHolder[i] = m_Components[i];
+        delete [] m_Components;
+        m_Components = new IComponent*[m_ComponentCount + DEFAULT_COMPONENT_ARRAY_SIZE];
+        for(int i=0; i<m_ComponentCount; i++) {
+            if(i < m_ComponentCount)
+                m_Components[i] = tmpHolder[i];
+            else
+                m_Components[i] = NULL;
+        }
+        delete [] tmpHolder;
+    }
+
+// ===== MEMBERS
 
     /**
      * 3D vector representing the placement of the unit.
@@ -162,6 +243,18 @@ private:
      *   the altitude of the tile-cells the unit is in
      */
     Vector3 m_Position;
+
+    /**
+     * The cell coordinates of the terrain, these are updated from the
+     * position vector.
+     */
+    unsigned short m_CellX;
+    unsigned short m_CellY;
+
+    /**
+     *
+     */
+    bool m_SyncHeightToTerrain;
 
     /**
      * 3D vector representing which way the unit is facing. The z-component
@@ -207,6 +300,19 @@ private:
      * if the Unit is upgraded.
      */
     int m_MaxHitpoints;
+
+    IComponent** m_Components;
+
+    /**
+     * Count of the components attached
+     * 
+     */
+    unsigned char m_ComponentCount;
+
+    /**
+     * The current capacity of the component array
+     */
+    unsigned char m_ComponentArraySize;
 
 };
 

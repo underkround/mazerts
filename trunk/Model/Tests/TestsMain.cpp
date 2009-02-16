@@ -15,6 +15,7 @@
 #include "TerrainTest.h"
 #include "PathFinderTest.h"
 #include "VectorAndMatriceTest.h"
+#include "UnitWithDebugComponent.h"
 
 using namespace std;
 
@@ -33,6 +34,9 @@ int main(int arcg, char* argv[])
 
     if(VERBOSE) cout << "\n *** unit position ***\n";
     testUnitPositionAndFacing();
+
+    if(VERBOSE) cout << "\n *** unit with debug component ***\n";
+    testUnitWithDebugComponent();
 
     //if(VERBOSE) cout << "\n *** vector & matrix ***\n";
     //testVectorAndMatrice ();
