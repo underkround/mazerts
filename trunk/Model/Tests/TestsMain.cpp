@@ -7,13 +7,15 @@
  * $Date$
  * $Id$
  */
+#include <iostream>
+
+
 #include "DamageAndDamageHandlerTests.h"
 #include "UnitPositionAndFacingTest.h"
 #include "TerrainTest.h"
 #include "PathFinderTest.h"
 #include "VectorAndMatriceTest.h"
 
-#include <iostream>
 using namespace std;
 
 #define VERBOSE 1
@@ -27,7 +29,7 @@ int main(int arcg, char* argv[])
     testTerrain();
 
     if(VERBOSE) cout << "\n *** Pathfinder ***\n";
-    testPathFinder();
+//    testPathFinder();
 
     if(VERBOSE) cout << "\n *** unit position ***\n";
     testUnitPositionAndFacing();

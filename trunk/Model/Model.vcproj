@@ -214,6 +214,38 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="GameConsole"
+				>
+			</Filter>
+			<Filter
+				Name="Common"
+				>
+				<File
+					RelativePath=".\Common\EulerAngles.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\JString.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\MathUtil.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\Matrix4x3.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\Quaternion.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\RotationMatrix.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -232,10 +264,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Common\EulerAngles.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Common\EulerAngles.h"
 					>
 				</File>
@@ -244,7 +272,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Common\MathUtil.cpp"
+					RelativePath=".\Common\JString.h"
 					>
 				</File>
 				<File
@@ -252,23 +280,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Common\Matrix4x3.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Common\Matrix4x3.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Common\Quaternion.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Common\Quaternion.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Common\RotationMatrix.cpp"
 					>
 				</File>
 				<File
@@ -355,6 +371,10 @@
 					RelativePath=".\Terrain\Terrain.h"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="GameConsole"
+				>
 			</Filter>
 		</Filter>
 		<Filter

@@ -15,9 +15,11 @@
 #define __TERRAIN_H__
 
 #include "ITerrainGenerator.h"
-#include <stdlib.h> //For srand and rand
-#include <time.h>   //For random seed
  
+#ifndef NULL
+#define NULL 0
+#endif
+
 class Terrain
 {
 public:
