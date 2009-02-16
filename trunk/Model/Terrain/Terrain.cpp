@@ -176,7 +176,6 @@ void Terrain::destroy()
 }
 
 
-//TODO: Waterlevel-check
 short Terrain::getMoveCost(const short x, const short y, const signed char dirX, const signed char dirY) const
 {
     short targetX = x + dirX;
@@ -276,6 +275,7 @@ void Terrain::calculateHeightMapFromVertices()
 
 void Terrain::calculateTileHeight(const short x, const short y)
 {
+    //Bounds check
     if(x < 0 ||x >= m_Size || y < 0 ||y >= m_Size)
     {
         return;
@@ -285,6 +285,40 @@ void Terrain::calculateTileHeight(const short x, const short y)
     m_ppVertexHeightData[y][x+1] + 
     m_ppVertexHeightData[y+1][x] + 
     m_ppVertexHeightData[y+1][x+1]) >> 2;
+
+
+    //PASSABLE CHECKS
+    //By default, a tile is passable, but the following checks can mark it as unpassable
+    m_ppPassableTile[y][x] = true;
+
+    //If the height difference between vertices is too high, the resulting quad
+    //will be too steep for units to travel
+    unsigned char min = 255;
+    unsigned char max = 0;
+
+    for(int i = 0; i < 2; i++)
+    {
+        for(int j = 0; j < 2; j++)
+        {
+            int xval = x+j;
+            int yval = y+i;
+            if(m_ppVertexHeightData[yval][xval] < min)
+            {
+                min = m_ppVertexHeightData[yval][xval];
+            }
+
+            if(m_ppVertexHeightData[yval][xval] > max)
+            {
+                max = m_ppVertexHeightData[yval][xval];
+            }
+        }
+    }
+    
+    if((max-min) > MOVECOST_THRESHOLD)
+    {
+        m_ppPassableTile[y][x] = false;
+        return;
+    }
 
     //If both triangles of the tile (quad) aren't on the same plane, it's unpassable
     //TODO: Note to self:
@@ -298,12 +332,16 @@ void Terrain::calculateTileHeight(const short x, const short y)
     unsigned short line2aver = (m_ppVertexHeightData[y+1][x] + 
                         m_ppVertexHeightData[y][x+1]) >> 1;
 
-    if(line1aver == line2aver)
-    {
-        m_ppPassableTile[y][x] = true;
-    }
-    else
+    if(line1aver != line2aver)
     {
         m_ppPassableTile[y][x] = false;
+        return;
+    }
+
+    //Waterlevel-check: if the middle of the tile is below water, it is not passable
+    if(m_WaterLevel > m_ppTerrainHeightData[y][x])
+    {
+        m_ppPassableTile[y][x] = false;
+        return;
     }
 }

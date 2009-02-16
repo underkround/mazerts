@@ -8,6 +8,7 @@
 
 void testPathFinder()
 {
+    Terrain::getInstance()->initialize();
     Terrain* terrain = Terrain::getInstance();    
     
     CConsole* pConsole = new CConsole();
@@ -32,10 +33,13 @@ void testPathFinder()
 
     for(int i = 0; i < 40; i++)
     {
-        terrain->setTerrainVertexHeight(20, i, i*30 % 255);
-        terrain->setTerrainVertexHeight(i+24, 25, i*30 % 255);
-        terrain->setTerrainVertexHeight(i+44, 25, i*30 % 255);
-        terrain->setTerrainVertexHeight(60, 45-i, i*30 % 255);
+        terrain->setTerrainVertexHeight(20+i, 0, 0);
+        terrain->setTerrainVertexHeight(60, i, 0);
+        terrain->setTerrainVertexHeight(20+i, 40, 0);        
+        terrain->setTerrainVertexHeight(20, 20+(i %20), 0);
+
+        terrain->setTerrainVertexHeight(60+(i%16), 20, 0);
+        terrain->setTerrainVertexHeight(76, 20+(i % 20), 0);
     }
     
     for(int i = 0; i < pConsole->swScreenSizeY; i++)
@@ -57,6 +61,8 @@ void testPathFinder()
     
     char* strMsg = new char[100];
     int steps = 0;
+    int mostSteps = 0;
+    float worstTime = 0.0f;
 
     for(int k = 0; k < 2000; k++)
     {
@@ -111,9 +117,18 @@ void testPathFinder()
 
         sprintf_s(strMsg, 100, "%d polkua haettu", k);
         pConsole->writeMessage(5, 47, strMsg);
+        
+        float time = (timer->GetElapsedSeconds() * 1000.0f);
+        if(time > worstTime)
+            worstTime = time;
+        if(steps > mostSteps)
+            mostSteps = steps;
 
-        sprintf_s(strMsg, 100, "%.3fms PathFinder luonti, haku, poisto", (timer->GetElapsedSeconds() * 1000.0f));
+        sprintf_s(strMsg, 100, "%.3fms PathFinder luonti, haku, poisto", time);
         pConsole->writeMessage(5, 48, strMsg);
+
+        sprintf_s(strMsg, 100, "Hitain: %.2fms, askelia: %d", worstTime, mostSteps);
+        pConsole->writeMessage(20, 0, strMsg);
 
         sprintf_s(strMsg, 100, "%d askelta haussa", steps);
         pConsole->writeMessage(5, 49, strMsg);

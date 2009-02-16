@@ -221,6 +221,9 @@ public:
     inline void setWaterLevel(const unsigned char waterLevel)
     {
         m_WaterLevel = waterLevel;
+        
+        //Re-calculates also passable-array, which can be affected by changed waterlevel
+        calculateHeightMapFromVertices();
     }
 
     /**
