@@ -6,9 +6,11 @@ PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
     DEBUG_steps = 0;
 
 
-    pStartNode = NULL;
+    m_pStartNode = NULL;
 
     m_pUnit = pUnit;
+
+    m_Size = pUnit->getWidth();
 
     //Set start and goal positions
     m_StartX = (short)pUnit->getPosition()->x;
@@ -18,7 +20,7 @@ PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
     m_GoalY = goalY;
 
     //If goal is unpassable, cancel the search right away
-    if(!Terrain::getInstance()->isPassable(goalX, goalY))
+    if(!Terrain::getInstance()->isPassable(goalX, goalY, m_Size))
     {
         m_Cancelled = true;
     }
@@ -147,7 +149,7 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                         }
 
                         //The node must not be in the closed list and it has to be passable
-                        if( Terrain::getInstance()->isPassable(adjaX, adjaY) && (!m_pppNodeArray[adjaY][adjaX] || m_pppNodeArray[adjaY][adjaX]->state != NODE_CLOSED) )
+                        if( Terrain::getInstance()->isPassable(adjaX, adjaY, m_Size) && (!m_pppNodeArray[adjaY][adjaX] || m_pppNodeArray[adjaY][adjaX]->state != NODE_CLOSED) )
                         {
                             //TODO OPT: getMoveCost? (Maybe not)
                             //Calculate costs                         
@@ -212,7 +214,7 @@ void PathFinder::buildPath(PathNode* pCurrent)
         }
         else
         {            
-            pStartNode = pCurrent;
+            m_pStartNode = pCurrent;
             return;
         }        
     }    
@@ -231,12 +233,14 @@ int PathFinder::heuristic(unsigned short x, unsigned short y)
 {
     int value = 0;
     
-#define HEURISTIC_FACTOR 9
+#define HEURISTIC_FACTOR 11
 
     //TODO: Better heuristics?
     short distX = abs(x - m_GoalX);
     short distY = abs(y - m_GoalY);
-    value = (distX + distY) << HEURISTIC_FACTOR;
+    //value = (distX + distY) << HEURISTIC_FACTOR;
+    value = ((unsigned int)sqrt((float)distX*distX + distY*distY)) << HEURISTIC_FACTOR;
+
     /*int diag = (distX < distY) ? distX : distY;
     int straight = (distX + distY);
     value = (int)(Terrain::MOVECOST_MIN * 0.95f) * diag + (int)((Terrain::MOVECOST_MIN * 0.95f) / 1.4f) * straight - 2 * diag;*/

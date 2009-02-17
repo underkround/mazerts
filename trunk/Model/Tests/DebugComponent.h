@@ -41,7 +41,7 @@ public:
         {
             // sweep x -mode
         case 1:
-            if(m_T->isPassable(m_Unit->getCellX() + m_DirX, m_Unit->getCellY())) {
+            if(m_T->isPassable(m_Unit->getCellX() + m_DirX, m_Unit->getCellY(), m_Unit->getWidth())) {
                 m_Unit->forcePosition(m_Unit->getCellX() + m_DirX, m_Unit->getCellY());
                 //cout << "moved unit\n";
             }
@@ -53,7 +53,7 @@ public:
 
             // sweep y -mode
         case 2:
-            if(m_T->isPassable(m_Unit->getCellX(), m_Unit->getCellY() + m_DirY)) {
+            if(m_T->isPassable(m_Unit->getCellX(), m_Unit->getCellY() + m_DirY, m_Unit->getWidth())) {
                 m_Unit->forcePosition(m_Unit->getCellX(), m_Unit->getCellY() + m_DirY);
                 //cout << "moved unit\n";
             }

@@ -17,6 +17,7 @@
 #include "VectorAndMatriceTest.h"
 #include "UnitWithDebugComponent.h"
 #include "ConfigTest.h"
+#include "PathFinderMasterTest.h"
 
 using namespace std;
 
@@ -24,7 +25,7 @@ using namespace std;
 
 int main(int arcg, char* argv[])
 {
-/*
+
     if(VERBOSE) cout << " *** damage and damagehandler ***\n";
     testDamageAndDamageHandler();
 
@@ -32,20 +33,22 @@ int main(int arcg, char* argv[])
     testTerrain();
 
     if(VERBOSE) cout << "\n *** Pathfinder ***\n";
-    testPathFinder();
+    //testPathFinder();
 
     if(VERBOSE) cout << "\n *** unit position ***\n";
     testUnitPositionAndFacing();
 
     if(VERBOSE) cout << "\n *** unit with debug component ***\n";
     testUnitWithDebugComponent();
-*/
+
     //if(VERBOSE) cout << "\n *** vector & matrix ***\n";
     //testVectorAndMatrice ();
 
 	if(VERBOSE) cout << "\n *** config from file ***\n";
     testConfig();
 
+    if(VERBOSE) cout << "\n *** PathFinderMaster-thread ***\n";
+    testPathFinderMaster();
 
 }
 

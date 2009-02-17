@@ -57,7 +57,7 @@ public:
 
     inline PathNode* getPath()
     {
-        return pStartNode;
+        return m_pStartNode;
     }
 
 private:
@@ -111,7 +111,7 @@ public:  // <-- TODO: poista
     /**
      * This is the node which will be delivered to unit if path is found
      */
-    PathNode* pStartNode;
+    PathNode* m_pStartNode;
 
 };
 

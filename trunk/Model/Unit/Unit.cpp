@@ -70,7 +70,7 @@ char Unit::update(const float deltaT)
 
 bool Unit::forcePosition(unsigned const short x, unsigned const short y)
 {
-    if(!Terrain::getInstance()->isPassable(x, y))
+    if(!Terrain::getInstance()->isPassable(x, y, m_Width))
         return false; // invalid target
     m_CellX = x;
     m_CellY = y;

@@ -21,6 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			UseOfMFC="1"
 			CharacterSet="1"
 			>
 			<Tool
@@ -41,10 +42,9 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -61,6 +61,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
+				AddModuleNamesToAssembly="pthreadVC2.lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -115,8 +116,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="0"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -192,6 +192,10 @@
 				>
 				<File
 					RelativePath=".\PathFinding\PathFinder.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PathFinding\PathFinderMaster.cpp"
 					>
 				</File>
 			</Filter>
@@ -305,6 +309,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Common\PThread.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Common\Quaternion.h"
 					>
 				</File>
@@ -334,6 +342,10 @@
 				</File>
 				<File
 					RelativePath=".\Tests\DebugComponent.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Tests\PathFinderMasterTest.h"
 					>
 				</File>
 				<File
@@ -390,6 +402,10 @@
 				</File>
 				<File
 					RelativePath=".\PathFinding\PathFinder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PathFinding\PathFinderMaster.h"
 					>
 				</File>
 			</Filter>

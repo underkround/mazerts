@@ -157,6 +157,11 @@ protected:
     Unit* m_pUnit;
 
     /**
+     * Size of the unit
+     */
+    unsigned char m_Size;
+
+    /**
      * Starting tile-coordinates for the search
      */
     short m_StartX;

@@ -16,11 +16,10 @@ void testPathFinder()
     pConsole->ClearBuffer();
     
     
-    srand(10000);
+    srand(100000);
     
-    for(int i = 0; i < 1000; i++)
+    for(int i = 0; i < 100; i++)
     {
-        /*srand(rand());
         int len = rand() % 10;
         int x = rand() % pConsole->swScreenSizeX;
         int y = rand() % pConsole->swScreenSizeY;
@@ -28,9 +27,10 @@ void testPathFinder()
         for(int j = 0; j < len; j++)
         {
             terrain->setTerrainVertexHeight(x++, y, j*30 % 255);
-        }*/
+        }
     }
 
+    /*
     for(int i = 0; i < 40; i++)
     {
         terrain->setTerrainVertexHeight(20+i, 0, 0);
@@ -40,9 +40,9 @@ void testPathFinder()
 
         terrain->setTerrainVertexHeight(60+(i%16), 20, 0);
         terrain->setTerrainVertexHeight(76, 20+(i % 20), 0);
-    }
+    }*/
     
-    for(int i = 0; i < pConsole->swScreenSizeY; i++)
+    /*for(int i = 0; i < pConsole->swScreenSizeY; i++)
     {
         for(int j = 0; j < pConsole->swScreenSizeX; j++)
         {
@@ -52,13 +52,14 @@ void testPathFinder()
                 pConsole->pCHAR_INFOScreenBuffer[loc].Attributes = FOREGROUND_RED | BACKGROUND_RED;
             }
         }
-    }
+    }*/
 
     CTimer* timer = new CTimer();
     timer->Create();
 
     Unit* pUnit = new Unit();
-    
+    pUnit->setWidth(2);
+
     char* strMsg = new char[100];
     int mostSteps = 0;
     float worstTime = 0.0f;
@@ -72,8 +73,9 @@ void testPathFinder()
             for(int j = 0; j < pConsole->swScreenSizeX; j++)
             {
                 int loc = pConsole->swScreenSizeX * i + j;
-                if(!terrain->isPassable(j, i))
+                if(!terrain->isPassable(j, i, 1))
                 {
+                    pConsole->pCHAR_INFOScreenBuffer[loc].Char.AsciiChar = 'E';
                     pConsole->pCHAR_INFOScreenBuffer[loc].Attributes = FOREGROUND_RED | BACKGROUND_RED;
                 }
             }

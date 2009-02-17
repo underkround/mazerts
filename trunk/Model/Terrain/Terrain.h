@@ -188,18 +188,42 @@ public:
      * Checks if the tile at x, y is passable or not
      * @param x X-coordinate of the tile
      * @param y Y-coordinate of the tile
+     * @param size Size of the unit, size*size tiles
      * @return True if the tile is passable, otherwise false
      */
-    inline bool isPassable(short x, short y)
+    inline bool isPassable(short x, short y, unsigned char size)
     {
-        //Bounds checking
-        if(x < 0 || x >= m_Size || y < 0 ||y >= m_Size)
+        if(size == 1)
         {
-            return false;
+            //Bounds checking
+            if(x < 0 || x >= m_Size || y < 0 ||y >= m_Size)
+            {
+                return false;
+            }
+            else
+            {
+                return m_ppPassableTile[y][x];
+            }
         }
         else
         {
-            return m_ppPassableTile[y][x];
+            if(x < 0 || (y+size) >= m_Size || y < 0 || (y+size) >= m_Size)
+            {
+                return false;
+            }
+            else
+            {
+                for(int i = 0; i < size; ++i)
+                {
+                    for(int j = 0; j < size; ++j)                    
+                    {
+                        if(!m_ppPassableTile[y+j][x+i])
+                            return false;
+                    }
+                }
+
+                return true;
+            }
         }
     }
 
