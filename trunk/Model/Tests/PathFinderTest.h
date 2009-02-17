@@ -77,7 +77,7 @@ void testPathFinder()
         
         steps = pFinder->DEBUG_steps;
 
-        delete pFinder;
+        //delete pFinder;
         timer->EndTimer();        
 
         pConsole->ClearBuffer();
@@ -89,6 +89,10 @@ void testPathFinder()
                 if(!terrain->isPassable(j, i))
                 {
                     pConsole->pCHAR_INFOScreenBuffer[loc].Attributes = FOREGROUND_RED | BACKGROUND_RED;
+                }
+                if(pFinder->m_pppClosedArray[i][j])
+                {
+                    pConsole->pCHAR_INFOScreenBuffer[loc].Attributes = FOREGROUND_BLUE | BACKGROUND_BLUE;
                 }
             }
         }

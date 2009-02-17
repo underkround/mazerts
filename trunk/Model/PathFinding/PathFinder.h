@@ -34,7 +34,7 @@ public:
     /**
      * Bitshift-factor for Manhattan distance-heuristic coefficient
      */
-    static const int HEURISTIC_FACTOR = 2;
+    static const int HEURISTIC_FACTOR = 3;
 
     /**
      * Constructor
@@ -95,7 +95,7 @@ private:
      * First dimension is Y, second X
      */
     bool** m_ppInOpenList;
-
+public:  // <-- TODO: poista
     /**
      * Two-dimensional PathNode-array to use for closed list and cleaning up
      * unused PathNodes when the path is completed

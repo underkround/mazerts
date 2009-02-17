@@ -118,7 +118,7 @@ IPathFinder::PathingState PathFinder::advance(short steps)
     {
         DEBUG_steps++;
 
-        if(!m_pOpenList->IsEmpty())
+        if(m_pOpenList->GetSize())
         {
             //Get pathnode with lowest F-score from openlist
             PathNode* current = NULL;
@@ -162,7 +162,7 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                             return FOUND;
                         }
 
-                        //The node must not be in the closed list it has to be passable
+                        //The node must not be in the closed list and it has to be passable
                         if( Terrain::getInstance()->isPassable(adjaX, adjaY) && !m_pppClosedArray[adjaY][adjaX] )
                         {
                             //If the node hasn't been in the open list yet, add it there
@@ -173,8 +173,19 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                                 short cost = Terrain::getInstance()->getMoveCost(currentX, currentY, i, j);
                                 G = current->G + cost;
        
-                                //TODO: Better heuristics?                  
-                                H = (abs(adjaX - m_GoalX) + abs(adjaY - m_GoalY)) << HEURISTIC_FACTOR;
+                                //TODO: Better heuristics?
+                                short distX = abs(adjaX - m_GoalX);
+                                short distY = abs(adjaY - m_GoalY);
+                                //H = (distX + distY) << HEURISTIC_FACTOR;
+                                int diag = (distX < distY) ? distX : distY;
+                                int straight = (distX + distY);
+                                H = 25 * diag + 18 * straight - 2 * diag;
+                                
+                                /*                                  
+                                short xDist = abs(adjaX-m_GoalX);
+                                short yDist = abs(adjaY-m_GoalY);
+                                H = ((xDist > yDist) ? xDist : yDist) << HEURISTIC_FACTOR;
+                                */
                                 F = G + H;
 
                                 //Add to list and mark InOpenList
