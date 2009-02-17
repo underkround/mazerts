@@ -199,6 +199,18 @@
 				Name="Tests"
 				>
 				<File
+					RelativePath=".\Tests\testi.ini"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\Tests\TestsMain.cpp"
 					>
 				</File>
@@ -220,6 +232,10 @@
 				>
 				<File
 					RelativePath=".\Common\CConsole.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\Config.cpp"
 					>
 				</File>
 				<File
@@ -265,6 +281,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Common\Config.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Common\EulerAngles.h"
 					>
 				</File>
@@ -300,6 +320,10 @@
 			<Filter
 				Name="Tests"
 				>
+				<File
+					RelativePath=".\Tests\ConfigTest.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Tests\CTimer.h"
 					>

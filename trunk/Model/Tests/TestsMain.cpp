@@ -16,6 +16,7 @@
 #include "PathFinderTest.h"
 #include "VectorAndMatriceTest.h"
 #include "UnitWithDebugComponent.h"
+#include "ConfigTest.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ using namespace std;
 
 int main(int arcg, char* argv[])
 {
+/*
     if(VERBOSE) cout << " *** damage and damagehandler ***\n";
     testDamageAndDamageHandler();
 
@@ -37,9 +39,13 @@ int main(int arcg, char* argv[])
 
     if(VERBOSE) cout << "\n *** unit with debug component ***\n";
     testUnitWithDebugComponent();
-
+*/
     //if(VERBOSE) cout << "\n *** vector & matrix ***\n";
     //testVectorAndMatrice ();
+
+	if(VERBOSE) cout << "\n *** config from file ***\n";
+    testConfig();
+
 
 }
 
