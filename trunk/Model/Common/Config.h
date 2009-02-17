@@ -55,43 +55,43 @@ protected:
   /**
    * isNumeric
    *
-   * Käytetään merkin numeerisuuden tarkistamiseen
+   * check if character is numeric
    *
-   * @param merkki tutkittava merkki
-   * @return oliko merkki numeerinen
+   * @param str character to be checked
+   * @return was given character numeric
    */
   bool isNumeric(string str);
 
   /**
    * trim
    *
-   * Poistaa whitespacet merkkijonon edestä ja takaa.
+   * trims spaces from front and behind of string
    *
-   * TODO: ei tajua tabeja :(
+   * TODO: still doesn't understand tabs
    */
   string trim(string str);
 
   /**
    * stringToInteger
    *
-   * Muuntaa merkkijonon kokonaisluvuksi
+   * converts string to integer
    *
-   * @param str   muutettava merkkijono
-   * @return      muutettu kokonaisluku
+   * @param str   string to be converted
+   * @return      converted integer
    */
   int Config::stringToInteger (string str);
 
   /**
    * printSettings
    *
-   * Tulostaa kaikki asetukset ruudulle. @see printSetting(Setting * set)
+   * prints all settings from file to screen @see printSetting(Setting * set)
    */
   void printSettings();
 
   /**
    * readFile
    *
-   * Lukee asetukset tiedostosta
+   * reads settings from set filename
    */
   void readFile();
 
@@ -100,26 +100,29 @@ protected:
   /**
    * getValueAsInt
    *
-   * @return Palauttaa halutun muuttujan arvon kokonaislukumuodossa.
+   * @param in_name name of setting to be queried
+   * @return setting as integer
    */
   int getValueAsInt(string in_name);
 
   /**
    * getValueAsBool
    *
-   * @return Palauttaa halutun muuttujan arvon totuusarvomuodossa.
+   * @param in_name name of setting to be queried
+   * @return setting as boolean
    */
   bool getValueAsBool(string in_name);
 
   /**
    * getValueAsString
    *
-   * @return Palauttaa halutun muuttujan arvon merkkijonomuodossa.
+   * @param in_name name of setting to be queried
+   * @return setting as string
    */
   string getValueAsString(string in_name);
 
   private:
-    //** muuttujat ja vakiot **
+    //** variables **
     string m_strFilename;
     vector<Setting*> settingData;
 	static Config* pInstance;
@@ -130,7 +133,9 @@ protected:
     /**
      * addSetting
      *
-     * Lisää uuden asetuksen, jos saman niminen asetus on jo olemassa, se korvataan
+	 * adds a new setting, if it already existed, replaces that
+	 * @param in_name name of setting
+	 * @param in_value value of setting
      */
     void addSetting(string in_name, string in_value);
     void addSetting(string in_name, int in_value);
@@ -138,32 +143,34 @@ public:
     /**
      * deleteSetting
      *
-     * Poistaa asetuksen
+     * removes setting
      */
     void deleteSetting(string name);
 
     /**
      * settingExists
      *
-     * Etsii onko halutun niminen asetus olemassa
+     * checks if setting exists
+	 *
+	 * @param name setting to be checked
      */
     bool settingExists(string name);
 
     /**
      * printSetting
      *
-     * Tulostaa halutun asetuksen muotoiltuna ruudulle
+     * prints setting to screen
      *
-     * @param set tulostettava asetus
+     * @param set setting to be printed
      */
     void printSetting(Setting * set);
 
     /**
      * parseRow
      *
-     * Muuttaa asetustiedostosta (tai jostain muualtakin) luetun rivin asetukseksi.
+     * parses single row into a setting
      *
-     * @return oliko rivi hyvin muodostettu?
+     * @return was that row well formed
      */
     bool parseRow(string row);
 

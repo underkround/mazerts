@@ -186,7 +186,7 @@ bool Config::settingExists(string in_name) {
 }
 
 bool Config::parseRow(string row) {
-  row = trim(row);
+  row = trim(row);  
   if(row.length() == 0) {
     //tyhjä rivi, skipataan
     return true;
@@ -204,7 +204,7 @@ bool Config::parseRow(string row) {
   int i;
   for(i = 0;row.substr(i, 1) != "=";i++) {
     if(i > (int)row.length()) {
-      return false; //rivillä ei ollut = merkkiä -> ini tiedosto on laittomasti muotoiltu
+      return false; //row did not contain = character -> our ini file is not well formed
     }
   }
   string name = trim(row.substr(0, i++));
