@@ -27,13 +27,15 @@ PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
     unsigned short size = Terrain::getInstance()->getSize();
         
     //TODO: Initial size?
-    m_pOpenList = new CHeapTree<PathNode*, int>(size);
+    m_pOpenList = new CHeapTree<PathNode*, unsigned int>(10000);
 
-    m_pppClosedArray = new PathNode**[size];
+    m_pppNodeArray = new PathNode**[size];
     m_ppInOpenList = new bool*[size];
+    //m_pppOpenArray = new PathNode**[size];
+
     for(int i = 0; i < size; i++)
     {
-        m_pppClosedArray[i] = new PathNode*[size];
+        m_pppNodeArray[i] = new PathNode*[size];
         m_ppInOpenList[i] = new bool[size];
     }    
     
@@ -42,37 +44,19 @@ PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
     {
         for(int j = 0; j < size; j++)
         {
-            m_pppClosedArray[i][j] = NULL;
-            m_ppInOpenList[i][j] = false;
+            m_pppNodeArray[i][j] = NULL;
+            m_ppInOpenList[i][j] = false;            
         }
     }
 
 
     //Push starting tile to open list
-    m_pOpenList->Insert(new PathNode(m_StartX, m_StartY,
-        0, 0, 0,
-        NULL), 0);
+    addNode(m_StartX, m_StartY, 0, 0, NODE_OPEN, NULL);    
 }
 
-#include <stdio.h>
 PathFinder::~PathFinder()
 {
-    //Empty and delete openlist -heaptree   
-    if(!m_pOpenList->IsEmpty())
-    {
-        /*PathNode* pNode = NULL;
-        m_pOpenList->GetTopID(&pNode);
-        m_pOpenList->RemoveTop();
-        delete pNode;*/
-
-        int size = m_pOpenList->GetSize();
-        CHeapTree<PathNode*, int>::_NODE* nodes = m_pOpenList->getDataArray();
-        for(int i = 0; i < size; ++i)
-        {
-            delete nodes[i].id;
-        }
-    }
-
+    //Delete heaptree
     delete m_pOpenList;
 
     unsigned short size = Terrain::getInstance()->getSize();
@@ -82,9 +66,9 @@ PathFinder::~PathFinder()
     {
         for(int j = 0; j < size; j++)
         {
-            if(m_pppClosedArray[i][j] != NULL)
+            if(m_pppNodeArray[i][j] != NULL)
             {
-                delete m_pppClosedArray[i][j];
+                delete m_pppNodeArray[i][j];                
             }
         }
     }
@@ -92,11 +76,11 @@ PathFinder::~PathFinder()
     //Destroy arrays
     for(int i = 0; i < size; i++)
     {
-        delete [] m_pppClosedArray[i];
-        delete [] m_ppInOpenList[i];
-    }
-    delete [] m_ppInOpenList;
-    delete [] m_pppClosedArray;
+        delete [] m_pppNodeArray[i];
+        delete [] m_ppInOpenList[i];        
+    }    
+    delete [] m_pppNodeArray;
+    delete [] m_ppInOpenList;    
 }
 
 
@@ -130,12 +114,12 @@ IPathFinder::PathingState PathFinder::advance(short steps)
 
             //Mark as removed from open, insert it into closed
             m_ppInOpenList[currentY][currentX] = false;
-            m_pppClosedArray[currentY][currentX] = current;
+            m_pppNodeArray[currentY][currentX]->state = NODE_CLOSED;
 
             //Push adjacent into openlist
-            short adjaX = 0;
-            short adjaY = 0;
-            int F, G, H;
+            unsigned short adjaX = 0;
+            unsigned short adjaY = 0;
+            unsigned int F, G, H;
             
             //TODO OPT: Separate loop contents into method, call repeatedly ("loop unrolling")
             for(int i = -1; i < 2; i++)
@@ -154,7 +138,7 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                         //Check if path was found
                         if(adjaX == m_GoalX && adjaY == m_GoalY)
                         {
-                            current = new PathNode(adjaX, adjaY, 0, 0, 0, current);
+                            addNode(adjaX, adjaY, 0, 0, NODE_OPEN, current);                            
                             //Path found!
                             buildPath(current);
                             //TODO: INFORM UNIT
@@ -163,45 +147,30 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                         }
 
                         //The node must not be in the closed list and it has to be passable
-                        if( Terrain::getInstance()->isPassable(adjaX, adjaY) && !m_pppClosedArray[adjaY][adjaX] )
+                        if( Terrain::getInstance()->isPassable(adjaX, adjaY) && (!m_pppNodeArray[adjaY][adjaX] || m_pppNodeArray[adjaY][adjaX]->state != NODE_CLOSED) )
                         {
+                            //TODO OPT: getMoveCost? (Maybe not)
+                            //Calculate costs                         
+                            short cost = Terrain::getInstance()->getMoveCost(currentX, currentY, i, j);
+                            G = current->G + cost;
+                            H = heuristic(adjaX, adjaY);
+
                             //If the node hasn't been in the open list yet, add it there
-                            if(!m_ppInOpenList[adjaY][adjaX])
-                            {
-                                //TODO OPT: getMoveCost? (Maybe not)
-                                //Calculate costs                         
-                                short cost = Terrain::getInstance()->getMoveCost(currentX, currentY, i, j);
-                                G = current->G + cost;
-       
-                                //TODO: Better heuristics?
-                                short distX = abs(adjaX - m_GoalX);
-                                short distY = abs(adjaY - m_GoalY);
-                                //H = (distX + distY) << HEURISTIC_FACTOR;
-                                int diag = (distX < distY) ? distX : distY;
-                                int straight = (distX + distY);
-                                H = 25 * diag + 18 * straight - 2 * diag;
-                                
-                                /*                                  
-                                short xDist = abs(adjaX-m_GoalX);
-                                short yDist = abs(adjaY-m_GoalY);
-                                H = ((xDist > yDist) ? xDist : yDist) << HEURISTIC_FACTOR;
-                                */
+                            if(!m_ppInOpenList[adjaY][adjaX])                            
+                            {                                
                                 F = G + H;
 
                                 //Add to list and mark InOpenList
-                                m_pOpenList->Insert(new PathNode(adjaX, adjaY,
-                                F, G, H,
-                                current), F);
-                                m_ppInOpenList[adjaY][adjaX] = true;
+                                addNode(adjaX, adjaY, F, G, NODE_OPEN, current);
+                                m_ppInOpenList[adjaY][adjaX] = true;                                
                             }
-                            //else
-                            {                               
-                                //TODO: (MAY NOT BE NEEDED)
-                                /*If it is on the open list already, check to see if this path to that square is better, 
-                                using G cost as the measure. A lower G cost means that this is a better path. 
-                                If so, change the parent of the square to the current square, and recalculate the G and F
-                                scores of the square. If you are keeping your open list sorted by F score, you may need 
-                                to resort the list to account for the change.*/
+                            else if(m_pppNodeArray[adjaY][adjaX]->G > G)
+                            {
+                                //Node is in the openlist, but has higher G-cost, 
+                                //switch parent, recalculate costs and reorder open list
+                                m_pppNodeArray[adjaY][adjaX]->pParent = current;
+                                m_pppNodeArray[adjaY][adjaX]->G = G;
+                                m_pOpenList->ResetData(m_pppNodeArray[adjaY][adjaX], G+H);
                             }
                         }
                     }
@@ -232,9 +201,9 @@ void PathFinder::buildPath(PathNode* pCurrent)
 {    
     while(1)
     {        
-        //Remove pointer from m_pppClosedArray, so the actual path nodes won't
+        //Remove pointer from m_pppNodeArray, so the actual path nodes won't
         //get deleted along with the array (the ones used by the unit)
-        m_pppClosedArray[pCurrent->y][pCurrent->x] = NULL;
+        m_pppNodeArray[pCurrent->y][pCurrent->x] = NULL;
         
         if(pCurrent->pParent != NULL)
         {
@@ -247,4 +216,36 @@ void PathFinder::buildPath(PathNode* pCurrent)
             return;
         }        
     }    
+}
+
+
+IPathFinder::PathNode* PathFinder::addNode(unsigned short x, unsigned short y, int F, int G, NodeState state, PathNode* pParent)
+{
+    PathNode* pNode = new PathNode(x, y, G, state, pParent);
+    m_pOpenList->Insert(pNode, F);
+    m_pppNodeArray[y][x] = pNode;
+    return pNode;
+}
+
+int PathFinder::heuristic(unsigned short x, unsigned short y)
+{
+    int value = 0;
+    
+#define HEURISTIC_FACTOR 9
+
+    //TODO: Better heuristics?
+    short distX = abs(x - m_GoalX);
+    short distY = abs(y - m_GoalY);
+    value = (distX + distY) << HEURISTIC_FACTOR;
+    /*int diag = (distX < distY) ? distX : distY;
+    int straight = (distX + distY);
+    value = (int)(Terrain::MOVECOST_MIN * 0.95f) * diag + (int)((Terrain::MOVECOST_MIN * 0.95f) / 1.4f) * straight - 2 * diag;*/
+
+    /*                                  
+    short xDist = abs(adjaX-m_GoalX);
+    short yDist = abs(adjaY-m_GoalY);
+    H = ((xDist > yDist) ? xDist : yDist) << HEURISTIC_FACTOR;
+    */
+
+    return value;
 }

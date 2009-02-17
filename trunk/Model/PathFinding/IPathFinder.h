@@ -34,18 +34,27 @@ public:
     };
 
     /**
+     * States for pathnodes
+     */
+    enum NodeState
+    {             
+        NODE_OPEN,
+        NODE_CLOSED
+    };
+
+    /**
      * Nodes making up the path and stored into open- and closed list
      * during search
      */
     struct PathNode
     {
-        PathNode(short x, short y, int F, int G, int H, PathNode* pParent)
+
+        PathNode(short x, short y, int G, NodeState state, PathNode* pParent)
         {
             this->x = x;
-            this->y = y;
-            this->F = F;
+            this->y = y;            
             this->G = G;
-            this->H = H;
+            this->state = state;
             this->pParent = pParent;
             this->pChild = NULL;
         }
@@ -53,27 +62,22 @@ public:
         /**
          * Node tile x-position
          */
-        short x;
+        unsigned short x;
 
         /**
          * Node tile y-position
          */
-        short y;
+        unsigned short y;
 
-        /**
-         * Node F-cost
-         */
-        int F;
-         
         /**
          * Node G-cost
          */
-        int G;
+        unsigned int G;
 
         /**
-         * Node H-cost
+         * Node state
          */
-        int H;
+        NodeState state;
 
         /**
          * Node parent

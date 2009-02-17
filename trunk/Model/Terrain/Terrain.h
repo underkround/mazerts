@@ -46,7 +46,7 @@ public:
      * Movecost offset, this is the value that is returned
      * as movecost between tiles at same height
      */
-    static const short MOVECOST_OFFSET = 50;
+    static const short MOVECOST_OFFSET = 550;
 
     /**
      * Movecost-threshold: this value is the maximum amount

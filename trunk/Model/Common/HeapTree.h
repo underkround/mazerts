@@ -9,10 +9,6 @@ template <class TID, class TDATA>
 class CHeapTree
 {
 public:
-	struct _NODE {
-		TID id;
-		TDATA data;
-	};
     
     CHeapTree(int nInitMax = 100);
 	~CHeapTree();
@@ -24,11 +20,6 @@ public:
 	// Remove the element with the highest priority [if the heap is not empty]
 	bool RemoveTop();
 	bool RemoveAll();
-
-    inline _NODE* getDataArray()
-    {
-        return m_data;
-    }
 
 	bool GetTopID(TID *pid) const {
 		if (IsEmpty()) return false;
@@ -46,6 +37,11 @@ public:
 	bool ResetData(const TID &id, const TDATA &data);
 
 private:
+	
+    struct _NODE {
+		TID id;
+		TDATA data;
+	};
 
 	int m_nSize;
 	int m_nMAX;
