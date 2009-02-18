@@ -92,6 +92,9 @@ public:
      */
     virtual ~PathFinderMaster()
     {
+        pthread_mutex_destroy(m_pNodeListMutex);
+        delete m_pNodeListMutex;
+        m_pNodeListMutex = NULL;
     }
 
     /**

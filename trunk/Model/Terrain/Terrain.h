@@ -207,7 +207,7 @@ public:
         }
         else
         {
-            if(x < 0 || (y+size) >= m_Size || y < 0 || (y+size) >= m_Size)
+            if(x < 0 || (x+size) >= m_Size || y < 0 || (y+size) >= m_Size)
             {
                 return false;
             }

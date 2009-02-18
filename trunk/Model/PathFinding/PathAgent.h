@@ -37,6 +37,7 @@ public:
     {
         destroyPath();
         pthread_mutex_destroy(m_pMutex);
+        delete m_pMutex;
         m_pMutex = NULL;
     }
 
