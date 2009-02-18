@@ -1,20 +1,23 @@
 /**
  * PathFinder
  *
- * Stepping A* -pathfinder
+ * Stepping A* -pathfinder. NOTE: The PathAgent constructed is _NOT_ 
+ * destroyed along with the PathFinder, same goes for found path.
+ * The destroying of the PathAgent is left for the user of the pathdata
  *
  * $Revision$
  * $Date$
  * $Id$
  */
 
-//TODO: canPath + path between two arbitrary points to interface, unit-callback?,
-// Master-thread, taking unit-size into account, bi-directional search?, reverse search?
+//TODO: canPath + path between two arbitrary points to interface, CALLBACKS!!,
+//  bi-directional search?, reverse search?
 
 #ifndef __PATHFINDER_H__
 #define __PATHFINDER_H__
 
 #include "IPathFinder.h"
+#include "PathAgent.h"
 #include "../Terrain/Terrain.h"
 #include "../Unit/Unit.h"
 #include "../Common/HeapTree.h"
@@ -36,7 +39,17 @@ public:
      * @param goalX X-coordinate of the goal tile
      * @param goalY Y-coordinate of the goal tile
      */
-    PathFinder(Unit* pUnit, short goalX, short goalY);
+    PathFinder(Unit* pUnit, unsigned short goalX, unsigned short goalY);
+
+    /**
+     * Constructor
+     * @param x X-coordinate of the start tile
+     * @param y Y-coordinate of the start tile
+     * @param goalX X-coordinate of the goal tile
+     * @param goalY Y-coordinate of the goal tile
+     * @param size Size of the path (size * size tiles)
+     */
+    PathFinder(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size);
 
     /**
      * Destructor
@@ -51,16 +64,58 @@ public:
     PathingState advance(short steps);
 
     /**
-     * Cancels the search and prepares pathfinder for destruction
+     * Returns the X-coordinate of the goal tile
+     * @param X-coordinate of the goal tile
      */
-    void cancel();
-
-    inline PathNode* getPath()
+    inline unsigned short getGoalX()
     {
-        return m_pStartNode;
+        return m_GoalX;
+    }
+
+    /**
+     * Returns the Y-coordinate of the goal tile
+     * @param Y-coordinate of the goal tile
+     */
+    inline unsigned short getGoalY()
+    {
+        return m_GoalY;
+    }
+
+    /**
+     * Returns the path-agent that mediates the data
+     * from this PathFinder to outside
+     * @return Pointer to PathAgent
+     */
+    inline PathAgent* getPathAgent()
+    {
+        return m_pPathAgent;
+    }
+
+    /**
+     * Tells if the constructor call initialized the internal data or not.
+     * Usually if the object wasn't initialized, it's because there's no
+     * path to search (goal tile is unpassable)
+     */
+    inline bool isInitialized()
+    {
+        return m_Initialized;
     }
 
 private:
+
+    /**
+     * Default constructor
+     */
+    PathFinder()
+    {
+    }
+
+    /**
+     * Internal initialize, does common stuff to all public constructos
+     * @param goalX X-coordinate of the goal tile
+     * @param goalY Y-coordinate of the goal tile
+     */
+    void initialize(unsigned short goalX, unsigned short goalY);
 
     /**
      * Heuristic value of the tile
@@ -75,6 +130,16 @@ private:
      * @param pEndNode PathNode containing the goal
      */
     void buildPath(PathNode* pEndNode);
+
+    /**
+     * Sets the PathingState for both agent and this object
+     * @param state PathingState to set
+     */
+    inline void setState(PathingState state)
+    {
+        m_State = state;
+        m_pPathAgent->setState(m_State);
+    }
 
     /**
      * Creates a new pathnode and adds it to array and openlist
@@ -113,6 +178,18 @@ public:  // <-- TODO: poista
      */
     PathNode* m_pStartNode;
 
+    /**
+     * Mediator-agent for pathdata
+     */
+    PathAgent* m_pPathAgent;
+
+    /**
+     * Tells if the pathfinder is initialized
+     * In certain situations (goal node is unpassable), there's no point
+     * in creating all the arrays etc., this is used to control the
+     * destruction
+     */
+    bool m_Initialized;
 };
 
 #endif //__PATHFINDER_H__

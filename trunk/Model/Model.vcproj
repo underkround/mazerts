@@ -401,6 +401,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PathFinding\PathAgent.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PathFinding\PathFinder.h"
 					>
 				</File>

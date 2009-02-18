@@ -15,8 +15,8 @@
     #define NULL 0
 #endif
 
-//Forward declarations
-class Unit;
+//FORWARD DECLARATIONS
+class PathAgent;
 
 class IPathFinder
 {
@@ -98,7 +98,7 @@ public:
      */
     IPathFinder()
     {
-        m_Cancelled = false;
+        m_State = NOT_FINISHED;
     }
 
     /**
@@ -121,43 +121,14 @@ public:
      */
     inline void cancel()
     {
-
+        m_State = CANCELLED;
     }
 
-    //TODO: Move back to using this? (Saves unnecessary sanity-checks from Terrain::getInstance() )
-    /**
-     * Terrain to use for data in the search
-     * @param pTerrain Terrain to use
-     */
-    /*inline void setTerrain(Terrain* pTerrain)
-    {
-        m_pTerrain = pTerrain;
-    }*/
-
-    /**
-     * Sets the unit that will get the path once its' done (or told that there is
-     * no path
-     * @param pUnit Pointer to the Unit
-     */
-    inline void setUnit(Unit* pUnit)
-    {
-        m_pUnit = pUnit;
-    }
 
 protected:
 
     /**
-     * Pointer to terrain to use in the search
-     */
-    //Terrain* m_pTerrain;
-
-    /**
-     * Pointer to Unit that is asking for the path
-     */
-    Unit* m_pUnit;
-
-    /**
-     * Size of the unit
+     * Size of the path
      */
     unsigned char m_Size;
 
@@ -174,9 +145,10 @@ protected:
     short m_GoalY;
 
     /**
-     * Tells if the search has been cancelled
+     * Tells the current state of the search
      */
-    bool m_Cancelled;
+    PathingState m_State;
+
 };
 
 #endif //__IPATHFINDER_H__

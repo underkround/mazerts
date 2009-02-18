@@ -8,7 +8,7 @@
 
 void testPathFinder()
 {
-    Terrain::getInstance()->initialize();
+    Terrain::getInstance()->initialize(Terrain::DEFAULT_MAPSIZE);
     Terrain* terrain = Terrain::getInstance();    
     
     CConsole* pConsole = new CConsole();
@@ -53,7 +53,8 @@ void testPathFinder()
             }
         }
     }*/
-
+    
+    
     CTimer* timer = new CTimer();
     timer->Create();
 
@@ -122,7 +123,7 @@ void testPathFinder()
         }
                 
 
-        PathFinder::PathNode* pCurrent = pFinder->getPath();    
+        /*PathFinder::PathNode* pCurrent = pFinder->getPath();    
 
         timer->BeginTimer();
         delete pFinder;
@@ -148,7 +149,7 @@ void testPathFinder()
                 delete pCurrent;
                 break;
             }
-        }
+        }*/
         
         sprintf_s(strMsg, 100, "%d polkua haettu", k);
         pConsole->writeMessage(5, 47, strMsg);

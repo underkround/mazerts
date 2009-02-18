@@ -30,7 +30,7 @@ public:
         setMode(mode);
     }
 
-    inline ~DebugComponent(void)
+    virtual ~DebugComponent(void)
     {
         cout << "(" << m_Id << ") DebugComponent: DESTRUCT\n";
     }

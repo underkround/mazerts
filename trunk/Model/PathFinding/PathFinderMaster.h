@@ -2,20 +2,68 @@
  * PathFinderMaster
  *
  * Master-thread handling the updating of PathFinders
- *
+ * NOTE: The PathAgent returned by findPath is NOT destroyed by the PathFinderMaster
+ * The responsibility of destroying the instance is left for the user of pathdata
+ * (actual path-data is destroyed along with the PathAgent)
  * $Revision$
  * $Date$
  * $Id$
  */
 
+//TODO: Memleak jossain, kaikki pathfinderit ei vapaudu?
+//TODO: MAX_PATHFINDER_AMOUNT
+
 #ifndef __PATHFINDERMASTER_H__
 #define __PATHFINDERMASTER_H__
 
+#include <pthread.h>
+
 #include "../Common/PThread.h"
+#include "PathFinder.h"
+#include "PathAgent.h"
 
 class PathFinderMaster : public PThread
 {
 public:
+
+    struct PathFinderNode
+    {
+        PathFinderNode()
+        {
+            pFinder = NULL;
+            pPrev = NULL;
+            pNext = NULL;            
+        }
+
+        /**
+         * Pointer to the pathfinder in this node
+         */
+        PathFinder* pFinder;
+
+        /**
+         * Previous node
+         */
+        PathFinderNode* pPrev;
+
+        /**
+         * Next node
+         */
+        PathFinderNode* pNext;
+
+        int DEBUG_id;
+    };
+    static int DEBUG_idCounter;
+
+    //TODO: raise these, left low for testing
+    /**
+     * How many steps in total per loop all the pathfinders can take
+     */
+    static const int STEPS_PER_LOOP = 100;
+
+    /**
+     * Minimum amount of steps the pathfinders take
+     */         
+    static const int MINIMUM_STEPS = 1;
 
     /**
      * Returns the singleton instance
@@ -25,6 +73,19 @@ public:
     {
         return pInstance;
     }
+
+    /**
+     * Starts a new PathFinder to search for path between the points.
+     * @param x Start X-tilecoordinate
+     * @param y Start Y-tilecoordinate
+     * @param goalX Goal X-tilecoordinate
+     * @param goalY Goal Y-tilecoordinate
+     * @param size Size of the path (size * size tiles)
+     * @return PathAgent-instance, that can be used to query for path searching state and 
+               pathdata once it's found   NOTE: The caller of this method must take care 
+               of destroying the PathAgent! Path data will be destroyed along with the agent
+     */
+    static PathAgent* findPath(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size);
 
     /**
      * Destructor
@@ -41,7 +102,7 @@ public:
     /**
      * Starts the thread
      */
-    void start()
+    inline void start()
     { 
         if(!m_Running)
         {
@@ -50,20 +111,63 @@ public:
         }        
     }
 
+    /**
+     * Tells the thread to stop executing and terminate
+     */
+    inline void stop()
+    {
+        m_Running = false;
+    }
+
+    /**
+     * Tells if the thread is running
+     */
+    inline bool isRunning()
+    {
+        return m_Running;
+    }
+
 private:
 
     /**
      * Static reference to the singleton instance
      */
     static PathFinderMaster* pInstance;
+    
+    /**
+     * First node in the PathFinderNode-list
+     */
+    PathFinderNode* m_pNodeStart;
+
+    /**
+     * Number of nodes in list
+     */
+    public: //<-- TODO: POISTA
+    int m_Nodes;
+
+    /**
+     * Mutex for the PathFinderNode-list
+     */
+    pthread_mutex_t* m_pNodeListMutex;
 
     /**
      * Default constructor
      */
-    PathFinderMaster() 
-    {
-        m_Running = false;
-    };
+    PathFinderMaster();
+    
+    /**
+     * Adds a new pathfinder
+     * @param pFinder Pointer to PathFinder to add
+     */
+    void addPathFinderNode(PathFinder* pFinder);
+
+    /**
+     * Removes PathFinderNode from list and deletes it
+     * @param pNode Node to remove
+     * @return The next node after the removed one (so list-iteration
+                doesn't go haywire)
+     */
+    PathFinderNode* deletePathFinderNode(PathFinderNode* pNode);
 
     /**
      * Tells if the thread is running or not

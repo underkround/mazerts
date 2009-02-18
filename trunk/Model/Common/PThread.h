@@ -17,7 +17,7 @@
 #include <pthread.h>
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-/* IF YOU ARE HERE BECAUSE OF MISSING pthread.h -LIBRARY:
+/* IF YOU ARE HERE BECAUSE OF MISSING pthread.h -LIBRARY (Windows):
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 Visual studio must be able to find the .h files in the include-directories 
@@ -52,7 +52,10 @@ public:
     {
     }
 
-    ~PThread()
+    /**
+     *Destructor
+     */
+    virtual ~PThread()
     {
         pthread_exit(NULL);
     }
@@ -79,7 +82,10 @@ public:
      * Waits for the thread to complete
      * @return 0 if successful, otherwise error code (from pthread_join)
      */
-    int wait(){return pthread_join(thread, NULL);}
+    int wait()
+    {
+        return pthread_join(thread, NULL);
+    }
 
 protected:
     /**
@@ -89,12 +95,14 @@ protected:
 
     /**
      * Static thread-function called by pthread_create, directs the call
-     * to correct objects' (this-pointer) run-method
-     * @param d this pointed through void-type pointer
+     * to correct objects' run-method
+     * @param pThreadInstance PThread-derivative pointed through void-type pointer
+     * @return A void* NULL, ignore this, the return is here just because the method 
+     *          signature must match the pthread_create -calls parameter
      */
-    static void *thread_func(void *d)
+    static void *thread_func(void* pThreadInstance)
     {
-        ((PThread *)d)->run();
+        ((PThread *)pThreadInstance)->run();
         return NULL;
     }
 

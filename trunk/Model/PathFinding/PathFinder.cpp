@@ -1,29 +1,44 @@
 #include "PathFinder.h"
 
-PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
+PathFinder::PathFinder(Unit* pUnit, unsigned short goalX, unsigned short goalY)
 {
-    //TODO: Remove when not needed anymore
-    DEBUG_steps = 0;
-
-
-    m_pStartNode = NULL;
-
-    m_pUnit = pUnit;
-
     m_Size = pUnit->getWidth();
 
     //Set start and goal positions
     m_StartX = (short)pUnit->getPosition()->x;
     m_StartY = (short)pUnit->getPosition()->y;
 
-    m_GoalX = goalX;
-    m_GoalY = goalY;
+    initialize(goalX, goalY);
+}
 
-    //If goal is unpassable, cancel the search right away
+PathFinder::PathFinder(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size)
+{
+    m_StartX = x;
+    m_StartY = y;
+    m_Size = size;
+
+    initialize(goalX, goalY);
+}
+
+void PathFinder::initialize(unsigned short goalX, unsigned short goalY)
+{
+    m_Initialized = false;
+
+    //CHECKS FOR THINGS THAT PREVENT INITIALIZATION (Or just make it unnecessary)
     if(!Terrain::getInstance()->isPassable(goalX, goalY, m_Size))
     {
-        m_Cancelled = true;
+        m_State = NOT_FOUND;
+        return;
     }
+
+
+    //TODO: Remove when not needed anymore
+    DEBUG_steps = 0;
+
+    m_pStartNode = NULL;
+
+    m_GoalX = goalX;
+    m_GoalY = goalY;
     
     //Create needed arrays
     unsigned short size = Terrain::getInstance()->getSize();
@@ -51,38 +66,47 @@ PathFinder::PathFinder(Unit* pUnit, short goalX, short goalY)
         }
     }
 
-
     //Push starting tile to open list
     addNode(m_StartX, m_StartY, 0, 0, NODE_OPEN, NULL);    
+
+    
+    //Agent initialization
+    m_pPathAgent = new PathAgent();
+
+    m_Initialized = true;
 }
 
 PathFinder::~PathFinder()
 {
-    //Delete heaptree
-    delete m_pOpenList;
-
-    unsigned short size = Terrain::getInstance()->getSize();
-
-    //Remove pathnodes
-    for(int i = 0; i < size; i++)
+    //If the pathfinder was initialized, destroy it
+    if(m_Initialized)
     {
-        for(int j = 0; j < size; j++)
+        //Delete heaptree
+        delete m_pOpenList;
+
+        unsigned short size = Terrain::getInstance()->getSize();
+
+        //Remove pathnodes
+        for(int i = 0; i < size; i++)
         {
-            if(m_pppNodeArray[i][j] != NULL)
+            for(int j = 0; j < size; j++)
             {
-                delete m_pppNodeArray[i][j];                
+                if(m_pppNodeArray[i][j] != NULL)
+                {
+                    delete m_pppNodeArray[i][j];                
+                }
             }
         }
-    }
 
-    //Destroy arrays
-    for(int i = 0; i < size; i++)
-    {
-        delete [] m_pppNodeArray[i];
-        delete [] m_ppInOpenList[i];        
-    }    
-    delete [] m_pppNodeArray;
-    delete [] m_ppInOpenList;    
+        //Destroy arrays
+        for(int i = 0; i < size; i++)
+        {
+            delete [] m_pppNodeArray[i];
+            delete [] m_ppInOpenList[i];        
+        }    
+        delete [] m_pppNodeArray;
+        delete [] m_ppInOpenList;
+    }
 }
 
 
@@ -91,9 +115,9 @@ IPathFinder::PathingState PathFinder::advance(short steps)
     //If the search has been cancelled, return true so the 
     //pathfinding-master thread knows to destroy this instance,
     //but do not pass the pathdata to unit
-    if(m_Cancelled)
-    {
-        return CANCELLED;
+    if(m_State != NOT_FINISHED)
+    {        
+        return m_State;
     }
 
     short currentY = 0;
@@ -140,11 +164,13 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                         //Check if path was found
                         if(adjaX == m_GoalX && adjaY == m_GoalY)
                         {
-                            addNode(adjaX, adjaY, 0, 0, NODE_OPEN, current);                            
-                            //Path found!
+                            //Path found! Add last node, package and send away to the agent
+                            current = addNode(adjaX, adjaY, 0, 0, NODE_OPEN, current);                                                        
                             buildPath(current);
-                            //TODO: INFORM UNIT
-                            
+
+                            m_pPathAgent->setPathData(m_pStartNode);
+
+                            setState(FOUND);                            
                             return FOUND;
                         }
 
@@ -182,20 +208,15 @@ IPathFinder::PathingState PathFinder::advance(short steps)
         else
         {
             //Openlist is empty, no path
-            //TODO: INFORM UNIT
+            setState(NOT_FOUND);
             return NOT_FOUND;
         }
 
         --steps;
     }
 
-    //Search isn't done yet
+    //Search isn't done yet    
     return NOT_FINISHED;
-}
-
-void PathFinder::cancel()
-{
-    m_Cancelled = true;
 }
 
 //TODO: If path is searched in reverse (goal and start swapped), this becomes much simpler
