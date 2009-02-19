@@ -17,7 +17,8 @@
 //#include "VectorAndMatriceTest.h"
 //#include "UnitWithDebugComponent.h"
 //#include "ConfigTest.h"
-#include "PathFinderMasterTest.h"
+//#include "PathFinderMasterTest.h"
+#include "AntinAITest.h"
 
 using namespace std;
 
@@ -48,7 +49,10 @@ int main(int arcg, char* argv[])
     //testConfig();
 
     if(VERBOSE) cout << "\n *** PathFinderMaster-thread ***\n";
-    testPathFinderMaster();
+    //testPathFinderMaster();
+
+	if(VERBOSE) cout << "\n *** Antin AI ***\n";
+	testAntinAI();
 
 }
 

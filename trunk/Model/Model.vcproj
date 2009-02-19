@@ -60,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="pthreadVC2.lib"
 				LinkIncremental="2"
 				AddModuleNamesToAssembly="pthreadVC2.lib"
 				GenerateDebugInformation="true"
@@ -133,6 +134,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="pthreadVC2.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -267,6 +269,26 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="AI"
+				>
+				<Filter
+					Name="Antin"
+					>
+					<File
+						RelativePath=".\AI\Antin\AntinAI.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\AI\Antin\AntinAIBuilding.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\AI\Antin\AntinAIUnits.cpp"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -328,6 +350,10 @@
 			<Filter
 				Name="Tests"
 				>
+				<File
+					RelativePath=".\Tests\AntinAITest.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Tests\ConfigTest.h"
 					>
@@ -439,6 +465,26 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+		</Filter>
+		<Filter
+			Name="AI"
+			>
+			<Filter
+				Name="Antin"
+				>
+				<File
+					RelativePath=".\AI\Antin\AntinAI.h"
+					>
+				</File>
+				<File
+					RelativePath=".\AI\Antin\AntinAIBuilding.h"
+					>
+				</File>
+				<File
+					RelativePath=".\AI\Antin\AntinAIUnits.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
