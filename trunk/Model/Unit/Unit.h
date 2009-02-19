@@ -301,6 +301,14 @@ private:
      */
     int m_MaxHitpoints;
 
+	/**
+	 * Unit's kill count. When ever projectile created by this unit's
+	 * weapon destroys enemy unit/building this value increases
+	 * value is then used to calculate effectiveness of certain
+	 * unit type. (Game balancing issues)
+	 */
+	int m_KillCount;
+
     IComponent** m_Components;
 
     /**

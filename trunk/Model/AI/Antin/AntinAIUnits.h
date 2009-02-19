@@ -1,20 +1,21 @@
 #pragma once
+#include "../../Common/Enums.h"
 
 /**
  * AntinAIUnits
  *
+ * Handles combat calculations (sends units to attack enemy targets)
  */
 class AntinAIUnits
 {
 public:
 	AntinAIUnits(void);
-	~AntinAIUnits(void);
+	virtual ~AntinAIUnits(void);
 
+	/**
+	 * Transfer values from config into internal logic
+	 */
 	void LoadValues(void);
 
 private:
-	//Unit AI configuration values (these are set from AI config file)
-	int m_CostMod;
-	int m_CountMod;
-	int m_KillMod;
 };

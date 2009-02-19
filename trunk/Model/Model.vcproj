@@ -311,6 +311,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Common\Enums.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Common\EulerAngles.h"
 					>
 				</File>
