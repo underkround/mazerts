@@ -18,61 +18,88 @@ PathFinderMaster::PathFinderMaster()
 }
 
 
-//#include <stdio.h>
-void PathFinderMaster::run()
+PathFinderMaster::~PathFinderMaster()
 {
-    //TODO: Askellus, kts. design doc
+    PathFinderNode* pCurrent = m_pNodeStart;
+    while(pCurrent != NULL)
+    {
+        //Remove PathFinder
+        delete pCurrent->pFinder;
+        pCurrent->pFinder = NULL;
+
+        //Remove PathFinderNode
+        pCurrent = deletePathFinderNode(pCurrent);
+    }
+
+    pthread_mutex_destroy(m_pNodeListMutex);
+    delete m_pNodeListMutex;
+    m_pNodeListMutex = NULL;
+}
+
+
+void PathFinderMaster::run()
+{    
     int steps = 0;
 
     while(m_Running)
     {
         PathFinderNode* pCurrent = m_pNodeStart;
-        while(pCurrent != NULL)
+
+        //Deadlock, deletePathFinderNode will cause another locking to occur
+        //pthread_mutex_lock(m_pNodeListMutex);
         {
-            //Calculate the steps
-            steps = STEPS_PER_LOOP / (m_Nodes+1);
-            if(steps < MINIMUM_STEPS)
+            while(pCurrent != NULL)
             {
-                steps = MINIMUM_STEPS;
-            }
-
-            //printf("Advancing PathFinderNode #%d towards %d %d\n", pCurrent->DEBUG_id, pCurrent->pFinder->getGoalX(), pCurrent->pFinder->getGoalY());
-
-            IPathFinder::PathingState pState = pCurrent->pFinder->advance(steps);
-
-            if(pState != IPathFinder::NOT_FINISHED)
-            {
-                /*printf("PathFinderNode #%d FINISHED\n", pCurrent->DEBUG_id);
-
-                switch(pState)
+                //Calculate the steps
+                steps = STEPS_PER_LOOP / (m_Nodes+1);
+                if(steps < MINIMUM_STEPS)
                 {
-                case IPathFinder::NOT_FOUND:
-                    printf("There seems to be no path...\n");
-                    break;
-                case IPathFinder::CANCELLED:
-                    printf("The search was cancelled by request\n");
-                    break;
-                case IPathFinder::FOUND:
-                    printf("Path found!\n");
-                    break;
-                }*/
-                
-                //Remove PathFinder
-                delete pCurrent->pFinder;
-                //Remove PathFinderNode
-                pCurrent = deletePathFinderNode(pCurrent);
+                    steps = MINIMUM_STEPS;
+                }
 
-                //printf("Nodes left: %d\n", m_Nodes);
-            }
+                //printf("Advancing PathFinderNode #%d towards %d %d\n", pCurrent->DEBUG_id, pCurrent->pFinder->getGoalX(), pCurrent->pFinder->getGoalY());
 
-            //Advance in list, pCurrent could be NULL if the removePathFinderNoder
-            //removed last node
-            if(pCurrent)
-            {
-                pCurrent = pCurrent->pNext;
+                IPathFinder::PathingState pState = pCurrent->pFinder->advance(steps);
+
+                if(pState != IPathFinder::NOT_FINISHED)
+                {
+                    /*printf("PathFinderNode #%d FINISHED\n", pCurrent->DEBUG_id);
+
+                    switch(pState)
+                    {
+                    case IPathFinder::NOT_FOUND:
+                        printf("There seems to be no path...\n");
+                        break;
+                    case IPathFinder::CANCELLED:
+                        printf("The search was cancelled by request\n");
+                        break;
+                    case IPathFinder::FOUND:
+                        printf("Path found!\n");
+                        break;
+                    }*/
+                    
+                    //Remove PathFinder
+                    delete pCurrent->pFinder;
+                    pCurrent->pFinder = NULL;
+
+                    //Remove PathFinderNode
+                    pCurrent = deletePathFinderNode(pCurrent);
+
+                    //printf("Nodes left: %d\n", m_Nodes);
+                }
+
+                //Advance in list, pCurrent could be NULL if the removePathFinderNoder
+                //removed last node
+                if(pCurrent)
+                {
+                    pCurrent = pCurrent->pNext;
+                }
             }
         }
+        //pthread_mutex_unlock(m_pNodeListMutex);
     }
+
+    PathFinderMaster::~PathFinderMaster();
 }
 
 //Static
@@ -86,8 +113,25 @@ PathAgent* PathFinderMaster::findPath(unsigned short x, unsigned short y, unsign
     }
     else
     {
+        delete pFinder;
         return NULL;
     }
+}
+
+//Static
+#include <stdio.h>
+void PathFinderMaster::cancelAll()
+{
+    pthread_mutex_lock(pInstance->m_pNodeListMutex);
+    {
+        PathFinderNode* pCurrent = pInstance->m_pNodeStart;
+        while(pCurrent != NULL)
+        {
+            pCurrent->pFinder->cancel();
+            pCurrent = pCurrent->pNext;            
+        }
+    }
+    pthread_mutex_unlock(pInstance->m_pNodeListMutex);
 }
 
 
@@ -149,7 +193,6 @@ PathFinderMaster::PathFinderNode* PathFinderMaster::deletePathFinderNode(PathFin
                 pNode->pPrev->pNext = pNode->pNext;            
             }
         }
-        
         delete pNode;
         pNode = NULL;
         m_Nodes--;

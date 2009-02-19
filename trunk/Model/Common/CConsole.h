@@ -27,6 +27,8 @@ class CConsole
 {
 public:
 
+    virtual ~CConsole();
+
 	/**
 	 * Size of console window
 	 */

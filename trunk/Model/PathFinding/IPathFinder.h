@@ -30,7 +30,8 @@ public:
         NOT_FINISHED = 0,
         NOT_FOUND,
         CANCELLED,
-        FOUND
+        FOUND,
+        __END = 0xFF
     };
 
     /**

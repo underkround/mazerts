@@ -5,6 +5,8 @@
 #include "../Terrain/Terrain.h"
 
 
+#define _CRTDBG_MAP_ALLOC
+
 
 int agents = 0;
 int agentID = 0;
@@ -17,7 +19,7 @@ struct AgentNode
         pNext = NULL;
         pPrev = NULL;
         id = agentID++;
-        count = rand() % 1000;
+        count = 100;//rand() % 1000;
     }
 
     PathAgent* pAgent;
@@ -91,13 +93,8 @@ static char** strState = new char*[4];
 
 void testPathFinderMaster()
 {
-    for(int i = 0; i < 4; i++)
-    {
-        strState[i] = new char[20];
-    }
-
     strState[0] = "Not finished";
-    strState[1] = "No path";
+    strState[1] = "!!! No path !!!";
     strState[2] = "Cancelled";
     strState[3] = "FOUND";
 
@@ -106,15 +103,16 @@ void testPathFinderMaster()
     Terrain* terrain = Terrain::getInstance();
     terrain->initialize(MAPSIZE);
 
-    for(int i = 0; i < 100; i++)
+    //Set to higher loops for longer searches
+    for(int i = 0; i < 4000; i++)
     {
-        int len = rand() % 50;
+        int len = rand() % 60;
         int x = rand() % MAPSIZE;
         int y = rand() % MAPSIZE;
         
         for(int j = 0; j < len; j++)
         {
-            terrain->setTerrainVertexHeight(x++, y, j*30 % 255);
+            terrain->setTerrainVertexHeight(x++, y, 0);
         }
     }
 
@@ -140,15 +138,17 @@ void testPathFinderMaster()
             {
                 run = false;
             }            
-            else if(key == 57 && record.Event.KeyEvent.bKeyDown == TRUE)
+            /*else if(key == 57 && record.Event.KeyEvent.bKeyDown == TRUE)
             {
                 //for(int i = 0; i < 10; i++)
                 {
                     addAgentNode(PathFinderMaster::findPath(0, 0, rand() % MAPSIZE, rand() % MAPSIZE, 2));
                 }
-            }
+            }*/
 
         }
+
+        int running = 0;
 
         if(agents)
         {
@@ -158,17 +158,16 @@ void testPathFinderMaster()
             
             pConsole->ClearBuffer();
 
-            sprintf(strMsg, "Agents: %d" , agents);
-            pConsole->writeMessage(50, 0, strMsg);
-            int row = 0;
-            
+            int row = 0;                       
+
             while(pCurrent != NULL && row < 49)
             {
-                sprintf_s(strMsg, 100, "Agent %d: State: %s ", pCurrent->id, strState[pCurrent->pAgent->getState()]);
-                pConsole->writeMessage(10, ++row, strMsg);
                 
+
                 if(pCurrent->pAgent->getState() != IPathFinder::NOT_FINISHED)
                 {
+                    sprintf_s(strMsg, 100, "Agent %d: State: %s ", pCurrent->id, strState[pCurrent->pAgent->getState()]);
+                    pConsole->writeMessage(10, ++row, strMsg);
                     sprintf_s(strMsg, 100, "Preparing to delete:  %d", pCurrent->count--);
                     pConsole->writeMessage(50, row, strMsg);
                     if(pCurrent->count <= 0)
@@ -176,6 +175,11 @@ void testPathFinderMaster()
                         pCurrent = removeAgentNode(pCurrent);
                     }
                 }
+                else
+                {
+                    running++;
+                }
+
                 if(pCurrent)
                 {
                     pCurrent = pCurrent->pNext;
@@ -185,9 +189,31 @@ void testPathFinderMaster()
             {
                 pConsole->ClearBuffer();
             }
+            sprintf_s(strMsg, 100, "Running: %d  Alive: %d Total all time: %d", running, agents, agentID);
+            pConsole->writeMessage(4, 0, strMsg);
             pConsole->DrawScreen();            
         }
-        Sleep(5);
+
+        if(rand() % ((running * 10) + 1) == 0)
+        {
+            //for(i = 0; i < rand() % 20); i++)
+            {
+                addAgentNode(PathFinderMaster::findPath(0, 0, rand() % MAPSIZE, rand() % MAPSIZE, 4));
+            }
+        }
+
+
+        Sleep(1);
+    }
+
+    delete pConsole;
+
+    PathFinderMaster::cancelAll();
+
+    AgentNode* pCurrent = pNodeStart;
+    while(pCurrent != NULL)
+    {
+        pCurrent = removeAgentNode(pCurrent);
     }
 
     pMaster->stop();
@@ -195,7 +221,13 @@ void testPathFinderMaster()
     if(pMaster->wait())
     {
         printf("Something went wrong\n");
-    }
+    }    
+
+    Terrain::getInstance()->initialize(1);
+
+    delete [] strState;
+
+    _CrtDumpMemoryLeaks();
     
     printf("DONE\n");
 }

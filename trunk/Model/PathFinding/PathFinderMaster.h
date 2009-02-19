@@ -10,8 +10,7 @@
  * $Id$
  */
 
-//TODO: Memleak jossain, kaikki pathfinderit ei vapaudu?
-//TODO: MAX_PATHFINDER_AMOUNT
+//TODO: MAX_PATHFINDER_AMOUNT, Queuing
 
 #ifndef __PATHFINDERMASTER_H__
 #define __PATHFINDERMASTER_H__
@@ -58,12 +57,12 @@ public:
     /**
      * How many steps in total per loop all the pathfinders can take
      */
-    static const int STEPS_PER_LOOP = 100;
+    static const int STEPS_PER_LOOP = 10000;
 
     /**
      * Minimum amount of steps the pathfinders take
      */         
-    static const int MINIMUM_STEPS = 1;
+    static const int MINIMUM_STEPS = 100;
 
     /**
      * Returns the singleton instance
@@ -73,6 +72,11 @@ public:
     {
         return pInstance;
     }
+
+    /**
+     * Destructor
+     */
+    virtual ~PathFinderMaster();
 
     /**
      * Starts a new PathFinder to search for path between the points.
@@ -88,14 +92,11 @@ public:
     static PathAgent* findPath(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size);
 
     /**
-     * Destructor
+     * Cancels all current PathFinders and destroys them
+     * PathAgents will be left behind with their state indicator set to IPathFinder::CANCELLED
      */
-    virtual ~PathFinderMaster()
-    {
-        pthread_mutex_destroy(m_pNodeListMutex);
-        delete m_pNodeListMutex;
-        m_pNodeListMutex = NULL;
-    }
+    static void cancelAll();
+
 
     /**
      * Thread entry-point
@@ -119,7 +120,7 @@ public:
      */
     inline void stop()
     {
-        m_Running = false;
+        m_Running = false;        
     }
 
     /**
@@ -131,27 +132,6 @@ public:
     }
 
 private:
-
-    /**
-     * Static reference to the singleton instance
-     */
-    static PathFinderMaster* pInstance;
-    
-    /**
-     * First node in the PathFinderNode-list
-     */
-    PathFinderNode* m_pNodeStart;
-
-    /**
-     * Number of nodes in list
-     */
-    public: //<-- TODO: POISTA
-    int m_Nodes;
-
-    /**
-     * Mutex for the PathFinderNode-list
-     */
-    pthread_mutex_t* m_pNodeListMutex;
 
     /**
      * Default constructor
@@ -171,6 +151,26 @@ private:
                 doesn't go haywire)
      */
     PathFinderNode* deletePathFinderNode(PathFinderNode* pNode);
+
+    /**
+     * Static reference to the singleton instance
+     */
+    static PathFinderMaster* pInstance;
+    
+    /**
+     * First node in the PathFinderNode-list
+     */
+    PathFinderNode* m_pNodeStart;
+
+    /**
+     * Number of nodes in list
+     */
+    int m_Nodes;
+
+    /**
+     * Mutex for the PathFinderNode-list
+     */
+    pthread_mutex_t* m_pNodeListMutex;
 
     /**
      * Tells if the thread is running or not

@@ -101,6 +101,20 @@ public:
         return m_Initialized;
     }
 
+    /**
+     * Sets the PathingState for both agent and this object
+     * @param state PathingState to set
+     */
+    inline void setState(PathingState state)
+    {
+        m_State = state;
+        
+        if(m_pPathAgent)
+        {
+            m_pPathAgent->setState(m_State);
+        }
+    }
+
 private:
 
     /**
@@ -130,16 +144,6 @@ private:
      * @param pEndNode PathNode containing the goal
      */
     void buildPath(PathNode* pEndNode);
-
-    /**
-     * Sets the PathingState for both agent and this object
-     * @param state PathingState to set
-     */
-    inline void setState(PathingState state)
-    {
-        m_State = state;
-        m_pPathAgent->setState(m_State);
-    }
 
     /**
      * Creates a new pathnode and adds it to array and openlist

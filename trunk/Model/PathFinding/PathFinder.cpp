@@ -22,6 +22,9 @@ PathFinder::PathFinder(unsigned short x, unsigned short y, unsigned short goalX,
 
 void PathFinder::initialize(unsigned short goalX, unsigned short goalY)
 {
+
+    m_pPathAgent = NULL;
+
     m_Initialized = false;
 
     //CHECKS FOR THINGS THAT PREVENT INITIALIZATION (Or just make it unnecessary)

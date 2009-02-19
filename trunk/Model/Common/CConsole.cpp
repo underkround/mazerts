@@ -33,6 +33,16 @@ CConsole::CConsole()
 	SetConsoleSize(80, 50);	
 }
 
+CConsole::~CConsole()
+{
+	//If buffer exists, destroy it
+	if(pCHAR_INFOScreenBuffer)
+	{
+		delete [] pCHAR_INFOScreenBuffer;
+		pCHAR_INFOScreenBuffer = NULL;
+	}
+}
+
 
 int CConsole::SetConsoleSize(SHORT wSizeX, SHORT wSizeY)
 {
