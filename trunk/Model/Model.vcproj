@@ -225,10 +225,6 @@
 				Name="Unit"
 				>
 				<File
-					RelativePath=".\Unit\GroundMovingComponent.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Unit\Unit.cpp"
 					>
 				</File>
@@ -415,10 +411,6 @@
 				Name="Unit"
 				>
 				<File
-					RelativePath=".\Unit\Command.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Unit\Damage.h"
 					>
 				</File>
@@ -427,19 +419,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\GroundMovingComponent.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Unit\IComponent.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Unit\IUpdatable.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Unit\TargetCommand.h"
 					>
 				</File>
 				<File
