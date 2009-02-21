@@ -225,7 +225,15 @@
 				Name="Unit"
 				>
 				<File
+					RelativePath=".\Unit\GroundMovingComponent.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Unit\Unit.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\UnitCollection.cpp"
 					>
 				</File>
 			</Filter>
@@ -295,6 +303,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\Constants.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Faction.h"
 				>
@@ -403,11 +415,19 @@
 				Name="Unit"
 				>
 				<File
+					RelativePath=".\Unit\Command.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Unit\Damage.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Unit\DamageHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\GroundMovingComponent.h"
 					>
 				</File>
 				<File
@@ -419,7 +439,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Unit\TargetCommand.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Unit\Unit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\UnitCollection.h"
 					>
 				</File>
 			</Filter>

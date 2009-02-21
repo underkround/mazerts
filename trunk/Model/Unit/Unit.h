@@ -20,10 +20,19 @@
 #include "DamageHandler.h"
 #include "Damage.h"
 #include "../Common/Vector3.h"
+#include "UnitCollection.h"
 
 class Unit : public IUpdatable
 {
 public:
+
+    static const int STATE_BEING_BUILD  = 0; // cannot take commands, switched when hitpoints reach max
+    static const int STATE_ACTIVE       = 1; // can take commands
+    static const int STATE_PARALYZED    = 2; // updates to components temporarily disabled until counter reaches 0
+    static const int STATE_DESTROYED    = 3; // object is destroyed when countdown reaches 0
+
+    static const char RESPONSE_OK           = 1; // normal update call return flag
+    static const char RESPONSE_DESTROYME    = 2; // indication that the unit needs to be destroyed
 
     /**
      * How many slots to allocate to components.
@@ -36,7 +45,7 @@ public:
     /**
      * Default constructor
      */
-    Unit(void);
+    Unit(int typeId=0);
 
     /**
      * Destructor
@@ -44,7 +53,8 @@ public:
     virtual ~Unit(void);
 
     /**
-     * //TODO: Update method
+     * Updates the components of this unit, and performs checks to unit's
+     * member data.
      */
     virtual char update(const float deltaT);
 
@@ -54,19 +64,13 @@ public:
      * Sets the width of the unit (x-tiles)
      * @param width The width of the unit
      */
-    inline void setWidth(const unsigned char width)
-    {
-        m_Width = width;
-    }
+    inline void setWidth(const unsigned char width) { m_Width = width; }
 
     /**
      * Sets the height of the unit (y-tiles)
      * @param height The height of the unit
      */
-    inline void setHeight(const unsigned char height)
-    {
-        m_Height = height;
-    }
+    inline void setHeight(const unsigned char height) { m_Height = height; }
 
     /**
      * Set maximum hitpoints for unit. If the Unit's current hitpoints top
@@ -76,7 +80,7 @@ public:
      */
     inline void setMaxHitpoints(const int maxHitpoints)
     {
-        if(maxHitpoints == 0)
+        if(maxHitpoints <= 0)
             return; // maximum hitpoints can't be zero since the unit would be
                     // dead instantly
         m_MaxHitpoints = maxHitpoints;
@@ -108,35 +112,23 @@ public:
      * Returns the width of the unit (x-tiles)
      * @return the width of the unit
      */
-    inline unsigned char getWidth()
-    {
-        return m_Width;
-    }
+    inline unsigned char getWidth() { return m_Width; }
 
     /**
      * Returns the height of the unit (y-tiles)
      * @return the height of the unit
      */
-    inline unsigned char getHeight()
-    {
-        return m_Height;
-    }
+    inline unsigned char getHeight() { return m_Height; }
 
     /**
      * @return the unit's cell coordinate x
      */
-    inline const unsigned short getCellX(void)
-    {
-        return m_CellX;
-    }
+    inline const unsigned short getCellX(void) { return m_CellX; }
 
     /**
      * @return the unit's cell coordinate y
      */
-    inline const unsigned short getCellY(void)
-    {
-        return m_CellY;
-    }
+    inline const unsigned short getCellY(void) { return m_CellY; }
 
     /**
      * Return pointer to the position of the unit as Vector3 object.
@@ -146,34 +138,31 @@ public:
      *          time out of sync (ok.. until next update call.. but still :)
      * @return position vector of the unit
      */
-    inline Vector3* getPosition(void)
-    {
-        return &m_Position;
-    }
+    inline Vector3* getPosition(void) { return &m_Position; }
 
     /**
      * Return pointer to the direction of the unit as Vector3 object.
      * Direction can be altered directly?
      * @return direction vector of the unit
      */
-    inline Vector3* getDirection(void)
-    {
-        return &m_Direction;
-    }
+    inline Vector3* getDirection(void) { return &m_Direction; }
 
     /**
-     * Return the DamageHandler of this unit that filters damage
-     * hitting it.
+     * Return the DamageHandler of this unit for setting it's values.
+     * DamageHandler reduces the amount of the damage the unit receives.
      * @return pointer to the DamageHandler of this unit
      */
-    inline DamageHandler const * const getDamageHandler(void)
-    {
-        return &m_DamageHandler;
-    }
+    inline DamageHandler const * const getDamageHandler(void) { return &m_DamageHandler; }
+
+    /**
+     * @return count of the components attached to this unit
+     */
+    inline const unsigned short getComponentCount() { return m_ComponentCount; }
 
     /**
      * Source should pass fresh damage object.
-     * NOTE: this will delete the damage object after it's been used,
+     *
+     * !NOTE!: this will delete the damage object after it's been used,
      * since the object is modified and hence cannot be used after this
      * unit is done with it.
      *
@@ -186,17 +175,16 @@ public:
     inline const int handleDamage(Damage* d)
     {
         // filter the damage with damage handler
+        m_DamageHandler.filterDamage(d);
         // reduce the modified damage from our hitpoints
         m_Hitpoints -= d->getTotalDamage();
         // @TODO: update needed?
         delete d;
+        // check if we're dead
+        if(m_Hitpoints <= 0)
+            m_State = STATE_DESTROYED;
         // return the amount of damage reduced
         return d->getTotalDamage();
-    }
-
-    inline const unsigned short getComponentCount()
-    {
-        return m_ComponentCount;
     }
 
 private:
@@ -209,52 +197,57 @@ private:
      * in the first place :)
      * But just to be sure..
      */
-    inline void increaseComponentCapacity()
-    {
-        IComponent** tmpHolder = new IComponent*[m_ComponentCount];
-        // this could possibly be done with some fancy memory copy -function
-        // but i'm the lame java-guy!
-        for(int i=0; i<m_ComponentCount; i++)
-            tmpHolder[i] = m_Components[i];
-        delete [] m_Components;
-        m_Components = new IComponent*[m_ComponentCount + DEFAULT_COMPONENT_ARRAY_SIZE];
-        for(int i=0; i<m_ComponentCount; i++) {
-            if(i < m_ComponentCount)
-                m_Components[i] = tmpHolder[i];
-            else
-                m_Components[i] = NULL;
-        }
-        delete [] tmpHolder;
-    }
+    void increaseComponentCapacity(void);
 
-// ===== MEMBERS
+// ===== MISC MEMBERS
+
+    int m_TypeId;           // the type of the unit
+    int m_Level;            // the level of the unit (type+level define the looks)
+
+    int m_State;            // the current state of the unit
+
+    DamageHandler m_DamageHandler;  // Damagehandler for this unit. All damage
+                                    // to this unit is filtered by damagehandler
+
+    unsigned char m_Width;  // Size of the unit as m_Width * m_Height (x * y)
+    unsigned char m_Height; // For vehicles, ALWAYS use same size for both width and height
+                            // (width = height) On structures, the width and height can differ
+
+    int m_Hitpoints;        // Unit's current hitpoints
+    int m_MaxHitpoints;     // Current hitpoints cannot top this
+
+    IComponent** m_Components;          // Components that make up the unit's logic
+    unsigned char m_ComponentCount;     // Count of the components attached
+    unsigned char m_ComponentArraySize; // The current capacity of the component array
+
+    bool m_CanMove;         // enabled by moving logic, if any
+    bool m_CanFire;         // enabled by weapon component, if any
+    bool m_IsGroundUnit;    // weather to sync the position z to terrain height
+
+    // timers for states
+    float m_DestroyTimer;   // downcounter for delay of death to object destruction
+    float m_ParalyzeTimer;  // downcounter for time to be paralized (idling)
+
+// ===== POSITION MEMBERS
 
     /**
      * 3D vector representing the placement of the unit.
      *
      * x and y -components:
-     *   Location of the unit in the terrain-grid.
-     *   To get the cell coordinates, cast floats to int.
-     *   Note that on units with size other than 1 * 1, this represents the
-     *   location of the units' topleft corner-tile!
+     *  Location of the unit in the terrain-grid.
+     *  To get the cell coordinates, cast floats to int.
+     *  Note that on units with size other than 1 * 1, this represents the
+     *  location of the units' topleft corner-tile!
      *
      * z-component:
-     *   Altitude from sealevel (0), usually calculated from
-     *   the altitude of the tile-cells the unit is in
+     *  Altitude usually calculated from the altitude of the tile-cells the
+     *  unit is in
      */
     Vector3 m_Position;
+    //Vector3 m_PositionCache;  // just a reminder of possible future use..
 
-    /**
-     * The cell coordinates of the terrain, these are updated from the
-     * position vector.
-     */
-    unsigned short m_CellX;
-    unsigned short m_CellY;
-
-    /**
-     *
-     */
-    bool m_SyncHeightToTerrain;
+    unsigned short m_CellX;     // The cell coordinates of the terrain, these are
+    unsigned short m_CellY;     // updated from the position vector.
 
     /**
      * 3D vector representing which way the unit is facing. The z-component
@@ -268,59 +261,6 @@ private:
      *      The unit could have it's facing represented by euler angles?
      */
     Vector3 m_Direction;
-
-    /**
-     * Damagehandler for this unit
-     * All damage to this unit is filtered by damagehandler
-     */
-    DamageHandler m_DamageHandler;
-
-    /**
-     * Size of the unit as m_Width * m_Height (x * y)
-     * For vehicles, ALWAYS use same size for both width and height
-     * (width = height) On structures, the width and height can differ
-     */
-    unsigned char m_Width;
-    unsigned char m_Height;
-
-    /**
-     * Unit's current hitpoints. If this goes <1, the unit is destroyed.
-     * This is left intentionally signed, so that unit's hitpoints can go
-     * below zero.
-     * This is the hitpoint value that is reduced when the unit receives
-     * damage.
-     */
-    int m_Hitpoints;
-
-    /**
-     * Unit's maximum hitpoints. This determines the maximum strength
-     * of the unit, and it's current hitpoints cannot top the maximum
-     * hitpoints (when repairing etc).
-     * By default, this value is not changed. An exception would be
-     * if the Unit is upgraded.
-     */
-    int m_MaxHitpoints;
-
-	/**
-	 * Unit's kill count. When ever projectile created by this unit's
-	 * weapon destroys enemy unit/building this value increases
-	 * value is then used to calculate effectiveness of certain
-	 * unit type. (Game balancing issues)
-	 */
-	int m_KillCount;
-
-    IComponent** m_Components;
-
-    /**
-     * Count of the components attached
-     * 
-     */
-    unsigned char m_ComponentCount;
-
-    /**
-     * The current capacity of the component array
-     */
-    unsigned char m_ComponentArraySize;
 
 };
 

@@ -90,7 +90,7 @@ public:
      * Handles the Damage-object and alters damage values based on resistances
      * @param pDamage Pointer to Damage-object to handle
      */
-    inline void handleDamage(Damage* pDamage)
+    inline void filterDamage(Damage* pDamage)
     {
         int totalDamage = 0;
         for(int i = 0; i < Damage::DAMAGETYPE_AMOUNT; i++)

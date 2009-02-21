@@ -1,21 +1,36 @@
+/**
+ * $Revision$
+ * $Date$
+ * $Id$
+ */
+
 #include "Unit.h"
 
 #include "../Terrain/Terrain.h"
 
-Unit::Unit(void)
+Unit::Unit(int typeId)
 {
+    m_State = STATE_BEING_BUILD;
+    m_TypeId = typeId;
+
+    m_Level = 1;
+
     // by default set unit size to 1*1 cell
     m_Width = 1;
     m_Height = 1;
+
     m_ComponentCount = 0;
     m_ComponentArraySize = DEFAULT_COMPONENT_ARRAY_SIZE;
     m_Components = new IComponent*[DEFAULT_COMPONENT_ARRAY_SIZE];
     for(int i=0; i<DEFAULT_COMPONENT_ARRAY_SIZE; i++)
         m_Components[i] = NULL;
 
-    // weather to keep the unit's position vector in sync with the terrain
-    // height at the unit's current position
-    m_SyncHeightToTerrain = true; // for ground units (for now, that is)
+    m_DestroyTimer = 1000;
+    m_ParalyzeTimer = 0; // set when the paralization happens
+
+    m_CanMove = false; // enabled by moving logic, if any
+    m_CanFire = false; // enabled by weapon component, if any
+    m_IsGroundUnit = true; // weather to sync the position z to terrain height
 
     // TODO: notify the collection
 }
@@ -41,6 +56,31 @@ Unit::~Unit(void)
 
 char Unit::update(const float deltaT)
 {
+    switch(m_State) {
+
+        case STATE_PARALYZED:
+            m_ParalyzeTimer -= deltaT;
+            if(m_ParalyzeTimer <= 0)
+                m_State = STATE_ACTIVE;
+            return 0;
+            break;
+
+        case STATE_DESTROYED:
+            m_DestroyTimer -= deltaT;
+            if(m_DestroyTimer <= 0)
+                return RESPONSE_DESTROYME;
+            return RESPONSE_OK;
+            break;
+
+        case STATE_BEING_BUILD:
+            return STATE_ACTIVE;
+            break;
+
+        default:
+        case STATE_ACTIVE:
+            break;
+    }
+
     // dispose update to components
     for(int i=0; i<m_ComponentCount; i++)
     {
@@ -90,4 +130,23 @@ bool Unit::addComponent(IComponent* component)
     m_Components[m_ComponentCount] = component;
     ++m_ComponentCount;
     return true;
+}
+
+
+void Unit::increaseComponentCapacity()
+{
+    IComponent** tmpHolder = new IComponent*[m_ComponentCount];
+    // this could possibly be done with some fancy memory copy -function
+    // but i'm the lame java-guy!
+    for(int i=0; i<m_ComponentCount; i++)
+        tmpHolder[i] = m_Components[i];
+    delete [] m_Components;
+    m_Components = new IComponent*[m_ComponentCount + DEFAULT_COMPONENT_ARRAY_SIZE];
+    for(int i=0; i<m_ComponentCount; i++) {
+        if(i < m_ComponentCount)
+            m_Components[i] = tmpHolder[i];
+        else
+            m_Components[i] = NULL;
+    }
+    delete [] tmpHolder;
 }

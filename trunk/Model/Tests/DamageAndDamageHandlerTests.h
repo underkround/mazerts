@@ -51,7 +51,7 @@ void testDamageAndDamageHandler()
     }
 
     //Handle the Damage-object
-    pDmgHandler->handleDamage(pDamage);
+    pDmgHandler->filterDamage(pDamage);
 
     //Values should not change, damage handler resistances default to 1.0
     for(int i = 0; i < Damage::DAMAGETYPE_AMOUNT; i++)
@@ -70,7 +70,7 @@ void testDamageAndDamageHandler()
     assert(pResistance[2] == 0.3f);
 
     //Test that damagehandler changes damage values properly
-    pDmgHandler->handleDamage(pDamage);
+    pDmgHandler->filterDamage(pDamage);
     
     assert(pDamage->getDamage(0) == 1);
     assert(pDamage->getDamage(1) == 2);
