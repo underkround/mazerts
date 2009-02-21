@@ -91,11 +91,10 @@ void testPathFinder()
         PathFinder* pFinder = new PathFinder(pUnit, rand() % 80, rand() % 50);  //, 78, 38);
         timer->EndTimer();
         tempTime += timer->GetElapsedSeconds();
-    
-
+            
         IPathFinder::PathingState pathState = IPathFinder::NOT_FINISHED;
 
-        while(pathState == IPathFinder::NOT_FINISHED)
+        while(pFinder->isInitialized() && pathState == IPathFinder::NOT_FINISHED)
         {
             timer->BeginTimer();
             pathState = pFinder->advance(10);

@@ -29,7 +29,7 @@ public:
     /**
      * Default map size, if not defined by constructor
      */
-    static const short DEFAULT_MAPSIZE = 255;
+    static const short DEFAULT_MAPSIZE = 127;
 
     /**
      * Default flattening height
@@ -94,7 +94,7 @@ public:
     /**
      * Create new terrain with given generator
      */
-    inline void initialize(ITerrainGenerator* generator);
+    void initialize(ITerrainGenerator* generator);
 
     /**
      * Releases and deletes the generator, if any.
@@ -110,6 +110,8 @@ public:
      * Doesn't lose the generator, but the size is set to 1.
      */
     void release();
+
+
 
 // ===== GETTERS
 
@@ -267,6 +269,22 @@ public:
         // @TODO: initialize with new generator?
     }
 
+//TERRAIN GENERATING
+
+    /**
+     * Sets all heights to given value
+     * @param heightValue height-value to set
+     */
+    void flattenMap(const unsigned char heightValue);
+
+    /**
+     * Smooths (blurs) the heightmap with given number
+     * of passes
+     * @param smoothPasses how many times the smoothing is done
+     */
+    void smoothMap(int smoothPasses);
+
+
 protected:
 
     /**
@@ -275,12 +293,6 @@ protected:
     Terrain();
 
     virtual ~Terrain();
-
-    /**
-     * Sets all heights to given value
-     * @param heightValue height-value to set
-     */
-    void flattenMap(const unsigned char heightValue);
 
     /**
      * Calculates the tile-heights based on vertexdata

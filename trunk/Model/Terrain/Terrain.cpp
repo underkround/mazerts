@@ -345,3 +345,79 @@ void Terrain::calculateTileHeight(const short x, const short y)
         return;
     }
 }
+
+
+void Terrain::smoothMap(int smoothPasses)
+{
+    int size = m_Size+1;
+
+    //Smoothing cycles
+    for(int i = 0; i < smoothPasses; i++)
+    {
+        //Create another array for the results
+        //If the results were directly written to the vertices,
+        //the smoothing would be affected by previous changes (last column/row)
+        unsigned char** tempArray;
+
+        tempArray = new unsigned char*[size];
+        for(int i = 0; i < size; i++)
+        {
+            tempArray[i] = new unsigned char[size];
+        }
+
+
+        for(int x = 0; x < size; x++)
+        {
+            for(int y = 0; y < size; y++)
+            {
+                
+
+                //Bounds checking, if the border is reached, we use a value
+                //from the opposite side of the heightmap
+                int xneg = x-1;
+                if(xneg < 0) xneg += size;
+
+                int yneg = y-1;
+                if(yneg < 0) yneg += size;
+
+                int xpos = x+1;
+                if(xpos > m_Size) xpos -= size;
+
+                int ypos = y+1;
+                if(ypos > m_Size) ypos -= size;
+
+                //Calculate sum from the diagonal vertices, divide by 16
+                int diagonal = (m_ppVertexHeightData[ypos][xpos] + m_ppVertexHeightData[ypos][xneg]
+                                +  m_ppVertexHeightData[yneg][xpos] + m_ppVertexHeightData[yneg][xneg]) >> 4;
+                
+                //Calculate the sum of adjacent vertices, and divide by 8                
+                int adjacent = (m_ppVertexHeightData[ypos][x]%256 + m_ppVertexHeightData[y][xneg]%256
+                                +  m_ppVertexHeightData[yneg][x]%256 + m_ppVertexHeightData[y][xpos]%256) >> 3;
+
+                //Middle: the curren vertice, value is divided by 4
+                int middle = m_ppVertexHeightData[y][x] >> 2;
+
+                //The final smoothed result is got from summing the above values                
+                tempArray[y][x] = diagonal + adjacent + middle;                                         
+                                
+            }
+        }
+
+        //Switch the heightmap values to the ones in the temporary array
+        for(int x = 0; x < size; x++)
+        {
+            for(int y = 0; y < size; y++)
+            {
+                m_ppVertexHeightData[y][x] = tempArray[y][x];
+            }
+        }
+
+        for(int i = 0; i < size; i++)
+        {
+            delete [] tempArray[i];
+        }
+        delete [] tempArray;
+
+        //calculateHeightMapFromVertices();
+    }//Smoothing cycle
+}
