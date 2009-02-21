@@ -15,14 +15,20 @@
 
 class Unit;
 
-class IComponent : public IUpdatable
+//class IComponent : public IUpdatable
+class IComponent
 {
 public:
 
     /**
-     * @see IUpdatable
+     * Update that is called by the host unit. Since component could be
+     * attached to many units, the current unit instance is given as
+     * a pointer.
+     * This update is called only when the unit is in active state, so
+     * components don't have to worry weather the unit is in state to
+     * perform actions.
      */
-    virtual char update(const float deltaT) = 0;
+    virtual char update(Unit* host, const float deltaT) = 0;
 
     /**
      * Attach

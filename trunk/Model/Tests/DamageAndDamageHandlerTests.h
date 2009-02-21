@@ -95,4 +95,5 @@ void testDamageAndDamageHandler()
 
     delete pDamage;
     delete pDmgHandler;
+    delete pResistance;
 }

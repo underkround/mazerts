@@ -5,6 +5,37 @@
  * Units are stored within the UnitContainer, and they themselves contain
  * multiple Components
  *
+ *
+ * *** USAGE ***
+ *
+ * You create the unit object by giving the type id in the constructor:
+ *  Unit* u = new Unit(UNIT_ID_BASIC);
+ *
+ * Then you set the unit's size and other parameteris:
+ *  u->setWidth(2); u->setHeight(2);
+ *
+ * Set the components of the unit:
+ *  u->addComponent(new SomeNewComponent(params));
+ *  u->addComponent(someExistingComponent);
+ *
+ * Position the unit to where it should be build in the map:
+ *  u->forcePosition(200,200);
+ *
+ * Tell the unit that it's ready to be send to the game:
+ *  u->create();
+ *
+ * You can now lose the pointer u since the UnitCollection takes care of the
+ * unit from this point on.
+ *
+ * The unit is destroyed when it's hitpoints drop to 0 or below, or you can
+ * instantly get rid of the unit by calling unit->release();
+ *
+ * !DO NOT! however delete the unit even when manually calling the release
+ * method! (the UnitCollection handles that).
+ *
+ * You can register as observer to single unit for it's position, or to get
+ * notices of the new and deleted objects via the unit collection.
+ *
  * $Revision$
  * $Date$
  * $Id$
@@ -26,17 +57,14 @@ class Unit : public IUpdatable
 {
 public:
 
-    static const int STATE_BEING_BUILD  = 0; // cannot take commands, switched when hitpoints reach max
+    static const int STATE_BEING_BUILD  = 0; // cannot take commands, switces to active when hitpoints reach max
     static const int STATE_ACTIVE       = 1; // can take commands
     static const int STATE_PARALYZED    = 2; // updates to components temporarily disabled until counter reaches 0
     static const int STATE_DESTROYED    = 3; // object is destroyed when countdown reaches 0
 
-    static const char RESPONSE_OK           = 1; // normal update call return flag
-    static const char RESPONSE_DESTROYME    = 2; // indication that the unit needs to be destroyed
-
     /**
-     * How many slots to allocate to components.
-     * If there is more components, the array will be expanded by
+     * How many slots to allocate to components by default.
+     * If there are more components, the array will be expanded by
      * this value -> set to a value that should be enough for units
      * in the game so growing is not needed.
      */
@@ -51,6 +79,14 @@ public:
      * Destructor
      */
     virtual ~Unit(void);
+
+    /**
+     * This should be called when the unit is initialized and it's ready
+     * to be put in the game
+     */
+    void create(void);
+
+    void release(void);
 
     /**
      * Updates the components of this unit, and performs checks to unit's
@@ -205,6 +241,7 @@ private:
     int m_Level;            // the level of the unit (type+level define the looks)
 
     int m_State;            // the current state of the unit
+    bool m_Initialized;     // flag for the initialization phase
 
     DamageHandler m_DamageHandler;  // Damagehandler for this unit. All damage
                                     // to this unit is filtered by damagehandler
@@ -220,9 +257,9 @@ private:
     unsigned char m_ComponentCount;     // Count of the components attached
     unsigned char m_ComponentArraySize; // The current capacity of the component array
 
-    bool m_CanMove;         // enabled by moving logic, if any
-    bool m_CanFire;         // enabled by weapon component, if any
-    bool m_IsGroundUnit;    // weather to sync the position z to terrain height
+    bool m_CanMove;             // enabled by moving logic, if any
+    bool m_CanFire;             // enabled by weapon component, if any
+    bool m_SyncHeightToTerrain; // weather to sync the position z to terrain height (for ground units)
 
     // timers for states
     float m_DestroyTimer;   // downcounter for delay of death to object destruction
@@ -246,8 +283,10 @@ private:
     Vector3 m_Position;
     //Vector3 m_PositionCache;  // just a reminder of possible future use..
 
-    unsigned short m_CellX;     // The cell coordinates of the terrain, these are
-    unsigned short m_CellY;     // updated from the position vector.
+    unsigned short m_CellX;         // The cell coordinates of the terrain, these are
+    unsigned short m_CellY;         // updated from the position vector.
+    unsigned short m_PreviousCellX; // stored old position to use when handling the
+    unsigned short m_PreviousCellY; // change in coordinates
 
     /**
      * 3D vector representing which way the unit is facing. The z-component

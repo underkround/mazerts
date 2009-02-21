@@ -10,12 +10,13 @@
 
 UnitCollection::UnitCollection(void)
 {
-
+    m_Head = m_Tail = NULL;
 }
 
 
 UnitCollection::~UnitCollection(void)
 {
+    releaseAll();
 }
 
 
@@ -27,34 +28,97 @@ Unit* UnitCollection::getUnitAt(unsigned short x, unsigned short y)
 
 void UnitCollection::registerUnit(Unit* unit)
 {
+    UNITNODE* temp;
+    if(m_Head) {
+        temp = m_Head;
+        m_Head = new UNITNODE();
+        m_Head->unit = unit;
+        m_Head->prev = temp;
+        m_Head->next = NULL;
+    }
+    else {
+        // this is the first node
+        m_Head = new UNITNODE();
+        m_Head->unit = unit;
+        m_Head->next = NULL;
+        m_Head->prev = NULL;
+        m_Tail = m_Head;
+    }
+    // TODO: notify addition
 }
 
 
-void UnitCollection::releaseUnit(Unit* unit)
+bool UnitCollection::releaseUnit(Unit* unit)
 {
+    UNITNODE* node = m_Tail;
+    // find unit
+    while(node) {
+        if(node->unit == unit) {
+            // fix links
+            node->prev->next = node->next;
+            node->next->prev = node->prev;
+            delete node->unit;
+            delete node;
+            return true;
+        }
+        node = node->next;
+    }
+    // unit not found in list.. delete anyway?
+    delete unit;
+    return false; // should return true cause unit was deleted?
 }
 
 
 char UnitCollection::updateAll(const float deltaT)
 {
-    std::vector<Unit*>::iterator it;
-    Unit* u;
-    for(it = m_Units.begin(); it != m_Units.end(); it++ )
+    UNITNODE* node = m_Tail;
+    char response;
+    while(node)
     {
-        u = *it;
-        u->update(deltaT); // .update(deltaT);
+        // update and check for deletion
+        response = node->unit->update(deltaT);
+        if(response == IUpdatable::RESPONSE_DESTROYME)
+        {
+            // unit object is to be deleted
+            UNITNODE* toBeGone;
+            // link previous to next
+            toBeGone = node;
+            node = toBeGone->next;
+            toBeGone->prev->next = toBeGone->next;
+            toBeGone->next->prev = toBeGone->prev;
+            delete toBeGone->unit;
+            delete toBeGone;
+            // TODO: notify remove
+        }
+        else
+        {
+            // advance to next
+            node = node->next;
+        }
     }
-    return 0;
+    return IUpdatable::RESPONSE_OK;
 }
 
 
 void UnitCollection::releaseAll(void)
 {
-    for(unsigned int i=0; i < m_Units.size(); i++)
-        delete m_Units[i];
+    UNITNODE* node = m_Tail;
+    UNITNODE* temp = NULL;
+    while(node) {
+        temp = node;
+        node = temp->next;
+        delete temp->unit;
+        delete temp;
+    }
+    m_Head = NULL;
+    m_Tail = NULL;
 }
 
 
-void UnitCollection::notifyNewPosition(Unit* unit, unsigned short oldPosX, unsigned short oldPosY)
+void UnitCollection::handlePositionChanged(Unit* unit, unsigned short oldPosX, unsigned short oldPosY)
 {
+    // TODO: implement some magic fast position-based data structure
+    // Notes for implementation:
+    // oldPosX and oldPosY indicate where the unit was before it's position changed
+    // obviously the new position can be queried from the unit itself
 }

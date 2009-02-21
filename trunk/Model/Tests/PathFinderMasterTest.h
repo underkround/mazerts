@@ -5,7 +5,9 @@
 #include "../Terrain/Terrain.h"
 
 
+#ifndef _CRTDBG_MAP_ALLOC
 #define _CRTDBG_MAP_ALLOC
+#endif
 
 
 int agents = 0;
@@ -226,8 +228,6 @@ void testPathFinderMaster()
     Terrain::getInstance()->initialize(1);
 
     delete [] strState;
-
-    _CrtDumpMemoryLeaks();
     
     printf("DONE\n");
 }

@@ -35,7 +35,7 @@ public:
         cout << "(" << m_Id << ") DebugComponent: DESTRUCT\n";
     }
 
-    inline virtual char update(const float deltaT)
+    inline virtual char update(Unit* host, const float deltaT)
     {
         switch(m_Mode)
         {

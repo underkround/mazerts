@@ -14,6 +14,11 @@
 class IUpdatable
 {
 public:
+
+    // response codes for update method
+    static const char RESPONSE_OK           = 0; // normal update call return flag
+    static const char RESPONSE_DESTROYME    = 2; // indication that the subject needs to be destroyed
+
     //Not instantiable
     IUpdatable(void)
     {

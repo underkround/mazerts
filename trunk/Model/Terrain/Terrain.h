@@ -15,6 +15,8 @@
 #define __TERRAIN_H__
 
 #include "ITerrainGenerator.h"
+#include "../Common/Vector3.h"
+#include <math.h>
  
 #ifndef NULL
 #define NULL 0
@@ -110,8 +112,6 @@ public:
      * Doesn't lose the generator, but the size is set to 1.
      */
     void release();
-
-
 
 // ===== GETTERS
 
@@ -269,7 +269,43 @@ public:
         // @TODO: initialize with new generator?
     }
 
-//TERRAIN GENERATING
+// MISC
+
+    /**
+     * Sync the given vector's z-component to match the current level of the
+     * terrain in the point defined by vector's x and y components.
+     * If step is greater than zero, the z-component adjust is no more than
+     * the value of step. If the z-component is not in sync with terrain after
+     * alter by step, false is returned.
+     * @param v     the vector to synchronize
+     * @param step  maximum amout of modification allowed, or 0 for unlimited
+     * @return      true, if the z-component is in sync with the terrain level
+     *
+     * !TODO!: for now this only syncs to the tile level, not the precise
+     * calculated level of the terrain in the given point.
+     *
+     * !TODO!: step not implemented!
+     */
+    inline bool syncToTerrainLevel(Vector3* v, float step) {
+        if(v->x < 0 || v->y < 0) return false;            // not really right return values
+        if(v->x > m_Size || v->y > m_Size) return false;  // since these are out of sync!
+        float height = (float)m_ppTerrainHeightData[(int)v->y][(int)v->x];
+        float diff = height - v->z;
+        step = fabs(step);
+        if(step > 0.0001 && step < fabs(diff)) {
+            // modify by step, not by diff
+            if(diff > 0)
+                v->z += step;
+            else
+                v->z -= step;
+            return false; // not in sync yet if step was smaller than height difference
+        }
+        // full sync
+        v->z = height;
+        return true;
+    }
+
+// TERRAIN GENERATING
 
     /**
      * Sets all heights to given value

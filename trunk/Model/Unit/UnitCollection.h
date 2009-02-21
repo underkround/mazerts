@@ -12,15 +12,19 @@
 #ifndef __UNITCOLLECTION_H__
 #define __UNITCOLLECTION_H__
 
-#include <vector>
-//#include "Unit.h"
-#include "IUpdatable.h"
+//#include "IUpdatable.h"
 
 class Unit;
 
 class UnitCollection
 {
 public:
+
+    struct UNITNODE {
+        Unit*       unit;
+        UNITNODE*   next;
+        UNITNODE*   prev;
+    };
 
     static inline UnitCollection* getInstance()
     {
@@ -36,7 +40,7 @@ public:
 
     void registerUnit(Unit* unit);
 
-    void releaseUnit(Unit* unit);
+    bool releaseUnit(Unit* unit);
 
     /**
      * Update call that iterates through all units in the game
@@ -49,7 +53,10 @@ public:
      */
     void releaseAll(void);
 
-    void notifyNewPosition(Unit* unit, unsigned short oldPosX, unsigned short oldPosY);
+    /**
+     * Unit calls this if it's position is changed in the map
+     */
+    void handlePositionChanged(Unit* unit, unsigned short oldPosX, unsigned short oldPosY);
 
 // ===== OBSERVERS
 
@@ -68,7 +75,8 @@ private:
     UnitCollection();
     ~UnitCollection();
 
-    std::vector<Unit*> m_Units;
+    UNITNODE*           m_Head;
+    UNITNODE*           m_Tail;
 
 };
 
