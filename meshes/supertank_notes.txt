@@ -1,0 +1,21 @@
+*** super tank ***
+
+this is 5x5 game grid size unit
+
+actual model about 50x40 max units
+
+= super tank component locations related to each other =
+
+  Turret should be placed at:
+    14 units up and 8 units backwards from tank base origo
+
+  Cannon should be placed at:
+    4 units up and 6 units forward from turret origo
+
+= files =
+
+supertank_base.X
+supertank_turret.X
+supertank_cannon.X
+
+additionally supertank.X contains all parts
