@@ -1,11 +1,8 @@
 #pragma once
+#pragma region includes
+//#ifdef _ANTIN_AI
 
-#ifndef NULL
-#define NULL 0 //TODO: this should probably be defined in somewhere common place?
-#endif
-
-#include "AntinAIBuilding.h"
-#include "AntinAIUnits.h"
+#include "../Constants.h"
 #include "../../Common/Config.h"
 #include "../../Common/Enums.h"
 #include <string>
@@ -13,6 +10,7 @@
 
 using namespace std;
 
+#pragma endregion
 /**
  * AntinAI
  *
@@ -23,7 +21,7 @@ using namespace std;
 class AntinAI
 {
 public:
-
+#pragma region constructors and structures
 	AntinAI(void);
 	virtual ~AntinAI(void);
 
@@ -36,19 +34,75 @@ public:
 		string					strWeaponName;
 		bool					bOffensive; //don't go attacking with weaponless units
 		int						cost;
+		//here probably should be pointer to actual unit
 	};
 	struct BUILDING
 	{
 		string					strName;
 		AntinAI::BUILDING_TYPE	eType;
 		int						cost;
+		//here probably should be pointer to actual building
 	};
+
+#pragma endregion
 
 private:
 	void LoadConfigFromFile(void);
-	inline void AddUnitValuesToVector(UNIT* addme) { m_vUnitValues.push_back(addme); }
+	inline void AddUnitValuesToVector(UNIT* addme) { m_vUnits.push_back(addme); }
 
-	AntinAIBuilding*	m_pBuild;
-	AntinAIUnits*		m_pUnits;
-	vector<UNIT*>		m_vUnitValues;
+
+#pragma region functions that perform actions
+
+	/**
+	 * make AI perform a single construction decision
+	 */
+	void HammerTime(void);
+
+#pragma endregion
+
+#pragma region functions that do strategic calculations
+	/**
+	 *  @return UNIT_TYPE that AI should build in current situation
+	 */
+	UNIT_TYPE ChooseUnitToBuild(void);
+
+	int CalculateUnitBuildValue(UNIT_TYPE unittype);
+#pragma endregion
+
+#pragma region functions that gather data from model
+	/**
+	 * @return does this player have science building built
+	 */
+	bool HaveScienceBuilding(void);
+
+	/**
+	 * @param unittype type of unit
+	 * @return cost to build this type of unit
+	 */
+	int FindUnitCost(UNIT_TYPE unittype);
+
+	/**
+	 * @param unittype type of unit
+	 * @return how many units has this unit type killed in total
+	 */
+	int FindUnitKillCount(UNIT_TYPE unittype);
+
+	/**
+	 * @return how many units of UNIT_TYPE this player has
+	 */
+	int FindUnitCount(UNIT_TYPE unittype);
+
+#pragma endregion
+
+#pragma region members
+	// ** Unit AI configuration values ** (these are set from AI config file)
+	vector<UNIT*>		m_vUnits;
+	vector<BUILDING*>	m_vBuildings;
+
+	int m_CostMod;
+	int m_CountMod;
+	int m_KillMod;
+#pragma endregion
 };
+
+//#endif //_ANTIN_AI
