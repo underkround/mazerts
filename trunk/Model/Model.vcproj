@@ -283,14 +283,6 @@
 						RelativePath=".\AI\Antin\AntinAI.cpp"
 						>
 					</File>
-					<File
-						RelativePath=".\AI\Antin\AntinAIBuilding.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\AI\Antin\AntinAIUnits.cpp"
-						>
-					</File>
 				</Filter>
 			</Filter>
 		</Filter>
@@ -490,14 +482,6 @@
 				>
 				<File
 					RelativePath=".\AI\Antin\AntinAI.h"
-					>
-				</File>
-				<File
-					RelativePath=".\AI\Antin\AntinAIBuilding.h"
-					>
-				</File>
-				<File
-					RelativePath=".\AI\Antin\AntinAIUnits.h"
 					>
 				</File>
 			</Filter>

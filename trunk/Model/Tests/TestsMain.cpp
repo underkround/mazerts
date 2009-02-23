@@ -29,7 +29,7 @@ using namespace std;
 
 int main(int arcg, char* argv[])
 {
-    if(VERBOSE) cout << " *** damage and damagehandler ***\n";      testDamageAndDamageHandler();
+    //if(VERBOSE) cout << " *** damage and damagehandler ***\n";      testDamageAndDamageHandler();
 
 //    if(VERBOSE) cout << "\n *** terrain ***\n";                     testTerrain();
 
@@ -45,9 +45,9 @@ int main(int arcg, char* argv[])
 
 //    if(VERBOSE) cout << "\n *** PathFinderMaster-thread ***\n";     testPathFinderMaster();
 
-//	if(VERBOSE) cout << "\n *** Antin AI ***\n";                    testAntinAI();
+	if(VERBOSE) cout << "\n *** Antin AI ***\n";                    testAntinAI();
 
-    _CrtDumpMemoryLeaks();
+    //_CrtDumpMemoryLeaks();
     return 0;
 }
 
