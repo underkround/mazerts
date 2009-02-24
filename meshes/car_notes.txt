@@ -1,5 +1,7 @@
 *** Scorpion car ***
 
+2x2 game units
+
 gun location related to car base:
 7 units backward, 10 units up
 
