@@ -74,7 +74,7 @@ void PathFinder::initialize(unsigned short goalX, unsigned short goalY)
 
     
     //Agent initialization
-    m_pPathAgent = new PathAgent();
+    m_pPathAgent = new PathAgent(this);
 
     m_Initialized = true;
 }

@@ -121,7 +121,6 @@ PathAgent* PathFinderMaster::findPath(unsigned short x, unsigned short y, unsign
 }
 
 //Static
-#include <stdio.h>
 void PathFinderMaster::cancelAll()
 {
     pthread_mutex_lock(pInstance->m_pNodeListMutex);

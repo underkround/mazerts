@@ -96,8 +96,8 @@ static char** strState = new char*[4];
 void testPathFinderMaster()
 {
     strState[0] = "Not finished";
-    strState[1] = "!!! No path !!!";
-    strState[2] = "Cancelled";
+    strState[1] = "NO PATH FOUND";
+    strState[2] = "CANCELLED";
     strState[3] = "FOUND";
 
     srand(100000);
@@ -188,6 +188,12 @@ void testPathFinderMaster()
                     pConsole->writeMessage(10, ++row, strMsg);
                     running++;
                 }
+
+                if(rand() % 5000 == 1)
+                {
+                    pCurrent->pAgent->cancel();
+                }
+
 
                 if(pCurrent)
                 {

@@ -20,10 +20,12 @@ class PathAgent
 public:
     
     /**
-     * Default constructor
+     * Constructor
+     * @param pFinder Pointer to IPathFinder-instance this agent is associated with
      */
-    PathAgent()
+    PathAgent(IPathFinder* pFinder)
     {
+        m_pFinder = pFinder;
         m_pNode = NULL;
         m_State = IPathFinder::NOT_FINISHED;
         m_pMutex = new pthread_mutex_t;
@@ -79,7 +81,7 @@ public:
      * Sets the current state of the pathfinding
      * @param state State to set, see enumeration in IPathFinder
      */
-    void setState(IPathFinder::PathingState state)
+    inline void setState(IPathFinder::PathingState state)
     {
         pthread_mutex_lock(m_pMutex);
         {
@@ -92,7 +94,7 @@ public:
      * Sets the pathdata-pointer safely
      * @param pNode Pointer to PathNode in the beginning of the path
      */
-    void setPathData(IPathFinder::PathNode* pNode)
+    inline void setPathData(IPathFinder::PathNode* pNode)
     {
         pthread_mutex_lock(m_pMutex);
         {
@@ -100,6 +102,18 @@ public:
         }
         pthread_mutex_unlock(m_pMutex);
     }
+
+    inline void cancel()
+    {
+        if(m_State == IPathFinder::NOT_FINISHED)
+        {
+            if(m_pFinder)
+            {
+                m_pFinder->cancel();
+            }
+        }
+    }
+       
 
 private:
 
@@ -145,6 +159,11 @@ private:
      * The starting node of the path, or NULL if not (yet) found
      */
     IPathFinder::PathNode* m_pNode;
+
+    /**
+     * IPathFinder-instance this agent is associated with
+     */
+    IPathFinder* m_pFinder;
 };
 
 #endif //__PATHAGENT_H
