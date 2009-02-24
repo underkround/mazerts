@@ -170,8 +170,11 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                             //Path found! Add last node, package and send away to the agent
                             current = addNode(adjaX, adjaY, 0, 0, NODE_OPEN, current);                                                        
                             buildPath(current);
-
-                            m_pPathAgent->setPathData(m_pStartNode);
+                            
+                            if(m_pPathAgent)
+                            {
+                                m_pPathAgent->setPathData(m_pStartNode);
+                            }
 
                             setState(FOUND);                            
                             return FOUND;

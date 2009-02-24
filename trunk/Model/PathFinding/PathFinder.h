@@ -118,6 +118,7 @@ public:
     inline void cancel()
     {
         setState(IPathFinder::CANCELLED);
+        m_pPathAgent = NULL;
     }
 
 private:
