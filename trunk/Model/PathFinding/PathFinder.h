@@ -115,6 +115,11 @@ public:
         }
     }
 
+    inline void cancel()
+    {
+        setState(IPathFinder::CANCELLED);
+    }
+
 private:
 
     /**

@@ -75,7 +75,7 @@ void Terrain::initialize()
     // give the vertex data to generator, if any
     if(m_pTerrainGenerator)
     {
-        m_pTerrainGenerator->generateHeightmap(m_ppVertexHeightData, m_Size);
+        m_pTerrainGenerator->generateHeightmap(m_ppVertexHeightData, m_Size + 1);
     }
 
     // calculate tile heights and mark as passable/non-passable

@@ -120,10 +120,7 @@ public:
     /**
      * Cancels the search
      */
-    inline void cancel()
-    {
-        m_State = CANCELLED;
-    }
+    virtual void cancel() = 0;
 
 
 protected:

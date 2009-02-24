@@ -18,7 +18,7 @@ RandomTerrainGenerator::~RandomTerrainGenerator()
 void RandomTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData, const unsigned short terrainSize)
 {
     // sanity check - if the terrain did not respect our preferred size
-    if(terrainSize != m_Size)
+    if(terrainSize != m_Size + 1)
     {
         // @TODO: actually random generator can still generate based on this,
         // this is just to demonstate action on generators that need certain
@@ -64,9 +64,9 @@ void RandomTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightDat
         //Do steps starting from the chosen random x, y -location
         for(int j = 0; j < mountSize; j++)
         {
-            //Move the current location randomly between -2...2 tiles in both axis
-            x += -2 + rand()%5;
-            y += -2 + rand()%5;
+            //Move the current location randomly between -1...1 tiles in both axis
+            x += -1 + rand()%3;
+            y += -1 + rand()%3;
 
             //Bounds checks
             if(x >= 0 && x < terrainSize)

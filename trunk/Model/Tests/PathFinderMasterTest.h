@@ -21,7 +21,7 @@ struct AgentNode
         pNext = NULL;
         pPrev = NULL;
         id = agentID++;
-        count = 100;//rand() % 1000;
+        count = 1000;//rand() % 1000;
     }
 
     PathAgent* pAgent;
@@ -139,7 +139,12 @@ void testPathFinderMaster()
             if(key == 1)
             {
                 run = false;
-            }            
+            }
+            if(key == 57)
+            {
+                PathFinderMaster::cancelAll();
+            }
+
             /*else if(key == 57 && record.Event.KeyEvent.bKeyDown == TRUE)
             {
                 //for(int i = 0; i < 10; i++)
@@ -166,7 +171,7 @@ void testPathFinderMaster()
             {
                 
 
-                if(pCurrent->pAgent->getState() != IPathFinder::NOT_FINISHED)
+                if(pCurrent->pAgent->getState() != PathFinder::NOT_FINISHED)
                 {
                     sprintf_s(strMsg, 100, "Agent %d: State: %s ", pCurrent->id, strState[pCurrent->pAgent->getState()]);
                     pConsole->writeMessage(10, ++row, strMsg);
@@ -179,6 +184,8 @@ void testPathFinderMaster()
                 }
                 else
                 {
+                    sprintf_s(strMsg, 100, "Agent %d: State: %s ", pCurrent->id, strState[pCurrent->pAgent->getState()]);
+                    pConsole->writeMessage(10, ++row, strMsg);
                     running++;
                 }
 
@@ -186,10 +193,6 @@ void testPathFinderMaster()
                 {
                     pCurrent = pCurrent->pNext;
                 }
-            }
-            if(!agents)
-            {
-                pConsole->ClearBuffer();
             }
             sprintf_s(strMsg, 100, "Running: %d  Alive: %d Total all time: %d", running, agents, agentID);
             pConsole->writeMessage(4, 0, strMsg);

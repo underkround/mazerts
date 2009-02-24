@@ -1,4 +1,5 @@
 #include "PathFinderMaster.h"
+#include "../Common/Sleep.h"
 
 PathFinderMaster* PathFinderMaster::pInstance = new PathFinderMaster();
 
@@ -97,6 +98,7 @@ void PathFinderMaster::run()
             }
         }
         //pthread_mutex_unlock(m_pNodeListMutex);
+        msleep(1);
     }
 
     PathFinderMaster::~PathFinderMaster();

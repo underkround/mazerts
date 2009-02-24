@@ -347,6 +347,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Common\Sleep.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Common\Vector3.h"
 					>
 				</File>
