@@ -1,0 +1,11 @@
+*** Scorpion car ***
+
+gun location related to car base:
+7 units backward, 10 units up
+
+= files =
+
+car_base.X
+car_gun.X
+
+and then there is also an car_example.X showing how gun should look when positioned correctly
