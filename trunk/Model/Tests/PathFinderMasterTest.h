@@ -21,13 +21,15 @@ struct AgentNode
         pNext = NULL;
         pPrev = NULL;
         id = agentID++;
-        count = 1000;//rand() % 1000;
+        count = 2100;//rand() % 1000;
+        nodeCount = 0;
     }
 
     PathAgent* pAgent;
     AgentNode* pNext;
     AgentNode* pPrev;
     int count;
+    int nodeCount;
     int id;
 };
 
@@ -129,6 +131,9 @@ void testPathFinderMaster()
     memset(&record, 0, sizeof(INPUT_RECORD));
 
     bool run = true;
+
+    bool noNew = false;
+
     while(run)
     {
         int i = pConsole->ReadInput(&record);
@@ -143,6 +148,11 @@ void testPathFinderMaster()
             if(key == 57)
             {
                 PathFinderMaster::cancelAll();
+                noNew = true;
+            }
+            else
+            {
+                noNew = false;
             }
 
             /*else if(key == 57 && record.Event.KeyEvent.bKeyDown == TRUE)
@@ -173,7 +183,13 @@ void testPathFinderMaster()
 
                 if(pCurrent->pAgent->getState() != PathFinder::NOT_FINISHED)
                 {
-                    sprintf_s(strMsg, 100, "Agent %d: State: %s ", pCurrent->id, strState[pCurrent->pAgent->getState()]);
+                    //TEST: get all the steps you can before dying
+                    if(pCurrent->pAgent->getNextPathNode() != NULL)
+                    {
+                        pCurrent->nodeCount++;
+                    }
+
+                    sprintf_s(strMsg, 100, "Agent %d: State: %s NodeCount: %d", pCurrent->id, strState[pCurrent->pAgent->getState()], pCurrent->nodeCount);
                     pConsole->writeMessage(10, ++row, strMsg);
                     sprintf_s(strMsg, 100, "Preparing to delete:  %d", pCurrent->count--);
                     pConsole->writeMessage(50, row, strMsg);
@@ -189,7 +205,7 @@ void testPathFinderMaster()
                     running++;
                 }
 
-                if(rand() % 5000 == 1)
+                if(rand() % 10000 == 1)
                 {
                     pCurrent->pAgent->cancel();
                 }
@@ -205,7 +221,7 @@ void testPathFinderMaster()
             pConsole->DrawScreen();            
         }
 
-        if(rand() % ((running * 10) + 1) == 0)
+        if(rand() % ((running * 10) + 1) == 0 && !noNew)
         {
             //for(i = 0; i < rand() % 20); i++)
             {

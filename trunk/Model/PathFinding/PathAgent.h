@@ -37,6 +37,7 @@ public:
      */
     virtual ~PathAgent()
     {
+        cancel();
         destroyPath();
         pthread_mutex_destroy(m_pMutex);
         delete m_pMutex;
@@ -90,6 +91,41 @@ public:
         pthread_mutex_unlock(m_pMutex);
     }
 
+    /** 
+     * Returns the next pathnode, deleting the old one
+     * @return PathNode-pointer
+     */
+    inline IPathFinder::PathNode* getNextPathNode()
+    {
+        IPathFinder::PathNode* pNode = NULL;
+        pthread_mutex_lock(m_pMutex);
+        {
+            if(m_pNode)
+            {                
+                pNode = m_pNode;
+
+                if(m_pNode->pParent != NULL)
+                {
+                    delete m_pNode->pParent;
+                    m_pNode->pParent = NULL;
+                }
+
+                if(m_pNode->pChild != NULL)
+                {
+                    m_pNode = m_pNode->pChild;
+                }
+                else
+                {
+                    delete m_pNode;
+                    m_pNode = NULL;
+                }
+            }
+        }
+        pthread_mutex_unlock(m_pMutex);
+        
+        return pNode;
+    }
+
     /**
      * Sets the pathdata-pointer safely
      * @param pNode Pointer to PathNode in the beginning of the path
@@ -114,6 +150,21 @@ public:
         }
     }
        
+    /**
+     * Locks the mutex from outside of class
+     */
+    inline void lock()
+    {
+        pthread_mutex_lock(m_pMutex);
+    }
+
+    /**
+     * Unlocks the mutex from outside of class
+     */
+    inline void unlock()
+    {
+        pthread_mutex_unlock(m_pMutex);
+    }
 
 private:
 

@@ -167,16 +167,25 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                         //Check if path was found
                         if(adjaX == m_GoalX && adjaY == m_GoalY)
                         {
-                            //Path found! Add last node, package and send away to the agent
-                            current = addNode(adjaX, adjaY, 0, 0, NODE_OPEN, current);                                                        
-                            buildPath(current);
-                            
+                            //Path found! Add last node, package and send away to the agent (if it still
+                            //exists, this is a special case, as a cancel-call might have come from the
+                            //other thread during this advance, and the m_pPathAgent would be NULL then
                             if(m_pPathAgent)
                             {
+                                //Lock the pathfinder while path is being built, this is to ensure
+                                //that the pathfinder isn't cancelled and destroyed while building
+                                //path (this has happened once, and the chance of it happening is very,
+                                //very improbable, but better be safe than sorry
+                                m_pPathAgent->lock();
+                                {
+                                    current = addNode(adjaX, adjaY, 0, 0, NODE_OPEN, current);                                                        
+                                    buildPath(current); 
+                                }
+                                m_pPathAgent->unlock();
                                 m_pPathAgent->setPathData(m_pStartNode);
+                                setState(FOUND);                            
                             }
 
-                            setState(FOUND);                            
                             return FOUND;
                         }
 
@@ -228,7 +237,47 @@ IPathFinder::PathingState PathFinder::advance(short steps)
 //TODO: If path is searched in reverse (goal and start swapped), this becomes much simpler
 void PathFinder::buildPath(PathNode* pCurrent)
 {    
-    while(1)
+
+#define sgn(a) (a > 0) ? 1 : (a < 0) ? -1 : 0
+
+    PathNode* pRealPath = new PathNode(pCurrent->x, pCurrent->y, pCurrent->G, NODE_CLOSED, NULL);        
+
+    //Keep track of direction
+    bool dirChange = true;
+    char oldxDir = -3;
+    short oldyDir = -3;    
+    
+    while(pCurrent->pParent != NULL)
+    {
+        char xDir = sgn(pCurrent->pParent->x -  pCurrent->x);
+        char yDir = sgn(pCurrent->pParent->y -  pCurrent->y);
+   
+        //Only store points where the x or y direction changes
+        if(oldxDir != xDir || oldyDir != yDir)
+        {            
+            //Remove pointer from m_pppNodeArray, so the actual path nodes won't
+            //get deleted along with the array (the ones used by the unit)
+            //m_pppNodeArray[pCurrent->y][pCurrent->x] = NULL;
+           
+            pRealPath->pParent = new PathNode(pCurrent->x, pCurrent->y, pCurrent->G, NODE_CLOSED, NULL);
+            pRealPath->pParent->pChild = pRealPath;
+            pRealPath = pRealPath->pParent;
+
+            oldxDir = xDir;
+            oldyDir = yDir;
+        }
+         
+        pCurrent->pParent->pChild = pCurrent;        
+        pCurrent = pCurrent->pParent;
+    }    
+    
+    pRealPath->pParent = new PathNode(pCurrent->x, pCurrent->y, pCurrent->G, NODE_CLOSED, NULL);
+    pRealPath->pParent->pChild = pRealPath;
+    pRealPath = pRealPath->pParent;
+
+    m_pStartNode = pRealPath;
+
+    /*while(1)
     {        
         //Remove pointer from m_pppNodeArray, so the actual path nodes won't
         //get deleted along with the array (the ones used by the unit)
@@ -244,7 +293,7 @@ void PathFinder::buildPath(PathNode* pCurrent)
             m_pStartNode = pCurrent;
             return;
         }        
-    }    
+    }*/
 }
 
 
