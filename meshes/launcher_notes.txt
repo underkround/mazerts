@@ -1,0 +1,7 @@
+*** Missle Launcher Vehicle ***
+
+
+No moving parts
+
+Missile should be created located at -6,5 backwards from launcher origo 
+and at height of 3 (or maybe up to 10 depending how much missile needs to stick out from it's launcher)
