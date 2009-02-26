@@ -34,6 +34,12 @@ void PathFinder::initialize(unsigned short goalX, unsigned short goalY)
         return;
     }
 
+    if(goalX == m_StartX && goalY == m_StartY)
+    {
+        m_State = NOT_FOUND;
+        return;
+    }
+
 
     //TODO: Remove when not needed anymore
     DEBUG_steps = 0;

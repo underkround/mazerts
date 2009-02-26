@@ -1,5 +1,6 @@
-#pragma once
- 
+#ifndef __TIMER_H__
+#define __TIMER_H__
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
  
@@ -81,3 +82,5 @@ void CTimer::EndTimer(void)
 		m_fElapsedSeconds = ftemp / (float)m_ddwTickFrequency;
 	}
 }
+
+#endif __TIMER_H__

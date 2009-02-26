@@ -48,21 +48,19 @@ public:
          * Next node
          */
         PathFinderNode* pNext;
-
-        int DEBUG_id;
     };
-    static int DEBUG_idCounter;
+
 
     //TODO: raise these, left low for testing
     /**
      * How many steps in total per loop all the pathfinders can take
      */
-    static const int STEPS_PER_LOOP = 10000;
+    static const int STEPS_PER_LOOP = 1000;
 
     /**
-     * Minimum amount of steps the pathfinders take
+     * Maximum amount of pathfinders running simultaneously (rest will be in the waiting list)
      */         
-    static const int MINIMUM_STEPS = 100;
+    static const int MAX_FINDERS_RUNNING = 3;
 
     /**
      * Returns the singleton instance
@@ -126,9 +124,27 @@ public:
     /**
      * Tells if the thread is running
      */
-    inline bool isRunning()
+    static inline bool isRunning()
     {
-        return m_Running;
+        return pInstance->m_Running;
+    }
+
+    /**
+     * Returns the amount of running pathfinders
+     * @return Amount of running pathfinders
+     */
+    static inline int getRunningAmount()
+    {
+        return pInstance->m_FinderNodes;
+    }
+
+    /**
+     * Returns the amount of pathfinders waiting for execution
+     * @return Amount of waiting pathfinders
+     */
+    static inline int getWaitingAmount()
+    {
+        return pInstance->m_WaitingNodes;
     }
 
 private:
@@ -139,13 +155,25 @@ private:
     PathFinderMaster();
     
     /**
-     * Adds a new pathfinder
+     * Pushes a new pathfinder to the end of waiting list
+     * @param pFinder Pointer to PathFinder to add
+     */
+    void pushWaitingFinderNode(PathFinder* pFinder);
+
+    /**
+     * Pops a pathfindernode from the start of waiting list
+     * @return PathFinderNode-pointer, or NULL if list is empty
+     */
+    PathFinderNode* popWaitingFinderNode();
+
+    /**
+     * Adds a new pathfinder to running list
      * @param pFinder Pointer to PathFinder to add
      */
     void addPathFinderNode(PathFinder* pFinder);
 
     /**
-     * Removes PathFinderNode from list and deletes it
+     * Removes PathFinderNode from running list and deletes it
      * @param pNode Node to remove
      * @return The next node after the removed one (so list-iteration
                 doesn't go haywire)
@@ -158,19 +186,39 @@ private:
     static PathFinderMaster* pInstance;
     
     /**
-     * First node in the PathFinderNode-list
+     * First node in the running PathFinderNode-list
      */
-    PathFinderNode* m_pNodeStart;
+    PathFinderNode* m_pFinderNodeStart;
 
     /**
-     * Number of nodes in list
+     * Number of running nodes in list
      */
-    int m_Nodes;
+    int m_FinderNodes;
 
     /**
-     * Mutex for the PathFinderNode-list
+     * First node in the waiting PathFinderNode-list
+     */
+   PathFinderNode* m_pWaitingNodeStart;
+
+   /**
+    * Last node in the waiting PathFinderNode-list
+    */
+   PathFinderNode* m_pWaitingNodeEnd;
+
+    /**
+     * Number of nodes waiting for execution
+     */
+    int m_WaitingNodes;
+
+    /**
+     * Mutex for the running PathFinderNode-list
      */
     pthread_mutex_t* m_pNodeListMutex;
+
+    /**
+     * Mutex for the waiting PathFinderNode-list
+     */
+    pthread_mutex_t* m_pWaitListMutex;
 
     /**
      * Tells if the thread is running or not

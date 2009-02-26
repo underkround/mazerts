@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "../Common/CConsole.h"
 #include "../Terrain/Terrain.h"
+#include "CTimer.h"
 
 
 #ifndef _CRTDBG_MAP_ALLOC
@@ -134,8 +135,14 @@ void testPathFinderMaster()
 
     bool noNew = false;
 
+    CTimer* timer = new CTimer();
+    timer->Create();
+    float time = 0.0f;
+
     while(run)
     {
+        timer->BeginTimer();
+
         int i = pConsole->ReadInput(&record);
         
         if(record.EventType == KEY_EVENT && i)
@@ -166,16 +173,15 @@ void testPathFinderMaster()
         }
 
         int running = 0;
+        char strMsg[100];
 
         if(agents)
         {
             AgentNode* pCurrent = pNodeStart;
-
-            char strMsg[100];
             
             pConsole->ClearBuffer();
 
-            int row = 0;                       
+            int row = 1;                       
 
             while(pCurrent != NULL && row < 49)
             {
@@ -216,21 +222,26 @@ void testPathFinderMaster()
                     pCurrent = pCurrent->pNext;
                 }
             }
-            sprintf_s(strMsg, 100, "Running: %d  Alive: %d Total all time: %d", running, agents, agentID);
-            pConsole->writeMessage(4, 0, strMsg);
-            pConsole->DrawScreen();            
         }
+
+        sprintf_s(strMsg, 100, "Agents: Reported running: %d  Alive Agents: %d Total agents: %d", running, agents, agentID);
+        pConsole->writeMessage(4, 0, strMsg);
+        sprintf_s(strMsg, 100, "Master: Running: %d  Waiting for execution: %d  ConsoleTime: %.2f ms", PathFinderMaster::getInstance()->getRunningAmount(), PathFinderMaster::getInstance()->getWaitingAmount(), time);
+        pConsole->writeMessage(4, 1, strMsg);
+        pConsole->DrawScreen();
 
         if(rand() % ((running * 10) + 1) == 0 && !noNew)
         {
             //for(i = 0; i < rand() % 20); i++)
             {
-                addAgentNode(PathFinderMaster::findPath(0, 0, rand() % MAPSIZE, rand() % MAPSIZE, 4));
+                addAgentNode(PathFinderMaster::findPath(0, 0, rand() % MAPSIZE, rand() % MAPSIZE, 4));                
             }
         }
+        timer->EndTimer();
+        time += timer->GetElapsedSeconds() * 1000.0f;
+        time *= 0.5f;
 
-
-        Sleep(1);
+        Sleep(10);
     }
 
     delete pConsole;
