@@ -140,14 +140,16 @@ public:
     }
 
     inline void cancel()
-    {
-        if(m_State == IPathFinder::NOT_FINISHED)
-        {
-            if(m_pFinder)
+    {        
+        {        
+            if(m_State == IPathFinder::NOT_FINISHED)
             {
-                m_pFinder->cancel();
+                if(m_pFinder)
+                {
+                    m_pFinder->cancel();
+                }
             }
-        }
+        }     
     }
        
     /**

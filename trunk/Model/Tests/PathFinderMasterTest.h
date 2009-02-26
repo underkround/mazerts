@@ -205,7 +205,7 @@ void testPathFinderMaster()
                     running++;
                 }
 
-                if(rand() % 10000 == 1)
+                if(pCurrent && rand() % 10000 == 1)
                 {
                     pCurrent->pAgent->cancel();
                 }

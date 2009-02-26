@@ -173,7 +173,7 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                             if(m_pPathAgent)
                             {
                                 //Lock the pathfinder while path is being built, this is to ensure
-                                //that the pathfinder isn't cancelled and destroyed while building
+                                //that the pathagent isn't cancelled and destroyed while building
                                 //path (this has happened once, and the chance of it happening is very,
                                 //very improbable, but better be safe than sorry
                                 m_pPathAgent->lock();
