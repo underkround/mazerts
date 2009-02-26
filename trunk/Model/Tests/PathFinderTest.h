@@ -88,7 +88,7 @@ void testPathFinder()
 
         //Measeure creation time
         timer->BeginTimer();
-        PathFinder* pFinder = new PathFinder(pUnit, rand() % 80, rand() % 50);  //, 78, 38);
+        PathFinder* pFinder = new PathFinder(0, 0, rand() % 80, rand() % 50, 1);  //, 78, 38);
         timer->EndTimer();
         tempTime += timer->GetElapsedSeconds();
             
@@ -101,17 +101,17 @@ void testPathFinder()
             timer->EndTimer();                        
 
             tempTime += timer->GetElapsedSeconds();
-            steps = pFinder->DEBUG_steps;
+            //steps = pFinder->DEBUG_steps;
             
             for(int i = 0; i < pConsole->swScreenSizeY; i++)
             {
                 for(int j = 0; j < pConsole->swScreenSizeX; j++)
                 {
                     int loc = pConsole->swScreenSizeX * i + j;
-                    if(pFinder->m_pppNodeArray[i][j])
+                    /*if(pFinder->m_pppNodeArray[i][j])
                     {
                         pConsole->pCHAR_INFOScreenBuffer[loc].Attributes = FOREGROUND_BLUE | BACKGROUND_BLUE;
-                    }
+                    }*/
                 }
             }
 

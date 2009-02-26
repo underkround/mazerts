@@ -19,9 +19,9 @@
 #include "IPathFinder.h"
 #include "PathAgent.h"
 #include "../Terrain/Terrain.h"
-#include "../Unit/Unit.h"
+//#include "../Unit/Unit.h"
 #include "../Common/HeapTree.h"
-#include "../Common/Vector3.h"
+//#include "../Common/Vector3.h"
 
 //Comment to use 4-way search
 #define EIGHTWAYSEARCH
@@ -31,7 +31,7 @@ class PathFinder : public IPathFinder
 public:
 
     //TODO: remove when not needed anymore
-    int DEBUG_steps;
+    //int DEBUG_steps;
 
     /**
      * Constructor
@@ -39,7 +39,7 @@ public:
      * @param goalX X-coordinate of the goal tile
      * @param goalY Y-coordinate of the goal tile
      */
-    PathFinder(Unit* pUnit, unsigned short goalX, unsigned short goalY);
+    //PathFinder(Unit* pUnit, unsigned short goalX, unsigned short goalY);
 
     /**
      * Constructor
@@ -55,6 +55,13 @@ public:
      * Destructor
      */
     virtual ~PathFinder();
+
+    /**
+     * Prepares the pathfinder to execution (the memory allocation
+     * of big arrays is left until here, last moment before the
+     * actual path searching starts)
+     */
+    virtual void prepareForExecution();
 
     /**
      * Advances the search a given number of steps
@@ -176,7 +183,6 @@ private:
      */
     bool** m_ppInOpenList;
 
-public:  // <-- TODO: poista
     /**
      * Two-dimensional PathNode-array to use for closed list and cleaning up
      * unused PathNodes when the path is completed
@@ -195,11 +201,14 @@ public:  // <-- TODO: poista
 
     /**
      * Tells if the pathfinder is initialized
-     * In certain situations (goal node is unpassable), there's no point
-     * in creating all the arrays etc., this is used to control the
-     * destruction
+     * This is used to control the destruction
      */
     bool m_Initialized;
+
+    /**
+     * Tells if the pathfinder is ready for execution (are the arrays allocated)
+     */
+    bool m_Prepared;
 };
 
 #endif //__PATHFINDER_H__

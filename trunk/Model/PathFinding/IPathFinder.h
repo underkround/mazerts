@@ -110,6 +110,11 @@ public:
     }
 
     /**
+     * Called just prior to starting the search, prepares the pathfinder for running
+     */
+    virtual void prepareForExecution() = 0;
+
+    /**
      * Advances the pathfinding by n steps and returns boolean to tell if the search
      * has ended or not
      * @param steps How many steps to advance

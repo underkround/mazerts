@@ -50,8 +50,6 @@ public:
         PathFinderNode* pNext;
     };
 
-
-    //TODO: raise these, left low for testing
     /**
      * How many steps in total per loop all the pathfinders can take
      */
@@ -60,7 +58,7 @@ public:
     /**
      * Maximum amount of pathfinders running simultaneously (rest will be in the waiting list)
      */         
-    static const int MAX_FINDERS_RUNNING = 3;
+    static const int MAX_FINDERS_RUNNING = 10;
 
     /**
      * Returns the singleton instance

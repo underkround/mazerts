@@ -1,6 +1,6 @@
 #include "PathFinder.h"
 
-PathFinder::PathFinder(Unit* pUnit, unsigned short goalX, unsigned short goalY)
+/*PathFinder::PathFinder(Unit* pUnit, unsigned short goalX, unsigned short goalY)
 {
     m_Size = pUnit->getWidth();
 
@@ -9,7 +9,7 @@ PathFinder::PathFinder(Unit* pUnit, unsigned short goalX, unsigned short goalY)
     m_StartY = (short)pUnit->getPosition()->y;
 
     initialize(goalX, goalY);
-}
+}*/
 
 PathFinder::PathFinder(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size)
 {
@@ -26,6 +26,7 @@ void PathFinder::initialize(unsigned short goalX, unsigned short goalY)
     m_pPathAgent = NULL;
 
     m_Initialized = false;
+    m_Prepared = false;
 
     //CHECKS FOR THINGS THAT PREVENT INITIALIZATION (Or just make it unnecessary)
     if(!Terrain::getInstance()->isPassable(goalX, goalY, m_Size))
@@ -42,43 +43,14 @@ void PathFinder::initialize(unsigned short goalX, unsigned short goalY)
 
 
     //TODO: Remove when not needed anymore
-    DEBUG_steps = 0;
+    //DEBUG_steps = 0;
 
     m_pStartNode = NULL;
 
     m_GoalX = goalX;
     m_GoalY = goalY;
     
-    //Create needed arrays
-    unsigned short size = Terrain::getInstance()->getSize();
-        
-    //TODO: Initial size?
-    m_pOpenList = new CHeapTree<PathNode*, unsigned int>(10000);
-
-    m_pppNodeArray = new PathNode**[size];
-    m_ppInOpenList = new bool*[size];
-    //m_pppOpenArray = new PathNode**[size];
-
-    for(int i = 0; i < size; i++)
-    {
-        m_pppNodeArray[i] = new PathNode*[size];
-        m_ppInOpenList[i] = new bool[size];
-    }    
-    
-    //Clear lists
-    for(int i = 0; i < size; i++)
-    {
-        for(int j = 0; j < size; j++)
-        {
-            m_pppNodeArray[i][j] = NULL;
-            m_ppInOpenList[i][j] = false;            
-        }
-    }
-
-    //Push starting tile to open list
-    addNode(m_StartX, m_StartY, 0, 0, NODE_OPEN, NULL);    
-
-    
+   
     //Agent initialization
     m_pPathAgent = new PathAgent(this);
 
@@ -87,8 +59,8 @@ void PathFinder::initialize(unsigned short goalX, unsigned short goalY)
 
 PathFinder::~PathFinder()
 {
-    //If the pathfinder was initialized, destroy it
-    if(m_Initialized)
+    //If the pathfinder was prepared, destroy it
+    if(m_Prepared)
     {
         //Delete heaptree
         delete m_pOpenList;
@@ -118,6 +90,40 @@ PathFinder::~PathFinder()
     }
 }
 
+void PathFinder::prepareForExecution()
+{
+    //Create needed arrays
+    unsigned short size = Terrain::getInstance()->getSize();
+        
+    //TODO: Initial size?
+    m_pOpenList = new CHeapTree<PathNode*, unsigned int>(3000);
+
+    m_pppNodeArray = new PathNode**[size];
+    m_ppInOpenList = new bool*[size];
+    //m_pppOpenArray = new PathNode**[size];
+
+    for(int i = 0; i < size; i++)
+    {
+        m_pppNodeArray[i] = new PathNode*[size];
+        m_ppInOpenList[i] = new bool[size];
+    }    
+    
+    //Clear lists
+    for(int i = 0; i < size; i++)
+    {
+        for(int j = 0; j < size; j++)
+        {
+            m_pppNodeArray[i][j] = NULL;
+            m_ppInOpenList[i][j] = false;            
+        }
+    }
+
+    //Push starting tile to open list
+    addNode(m_StartX, m_StartY, 0, 0, NODE_OPEN, NULL);
+
+    m_Prepared = true;
+}
+
 
 IPathFinder::PathingState PathFinder::advance(short steps)
 {
@@ -135,7 +141,7 @@ IPathFinder::PathingState PathFinder::advance(short steps)
 
     while(steps)
     {
-        DEBUG_steps++;
+        //DEBUG_steps++;
 
         if(m_pOpenList->GetSize())
         {
