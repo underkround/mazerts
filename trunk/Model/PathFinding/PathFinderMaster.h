@@ -51,9 +51,9 @@ public:
     };
 
     /**
-     * How many steps in total per loop all the pathfinders can take
+     * How many steps per loop a pathfinder can take
      */
-    static const int STEPS_PER_LOOP = 1000;
+    static const int STEPS_PER_LOOP = 10000;
 
     /**
      * Maximum amount of pathfinders running simultaneously (rest will be in the waiting list)

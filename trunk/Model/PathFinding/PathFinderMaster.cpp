@@ -64,7 +64,7 @@ void PathFinderMaster::run()
     while(m_Running)
     {
         //Get new pathfinder from waiting list, if maximum amount isn't reached
-        if(m_FinderNodes < MAX_FINDERS_RUNNING && m_WaitingNodes)
+        while(m_FinderNodes < MAX_FINDERS_RUNNING && m_WaitingNodes)
         {
             PathFinderNode* pNode = popWaitingFinderNode();
             
