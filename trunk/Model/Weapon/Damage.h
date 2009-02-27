@@ -51,7 +51,6 @@ public:
     Damage(int damageValue, DamageType damageType)
     {
         ::memset(m_Damage, 0, DAMAGETYPE_AMOUNT * sizeof(int));
-
     }
 
     /**

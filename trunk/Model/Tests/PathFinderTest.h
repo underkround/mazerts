@@ -1,10 +1,11 @@
 #include "../Terrain/Terrain.h"
-#include "../Unit/Unit.h"
 #include "../Pathfinding/PathFinder.h"
 #include "../Common/CConsole.h"
 #include "CTimer.h"
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "../Asset/Unit.h"
 
 void testPathFinder()
 {
@@ -58,8 +59,8 @@ void testPathFinder()
     CTimer* timer = new CTimer();
     timer->Create();
 
-    Unit* pUnit = new Unit();
-    pUnit->setWidth(2);
+//    Unit* pUnit = new Unit();
+//    pUnit->setWidth(2);
 
     char* strMsg = new char[100];
     int mostSteps = 0;
@@ -187,6 +188,7 @@ void testPathFinder()
     timer->Release();
     delete timer;
 
-    delete pUnit;
+//    delete pUnit;
+
     delete pConsole;
 }

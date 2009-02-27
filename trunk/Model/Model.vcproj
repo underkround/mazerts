@@ -169,73 +169,237 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			Name="Tests"
 			>
+			<File
+				RelativePath=".\Tests\AntinAITest.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\ConfigTest.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\CTimer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\DebugAssetCollectionListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\PathFinderMasterTest.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\PathFinderTest.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\TerrainTest.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\testAssetCollection.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\testAssetFactory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\testi.ini"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\TestsMain.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Tests\VectorAndMatriceTest.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
+		</Filter>
+		<Filter
+			Name="AI"
+			>
+			<Filter
+				Name="Antin"
+				>
+				<File
+					RelativePath=".\AI\Antin\AntinAI.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Model"
+			>
+			<File
+				RelativePath=".\Buildings.ini"
+				>
+			</File>
+			<File
+				RelativePath=".\common.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Constants.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Faction.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Faction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Units.ini"
+				>
+			</File>
+			<Filter
+				Name="Weapon"
+				>
+				<File
+					RelativePath=".\Weapon\Damage.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\IWeapon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\IWeapon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\ProjectileDefinition.h"
+					>
+				</File>
+			</Filter>
 			<Filter
 				Name="Terrain"
 				>
 				<File
+					RelativePath=".\Terrain\ITerrain.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Terrain\ITerrainGenerator.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Terrain\RandomTerrainGenerator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Terrain\RandomTerrainGenerator.h"
 					>
 				</File>
 				<File
 					RelativePath=".\Terrain\Terrain.cpp"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="Pathfinding"
-				>
 				<File
-					RelativePath=".\PathFinding\PathFinder.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\PathFinding\PathFinderMaster.cpp"
+					RelativePath=".\Terrain\Terrain.h"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="Tests"
+				Name="Asset"
 				>
 				<File
-					RelativePath=".\Tests\testi.ini"
+					RelativePath=".\Asset\Armor.cpp"
 					>
-					<FileConfiguration
-						Name="Release|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\Tests\TestsMain.cpp"
+					RelativePath=".\Asset\Armor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\AssetCollection.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\AssetCollection.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\AssetFactory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\AssetFactory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\Building.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\Building.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\GroundMovingLogic.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\GroundMovingLogic.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\IAsset.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\IAsset.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\IAssetCollectionListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\IAssetRadar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\IAssetRadar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\IMovingLogic.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\Unit.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\Unit.h"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="Unit"
+				Name="Command"
 				>
 				<File
-					RelativePath=".\Unit\Unit.cpp"
+					RelativePath=".\Command\Command.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UnitCollection.cpp"
+					RelativePath=".\Command\Target.h"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="GameConsole"
-				>
 			</Filter>
 			<Filter
 				Name="Common"
@@ -245,65 +409,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Common\Config.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Common\EulerAngles.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Common\JString.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Common\MathUtil.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Common\Matrix4x3.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Common\Quaternion.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Common\RotationMatrix.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="AI"
-				>
-				<Filter
-					Name="Antin"
-					>
-					<File
-						RelativePath=".\AI\Antin\AntinAI.cpp"
-						>
-					</File>
-				</Filter>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
-			<File
-				RelativePath=".\Constants.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Faction.h"
-				>
-			</File>
-			<Filter
-				Name="Common"
-				>
-				<File
 					RelativePath=".\Common\CConsole.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\Config.cpp"
 					>
 				</File>
 				<File
@@ -311,7 +421,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Common\DoubleLinkedList.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Common\Enums.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\EulerAngles.cpp"
 					>
 				</File>
 				<File
@@ -323,11 +441,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Common\JString.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Common\JString.h"
 					>
 				</File>
 				<File
+					RelativePath=".\Common\MathUtil.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Common\MathUtil.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\Matrix4x3.cpp"
 					>
 				</File>
 				<File
@@ -339,7 +469,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Common\Quaternion.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Common\Quaternion.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Common\RotationMatrix.cpp"
 					>
 				</File>
 				<File
@@ -356,83 +494,51 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Tests"
+				Name="ExternalLibs"
 				>
 				<File
-					RelativePath=".\Tests\AntinAITest.h"
+					RelativePath=".\ExternalLibs\pthread.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Tests\ConfigTest.h"
+					RelativePath=".\ExternalLibs\sched.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Tests\CTimer.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Tests\DamageAndDamageHandlerTests.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Tests\DebugComponent.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Tests\PathFinderMasterTest.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Tests\PathFinderTest.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Tests\TerrainTest.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Tests\UnitPositionAndFacingTest.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Tests\UnitWithDebugComponent.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Tests\VectorAndMatriceTest.h"
+					RelativePath=".\ExternalLibs\semaphore.h"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="Unit"
+				Name="GameConsole"
 				>
 				<File
-					RelativePath=".\Unit\Damage.h"
+					RelativePath=".\GameConsole\ConsoleBuffer.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\DamageHandler.h"
+					RelativePath=".\GameConsole\ConsoleBufferIterator.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\IComponent.h"
+					RelativePath=".\GameConsole\DefaultConsoleParser.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\IUpdatable.h"
+					RelativePath=".\GameConsole\GameConsole.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\Unit.h"
+					RelativePath=".\GameConsole\GameConsole.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UnitCollection.h"
+					RelativePath=".\GameConsole\IGameConsoleParser.h"
 					>
 				</File>
 			</Filter>
 			<Filter
-				Name="Pathfinding"
+				Name="PathFinding"
 				>
 				<File
 					RelativePath=".\PathFinding\IPathFinder.h"
@@ -443,7 +549,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PathFinding\PathFinder.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\PathFinding\PathFinder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PathFinding\PathFinderMaster.cpp"
 					>
 				</File>
 				<File
@@ -452,40 +566,14 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Terrain"
+				Name="Team"
 				>
 				<File
-					RelativePath=".\Terrain\ITerrainGenerator.h"
+					RelativePath=".\Team\Team.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Terrain\RandomTerrainGenerator.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Terrain\Terrain.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="GameConsole"
-				>
-			</Filter>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
-		</Filter>
-		<Filter
-			Name="AI"
-			>
-			<Filter
-				Name="Antin"
-				>
-				<File
-					RelativePath=".\AI\Antin\AntinAI.h"
+					RelativePath=".\Team\Team.h"
 					>
 				</File>
 			</Filter>

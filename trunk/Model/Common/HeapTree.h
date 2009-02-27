@@ -2,8 +2,9 @@
 // Author: Arman Sahakyan
 // Copyright (C) 2007, The CodeProject
 // Contact: arman_sahakyan@edu.aua.am
-#pragma once
-
+//#pragma once
+#ifndef __HEAPTREE_H__
+#define __HEAPTREE_H__
 
 template <class TID, class TDATA>
 class CHeapTree
@@ -181,3 +182,5 @@ inline void CHeapTree<TID, TDATA>::_ReformatHeap(int iRoot)
 		}
 	}
 }
+
+#endif // __HEAPTREE_H__

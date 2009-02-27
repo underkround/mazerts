@@ -9,15 +9,18 @@
  */
 #include <iostream>
 
-#include "DamageAndDamageHandlerTests.h"
-#include "UnitPositionAndFacingTest.h"
+#define VERBOSE 1
+
+
 #include "TerrainTest.h"
 #include "PathFinderTest.h"
 #include "VectorAndMatriceTest.h"
-#include "UnitWithDebugComponent.h"
 #include "ConfigTest.h"
 #include "PathFinderMasterTest.h"
-#include "AntinAITest.h"
+//#include "AntinAITest.h"
+
+#include "testAssetCollection.h"
+#include "testAssetFactory.h"
 
 using namespace std;
 
@@ -25,27 +28,23 @@ using namespace std;
 #define _CRTDBG_MAP_ALLOC
 #endif
 
-#define VERBOSE 1
-
 int main(int arcg, char* argv[])
 {
-    //if(VERBOSE) cout << " *** damage and damagehandler ***\n";      testDamageAndDamageHandler();
-
 //    if(VERBOSE) cout << "\n *** terrain ***\n";                     testTerrain();
 
-//    if(VERBOSE) cout << "\n *** unit position ***\n";               testUnitPositionAndFacing();
+    if(VERBOSE) cout << "\n *** vector & matrix ***\n";             testVectorAndMatrice ();
 
-//    if(VERBOSE) cout << "\n *** unit with debug component ***\n";   testUnitWithDebugComponent();
-
-//    if(VERBOSE) cout << "\n *** vector & matrix ***\n";             testVectorAndMatrice ();
-
-//	if(VERBOSE) cout << "\n *** config from file ***\n";            testConfig();
+//    if(VERBOSE) cout << "\n *** config from file ***\n";            testConfig();
 
 //    if(VERBOSE) cout << "\n *** Pathfinder ***\n";                  testPathFinder();
 
     if(VERBOSE) cout << "\n *** PathFinderMaster-thread ***\n";     testPathFinderMaster();
 
-	if(VERBOSE) cout << "\n *** Antin AI ***\n";                    testAntinAI();
+//    if(VERBOSE) cout << "\n *** Antin AI ***\n";                    testAntinAI();
+
+    if(VERBOSE) cout << "\n *** Asset collection ***\n";            testAssetCollection();
+
+    if(VERBOSE) cout << "\n *** Asset factory ***\n";               testAssetFactory();
 
     //_CrtDumpMemoryLeaks();
     return 0;
