@@ -71,11 +71,15 @@ void PathFinderMaster::run()
             if(pNode != NULL)
             {
                 //Check that the search is still valid
-                if(pNode->pFinder->getPathAgent() != NULL)
+                if(pNode->pFinder->getPathAgent() != NULL && pNode->pFinder->getPathAgent()->getState() == IPathFinder::NOT_FINISHED)
                 {
                     //Prepare the pathfinder for the search
                     pNode->pFinder->prepareForExecution();
                     addPathFinderNode(pNode->pFinder);
+                }
+                else
+                {
+                    delete pNode->pFinder;
                 }
                 delete pNode;
             }
