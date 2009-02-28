@@ -29,7 +29,7 @@ public:
 
 	struct UNIT //values about units AI cares about
 	{
-		string					strName;
+	    string					strName;
 		AntinAI::UNIT_TYPE		eType;
 		string					strWeaponName;
 		bool					bOffensive; //don't go attacking with weaponless units

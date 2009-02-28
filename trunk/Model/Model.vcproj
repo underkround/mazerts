@@ -233,6 +233,10 @@
 				Name="Antin"
 				>
 				<File
+					RelativePath=".\AI\Antin\AntinAI.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\AI\Antin\AntinAI.h"
 					>
 				</File>
