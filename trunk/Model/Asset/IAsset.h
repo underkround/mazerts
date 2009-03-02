@@ -1,5 +1,16 @@
 /**
  *
+ * !IMPORTANT IMPLEMENTATION NOTES!
+ *
+ * There are few key notes regarding the assets:
+ *  - assets are created with static AssetFactory -class
+ *    asset creation consist of:
+ *      - setting the properties, moving, weapon etc. for the asset
+ *      - calling asset->create() that registers the asset to the game
+ *  - after the create, the unit is managed by the collection, and
+ *    should not be deleted, updated etc by themselves!
+ *  - asset can be forcely destroyed by the collection's methods
+ *  - assets are updated via the collection's update-methods
  *
  * $Revision$
  * $Date$
@@ -32,17 +43,47 @@ public:
     IAsset(Type assetType);
     virtual ~IAsset();
 
-// =====
+// ==== update
 
-    virtual void create() = 0;
-
-    virtual void release() = 0;
-
+    /**
+     * Update & dispatch the update to the components
+     */
     virtual char update(const float deltaT) = 0;
 
-    inline void setOwner(Team* owner) { m_Owner = owner; }
+    /**
+     * Called by the collection only!
+     * Release resources, called right before the instance is to be deleted.
+     */
+    virtual void release();
 
-    inline Team* getOwner() { return m_Owner; }
+// ===== Initialization
+
+    /**
+     * Should be called after setting the properties & initial position.
+     * Adds the asset to the game, and transfers the ownershp to the
+     * collection.
+     */
+    virtual void create() = 0;
+
+    /**
+     * Set weapon to this asset (old weapon will be deleted, if any).
+     */
+    void setWeapon(IWeapon* weapon);
+
+    /**
+     * Set the radar
+     */
+    void setRadar(IAssetRadar* radar);
+
+    /**
+     * Set the owner of this unit
+     */
+    inline void setOwner(Team* owner) { m_pOwner = owner; }
+
+    /**
+     * Return the owner of this asset, or NULL if no owner
+     */
+    virtual inline Team* getOwner() { return m_pOwner; }
 
 // ===== Size
 
@@ -56,18 +97,13 @@ public:
     /**
      * Indications weather this asset has a weapon attached.
      */
-    inline const bool hasWeapon() const { return (m_Weapon) ? true : false; }
+    inline const bool hasWeapon() const { return (m_pWeapon) ? true : false; }
 
     /**
      * @return  Asset's weapon. Returns NULL if asset has no weapon
      *          (hasWeapon() returns false)
      */
-    inline const IWeapon* getWeapon() { return m_Weapon; }
-
-    /**
-     * Set weapon to this asset (old weapon will be deleted, if any).
-     */
-    void setWeapon(IWeapon* weapon);
+    inline const IWeapon* getWeapon() { return m_pWeapon; }
 
 // ===== Position & direction
 
@@ -111,18 +147,30 @@ private:
 
 protected:
 
+    /**
+     * Release and delete the weapon instance
+     */
+    void releaseWeapon();
+
+    /**
+     * Release and delete the unti radar instance
+     */
+    void releaseRadar();
+
+// ===== MEMBERS
+
     const int       m_IID;          // unique instance id among all assets
     const Type      m_AssetType;    // the concrete class of this asset
 
-    Team*           m_Owner;
+    Team*           m_pOwner;       // the owner of this unit
 
     unsigned char   m_Width;        // sizes
     unsigned char   m_Height;
     Vector3         m_Position;     // vector defining the absolute position
     Vector3         m_Direction;    // facing of the unit
 
-    IWeapon*        m_Weapon;       // weapon attached to this asset, or null
-    IAssetRadar*    m_Radar;        // the logic that handles the inspection of
+    IWeapon*        m_pWeapon;      // weapon attached to this asset, or NULL
+    IAssetRadar*    m_pRadar;       // the logic that handles the inspection of
                                     // the surrounding of the asset
 
 };

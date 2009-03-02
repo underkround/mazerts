@@ -10,7 +10,6 @@ using namespace std;
 
 void testAssetCollection()
 {
-
     Building* b;
     Unit* u;
 
@@ -102,4 +101,5 @@ void testAssetCollection()
 
     cout << " - total of " << IAsset::getInstanceCount() << " assets created\n";
     cout << " - total of " << IAsset::getInstanceDestructionCount() << " assets deleted\n";
+
 }
