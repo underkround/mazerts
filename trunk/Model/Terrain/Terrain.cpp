@@ -75,7 +75,7 @@ void Terrain::initialize()
     // give the vertex data to generator, if any
     if(m_pTerrainGenerator)
     {
-        m_pTerrainGenerator->generateHeightmap(m_ppVertexHeightData, m_Size + 1);
+        m_pTerrainGenerator->generateHeightmap(m_ppVertexHeightData, m_Size+1);
     }
 
     // calculate tile heights and mark as passable/non-passable
@@ -326,7 +326,7 @@ void Terrain::calculateTileHeight(const short x, const short y)
     //tiles with slightly different triangle normals fall through also (+-1 difference
     //in heíght-difference of the vertex-pairs)
     //Have to check later if this is an issue, and if need be, convert to floating point
-    unsigned short line1aver = (m_ppVertexHeightData[y][x] + 
+    /*unsigned short line1aver = (m_ppVertexHeightData[y][x] + 
                         m_ppVertexHeightData[y+1][x+1]) >> 1;
 
     unsigned short line2aver = (m_ppVertexHeightData[y+1][x] + 
@@ -336,7 +336,7 @@ void Terrain::calculateTileHeight(const short x, const short y)
     {
         m_ppPassableTile[y][x] = false;
         return;
-    }
+    }*/
 
     //Waterlevel-check: if the middle of the tile is below water, it is not passable
     if(m_WaterLevel > m_ppTerrainHeightData[y][x])

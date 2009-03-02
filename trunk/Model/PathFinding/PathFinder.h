@@ -122,11 +122,20 @@ public:
         }
     }
 
+    /**
+     * Cancels the search
+     */
     inline void cancel()
     {
         setState(IPathFinder::CANCELLED);
         m_pPathAgent = NULL;
     }
+
+    /**
+     * Returns the nodearray, FOR TESTING PURPOSES ONLY
+     * @return two-dimensional array of PathNode-pointers
+     */
+    PathNode*** getNodeArray() { return m_pppNodeArray; }
 
 private:
 

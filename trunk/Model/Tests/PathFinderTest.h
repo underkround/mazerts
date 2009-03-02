@@ -1,7 +1,7 @@
 #include "../Terrain/Terrain.h"
 #include "../Pathfinding/PathFinder.h"
 #include "../Common/CConsole.h"
-#include "CTimer.h"
+//#include "CTimer.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -42,22 +42,9 @@ void testPathFinder()
         terrain->setTerrainVertexHeight(60+(i%16), 20, 0);
         terrain->setTerrainVertexHeight(76, 20+(i % 20), 0);
     }*/
-    
-    /*for(int i = 0; i < pConsole->swScreenSizeY; i++)
-    {
-        for(int j = 0; j < pConsole->swScreenSizeX; j++)
-        {
-            int loc = pConsole->swScreenSizeX * i + j;
-            if(!terrain->isPassable(j, i))
-            {
-                pConsole->pCHAR_INFOScreenBuffer[loc].Attributes = FOREGROUND_RED | BACKGROUND_RED;
-            }
-        }
-    }*/
-    
-    
-    CTimer* timer = new CTimer();
-    timer->Create();
+       
+   // CTimer* timer = new CTimer();
+   // timer->Create();
 
 //    Unit* pUnit = new Unit();
 //    pUnit->setWidth(2);
@@ -88,20 +75,23 @@ void testPathFinder()
         int steps = 0;
 
         //Measeure creation time
-        timer->BeginTimer();
+    //    timer->BeginTimer();
         PathFinder* pFinder = new PathFinder(0, 0, rand() % 80, rand() % 50, 1);  //, 78, 38);
-        timer->EndTimer();
-        tempTime += timer->GetElapsedSeconds();
+    //    timer->EndTimer();
+    //    tempTime += timer->GetElapsedSeconds();
             
         PathFinder::PathingState pathState = PathFinder::NOT_FINISHED;
+        pFinder->prepareForExecution();
+
+        IPathFinder::PathNode*** pppNodeArray = pFinder->getNodeArray();
 
         while(pFinder->isInitialized() && pathState == PathFinder::NOT_FINISHED)
         {
-            timer->BeginTimer();
+            //timer->BeginTimer();
             pathState = pFinder->advance(10);
-            timer->EndTimer();                        
+            //timer->EndTimer();                        
 
-            tempTime += timer->GetElapsedSeconds();
+            //tempTime += timer->GetElapsedSeconds();
             //steps = pFinder->DEBUG_steps;
             
             for(int i = 0; i < pConsole->swScreenSizeY; i++)
@@ -109,25 +99,30 @@ void testPathFinder()
                 for(int j = 0; j < pConsole->swScreenSizeX; j++)
                 {
                     int loc = pConsole->swScreenSizeX * i + j;
-                    /*if(pFinder->m_pppNodeArray[i][j])
+                    if(pppNodeArray[i][j])
                     {
                         pConsole->pCHAR_INFOScreenBuffer[loc].Attributes = FOREGROUND_BLUE | BACKGROUND_BLUE;
-                    }*/
+                    }
                 }
             }
 
             sprintf_s(strMsg, 100, "Askelia: %d  Aika: %.2fms", steps, tempTime * 1000.0f);
             pConsole->writeMessage(20, 0, strMsg);
             pConsole->DrawScreen();
-            Sleep(1);
+            Sleep(40);
         }
                 
 
-        /*PathFinder::PathNode* pCurrent = pFinder->getPath();    
+        PathFinder::PathNode* pCurrent = NULL;
+        
+        if(pFinder->getPathAgent() != NULL)
+        {
+            pCurrent = pFinder->getPathAgent()->getPathData();    
+        }
 
-        timer->BeginTimer();
+        //timer->BeginTimer();
         delete pFinder;
-        timer->EndTimer();
+        //timer->EndTimer();
 
         while(pCurrent != NULL)
         {            
@@ -149,12 +144,12 @@ void testPathFinder()
                 delete pCurrent;
                 break;
             }
-        }*/
+        }
         
         sprintf_s(strMsg, 100, "%d polkua haettu", k);
         pConsole->writeMessage(5, 47, strMsg);
         
-        float time = ((tempTime + timer->GetElapsedSeconds()) * 1000.0f);
+        float time = 0.0f;//((tempTime + timer->GetElapsedSeconds()) * 1000.0f);
         if(time > worstTime)
             worstTime = time;
         if(steps > mostSteps)
@@ -185,8 +180,8 @@ void testPathFinder()
         }
     }
 
-    timer->Release();
-    delete timer;
+    //timer->Release();
+    //delete timer;
 
 //    delete pUnit;
 

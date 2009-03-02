@@ -9,8 +9,6 @@
  * $Id$
  */
 
-//TODO: This class is unfinished, STC
-
 #ifndef __TERRAIN_H__
 #define __TERRAIN_H__
 
@@ -31,7 +29,7 @@ public:
     /**
      * Default map size, if not defined by constructor
      */
-    static const short DEFAULT_MAPSIZE = 127;
+    static const short DEFAULT_MAPSIZE = 256;
 
     /**
      * Default flattening height
@@ -54,7 +52,7 @@ public:
      * Movecost-threshold: this value is the maximum amount
      * the movecost can differ from threshold
      */
-    static const short MOVECOST_THRESHOLD = 25;
+    static const short MOVECOST_THRESHOLD = 10;
     static const short MOVECOST_MAX = MOVECOST_OFFSET + MOVECOST_THRESHOLD;
     static const short MOVECOST_MIN = MOVECOST_OFFSET - MOVECOST_THRESHOLD;
 

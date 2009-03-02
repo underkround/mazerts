@@ -26,17 +26,24 @@ void RandomTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightDat
         return;
     }
 
+    /*for(int y = 0; y < m_Size; y++)
+    {
+        for(int x = 0; x < m_Size; x++)
+        {
+            ppVertexHeightData[y][x] = y + Terrain::DEFAULT_WATERLEVEL;
+        }
+    }
+    return;*/
+
     //TODO: uncomment
     //srand((unsigned int)m_Seed);
 
-    //TODO: For testing purposes, later on the terraingenerator takes care of this
-    //Set to higher loops for longer searches
-    for(int i = 0; i < 4000; i++)
+    for(int y = 0; y < m_Size; y++)
     {
-        int x = rand() % terrainSize;
-        int y = rand() % terrainSize;
-        
-        ppVertexHeightData[y][x] =  rand() % 255;//100 + ((rand() % 20)-10);
+        for(int x = 0; x < m_Size; x++)
+        {        
+            ppVertexHeightData[y][x] =  rand() % 255;//100 + ((rand() % 20)-10);
+        }
     }
 
     Terrain::getInstance()->smoothMap(10);
@@ -82,4 +89,8 @@ void RandomTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightDat
     }
 
     Terrain::getInstance()->smoothMap(1);
+
+    //comparison points
+    ppVertexHeightData[0][m_Size-2] = 255;
+    ppVertexHeightData[0][m_Size-1] = 0;
 }

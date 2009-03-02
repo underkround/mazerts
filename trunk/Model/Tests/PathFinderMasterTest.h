@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "../Common/CConsole.h"
 #include "../Terrain/Terrain.h"
-#include "CTimer.h"
+//#include "CTimer.h"
 
 
 #ifndef _CRTDBG_MAP_ALLOC
@@ -23,8 +23,8 @@ struct AgentNode
         pPrev = NULL;
         id = agentID++;
         count = 800;//rand() % 1000;
-        timer.Create();
-        timer.BeginTimer();
+        //timer.Create();
+        //timer.BeginTimer();
         time = 0.0f;
         //nodeCount = 0;
         finished = false;
@@ -35,7 +35,7 @@ struct AgentNode
     AgentNode* pPrev;
     int count;
     //int nodeCount;
-    CTimer timer;
+    //CTimer timer;
     float time;
     int id;
     bool finished;
@@ -127,8 +127,8 @@ void testPathFinderMaster()
 
     bool noNew = false;
 
-    CTimer* timer = new CTimer();
-    timer->Create();
+   // CTimer* timer = new CTimer();
+   // timer->Create();
     float time = 0.0f;
 
     while(run)
@@ -186,8 +186,8 @@ void testPathFinderMaster()
                 {
                     if(pCurrent->finished == false)
                     {
-                        pCurrent->timer.EndTimer();
-                        pCurrent->time = pCurrent->timer.GetElapsedSeconds();
+//                       pCurrent->timer.EndTimer();
+//                       pCurrent->time = pCurrent->timer.GetElapsedSeconds();
                         pCurrent->finished = true;
                     }
 
@@ -227,23 +227,19 @@ void testPathFinderMaster()
         pConsole->writeMessage(2, 0, "Press BACKSPACE to toggle creating new, SPACE to cancel all current searches");
         sprintf_s(strMsg, 100, "Agents: Reported running: %d  Alive Agents: %d Total agents: %d", running, agents, agentID);
         pConsole->writeMessage(1, 1, strMsg);
-        sprintf_s(strMsg, 100, "Master: Running: %d  Waiting: %d  Longest Agent creation: %.2f ms Create new:%d", PathFinderMaster::getInstance()->getRunningAmount(), PathFinderMaster::getInstance()->getWaitingAmount(), time, !noNew);
+        sprintf_s(strMsg, 100, "Master: Running: %d  Waiting: %d   ms Create new:%d", PathFinderMaster::getInstance()->getRunningAmount(), PathFinderMaster::getInstance()->getWaitingAmount(), !noNew);
         pConsole->writeMessage(1, 2, strMsg);
         pConsole->DrawScreen();
         pConsole->ClearBuffer();
 
-        if(rand() % ((running * 10) + 1) == 0 && !noNew)
+        //if(rand() % ((running * 10) + 1) == 0 && !noNew)
+        if(!noNew)
         {
-            for(i = 0; i < rand() % 20; i++)
+            //for(i = 0; i < rand() % 40; i++)
+            for(i = 0; i < 10; i++)
             {
-                timer->BeginTimer();
                 addAgentNode(PathFinderMaster::findPath(rand() % MAPSIZE,  rand() % MAPSIZE, rand() % MAPSIZE, rand() % MAPSIZE, (rand() % 5) + 1));
                 //addAgentNode(PathFinderMaster::findPath(0, 0, MAPSIZE-1, MAPSIZE-1, 1));
-                timer->EndTimer();
-                if(time < timer->GetElapsedSeconds() * 1000.0f)
-                {
-                    time = timer->GetElapsedSeconds() * 1000.0f;
-                }
             }
         }
         
