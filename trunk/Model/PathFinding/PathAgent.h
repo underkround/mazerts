@@ -37,7 +37,10 @@ public:
      */
     virtual ~PathAgent()
     {
-        cancel();
+        if(m_State != IPathFinder::CANCELLED)
+        {
+            cancel();
+        }
         destroyPath();
         pthread_mutex_destroy(m_pMutex);
         delete m_pMutex;
@@ -118,6 +121,7 @@ public:
                 {
                     delete m_pNode;
                     m_pNode = NULL;
+                    pNode = NULL;
                 }
             }
         }

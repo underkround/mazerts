@@ -186,8 +186,8 @@ void testPathFinderMaster()
                 {
                     if(pCurrent->finished == false)
                     {
-//                       pCurrent->timer.EndTimer();
-//                       pCurrent->time = pCurrent->timer.GetElapsedSeconds();
+//                      pCurrent->timer.EndTimer();
+//                      pCurrent->time = pCurrent->timer.GetElapsedSeconds();
                         pCurrent->finished = true;
                     }
 
@@ -195,8 +195,15 @@ void testPathFinderMaster()
                     pConsole->writeMessage(50, row, strMsg);
 
                     //TEST: get all the steps you can before dying
-                    if(pCurrent->pAgent->getNextPathNode() != NULL)
+                    IPathFinder::PathNode* pNode = pCurrent->pAgent->getNextPathNode();
+                    if(pNode != NULL)
                     {
+                        if(pNode->x > terrain->getSize() || pNode->y > terrain->getSize())
+                        {
+                            pConsole->ClearBuffer();
+                            pConsole->writeMessage(0, row, "INVALID DATA!!!!!");
+                        }
+
                         //pCurrent->nodeCount++;
                     }
 

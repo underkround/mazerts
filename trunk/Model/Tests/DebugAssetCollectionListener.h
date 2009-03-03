@@ -26,13 +26,13 @@ public:
 
     void handleCreatedAsset(IAsset* instance)
     {
-        cout    << "COLLECTION LISTENER: asset (assettype " << instance->getAssertType()
+        cout    << "COLLECTION LISTENER: asset (assettype " << instance->getAssetType()
                 << ", iid " << instance->getIID() << ") was created\n";
     }
 
     void handleReleasedAsset(IAsset* instance)
     {
-        cout    << "COLLECTION LISTENER: asset (assettype " << instance->getAssertType()
+        cout    << "COLLECTION LISTENER: asset (assettype " << instance->getAssetType()
                 << ", iid " << instance->getIID() << ") is being destoyed\n";
     }
 

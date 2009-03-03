@@ -15,6 +15,10 @@
 #include "vertices.h"
 #include "../Terrain/UITerrain.h"
 
+#include "../Unit/UI3DObjectManager.h"
+#include "../Unit/UIUnit.h"
+#include "../../Model/Asset/Unit.h"
+
 class CTheApp : public ID3DApplication
 {
 public:
@@ -78,10 +82,7 @@ private:
 
     bool m_Help;
 
-    LPD3DXMESH m_TestCube;
-    LPD3DXMESH m_TargetSphere;    
-
-    D3DMATERIAL9* m_pMat;
+    UI3DObjectManager* m_pManager;
 };
 
 

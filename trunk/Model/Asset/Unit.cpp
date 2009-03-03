@@ -71,6 +71,6 @@ char Unit::update(const float deltaT)
     if(m_pMovingLogic)
         m_pMovingLogic->update(this, deltaT);
 
-    return RESULT_DELETEME; // unit will be deleted when returning this value
-//    return RESULT_OK; // normal return value
+    //return RESULT_DELETEME; // unit will be deleted when returning this value
+    return RESULT_OK; // normal return value
 }

@@ -16,6 +16,7 @@ PathFinder::PathFinder(unsigned short x, unsigned short y, unsigned short goalX,
     m_StartX = x;
     m_StartY = y;
     m_Size = size;
+    m_pStartNode = NULL;
 
     initialize(goalX, goalY);
 }
@@ -252,13 +253,15 @@ void PathFinder::buildPath(PathNode* pCurrent)
 
 #define sgn(a) (a > 0) ? 1 : (a < 0) ? -1 : 0
 
-    PathNode* pRealPath = new PathNode(pCurrent->x, pCurrent->y, pCurrent->G, NODE_CLOSED, NULL);        
+    
+    PathNode* pRealPath = new PathNode(pCurrent->x, pCurrent->y, pCurrent->G, NODE_CLOSED, NULL);    
+    pRealPath->pChild = NULL;
 
     //Keep track of direction
     bool dirChange = true;
-    char oldxDir = -3;
-    short oldyDir = -3;    
-    
+    char oldxDir = -3; //sgn(pCurrent->pParent->x -  pCurrent->x);
+    short oldyDir = -3; //sgn(pCurrent->pParent->y -  pCurrent->y);   
+
     while(pCurrent->pParent != NULL)
     {
         char xDir = sgn(pCurrent->pParent->x -  pCurrent->x);
@@ -266,11 +269,7 @@ void PathFinder::buildPath(PathNode* pCurrent)
    
         //Only store points where the x or y direction changes
         if(oldxDir != xDir || oldyDir != yDir)
-        {            
-            //Remove pointer from m_pppNodeArray, so the actual path nodes won't
-            //get deleted along with the array (the ones used by the unit)
-            //m_pppNodeArray[pCurrent->y][pCurrent->x] = NULL;
-           
+        {           
             pRealPath->pParent = new PathNode(pCurrent->x, pCurrent->y, pCurrent->G, NODE_CLOSED, NULL);
             pRealPath->pParent->pChild = pRealPath;
             pRealPath = pRealPath->pParent;
@@ -282,11 +281,8 @@ void PathFinder::buildPath(PathNode* pCurrent)
         pCurrent->pParent->pChild = pCurrent;        
         pCurrent = pCurrent->pParent;
     }    
-    
-    pRealPath->pParent = new PathNode(pCurrent->x, pCurrent->y, pCurrent->G, NODE_CLOSED, NULL);
-    pRealPath->pParent->pChild = pRealPath;
-    pRealPath = pRealPath->pParent;
 
+    //Now set the REAL start node
     m_pStartNode = pRealPath;
 
     /*while(1)

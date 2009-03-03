@@ -36,9 +36,9 @@ int main(int arcg, char* argv[])
 
 //    if(VERBOSE) cout << "\n *** config from file ***\n";            testConfig();
 
-    if(VERBOSE) cout << "\n *** Pathfinder ***\n";                  testPathFinder();
+//    if(VERBOSE) cout << "\n *** Pathfinder ***\n";                  testPathFinder();
 
-//    if(VERBOSE) cout << "\n *** PathFinderMaster-thread ***\n";     testPathFinderMaster();
+    if(VERBOSE) cout << "\n *** PathFinderMaster-thread ***\n";     testPathFinderMaster();
 
 //    if(VERBOSE) cout << "\n *** Antin AI ***\n";                    testAntinAI();
 

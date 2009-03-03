@@ -20,13 +20,26 @@ class UIUnit : public C3DObject
 public:
     /**
      * Constructor
+     * @param pUnit Pointer to Model-side unit this UIUnit represents
      */
-    UIUnit();
+    UIUnit(Unit* pUnit)
+    {
+        m_pUnit = pUnit;
+        m_HalfSize = pUnit->getWidth() * 0.5f;
+    }
+
+    /**
+     * Update the unit
+     * @param fFrametime Time elapsed in frame as seconds
+     */
+    virtual void Update(float fFrametime);
 
     /**
      * Destructor
      */
-    virtual ~UIUnit();
+    virtual ~UIUnit()
+    {
+    }
 
 
 protected:
@@ -45,6 +58,8 @@ protected:
      * Half of the actual unit "grid-size", used to offset the model correctly
      */
     float m_HalfSize;
+
+    static float Scale;
 };
 
 #endif //__UIUNIT_H__

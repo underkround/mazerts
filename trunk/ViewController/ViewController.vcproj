@@ -690,6 +690,14 @@
 				Name="Unit"
 				>
 				<File
+					RelativePath=".\Unit\UI3DObjectManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\UI3DObjectManager.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Unit\UIUnit.cpp"
 					>
 				</File>

@@ -7,6 +7,7 @@
  */
 
 #include "AssetFactory.h"
+#include "GroundMovingLogic.h"
 
 Unit* AssetFactory::createUnit( Team* owner, int unitType, short positionX, short positionY)
 {
@@ -25,7 +26,7 @@ Unit* AssetFactory::createUnit( Team* owner, int unitType, short positionX, shor
         u->setWidth(2);
         u->setHeight(2);
         //u->setWeapon(NULL); // TODO
-        //u->setMoving(NULL); // TODO
+        u->setMovingLogic(new GroundMovingLogic()); // TODO
         break;
     }
 

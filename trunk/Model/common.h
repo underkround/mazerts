@@ -15,6 +15,10 @@
 #define NULL 0
 #endif
 
+#ifndef byte
+#define byte unsigned char
+#endif
+
 
 // =====
 #endif // __COMMON_H__

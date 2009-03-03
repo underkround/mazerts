@@ -125,7 +125,7 @@ public:
     inline Vector3* getDirection()  { return &m_Direction; }
     inline short getGridX()         { return (short)m_Position.x; }
     inline short getGridY()         { return (short)m_Position.y; }
-    inline Type getAssertType()     { return m_AssetType; }
+    inline Type getAssetType()      { return m_AssetType; }
 
 // ===== Mostly for debugging, but why not for some statistics too
 
