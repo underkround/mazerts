@@ -20,20 +20,31 @@
 #ifndef __ASSET_H__
 #define __ASSET_H__
 
+#include "../Common/DoubleLinkedList.h"
 #include "IAssetRadar.h"
 #include "../Common/Vector3.h"
 #include "../Weapon/IWeapon.h"
 #include "../Team/Team.h"
 
+class IAssetListener;
+
 class IAsset
 {
-
 public:
 
     enum Type
     {
         UNIT = 1,
         BUILDING
+    };
+
+    enum State
+    {
+        BEING_BUILT = 0,    // set when created, until hitpoints reach max,
+                            // cannot operate until active
+        ACTIVE,         // normal state
+        PARALYZED,      // cannot do anything
+        DESTROYED       // downcounter running for object destruction
     };
 
     // result codes for update method
@@ -127,6 +138,23 @@ public:
     inline short getGridY()         { return (short)m_Position.y; }
     inline Type getAssetType()      { return m_AssetType; }
 
+// ===== Listeners
+
+    /**
+     * Register new listener that starts to receive notifications
+     * of this asset.
+     * @param listener  class implementing the IAssetListener
+     */
+    void registerListener(IAssetListener* listener);
+
+    /**
+     * Remove registered listener, removed listener does not receive
+     * notifications of this asset after this call.
+     * @param listener  registered listener that is to be removed
+     *                  from the listeners of this asset
+     */
+    void unregisterListener(IAssetListener* listener);
+
 // ===== Mostly for debugging, but why not for some statistics too
 
     // Unique instance id, each created asset gets one starting from 0.
@@ -148,6 +176,27 @@ private:
 protected:
 
     /**
+     * Change the asset's state.
+     * Use this instead of directly setting the state, since this
+     * notifies the state to the listeners.
+     */
+    void changeState(State newState);
+
+// ===== Listeners
+
+    /**
+     * Notify listeners that this asset object has changed it's main state.
+     */
+    void notifyStateChanged();
+
+    /**
+     * Notify listeners that this asset object is being destroyed.
+     */
+    void notifyDestroyed();
+
+// ===== Release
+
+    /**
      * Release and delete the weapon instance
      */
     void releaseWeapon();
@@ -162,6 +211,8 @@ protected:
     const int       m_IID;          // unique instance id among all assets
     const Type      m_AssetType;    // the concrete class of this asset
 
+    State           m_State;        // the current state of the asset
+
     Team*           m_pOwner;       // the owner of this unit
 
     unsigned char   m_Width;        // sizes
@@ -172,6 +223,8 @@ protected:
     IWeapon*        m_pWeapon;      // weapon attached to this asset, or NULL
     IAssetRadar*    m_pRadar;       // the logic that handles the inspection of
                                     // the surrounding of the asset
+
+    DoubleLinkedList<IAssetListener*>    m_pListeners; // registered listeners
 
 };
 

@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Tests\testDoubleLinkedList.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Tests\testi.ini"
 				>
 			</File>
@@ -370,6 +374,10 @@
 				</File>
 				<File
 					RelativePath=".\Asset\IAssetCollectionListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\IAssetListener.h"
 					>
 				</File>
 				<File

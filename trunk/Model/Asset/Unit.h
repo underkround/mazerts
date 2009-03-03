@@ -11,9 +11,7 @@
 #define __UNIT_H__
 
 #include "IAsset.h"
-//#include "AssetCollection.h"
 #include "IMovingLogic.h"
-
 #include "../Command/Target.h"
 
 class Unit : public IAsset
@@ -61,7 +59,6 @@ public:
      * Normal update call, updates the unit's components
      */
     virtual char update(const float deltaT);
-
 
 private:
 

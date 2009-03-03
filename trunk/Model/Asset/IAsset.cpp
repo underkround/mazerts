@@ -6,9 +6,9 @@
  * $Id$
  */
 
+#include "../common.h" // for NULL etc
 #include "IAsset.h"
-
-#include <iostream>
+#include "IAssetListener.h"
 
 int IAsset::m_InstanceCounter = 0;
 int IAsset::m_InstanceDestructionCounter = 0;
@@ -22,6 +22,8 @@ IAsset::IAsset(const Type assetType) : m_AssetType (assetType), m_IID (m_Instanc
     m_Direction.x = 0;
     m_Direction.y = 1;
     m_Direction.z = 0;
+    //
+    m_State = BEING_BUILT;
     // components
     m_pOwner = NULL;
     m_pWeapon = NULL;
@@ -31,12 +33,6 @@ IAsset::IAsset(const Type assetType) : m_AssetType (assetType), m_IID (m_Instanc
 IAsset::~IAsset()
 {
     m_InstanceDestructionCounter++;
-}
-
-void IAsset::release()
-{
-    releaseWeapon();
-    releaseRadar();
 }
 
 // ===== Initialization
@@ -63,6 +59,13 @@ void IAsset::setRadar(IAssetRadar* radar)
 
 // ===== Releasing
 
+void IAsset::release()
+{
+    notifyDestroyed();
+    releaseWeapon();
+    releaseRadar();
+}
+
 void IAsset::releaseWeapon()
 {
     if(m_pWeapon)
@@ -83,3 +86,48 @@ void IAsset::releaseRadar()
     }
 }
 
+// =====
+
+void IAsset::changeState(State newState)
+{
+    m_State = newState;
+    notifyStateChanged();
+}
+
+// ===== Listeners
+
+void IAsset::registerListener(IAssetListener* listener)
+{
+    m_pListeners.pushTail(listener);
+}
+
+void IAsset::unregisterListener(IAssetListener* listener)
+{
+    m_pListeners.remove(listener);
+}
+
+void IAsset::notifyStateChanged()
+{
+    if(m_pListeners)
+    {
+        ListNode<IAssetListener*>* node = m_pListeners.headNode();
+        while(node)
+        {
+            node->item->handleAssetStateChange(this, m_State);
+            node = node->next;
+        }
+    }
+}
+
+void IAsset::notifyDestroyed()
+{
+    if(m_pListeners)
+    {
+        ListNode<IAssetListener*>* node = m_pListeners.headNode();
+        while(node)
+        {
+            node->item->handleAssetReleased(this);
+            node = node->next;
+        }
+    }
+}
