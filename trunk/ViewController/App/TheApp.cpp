@@ -130,13 +130,31 @@ void CTheApp::OnFlip(void)
     pDevice->SetTransform(D3DTS_VIEW, &view);
 
 
+    static bool timersCreated = false;
+    static CTimer* timer1;
+    static CTimer* timer2;
+    static float time = 0.0f;
 
+    if(!timersCreated)
+    {    
+        timer1 = new CTimer();
+        timer1->Create();
+        timer2 = new CTimer();
+        timer2->Create();
+    }
+
+    timer1->BeginTimer();
     float frameTime = GetFrameTime();
     m_pManager->getRootObject()->Update(frameTime);
     AssetCollection::updateUnits(frameTime);
 
+    UpdateKeyboard();
+	UpdateMouse();
 
 
+    timer1->EndTimer();
+
+    timer2->BeginTimer();
     if (SUCCEEDED(pDevice->BeginScene()))
     {
         // all graphics rendering must happen in between
@@ -154,7 +172,7 @@ void CTheApp::OnFlip(void)
             DrawTextRow(_T("Enter forces the unit to get a new path"), 0xFFFFFFFF);
             DrawTextRow(_T("F1 hides/shows this help message"), 0xFFFFFFFF);            
             DrawTextRow(_T("M & N change terrain detail level"), 0xFFFFFFFF);            
-
+            
         }
 
         TCHAR text[100];
@@ -164,9 +182,9 @@ void CTheApp::OnFlip(void)
         _stprintf_s(text, _T("Detail level: %d"), pUITerrain->getDetailLevel());
         DrawText(500, 40, text, 0xFFFFFFFF);
 
-		UpdateKeyboard();
-		UpdateMouse();
-
+        _stprintf_s(text, _T("Update: %.2f  Render: %.2f"), timer1->GetElapsedSeconds() * 1000.0f, time * 1000.0f);
+        DrawText(500, 20, text, 0xFFFFFFFF);
+       
         m_TextRow = 0;
         EndText();
 
@@ -178,6 +196,8 @@ void CTheApp::OnFlip(void)
 
         pDevice->EndScene();
     }
+    timer2->EndTimer();
+    time = timer2->GetElapsedSeconds();
 }
 
 void CTheApp::DrawTextRow(LPCTSTR text, DWORD color)
@@ -185,7 +205,6 @@ void CTheApp::DrawTextRow(LPCTSTR text, DWORD color)
     DrawText(0, m_TextRow, text, color);
     m_TextRow += GetTextHeight();
 }
-
 
 
 void CTheApp::OnKeyDown(DWORD dwKey)
@@ -255,33 +274,25 @@ void CTheApp::OnKeyDown(DWORD dwKey)
 
     }
 
-    //Slow down changing the levels
-    static int counter = 0;
-
-    counter++;
-    if(counter > 40)
+    if(dwKey == 'N')
     {
-        if(dwKey == 'N')
+        unsigned char detail = pUITerrain->getDetailLevel();
+        detail++;
+        if(detail < 4)
         {
-            unsigned char detail = pUITerrain->getDetailLevel();
-            detail++;
-            if(detail < 4)
-            {
-                pUITerrain->setDetailLevel(detail);
-            }
+            pUITerrain->setDetailLevel2(detail);
         }
+    }
 
-        if(dwKey == 'M')
+    if(dwKey == 'M')
+    {
+        unsigned char detail = pUITerrain->getDetailLevel();
+        detail--;
+        //Wrapping
+        if(detail < 4)
         {
-            unsigned char detail = pUITerrain->getDetailLevel();
-            detail--;
-            //Wrapping
-            if(detail < 4)
-            {
-                pUITerrain->setDetailLevel(detail);
-            }
+            pUITerrain->setDetailLevel2(detail);
         }
-        counter = 0;
     }
 }
 

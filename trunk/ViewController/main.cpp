@@ -17,8 +17,8 @@ int APIENTRY WinMain(   HINSTANCE hInstance,
     CTheApp    theApp;
 
     // create application
-    hres = theApp.Create(    1000,
-                            600,
+    hres = theApp.Create(    1024,
+                            768,
                             32,
                             TRUE,
                             _T("Maze Game Engine"),

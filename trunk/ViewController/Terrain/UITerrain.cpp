@@ -23,11 +23,6 @@ UITerrain::UITerrain()
     m_NumVertices = 0;
     m_DetailLevel = 0;
 
-#ifdef HEIGHTMAPCOLORING
-    pVertices = NULL;
-    pIndices = NULL;
-#endif
-
     D3DXMatrixIdentity(&m_World);
 
     m_FillMode = D3DFILL_SOLID;
@@ -36,7 +31,18 @@ UITerrain::UITerrain()
     
     ::memset(&m_Mat, 0, sizeof(D3DMATERIAL9));
     m_Mat.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-    
+ 
+    //Create triangle normals-array
+    m_pppTriangleNormals = new D3DXVECTOR3**[m_Size];
+    for(int i = 0; i < m_Size; i++)
+    {
+        m_pppTriangleNormals[i] = new D3DXVECTOR3*[m_Size];
+
+        for(int j = 0; j < m_Size; j++)
+        {
+            m_pppTriangleNormals[i][j] = new D3DXVECTOR3[2];
+        }
+    }
 }
 
 UITerrain::~UITerrain(void)
@@ -99,8 +105,6 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
 
     pDevice->SetTransform(D3DTS_WORLD, &m_World);
 
-#ifndef HEIGHTMAPCOLORING
-
     pDevice->SetFVF( VERTEX2UV::GetFVF() );
     pDevice->SetRenderState(D3DRS_FILLMODE, m_FillMode);
 
@@ -143,30 +147,6 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
         }
 
     }
-
-
-#else
-    //Use height-based vertexcolors, for debugging
-    pDevice->SetFVF( LITVERTEX::GetFVF() );
-
-    // set the material
-    D3DMATERIAL9 material;
-    ::memset(&material, 0, sizeof(D3DMATERIAL9));
-    material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-    pDevice->SetMaterial(&material);
-
-    pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-    pDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST,
-            0, m_numVertices, m_numPrimitives, 
-            pIndices, D3DFMT_INDEX16, pVertices, sizeof(LITVERTEX));
-    /*if ( m_pIB )
-    {
-        
-        pDevice->SetIndices( m_pIB );
-        pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_numVertices, 0, m_numPrimitives );
-    } */
-#endif
 }
 
 HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice)
@@ -213,17 +193,9 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
 
         for(int x = 0; x < m_Patches; x++)
         {
-//            m_pVB[i] = new IDirect3DVertexBuffer9;
-
-#ifndef HEIGHTMAPCOLORING
             hres = pDevice->CreateVertexBuffer(    m_NumVertices * sizeof(VERTEX2UV),
                                         0,
                                         VERTEX2UV::GetFVF(),
-#else
-    hres = pDevice->CreateVertexBuffer(    m_NumVertices * sizeof(LITVERTEX),
-                                        0,
-                                        LITVERTEX::GetFVF(),
-#endif
                                         D3DPOOL_MANAGED,    //Needs to be something else for dynamic?
                                         &m_pVB[y][x],
                                         NULL);
@@ -233,11 +205,7 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
             }
 
             //Pointer to vertex-data
-#ifndef HEIGHTMAPCOLORING
             VERTEX2UV* pVertices = NULL;
-#else
-            pVertices = NULL;
-#endif
 
             //Fill vertex-data
             m_pVB[y][x]->Lock(0, 0, (void**)&pVertices, 0);
@@ -256,22 +224,12 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
                         pVertices[loc].y = (float)offsetY;
                         pVertices[loc].z = -(float)ppTerrainVertexData[offsetY][offsetX] * HEIGHTFACTOR;
                         
-#ifndef HEIGHTMAPCOLORING
-                        //If using VERTEX2UV, calculate normals
+                        //Calculate normals
                         D3DXVECTOR3 normal = calculateNormalForVertex(offsetX, offsetY);
 
                         pVertices[loc].nx = normal.x;
                         pVertices[loc].ny = normal.y;
                         pVertices[loc].nz = normal.z;
-#else                
-                        //If using LITVERTEX, set color
-                        unsigned short h = ppTerrainVertexData[i][j];
-                        unsigned short r = h;
-                        unsigned short g = h % 128;
-                        unsigned short b = 255 - h;
-
-                        pVertices[loc].dwColor = D3DCOLOR_XRGB(r, g, b);
-#endif
  
                         //Repeating texture
                         pVertices[loc].tu = (m_TextureRepeat / m_Size) * j;
@@ -297,11 +255,7 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
                 &m_pIB[y][x],
                 NULL);
 
-#ifndef HEIGHTMAPCOLORING
             USHORT* pIndices = NULL;
-#else
-            pIndices = NULL;
-#endif
 
             
             //Index-array index
@@ -330,12 +284,13 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
             }
             m_pIB[y][x]->Unlock();
 
-#ifndef HEIGHTMAPCOLORING
             hres = D3DXCreateTextureFromFile(    pDevice,
                                         _T("grass01.png"),
                                         &m_pTexture);
-    
-#endif
+            if(FAILED(hres))
+            {
+                return hres;
+            }
         }
     }
 
@@ -384,26 +339,6 @@ HRESULT UITerrain::createPassabilityTexture(LPDIRECT3DDEVICE9 pDevice)
             }
         }
         
-        /*int sizeARGB = terraSize * terraSize * (lockedRect.Pitch / terraSize / 4);//64bit values... wut?
-        for(int i = 0; i < sizeARGB; i++)*/
-        {
-            /*if((i % 4) == 0)
-            {
-                ((unsigned char*)lockedRect.pBits)[i] = 255;
-            }
-            else
-            {
-                ((unsigned char*)lockedRect.pBits)[i] = 0;
-            }*/            
-            /*if(pTerrain->isPassable(i % terraSize, i / terraSize, 1))
-            {
-                ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (255 << 16) + (i % 255 << 8) + (i % 255);
-            }
-            else
-            {
-                ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (255 << 16); //+ (i % 255 << 8) + (i % 255);
-            } */
-        }
     }
     m_pPixelTexture->UnlockRect(0);
 
@@ -488,17 +423,6 @@ void UITerrain::calculateTriangleNormals()
 
     unsigned char const * const * ppVertexHeightData = Terrain::getInstance()->getTerrainVertexHeightData();
 
-    m_pppTriangleNormals = new D3DXVECTOR3**[m_Size];
-    for(int i = 0; i < m_Size; i++)
-    {
-        m_pppTriangleNormals[i] = new D3DXVECTOR3*[m_Size];
-
-        for(int j = 0; j < m_Size; j++)
-        {
-            m_pppTriangleNormals[i][j] = new D3DXVECTOR3[2];
-        }
-    }
-
     for(int i = 0; i < m_Size; i++)    
     {
         for(int j = 0; j < m_Size; j++)        
@@ -570,7 +494,7 @@ float UITerrain::calculateTriangleHeightAt(float x, float y)
         v0.x = iX + 1.0f;
         v0.y = iY;
         v0.z = ppVertexHeightData[iY][iX + 1] * HEIGHTFACTOR;
-
+                
         v1.x = iX;
         v1.y = iY;
         v1.z = ppVertexHeightData[iY][iX] * HEIGHTFACTOR;
@@ -601,7 +525,7 @@ float UITerrain::calculateTriangleHeightAt(float x, float y)
     }
     
     //P.z = (N.x(P.x-V0.x) + N.y(P.y-V0.y))/-N.z + V0.z 
-    result = (((normal.x * (x - v0.x) + normal.y * (y - v0.y)) / normal.z) - v0.z);
+    result = (((normal.x * (x - v0.x) + normal.y * (y - v0.y)) / normal.z) - v0.z);    
 
     return result;
     
@@ -649,6 +573,92 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
                 }
             }
             m_pIB[y][x]->Unlock();
+        }
+    }
+}
+
+void UITerrain::setDetailLevel2(unsigned char detailLevel)
+{
+    m_DetailLevel = detailLevel;
+
+    unsigned char detail = 1 << m_DetailLevel;
+
+    m_NumPrimitives = (PATCHSIZE * PATCHSIZE * 2) / (detail * detail);
+
+    unsigned short vertexSize = ((PATCHSIZE) / detail) + 1;
+
+    VERTEX2UV* pVertices = NULL;
+
+    unsigned const char* const * ppTerrainVertexData = Terrain::getInstance()->getTerrainVertexHeightData();    
+
+    for(int y = 0; y < m_Patches; y++)
+    {
+        for(int x = 0; x < m_Patches; x++)
+        {
+            //Fill vertex-data
+            m_pVB[y][x]->Lock(0, 0, (void**)&pVertices, 0);
+            {
+                for(int i = 0; i < vertexSize; i++)
+                {
+                    for(int j = 0; j < vertexSize; j++)
+                    {   
+                        //Location in 1D-buffer from 2D-values
+                        int loc = i * vertexSize + j;
+                        
+                        int offsetX = (j * detail) + (x * PATCHSIZE);
+                        int offsetY = (i * detail) + (y * PATCHSIZE);
+
+                        pVertices[loc].x = (float)offsetX;
+                        pVertices[loc].y = (float)offsetY;
+                        pVertices[loc].z = -(float)ppTerrainVertexData[offsetY][offsetX] * HEIGHTFACTOR;
+                        
+                        //If using VERTEX2UV, calculate normals
+                        D3DXVECTOR3 normal = calculateNormalForVertex(offsetX, offsetY);
+
+                        pVertices[loc].nx = normal.x;
+                        pVertices[loc].ny = normal.y;
+                        pVertices[loc].nz = normal.z;
+
+                        //Repeating texture
+                        pVertices[loc].tu = ((m_TextureRepeat * detail) / m_Size) * j;
+                        pVertices[loc].tv = ((m_TextureRepeat * detail) / m_Size) * i;
+				        pVertices[loc].tu2 = (1.0f / m_Size) * offsetX;
+				        pVertices[loc].tv2 = (1.0f / m_Size) * offsetY;
+                    }
+                }
+            }
+            m_pVB[y][x]->Unlock();
+
+           
+            USHORT* pIndices = NULL;
+            
+            //Index-array index
+            int ind = 0;
+            //Vertice index
+            int vIndex = 0;
+
+            //Fill index-data
+            m_pIB[y][x]->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD);
+            {
+                for(int i = 0; i < (PATCHSIZE / detail); i++)
+                {
+                    vIndex = i * vertexSize;
+
+                    for(int j = 0; j < (PATCHSIZE / detail); j++)
+                    {
+                        pIndices[ind++] = vIndex;
+                        pIndices[ind++] = vIndex + vertexSize;
+                        pIndices[ind++] = vIndex + 1;
+                        
+                        pIndices[ind++] = vIndex + 1;  //Second triangle
+                        pIndices[ind++] = vIndex + vertexSize;
+                        pIndices[ind++] = vIndex + vertexSize + 1;
+                        vIndex++;
+                    }                    
+                }
+            }
+            m_pIB[y][x]->Unlock();
+
         }
     }
 }

@@ -15,9 +15,6 @@
 
 #include <d3dx9.h>
 
-//Comment out to use texture & hw-lighting
-//#define HEIGHTMAPCOLORING
-
 class UITerrain
 {
 public:
@@ -101,6 +98,13 @@ public:
     void setDetailLevel(unsigned char detailLevel);
 
     /**
+     * Sets the detail level for terrain and recalculates vertex- and indexbuffers
+     * @param detailLevel Value from 0 upwards, 0 is the most detailed (2 triangles per 
+     * grid square)
+     */
+    void setDetailLevel2(unsigned char detailLevel);
+
+    /**
      * Returns the detail level, smaller is better
      */
     inline unsigned char getDetailLevel() { return m_DetailLevel; }
@@ -168,19 +172,6 @@ private:
      * Number of vertices per terrain patch
      */
     UINT m_NumVertices;
-
-#ifdef HEIGHTMAPCOLORING
-#include "vertices.h"
-    /**
-     * Vertex-data
-     */
-    LITVERTEX* pVertices;
-
-    /**
-     * Index data
-     */
-    USHORT* pIndices;
-#endif
 
     /**
      * Number of triangles per patch
