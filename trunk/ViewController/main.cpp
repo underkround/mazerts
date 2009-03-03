@@ -1,8 +1,5 @@
 /*
  * main.cpp
- * Copyright (c) 2009 Jani Immonen
- * www.jani-immonen.net
- * Date: 26.1.2009
  *
  * Entry point for a Windows application
  * 
@@ -11,7 +8,7 @@
 #include "App/TheApp.h"
 
 
-int APIENTRY WinMain(    HINSTANCE hInstance,
+int APIENTRY WinMain(   HINSTANCE hInstance,
                         HINSTANCE hPreviousInstance,
                         LPSTR strCmdLine,
                         int iShowCmd)
@@ -24,7 +21,7 @@ int APIENTRY WinMain(    HINSTANCE hInstance,
                             600,
                             32,
                             TRUE,
-                            _T("Game Engine - Texturing"),
+                            _T("Maze Game Engine"),
                             0);
     if (FAILED(hres))
     {
@@ -42,5 +39,3 @@ int APIENTRY WinMain(    HINSTANCE hInstance,
 
     return retval;
 }
-
-

@@ -8,8 +8,7 @@
  * Concrete game application class
  */
 
-#ifndef __THEAPP_H__
-#define __THEAPP_H__
+#pragma once
 
 #include "ID3DApplication.h"
 #include "vertices.h"
@@ -18,6 +17,10 @@
 #include "../Unit/UI3DObjectManager.h"
 #include "../Unit/UIUnit.h"
 #include "../../Model/Asset/Unit.h"
+
+#include "InputEngine.h"
+#include "InputKeyboard.h"
+#include "InputMouse.h"
 
 class CTheApp : public ID3DApplication
 {
@@ -50,8 +53,24 @@ public:
      */
     virtual void OnFlip(void);
 
-
 private:
+    //Input engine members
+	int							    m_TextRow;
+	int								m_iMouseX;
+	int								m_iMouseY;
+	int								m_iMouseZ;
+    CInputEngine                    m_InputEngine;
+	vector<CInputEngine::DEVICE>	m_arrInputDevices;
+    CInputKeyboard			        m_Keyboard;
+	CInputMouse			            m_Mouse;
+
+    /**
+     * DrawTextRow
+     * writes text to screen and advances cursor one row
+     * @param text to be written on screen
+     * @param color text color
+     */
+    void DrawTextRow(LPCTSTR text, DWORD color);
 
     /**
      * OnKeyDown
@@ -60,9 +79,16 @@ private:
     virtual void OnKeyDown(DWORD dwKey);
 
     /**
-     * Read keys and do stuff
-     */
-    void ReadKeys(void);
+	 * UpdateKeyboard
+	 * update keyboard status and print it to screen
+	 */
+	void UpdateKeyboard(void);
+ 
+	/**
+	 * UpdateKeyboard
+	 * update mouse status and print it to screen
+	 */
+	void UpdateMouse(void);
 
     /**
      * CheckTexturingCaps
@@ -83,7 +109,5 @@ private:
     bool m_Help;
 
     UI3DObjectManager* m_pManager;
+
 };
-
-
-#endif    // __THEAPP_H__

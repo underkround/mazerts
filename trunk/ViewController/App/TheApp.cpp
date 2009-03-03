@@ -1,9 +1,5 @@
 /**
  * TheApp.cpp source file
- * Implementation for the CTimer class
- * Copyright (c) 2009 Jani Immonen
- * www.jani-immonen.net
- * Date: 29.1.2009
  * 
  * Concrete game application class
  */
@@ -20,7 +16,12 @@ CTheApp::CTheApp(void)
 
     m_fX = 10.0f;
     m_fY = 10.0f;
-    m_fZ = -40.0f;    
+    m_fZ = -40.0f;
+
+    m_TextRow = 0;
+	m_iMouseX = 0;
+	m_iMouseY = 0;
+	m_iMouseZ = 0;
 
     m_pManager = NULL;    
 }
@@ -33,6 +34,32 @@ CTheApp::~CTheApp(void)
 
 HRESULT CTheApp::OnCreate(void)
 {
+    HRESULT hres;
+
+    //initialize input engine
+    hres = m_InputEngine.Create(GetWindow());
+	if(FAILED(hres))
+	{
+		::MessageBox( GetWindow(), _T("failed to init input engine."), _T("error"), MB_OK);
+	}
+
+	//enumerate attached input devices
+	m_InputEngine.GetKeyboards(m_arrInputDevices);
+	m_InputEngine.GetMice(m_arrInputDevices);
+
+	hres = m_Keyboard.Create(m_InputEngine, NULL, 0);
+	hres = m_Mouse.Create(m_InputEngine, NULL, 0);
+ 
+	//init mouse coordinates
+	if(IsWindowed())
+	{
+		POINT mousepos;
+		::GetCursorPos(&mousepos);
+		::ScreenToClient(GetWindow(), &mousepos);
+		m_iMouseX = mousepos.x;
+		m_iMouseY = mousepos.y;
+	}
+
     //Get the pathfinder running
     PathFinderMaster::getInstance()->start();
 
@@ -62,6 +89,14 @@ void CTheApp::OnRelease(void)
     PathFinderMaster::cancelAll();
     PathFinderMaster::getInstance()->stop();
     Sleep(100);
+
+    // clear the device array
+	m_arrInputDevices.clear();
+    // release input devices
+	m_Mouse.Release();
+	m_Keyboard.Release();
+ 	// release the input engine
+	m_InputEngine.Release();
 }
 
 
@@ -76,8 +111,6 @@ void CTheApp::OnFlip(void)
                     0xFF444444,
                     1.0f,
                     0);
-
-    ReadKeys();
 
    // build the rotation matrix and set it to device
     D3DXMATRIX m;
@@ -112,14 +145,15 @@ void CTheApp::OnFlip(void)
         
         if(m_Help)
         {
-            DrawText(0, 0, _T("Use LEFT, RIGHT, UP, DOWN, A and Z to move camera"), 0xFFFFFFFF);
-            DrawText(0, 20, _T("Press ESC to quit"), 0xFFFFFFFF);
-            DrawText(0, 40, _T("Use space to generate new terrain"), 0xFFFFFFFF);
-            DrawText(0, 60, _T("1 replaces the texture with passability data"), 0xFFFFFFFF);
-            DrawText(0, 80, _T("TAB switches fillmode (solid/wireframe)"), 0xFFFFFFFF);
-            DrawText(0, 100, _T("Enter forces the unit to get a new path"), 0xFFFFFFFF);
-            DrawText(0, 200, _T("F1 hides/shows this help message"), 0xFFFFFFFF);            
-            DrawText(0, 220, _T("M & N change terrain detail level"), 0xFFFFFFFF);            
+            DrawTextRow(_T("Use LEFT, RIGHT, UP, DOWN, A and Z to move camera"), 0xFFFFFFFF);
+            DrawTextRow(_T("Use LEFT, RIGHT, UP, DOWN, A and Z to move camera"), 0xFFFFFFFF);
+            DrawTextRow(_T("Press ESC to quit"), 0xFFFFFFFF);
+            DrawTextRow(_T("Use space to generate new terrain"), 0xFFFFFFFF);
+            DrawTextRow(_T("1 replaces the texture with passability data"), 0xFFFFFFFF);
+            DrawTextRow(_T("TAB switches fillmode (solid/wireframe)"), 0xFFFFFFFF);
+            DrawTextRow(_T("Enter forces the unit to get a new path"), 0xFFFFFFFF);
+            DrawTextRow(_T("F1 hides/shows this help message"), 0xFFFFFFFF);            
+            DrawTextRow(_T("M & N change terrain detail level"), 0xFFFFFFFF);            
 
         }
 
@@ -130,8 +164,10 @@ void CTheApp::OnFlip(void)
         _stprintf_s(text, _T("Detail level: %d"), pUITerrain->getDetailLevel());
         DrawText(500, 40, text, 0xFFFFFFFF);
 
+		UpdateKeyboard();
+		UpdateMouse();
 
-
+        m_TextRow = 0;
         EndText();
 
         pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
@@ -144,56 +180,68 @@ void CTheApp::OnFlip(void)
     }
 }
 
-void CTheApp::ReadKeys()
+void CTheApp::DrawTextRow(LPCTSTR text, DWORD color)
 {
+    DrawText(0, m_TextRow, text, color);
+    m_TextRow += GetTextHeight();
+}
+
+
+
+void CTheApp::OnKeyDown(DWORD dwKey)
+{
+    if (dwKey == VK_ESCAPE)
+    {
+        Close();
+    }
     const float camspeed = 20.0f;
 
     // read keys to rotate the quad
-    if (::GetAsyncKeyState(VK_LEFT))
+    if (dwKey == VK_LEFT)
     {
         m_fX -= camspeed * GetFrameTime();
     }
-    else if (::GetAsyncKeyState(VK_RIGHT))
+    else if (dwKey == VK_RIGHT)
     {
         m_fX += camspeed * GetFrameTime();
     }
     
-    if (::GetAsyncKeyState(VK_UP))
+    if (dwKey == VK_UP)
     {
         m_fY += camspeed * GetFrameTime();
     }
-    else if (::GetAsyncKeyState(VK_DOWN))
+    else if (dwKey == VK_DOWN)
     {
         m_fY -= camspeed * GetFrameTime();
     }
     
-    if (::GetAsyncKeyState('A'))
+    if (dwKey == 'A')
     {
         m_fZ += camspeed * GetFrameTime();
     }
-    else if (::GetAsyncKeyState('Z'))
+    else if (dwKey == 'Z')
     {
         m_fZ -= camspeed * GetFrameTime();
     }
 
-    if(::GetAsyncKeyState(VK_SPACE))
+    if(dwKey == VK_SPACE)
     {
         Terrain::getInstance()->initialize();
         UITerrain::create(GetDevice());
         pUITerrain = UITerrain::getInstance();
     }
-    if(::GetAsyncKeyState('1'))
+    if(dwKey == '1')
     {
         pUITerrain->createPassabilityTexture(GetDevice());
     }
 
 
-    if(::GetAsyncKeyState(VK_F1))
+    if(dwKey == VK_F1)
     {
         m_Help = !m_Help;
     }
 
-    if(::GetAsyncKeyState(VK_TAB))
+    if(dwKey == VK_TAB)
     {
         D3DFILLMODE f = pUITerrain->getFillMode();
         if(f == D3DFILL_SOLID)
@@ -213,7 +261,7 @@ void CTheApp::ReadKeys()
     counter++;
     if(counter > 40)
     {
-        if(::GetAsyncKeyState('N'))
+        if(dwKey == 'N')
         {
             unsigned char detail = pUITerrain->getDetailLevel();
             detail++;
@@ -223,7 +271,7 @@ void CTheApp::ReadKeys()
             }
         }
 
-        if(::GetAsyncKeyState('M'))
+        if(dwKey == 'M')
         {
             unsigned char detail = pUITerrain->getDetailLevel();
             detail--;
@@ -234,15 +282,6 @@ void CTheApp::ReadKeys()
             }
         }
         counter = 0;
-    }
-}
-
-
-void CTheApp::OnKeyDown(DWORD dwKey)
-{
-    if (dwKey == VK_ESCAPE)
-    {
-        Close();
     }
 }
 
@@ -302,3 +341,95 @@ void CTheApp::CheckTexturingCaps(void)
 
 }
 
+void CTheApp::UpdateKeyboard(void)
+{
+	//read the keyboard data
+	DWORD i;
+	TCHAR msg[256];
+ 
+	if(SUCCEEDED(m_Keyboard.Update()))
+	{
+		for(i=0; i<m_Keyboard.GetButtonCount(); i++)
+		{
+			if(m_Keyboard.GetButton(i))
+			{
+                #ifdef _DEBUG
+				_stprintf_s(msg, _T("KEYBOARD: %d DOWN"), i);
+				DrawText(	0,
+						m_TextRow,
+						msg,
+						D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f));
+				m_TextRow += GetTextHeight();
+                #endif
+			}
+		}
+	}
+	m_TextRow += GetTextHeight();
+}
+ 
+void CTheApp::UpdateMouse(void)
+{
+	//read the mouse data
+	DWORD i;
+	TCHAR msg[256];
+ 
+	if(SUCCEEDED(m_Mouse.Update()))
+	{
+		//please note that we track mouse position by reading it's changes, not absolute coordinates
+		m_iMouseX += m_Mouse.GetState().lX;
+		m_iMouseY += m_Mouse.GetState().lY;
+		m_iMouseZ += m_Mouse.GetState().lZ;
+ 
+		// keep mouse positions inside our window
+		if(m_iMouseX <0) {
+			m_iMouseX = 0;
+		}
+		if(m_iMouseY <0) {
+			m_iMouseY = 0;
+		}
+		const int iMaxX = GetWindowRect().right;
+		if(m_iMouseX > iMaxX) {
+			m_iMouseX = iMaxX;
+		}
+		const int iMaxY = GetWindowRect().bottom;
+		if(m_iMouseY > iMaxY) {
+			m_iMouseY = iMaxY;
+		}
+ 
+        #ifdef _DEBUG
+		//print mouse coordinate changes
+		_stprintf_s(	msg,
+				_T("MOUSE CHANGE: x:%d y:%d z:§%d"),
+				m_Mouse.GetState().lX,
+				m_Mouse.GetState().lY,
+				m_Mouse.GetState().lZ);
+		DrawTextRow( msg, D3DXCOLOR(1.0f, 0.25f, 0.60f, 1.0f) );
+ 
+		//print mouse coordinates
+		_stprintf_s(	msg,
+				_T("MOUSE COORDS: x:%d y:%d z:%d"),
+				m_iMouseX,
+				m_iMouseY,
+				m_iMouseZ);
+		DrawTextRow( msg, D3DXCOLOR(1.0f, 0.25f, 0.60f, 1.0f) );
+ 
+		//print "virtual" mouse cursor 
+		//(it's not in sync with windows cursor because windows adds it's own sensitivity
+		// modifiers to mouse, use getmousepos if you want some values)
+		DrawText(   m_iMouseX,
+				    m_iMouseY,
+				    _T("M"),
+				    D3DXCOLOR(0.8f, 0.4f, 0.4f, 0.5f));
+ 
+		for(i=0; i<m_Mouse.GetButtonCount(); i++)
+		{
+			if(m_Mouse.GetButton(i))
+			{
+				//print the mosue button index
+				_stprintf_s(msg, _T("MOUSE: %d DOWN"), i);
+				DrawTextRow( msg, D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f) );
+			}
+		}
+        #endif
+	}
+}
