@@ -578,14 +578,14 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Team"
+				Name="Player"
 				>
 				<File
-					RelativePath=".\Team\Team.cpp"
+					RelativePath=".\Player\Player.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Team\Team.h"
+					RelativePath=".\Player\Player.h"
 					>
 				</File>
 			</Filter>

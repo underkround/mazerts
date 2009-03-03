@@ -24,7 +24,7 @@
 #include "IAssetRadar.h"
 #include "../Common/Vector3.h"
 #include "../Weapon/IWeapon.h"
-#include "../Team/Team.h"
+#include "../Player/Player.h"
 
 class IAssetListener;
 
@@ -89,12 +89,24 @@ public:
     /**
      * Set the owner of this unit
      */
-    inline void setOwner(Team* owner) { m_pOwner = owner; }
+    void setOwner(Player* owner) { m_pOwner = owner; }
+
+// ===== Getters
 
     /**
-     * Return the owner of this asset, or NULL if no owner
+     * @return  The owner of this asset, or NULL if no owner
      */
-    virtual inline Team* getOwner() { return m_pOwner; }
+    inline Player* getOwner()       { return m_pOwner; }
+
+    /**
+     * @return  The current main state of this asset
+     */
+    inline State getState()         { return m_State; }
+
+    /**
+     * @return  The concrete type of this asset
+     */
+    inline Type getAssetType()      { return m_AssetType; }
 
 // ===== Size
 
@@ -107,6 +119,7 @@ public:
 
     /**
      * Indications weather this asset has a weapon attached.
+     * @return  true, if this asset has weapon attached to it
      */
     inline const bool hasWeapon() const { return (m_pWeapon) ? true : false; }
 
@@ -136,7 +149,6 @@ public:
     inline Vector3* getDirection()  { return &m_Direction; }
     inline short getGridX()         { return (short)m_Position.x; }
     inline short getGridY()         { return (short)m_Position.y; }
-    inline Type getAssetType()      { return m_AssetType; }
 
 // ===== Listeners
 
@@ -213,7 +225,7 @@ protected:
 
     State           m_State;        // the current state of the asset
 
-    Team*           m_pOwner;       // the owner of this unit
+    Player*         m_pOwner;       // the owner of this unit
 
     unsigned char   m_Width;        // sizes
     unsigned char   m_Height;

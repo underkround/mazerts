@@ -318,6 +318,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Model\Asset\IAssetListener.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Model\Asset\IAssetRadar.cpp"
 					>
 				</File>
@@ -515,14 +519,14 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Team"
+				Name="Player"
 				>
 				<File
-					RelativePath="..\Model\Team\Team.cpp"
+					RelativePath="..\Model\Player\Player.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\Model\Team\Team.h"
+					RelativePath="..\Model\Player\Player.h"
 					>
 				</File>
 			</Filter>

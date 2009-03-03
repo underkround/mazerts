@@ -9,7 +9,7 @@
 #include "AssetFactory.h"
 #include "GroundMovingLogic.h"
 
-Unit* AssetFactory::createUnit( Team* owner, int unitType, short positionX, short positionY)
+Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, short positionY)
 {
     // create unit
     Unit* u = new Unit(unitType);
@@ -37,7 +37,7 @@ Unit* AssetFactory::createUnit( Team* owner, int unitType, short positionX, shor
 }
 
 
-Building* AssetFactory::createBuilding( Team* owner, int buildingType, short positionX, short positionY)
+Building* AssetFactory::createBuilding(Player* owner, int buildingType, short positionX, short positionY)
 {
     Building* b = new Building(buildingType);
     b->setOwner(owner);

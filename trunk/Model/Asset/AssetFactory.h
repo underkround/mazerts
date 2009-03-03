@@ -23,7 +23,7 @@ public:
      * Creates new unit, sets the parameters against unitType
      * @return pointer to new Unit instance
      */
-    static Unit* createUnit(Team* owner,
+    static Unit* createUnit(Player* owner,
                             int unitType,
                             short positionX,
                             short positionY);
@@ -32,7 +32,7 @@ public:
      * Creates new building, sets the parameters against buildingType
      * @return pointer to new Building instance
      */
-    static Building* createBuilding(Team* owner,
+    static Building* createBuilding(Player* owner,
                                     int buildingType,
                                     short positionX,
                                     short positionY);
