@@ -109,5 +109,4 @@ private:
     bool m_Help;
 
     UI3DObjectManager* m_pManager;
-
 };

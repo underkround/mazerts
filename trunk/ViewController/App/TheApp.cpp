@@ -10,6 +10,9 @@
 #include "../../Model/PathFinding/PathFinderMaster.h"
 #include "../../Model/Asset/AssetFactory.h"
 
+#define KEYBOARD_CAMSPEED 60.0f
+#define MOUSE_CAMSPEED 2.0f
+
 CTheApp::CTheApp(void)
 {
     m_Help = true;
@@ -180,9 +183,9 @@ void CTheApp::OnFlip(void)
         
         if(m_Help)
         {
+            DrawTextRow(_T("Drag with right mouse button pressed to pan view"), 0xFFFFFFFF);
+            DrawTextRow(_T("Mouse scroll wheel zooms"), 0xFFFFFFFF);
             DrawTextRow(_T("Use LEFT, RIGHT, UP, DOWN, A and Z to move camera"), 0xFFFFFFFF);
-            DrawTextRow(_T("Use LEFT, RIGHT, UP, DOWN, A and Z to move camera"), 0xFFFFFFFF);
-            DrawTextRow(_T("Press ESC to quit"), 0xFFFFFFFF);
             DrawTextRow(_T("Use space to generate new terrain"), 0xFFFFFFFF);
             DrawTextRow(_T("1 replaces the texture with passability data"), 0xFFFFFFFF);
             DrawTextRow(_T("TAB switches fillmode (solid/wireframe)"), 0xFFFFFFFF);
@@ -233,34 +236,33 @@ void CTheApp::OnKeyDown(DWORD dwKey)
     {
         Close();
     }
-    const float camspeed = 60.0f;
 
     // read keys to rotate the quad
     if (dwKey == VK_LEFT)
     {
-        m_fX -= camspeed * GetFrameTime();
+        m_fX -= KEYBOARD_CAMSPEED * GetFrameTime();
     }
     else if (dwKey == VK_RIGHT)
     {
-        m_fX += camspeed * GetFrameTime();
+        m_fX += KEYBOARD_CAMSPEED * GetFrameTime();
     }
     
     if (dwKey == VK_UP)
     {
-        m_fY += camspeed * GetFrameTime();
+        m_fY += KEYBOARD_CAMSPEED * GetFrameTime();
     }
     else if (dwKey == VK_DOWN)
     {
-        m_fY -= camspeed * GetFrameTime();
+        m_fY -= KEYBOARD_CAMSPEED * GetFrameTime();
     }
     
     if (dwKey == 'A')
     {
-        m_fZ += camspeed * GetFrameTime();
+        m_fZ += KEYBOARD_CAMSPEED * GetFrameTime();
     }
     else if (dwKey == 'Z')
     {
-        m_fZ -= camspeed * GetFrameTime();
+        m_fZ -= KEYBOARD_CAMSPEED * GetFrameTime();
     }
 
     if(dwKey == VK_SPACE)
@@ -392,7 +394,7 @@ void CTheApp::UpdateKeyboard(void)
 						D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f));
 				m_TextRow += GetTextHeight();
                 #endif
-			}
+		    }
 		}
 	}
 	m_TextRow += GetTextHeight();
@@ -403,7 +405,7 @@ void CTheApp::UpdateMouse(void)
 	//read the mouse data
 	DWORD i;
 	TCHAR msg[256];
- 
+
 	if(SUCCEEDED(m_Mouse.Update()))
 	{
 		//please note that we track mouse position by reading it's changes, not absolute coordinates
@@ -426,7 +428,19 @@ void CTheApp::UpdateMouse(void)
 		if(m_iMouseY > iMaxY) {
 			m_iMouseY = iMaxY;
 		}
+
+        //mouse zoom
+        m_fZ += MOUSE_CAMSPEED * GetFrameTime() * m_Mouse.GetState().lZ;
+
+        //mouse dragging
+        if(m_Mouse.GetButton(1) == 1)
+        {
+            m_fX -= GetFrameTime() * m_Mouse.GetState().lX * MOUSE_CAMSPEED;
+            m_fY += GetFrameTime() * m_Mouse.GetState().lY * MOUSE_CAMSPEED;
+            //TODO: move faster when farther away from terrain
+        }
  
+        /*
         #ifdef _DEBUG
 		//print mouse coordinate changes
 		_stprintf_s(	msg,
@@ -441,7 +455,7 @@ void CTheApp::UpdateMouse(void)
 				_T("MOUSE COORDS: x:%d y:%d z:%d"),
 				m_iMouseX,
 				m_iMouseY,
-				m_iMouseZ);
+                m_iMouseZ);
 		DrawTextRow( msg, D3DXCOLOR(1.0f, 0.25f, 0.60f, 1.0f) );
  
 		//print "virtual" mouse cursor 
@@ -462,5 +476,6 @@ void CTheApp::UpdateMouse(void)
 			}
 		}
         #endif
+        */
 	}
 }
