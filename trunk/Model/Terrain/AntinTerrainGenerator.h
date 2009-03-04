@@ -70,11 +70,12 @@ private:
      */
     void faultLines(unsigned char **ppVertexHeightData, const unsigned short terrainSize, int flCount, int flMod);
     /**
-     * makes some circular hills
+     * makes some perfectly circular hills to random locations
      * @param ppVertexHeightData    height data
      * @param terrainSize           terrain height/width
-     * @param flCount               amount of fault lines to create
-     * @param flMod                 height of a single fault line
+     * @param cirCount              amount of hills
+     * @param cirRad                radius of a single hill
+     * @param cirHeight             height of a single hill
      */
     void makeHills(unsigned char **ppVertexHeightData, const unsigned short terrainSize, int cirCount, int cirRad, int cirHeight);
 
