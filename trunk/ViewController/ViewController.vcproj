@@ -525,6 +525,10 @@
 					RelativePath="..\Model\PathFinding\PathFinderMaster.h"
 					>
 				</File>
+				<File
+					RelativePath="..\Model\PathFinding\PathNode.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Player"
@@ -751,6 +755,18 @@
 				</File>
 				<File
 					RelativePath=".\App\InputMouse.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="3DDebug"
+				>
+				<File
+					RelativePath=".\3DDebug\UI3DDebug.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\3DDebug\UI3DDebug.h"
 					>
 				</File>
 			</Filter>

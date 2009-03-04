@@ -188,7 +188,7 @@ void GroundMovingLogic::move(float deltaTime)
     }
     
     //If current direction differs more than 35 degrees, slow down
-    if(fabs(turn) > 0.61f)
+    if(fabs(turn) > 0.61f || m_State == IDLE)
     {
         //Braking factor to data?
         m_CurrentSpeed *= (0.95f - (0.95f * deltaTime));

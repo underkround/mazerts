@@ -9,6 +9,7 @@
 #include "../../Model/Terrain/AntinTerrainGenerator.h"
 #include "../../Model/PathFinding/PathFinderMaster.h"
 #include "../../Model/Asset/AssetFactory.h"
+#include "../3DDebug/UI3DDebug.h"
 
 #define KEYBOARD_CAMSPEED 60.0f
 #define MOUSE_CAMSPEED 2.0f
@@ -80,8 +81,19 @@ HRESULT CTheApp::OnCreate(void)
     AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 256);
     pTerrain->initialize(pGenerator);
 
+    pTerrain->setWaterLevel(0);
+
     UITerrain::create(GetDevice());
     pUITerrain = UITerrain::getInstance();
+
+    //HELPER DEBUG METHODS TO DRAW STUFF INTO SCENE
+    UI3DDebug::setDevice(GetDevice());
+    UI3DDebug::addSphere(0, 0, -100, 1.0f);
+    UI3DDebug::addLine(0, 0, 0, 127.0f, 127.0f, -25.5f, 0.2f);
+    UI3DDebug::addLine(0, 0, 0, 0, 0, -25.5f, 0.4f);
+    UI3DDebug::addLine(0, 0, 0, 255.0f, 255.0f, -25.5f, 0.2f);
+                              
+
 
     return S_OK;
 }
@@ -92,7 +104,7 @@ void CTheApp::OnRelease(void)
     PathFinderMaster::cancelAll();
     //Tell the thread to stop and wait for it to finish
     PathFinderMaster::getInstance()->stop();
-    PathFinderMaster::getInstance()->wait();    
+    PathFinderMaster::getInstance()->wait();
 
     // clear the device array
 	m_arrInputDevices.clear();
