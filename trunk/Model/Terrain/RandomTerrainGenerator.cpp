@@ -30,7 +30,7 @@ void RandomTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightDat
     {
         for(int x = 0; x < m_Size; x++)
         {
-            ppVertexHeightData[y][x] = + y + Terrain::DEFAULT_WATERLEVEL;
+            ppVertexHeightData[y][x] = x + y + Terrain::DEFAULT_WATERLEVEL;
         }
     }
     //return;
@@ -49,7 +49,7 @@ void RandomTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightDat
     Terrain::getInstance()->smoothMap(10);
 
     //Create mountains
-    int passes = rand() % 50;
+    int passes = 10 + rand() % 100;
     for(int i = 0; i < passes; i++)
     {
         //Select a random location for the mountain

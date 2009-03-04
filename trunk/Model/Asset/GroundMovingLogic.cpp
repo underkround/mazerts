@@ -115,6 +115,10 @@ void GroundMovingLogic::askPath()
     {
         m_State = WAITPATH;
     }
+    else
+    {
+        m_State = IDLE;
+    }
 }
 
 void GroundMovingLogic::waitPath()
@@ -126,7 +130,7 @@ void GroundMovingLogic::waitPath()
 
         if(m_pPathNode == NULL)
         {
-            m_State = ASKPATH;
+            m_State = IDLE;
         }
     }
     else if(m_pAgent->getState() != IPathFinder::NOT_FINISHED)
@@ -176,7 +180,7 @@ void GroundMovingLogic::move(float deltaTime)
     static const float maxMoveSpeed = 6.0f;
 
     //Static deceleration, due to friction etc.
-    m_CurrentSpeed *= 0.98f;
+    m_CurrentSpeed *= (0.99f - (0.99f * deltaTime));
 
     //Target direction
     float targetAngle = atan2(m_TargetDir.y, m_TargetDir.x);
@@ -197,7 +201,7 @@ void GroundMovingLogic::move(float deltaTime)
     if(fabs(turn) > 0.61f)
     {
         //Braking factor to data?
-        m_CurrentSpeed *= 0.95f;
+        m_CurrentSpeed *= (0.95f - (0.95f * deltaTime));
     }
 
 
@@ -219,7 +223,7 @@ void GroundMovingLogic::move(float deltaTime)
     {
         //Heading (pretty much) toward correct direction, hit the pedal to the metal
         //TODO: Acceleration from data?
-        m_CurrentSpeed += 0.5f * deltaTime;
+        m_CurrentSpeed += 1.0f * deltaTime;
         
         if(m_CurrentSpeed > maxMoveSpeed)
         {
@@ -231,7 +235,10 @@ void GroundMovingLogic::move(float deltaTime)
     pos->x += m_CurrentSpeed * dir->x;
     pos->y += m_CurrentSpeed * dir->y;
 
-
+    if(pos->x < 0 || pos->y < 0)
+    {
+        int k = 1;
+    }
 
 }
 

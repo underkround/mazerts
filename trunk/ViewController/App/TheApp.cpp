@@ -77,7 +77,7 @@ HRESULT CTheApp::OnCreate(void)
     }
 
     Terrain* pTerrain = Terrain::getInstance();
-    RandomTerrainGenerator* pGenerator = new RandomTerrainGenerator(100, pTerrain->getSize());
+    RandomTerrainGenerator* pGenerator = new RandomTerrainGenerator(100, 256);
     pTerrain->initialize(pGenerator);
 
     UITerrain::create(GetDevice());

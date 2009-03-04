@@ -470,15 +470,15 @@ void UITerrain::calculateTriangleNormals()
             //Lower left
             v0.x = (float)x + detail;
             v0.y = (float)y;
-            v0.z = -(float)ppVertexHeightData[i][j + detail] * HEIGHTFACTOR;
+            v0.z = -(float)ppVertexHeightData[y][x + detail] * HEIGHTFACTOR;
 
             v1.x = (float)x;
             v1.y = (float)y;
-            v1.z = -(float)ppVertexHeightData[i][j] * HEIGHTFACTOR;
+            v1.z = -(float)ppVertexHeightData[y][x] * HEIGHTFACTOR;
 
             v2.x = (float)x;
             v2.y = (float)y + detail;
-            v2.z = -(float)ppVertexHeightData[i + detail][j] * HEIGHTFACTOR;
+            v2.z = -(float)ppVertexHeightData[y + detail][x] * HEIGHTFACTOR;
 
             D3DXVec3Subtract(&sub1, &v1, &v0);
             D3DXVec3Subtract(&sub2, &v2, &v0);
@@ -489,15 +489,15 @@ void UITerrain::calculateTriangleNormals()
             //Upper right
             v0.x = (float)x;
             v0.y = (float)y + detail;
-            v0.z = -(float)ppVertexHeightData[i + detail][j] * HEIGHTFACTOR;
+            v0.z = -(float)ppVertexHeightData[y + detail][x] * HEIGHTFACTOR;
 
             v1.x = (float)x + detail;
             v1.y = (float)y + detail;
-            v1.z = -(float)ppVertexHeightData[i + detail][j + detail] * HEIGHTFACTOR;
+            v1.z = -(float)ppVertexHeightData[y + detail][x + detail] * HEIGHTFACTOR;
 
             v2.x = (float)x + detail;
             v2.y = (float)y;
-            v2.z = -(float)ppVertexHeightData[i][j + detail] * HEIGHTFACTOR;
+            v2.z = -(float)ppVertexHeightData[y][x + detail] * HEIGHTFACTOR;
 
             D3DXVec3Subtract(&sub1, &v1, &v0);
             D3DXVec3Subtract(&sub2, &v2, &v0);
@@ -540,8 +540,8 @@ float UITerrain::calculateTriangleHeightAt(float x, float y)
 
     //Vertex heights are got from nearest vertex that is used on this detail-level
     //Coordinate of the "real" quad (0, detail, detail * 2, detail * 3...) in model-side
-    int verX = (int)(x - fractX);
-    int verY = (int)(y - fractY);
+    int verX = iX * detail;//(int)(x - fractX);
+    int verY = iY * detail;//(int)(y - fractY);
 
     float result = 0.0f;
     bool upperRight = false;
