@@ -23,8 +23,8 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, sho
     default:
     case AssetFactory::UNIT_TYPE_DEBUG:
         // create unit & set it's properties
-        u->setWidth(2);
-        u->setHeight(2);
+        u->setWidth(4);
+        u->setHeight(4);
         //u->setWeapon(NULL); // TODO
         u->setMovingLogic(new GroundMovingLogic()); // TODO
         break;

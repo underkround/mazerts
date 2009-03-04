@@ -116,7 +116,7 @@ void GroundMovingLogic::move(const float deltaTime)
     Vector3* pos = m_pUnit->getPosition();
 
     //If close enough to current, get next target square
-    if( fabs(pos->x  - m_pPathNode->x) < 0.5f && fabs(pos->y - m_pPathNode->y) < 0.5f)
+    if( fabs(pos->x  - m_pPathNode->x) < m_pUnit->getWidth() && fabs(pos->y - m_pPathNode->y) < m_pUnit->getHeight())
     {
         m_pPathNode = m_pAgent->getNextPathNode();
     }
@@ -128,60 +128,74 @@ void GroundMovingLogic::move(const float deltaTime)
     }
     else
     {
-        dir->x =  m_pPathNode->x - pos->x;
-        dir->y =  m_pPathNode->y - pos->y;
-        dir->z = 0.0f;
+        Vector3 targetDir;
+        targetDir.x = m_pPathNode->x - pos->x;
+        targetDir.y = m_pPathNode->y - pos->y;
+        targetDir.z = 0.0f;
+        targetDir.normalize();
         
-        //TODO: Speed from unit-data
-        float currentSpeed = 5.0f * deltaTime;
+        //TODO: Maximum turning speed as radians per second to unit TYPE data
+        static const float maxTurnSpeed = 1.0f * 3.1415f;
+        
+        //TODO: Maximum moving speed as units (grid squares) per second to unit TYPE data
+        static const float maxMoveSpeed = 20.0f;
 
-        //TODO: better moving and turning
-        //TODO: movecost affects movespeed?
-        if(dir->x > 0.0f)
-        {
-            if(currentSpeed < dir->x)
-            {
-                pos->x += currentSpeed;
-            }
-            else
-            {
-                pos->x += dir->x;
-            }
-        }
-        else if(dir->x < 0.0f)
-        {
-            if(currentSpeed > dir->x)
-            {
-                pos->x -= currentSpeed;
-            }
-            else
-            {
-                pos->x -= dir->x;
-            }             
-        }
+        //TODO: CURRENT moving speed to unit data (not TYPE data)
+        static float currentSpeed = 0.0f;
+
+        //Deceleration
+        currentSpeed *= 0.999f;
+
+
+        //Target direction
+        float targetAngle = atan2(targetDir.y, targetDir.x);
+
+        //Turning speed        
+        float turnSpeed = maxTurnSpeed * deltaTime;
+
+        //Difference between target and current angle
+        float turn = targetAngle - atan2(dir->y, dir->x);
         
-        if(dir->y > 0.0f)
+        
+        //If current direction differs more than 35 degrees, slow down
+        if(fabs(turn) > 0.61f)
         {
-            if(currentSpeed < dir->y)
+            //Braking factor to data?
+            currentSpeed *= 0.95f;
+        }
+
+
+        if(turnSpeed > fabs(turn))
+        {
+            turnSpeed = -turn;
+        }
+        if(turn > 0.01f)
+        {
+            dir->x = cos(turnSpeed) * dir->x - sin(turnSpeed) * dir->y;
+            dir->y = cos(turnSpeed) * dir->y + sin(turnSpeed) * dir->x;
+        }
+        else if(turn < -0.01f)
+        {
+            dir->x = cos(-turnSpeed) * dir->x - sin(-turnSpeed) * dir->y;
+            dir->y = cos(-turnSpeed) * dir->y + sin(-turnSpeed) * dir->x;
+        }
+        else
+        {
+            //Heading (pretty much) toward correct direction, hit the pedal to the metal
+            //TODO: Acceleration from data?
+            currentSpeed += 0.5f * deltaTime;
+            
+            if(currentSpeed > maxMoveSpeed)
             {
-                pos->y += currentSpeed;
-            }
-            else
-            {
-                pos->y += dir->y;
+                currentSpeed = maxMoveSpeed;
             }
         }
-        else if(dir->y < 0.0f)
-        {
-            if(currentSpeed > dir->y)
-            {
-                pos->y -= currentSpeed;
-            }
-            else
-            {
-                pos->y -= dir->y;
-            }             
-        }
+
+        //Move the unit towards current direction by current speed
+        pos->x += currentSpeed * dir->x;
+        pos->y += currentSpeed * dir->y;
+
+
         
     }
 }

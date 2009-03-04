@@ -68,7 +68,7 @@ HRESULT CTheApp::OnCreate(void)
     m_pManager = UI3DObjectManager::getInstance();
 
     //TEST
-    for(int i = 0; i < 50; i++)
+    //for(int i = 0; i < 100; i++)
     {
         AssetFactory::createUnit(NULL, 0, RandInt(0, 200), RandInt(0, 200));
     }
@@ -87,8 +87,9 @@ HRESULT CTheApp::OnCreate(void)
 void CTheApp::OnRelease(void)
 {
     PathFinderMaster::cancelAll();
+    //Tell the thread to stop and wait for it to finish
     PathFinderMaster::getInstance()->stop();
-    Sleep(100);
+    PathFinderMaster::getInstance()->wait();    
 
     // clear the device array
 	m_arrInputDevices.clear();
@@ -154,6 +155,22 @@ void CTheApp::OnFlip(void)
 
     timer1->EndTimer();
 
+    D3DLIGHT9 light;
+    light.Type = D3DLIGHT_POINT;
+    light.Position = D3DXVECTOR3(100.0f, 100.0f, -100.0f);    
+    light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+    light.Specular = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+    light.Ambient = D3DXCOLOR(0.1f, 0.1f, 0.1f, 1.0f);
+    light.Range = 10000.0f;
+    light.Attenuation0 = 0.01f;
+    light.Attenuation1 = 0.001f;
+    light.Attenuation2 = 0.0001f;
+
+    pDevice->SetLight(0, &light);
+    pDevice->LightEnable(0, TRUE);
+
+
+
     timer2->BeginTimer();
     if (SUCCEEDED(pDevice->BeginScene()))
     {
@@ -179,12 +196,15 @@ void CTheApp::OnFlip(void)
         _stprintf_s(text, _T("FPS: %.2f"), (1.0f / GetFrameTime()));
         DrawText(500, 0, text, 0xFFFFFFFF);
 
+        _stprintf_s(text, _T("Update: %.2fms  Render: %.2fms"), timer1->GetElapsedSeconds() * 1000.0f, time * 1000.0f);
+        DrawText(500, 20, text, 0xFFFFFFFF);
+
         _stprintf_s(text, _T("Detail level: %d"), pUITerrain->getDetailLevel());
         DrawText(500, 40, text, 0xFFFFFFFF);
 
-        _stprintf_s(text, _T("Update: %.2f  Render: %.2f"), timer1->GetElapsedSeconds() * 1000.0f, time * 1000.0f);
-        DrawText(500, 20, text, 0xFFFFFFFF);
-       
+        _stprintf_s(text, _T("Pathfinders  Running:%d  Waiting: %d"), PathFinderMaster::getRunningAmount(), PathFinderMaster::getWaitingAmount());
+        DrawText(500, 60, text, 0xFFFFFFFF);        
+
         m_TextRow = 0;
         EndText();
 
@@ -213,7 +233,7 @@ void CTheApp::OnKeyDown(DWORD dwKey)
     {
         Close();
     }
-    const float camspeed = 20.0f;
+    const float camspeed = 60.0f;
 
     // read keys to rotate the quad
     if (dwKey == VK_LEFT)

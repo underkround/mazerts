@@ -67,7 +67,7 @@ public:
     D3DXVECTOR3 getNormalAt(float x, float y, int j, int k);
 
     /**
-     * Calculates height of the map at given position
+     * Calculates height of the map at given position in current detail level
      */
     float calculateTriangleHeightAt(float x, float y);
 
@@ -132,7 +132,8 @@ private:
     D3DXVECTOR3 calculateNormalForVertex(unsigned short x, unsigned short y);
 
     /**
-     * Precalculates triangle normals into the m_ppTriangleNormals-array
+     * Calculates triangle normals into the m_ppTriangleNormals-array for current 
+     * detail level.
      */
     void calculateTriangleNormals();
 
@@ -189,7 +190,9 @@ private:
     float m_TextureRepeat;
 
     /**
-     * Look-up table of triangle normals
+     * Look-up table of triangle normals. NOTE: if other than highest detail level
+     * (= level 0) is used, the data will NOT be placed according to Model-side
+     * terrain squares
      */
     D3DXVECTOR3*** m_pppTriangleNormals;
 

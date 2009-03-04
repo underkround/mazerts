@@ -3,7 +3,7 @@
 #include "../App/I3DObject.h"
 
 //TODO: Move this to manager or somewhere more obvious (Global unit scale)
-float UIUnit::Scale = 0.05f;
+float UIUnit::Scale = 0.075f;
 
 void UIUnit::Update(float fFrameTime) 
 {

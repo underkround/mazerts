@@ -32,17 +32,6 @@ UITerrain::UITerrain()
     ::memset(&m_Mat, 0, sizeof(D3DMATERIAL9));
     m_Mat.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
  
-    //Create triangle normals-array
-    m_pppTriangleNormals = new D3DXVECTOR3**[m_Size];
-    for(int i = 0; i < m_Size; i++)
-    {
-        m_pppTriangleNormals[i] = new D3DXVECTOR3*[m_Size];
-
-        for(int j = 0; j < m_Size; j++)
-        {
-            m_pppTriangleNormals[i][j] = new D3DXVECTOR3[2];
-        }
-    }
 }
 
 UITerrain::~UITerrain(void)
@@ -104,7 +93,7 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
 {
 
     pDevice->SetTransform(D3DTS_WORLD, &m_World);
-
+    
     pDevice->SetFVF( VERTEX2UV::GetFVF() );
     pDevice->SetRenderState(D3DRS_FILLMODE, m_FillMode);
 
@@ -136,7 +125,7 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
                 pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
 			}
 
-            //pDevice->SetMaterial(&m_Mat);
+            pDevice->SetMaterial(&m_Mat);
 
             if ( m_pIB[i][j] )
             {
@@ -174,6 +163,18 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
 
     unsigned short vertexSize = PATCHSIZE + 1;
     m_NumVertices = vertexSize * vertexSize;
+
+    //Create triangle normals-array
+    m_pppTriangleNormals = new D3DXVECTOR3**[m_Size];
+    for(int i = 0; i < m_Size; i++)
+    {
+        m_pppTriangleNormals[i] = new D3DXVECTOR3*[m_Size];
+
+        for(int j = 0; j < m_Size; j++)
+        {
+            m_pppTriangleNormals[i][j] = new D3DXVECTOR3[2];
+        }
+    }
 
     //Calculate trianglenormals
     calculateTriangleNormals();
@@ -390,22 +391,49 @@ Triangle edges intersecting in vertex:
     }
 
     D3DXVec3Normalize(&normal, &normal);
-    normal.z = -normal.z;
 
     return normal;
 }
 
 D3DXVECTOR3 UITerrain::getNormalAt(float x, float y, int tilesX, int tilesY)
 {
-    //D3DXVECTOR3 result = calculateNormalForVertex((unsigned short)x, (unsigned short)y);
-    D3DXVECTOR3 result;
-    result.x = result.y = result.z = 0;
+    
+    D3DXVECTOR3 result(0, 0, 0);
+    
+    /*
     for(int ix=0; ix<tilesX; ix++) {
         for(int iy=0; iy<tilesY; iy++) {
             result += calculateNormalForVertex((unsigned short)x+ix, (unsigned short)y+iy);
         }
     }
 
+    D3DXVec3Normalize(&result, &result);*/
+    
+    int detail = 1 << m_DetailLevel;
+    float inverseFactor = 1.0f / detail;
+    
+    int iX = (int)(x * inverseFactor);
+    int iY = (int)(y * inverseFactor);
+    
+    tilesX = (int)((float)tilesX * inverseFactor);
+    tilesY = (int)((float)tilesY * inverseFactor);
+
+    if(tilesX + tilesY > 0)
+    {
+        for(int i = 0; i < tilesX; i++) 
+        {
+            for(int j = 0; j < tilesY; j++) 
+            {
+                result += m_pppTriangleNormals[iY + i][iX + j][0];
+                result += m_pppTriangleNormals[iY + i][iX + j][1];
+            }
+        }
+    }
+    else
+    {
+        result += m_pppTriangleNormals[iY][iX][0];
+        result += m_pppTriangleNormals[iY][iX][1];
+    }
     D3DXVec3Normalize(&result, &result);
 
     return result;
@@ -421,47 +449,54 @@ void UITerrain::calculateTriangleNormals()
     D3DXVECTOR3 sub1;
     D3DXVECTOR3 sub2;
 
+    //Get detail-factor (2^m_DetailLevel = 1, 2, 4, 8...)
+    unsigned char detail = 1 << m_DetailLevel;
+
     unsigned char const * const * ppVertexHeightData = Terrain::getInstance()->getTerrainVertexHeightData();
 
-    for(int i = 0; i < m_Size; i++)    
+    int loops = m_Size / detail;
+
+    for(int i = 0; i < loops; i++) 
     {
-        for(int j = 0; j < m_Size; j++)        
+        for(int j = 0; j < loops; j++)
         {
+            int x = j * detail;
+            int y = i * detail;
             //Lower left
-            v0.x = (float)j + 1.0f;
-            v0.y = (float)i;
-            v0.z = (float)ppVertexHeightData[i][j + 1] * HEIGHTFACTOR;
+            v0.x = (float)x + detail;
+            v0.y = (float)y;
+            v0.z = -(float)ppVertexHeightData[i][j + detail] * HEIGHTFACTOR;
 
-            v1.x = (float)j;
-            v1.y = (float)i;
-            v1.z = (float)ppVertexHeightData[i][j] * HEIGHTFACTOR;
+            v1.x = (float)x;
+            v1.y = (float)y;
+            v1.z = -(float)ppVertexHeightData[i][j] * HEIGHTFACTOR;
 
-            v2.x = (float)j;
-            v2.y = (float)i + 1.0f;
-            v2.z = (float)ppVertexHeightData[i + 1][j] * HEIGHTFACTOR;
+            v2.x = (float)x;
+            v2.y = (float)y + detail;
+            v2.z = -(float)ppVertexHeightData[i + detail][j] * HEIGHTFACTOR;
 
             D3DXVec3Subtract(&sub1, &v1, &v0);
             D3DXVec3Subtract(&sub2, &v2, &v0);
 
-            D3DXVec3Cross(&m_pppTriangleNormals[i][j][0], &sub2, &sub1);            
+            D3DXVec3Cross(&m_pppTriangleNormals[i][j][0], &sub1, &sub2);
             D3DXVec3Normalize(&m_pppTriangleNormals[i][j][0], &m_pppTriangleNormals[i][j][0]);
 
             //Upper right
-            v0.x = (float)j;
-            v0.y = (float)i + 1.0f;
-            v0.z = (float)ppVertexHeightData[i + 1][j] * HEIGHTFACTOR;
+            v0.x = (float)x;
+            v0.y = (float)y + detail;
+            v0.z = -(float)ppVertexHeightData[i + detail][j] * HEIGHTFACTOR;
 
-            v1.x = (float)j + 1.0f;
-            v1.y = (float)i + 1.0f;
-            v1.z = (float)ppVertexHeightData[i + 1][j + 1] * HEIGHTFACTOR;
+            v1.x = (float)x + detail;
+            v1.y = (float)y + detail;
+            v1.z = -(float)ppVertexHeightData[i + detail][j + detail] * HEIGHTFACTOR;
 
-            v2.x = (float)j + 1.0f;
-            v2.y = (float)i;
-            v2.z = (float)ppVertexHeightData[i][j + 1] * HEIGHTFACTOR;
+            v2.x = (float)x + detail;
+            v2.y = (float)y;
+            v2.z = -(float)ppVertexHeightData[i][j + detail] * HEIGHTFACTOR;
 
             D3DXVec3Subtract(&sub1, &v1, &v0);
             D3DXVec3Subtract(&sub2, &v2, &v0);
-            D3DXVec3Cross(&m_pppTriangleNormals[i][j][1], &sub2, &sub1);   
+            D3DXVec3Cross(&m_pppTriangleNormals[i][j][1], &sub1, &sub2);
             D3DXVec3Normalize(&m_pppTriangleNormals[i][j][1], &m_pppTriangleNormals[i][j][1]);
         }
     }
@@ -472,60 +507,72 @@ void UITerrain::calculateTriangleNormals()
 
 float UITerrain::calculateTriangleHeightAt(float x, float y)
 {
-    D3DXVECTOR3 v0;
-    D3DXVECTOR3 v1;
-    D3DXVECTOR3 v2;
+    float height;
     D3DXVECTOR3 normal;
 
-    //Get the integer locations and fractional part of the float
-    unsigned short iX = (unsigned short)x;
-    unsigned short iY = (unsigned short)y;
-    float fractX = x - iX; //0...1.0f
-    float fractY = y - iY; //0...1.0f
-    
-    float result = 0.0f;
+    //Get detail-factor (2^m_DetailLevel = 1, 2, 4, 8...)
+    int detail = 1 << m_DetailLevel;
 
+    //Get the integer locations and "fractional part" of the float
+    
+    //Precalculate inverse factor so divisions can be done as multiplications
+    float inverseFactor = 1.0f / detail;
+    
+    //Casting will drop the fractional part off, which acts like rounding down
+    //The result will be the coordinate of the detail level-quad (0, 1, 2, 3
+    int iX = (int)(x * inverseFactor);
+    int iY = (int)(y * inverseFactor);
+    float fractX = x - (iX * detail); //0...detail, coordinate within detail level-quad
+    float fractY = y - (iY * detail); //0...detail
+
+    //Vertex heights are got from nearest vertex that is used on this detail-level
+    //Coordinate of the "real" quad (0, detail, detail * 2, detail * 3...) in model-side
+    int verX = (int)(x - fractX);
+    int verY = (int)(y - fractY);
+
+    float result = 0.0f;
+    bool upperRight = false;
     const unsigned char* const * ppVertexHeightData = Terrain::getInstance()->getTerrainVertexHeightData();
 
     //See which side of the terrain quad the point is
-    if(fractX + fractY < 1.0f)
+    if(fractX + fractY < detail)
     {        
         //Lower left
-        v0.x = iX + 1.0f;
-        v0.y = iY;
-        v0.z = ppVertexHeightData[iY][iX + 1] * HEIGHTFACTOR;
-                
-        v1.x = iX;
-        v1.y = iY;
-        v1.z = ppVertexHeightData[iY][iX] * HEIGHTFACTOR;
-
-        v2.x = iX;
-        v2.y = iY + 1.0f;
-        v2.z = ppVertexHeightData[iY + 1][iX] * HEIGHTFACTOR;
+        height = ppVertexHeightData[verY][verX] * HEIGHTFACTOR;
 
         normal = m_pppTriangleNormals[iY][iX][0];
     }
     else
     {
         //Upper right
-        
-        v0.x = iX;
-        v0.y = iY + 1.0f;
-        v0.z = ppVertexHeightData[iY + 1][iX] * HEIGHTFACTOR;
-
-        v1.x = iX + 1.0f;
-        v1.y = iY + 1.0f;
-        v1.z = ppVertexHeightData[iY + 1][iX + 1] * HEIGHTFACTOR;
-
-        v2.x = iX + 1.0f;
-        v2.y = iY;
-        v2.z = ppVertexHeightData[iY][iX + 1] * HEIGHTFACTOR;
+        upperRight = true;
+        height = ppVertexHeightData[verY + detail][verX] * HEIGHTFACTOR;
 
         normal = m_pppTriangleNormals[iY][iX][1];
     }
     
+    //Somethings need to be done on larger than 1x1 quads...
+    //if(detail > 1)
+    {
+        //Upper right triangles' height point is chosen from
+        //upper left:
+        //this one --> +--+
+        //             |\ |
+        //             | \|
+        //             +--+
+        //So the y-fraction needs to be adjusted to negative for upper right triangles
+        if(upperRight)
+        {
+            fractY -= detail;
+        }
+        //fractX *= inverseFactor;
+        //fractY *= inverseFactor;
+        //normal *= inverseFactor;
+    }
+
     //P.z = (N.x(P.x-V0.x) + N.y(P.y-V0.y))/-N.z + V0.z 
-    result = (((normal.x * (x - v0.x) + normal.y * (y - v0.y)) / normal.z) - v0.z);    
+    //result = (((normal.x * (x - verX) + normal.y * (y - verY)) / -normal.z) - height);    
+    result = (((normal.x * (fractX) + normal.y * (fractY)) / -normal.z) - height);    
 
     return result;
     
@@ -581,12 +628,14 @@ void UITerrain::setDetailLevel2(unsigned char detailLevel)
 {
     m_DetailLevel = detailLevel;
 
+    //Detail-factor, 2^m_DetailLevel (=1,2,4,8...)
     unsigned char detail = 1 << m_DetailLevel;
 
+    //Recalculate triangle normals for new detail-level
+    calculateTriangleNormals();
+
     m_NumPrimitives = (PATCHSIZE * PATCHSIZE * 2) / (detail * detail);
-
     unsigned short vertexSize = ((PATCHSIZE) / detail) + 1;
-
     VERTEX2UV* pVertices = NULL;
 
     unsigned const char* const * ppTerrainVertexData = Terrain::getInstance()->getTerrainVertexHeightData();    
@@ -596,7 +645,7 @@ void UITerrain::setDetailLevel2(unsigned char detailLevel)
         for(int x = 0; x < m_Patches; x++)
         {
             //Fill vertex-data
-            m_pVB[y][x]->Lock(0, 0, (void**)&pVertices, 0);
+            m_pVB[y][x]->Lock(0, 0, (void**)&pVertices, D3DLOCK_DISCARD);
             {
                 for(int i = 0; i < vertexSize; i++)
                 {
@@ -637,14 +686,16 @@ void UITerrain::setDetailLevel2(unsigned char detailLevel)
             //Vertice index
             int vIndex = 0;
 
+            int loops = (PATCHSIZE / detail);
+
             //Fill index-data
             m_pIB[y][x]->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD);
             {
-                for(int i = 0; i < (PATCHSIZE / detail); i++)
+                for(int i = 0; i < loops; i++)
                 {
                     vIndex = i * vertexSize;
 
-                    for(int j = 0; j < (PATCHSIZE / detail); j++)
+                    for(int j = 0; j < loops; j++)
                     {
                         pIndices[ind++] = vIndex;
                         pIndices[ind++] = vIndex + vertexSize;

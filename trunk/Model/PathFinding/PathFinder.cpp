@@ -259,8 +259,8 @@ void PathFinder::buildPath(PathNode* pCurrent)
 
     //Keep track of direction
     bool dirChange = true;
-    char oldxDir = -3; //sgn(pCurrent->pParent->x -  pCurrent->x);
-    short oldyDir = -3; //sgn(pCurrent->pParent->y -  pCurrent->y);   
+    char oldxDir = sgn(pCurrent->pParent->x -  pCurrent->x);
+    short oldyDir = sgn(pCurrent->pParent->y -  pCurrent->y);   
 
     while(pCurrent->pParent != NULL)
     {
