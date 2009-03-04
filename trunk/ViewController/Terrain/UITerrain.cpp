@@ -672,7 +672,7 @@ void UITerrain::setDetailLevel2(unsigned char detailLevel)
 
                         pVertices[loc].x = (float)offsetX;
                         pVertices[loc].y = (float)offsetY;
-                        pVertices[loc].z = -(float)ppTerrainVertexData[offsetY][offsetX] * HEIGHTFACTOR;
+                        pVertices[loc].z = -calculateAverageHeightForVertex(offsetX, offsetY);
                         
                         //If using VERTEX2UV, calculate normals
                         D3DXVECTOR3 normal = calculateNormalForVertex(offsetX, offsetY);
@@ -725,4 +725,51 @@ void UITerrain::setDetailLevel2(unsigned char detailLevel)
 
         }
     }
+}
+
+
+float UITerrain::calculateAverageHeightForVertex(unsigned short x, unsigned short y)
+{
+
+    unsigned char const * const * ppTerrainVertexData = Terrain::getInstance()->getTerrainVertexHeightData();    
+
+    if(m_DetailLevel == 0)
+    {
+        return ppTerrainVertexData[y][x] * HEIGHTFACTOR;
+    }
+
+    unsigned char detail = 1 << m_DetailLevel;
+    unsigned char halfDetail = detail >> 1;
+
+    float result = 0.0f;
+
+    int steps = 0;
+    unsigned short offX;
+    unsigned short offY;
+
+    for(int iY = -halfDetail; iY < halfDetail; iY++)
+    {
+        offY = y + iY;
+        if(offY < 0 || offY > m_Size)
+        {
+            continue;
+        }
+
+        for(int iX = -halfDetail; iX < halfDetail; iX++)
+        {
+            offX = x + iX;
+            if(offX < 0 || offX > m_Size)
+            {
+                continue;
+            }            
+            
+            result += ppTerrainVertexData[offY][offX];
+            steps++;
+        }
+    }
+
+    result /= (float)steps;
+
+    return result * HEIGHTFACTOR;
+
 }

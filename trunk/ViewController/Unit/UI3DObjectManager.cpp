@@ -4,9 +4,6 @@
 
 #include "../../Model/Asset/IAsset.h"
 
-UI3DObjectManager* UI3DObjectManager::pInstance = new UI3DObjectManager();
-
-
 void UI3DObjectManager::handleCreatedAsset(IAsset* pAsset)
 {
     IAsset::Type assetType = pAsset->getAssetType();

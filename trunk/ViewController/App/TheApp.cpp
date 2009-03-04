@@ -71,10 +71,10 @@ HRESULT CTheApp::OnCreate(void)
     m_pManager = UI3DObjectManager::getInstance();
 
     //TEST
-    /*for(int i = 0; i < 50; i++)
+    for(int i = 0; i < 50; i++)
     {
         AssetFactory::createUnit(NULL, 0, RandInt(0, 200), RandInt(0, 200));
-    }*/
+    }
 
     Terrain* pTerrain = Terrain::getInstance();
     AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 256);

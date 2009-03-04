@@ -138,6 +138,13 @@ private:
     void calculateTriangleNormals();
 
     /**
+     * Calculates average height for given vertex on current detail-level
+     * @param x X-location of the vertex
+     * @param y Y-location of the vertex
+     */
+    float calculateAverageHeightForVertex(unsigned short x, unsigned short y);
+
+    /**
      * UITerrain singleton instance
      */
     static UITerrain* pInstance;

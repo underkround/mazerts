@@ -66,26 +66,14 @@ void GroundMovingLogic::idle(const float deltaT)
     //TODO: Maybe turning around or something while idling?
     //TODO: Replace with reading targets from commands, after they are implemented
 
-    //DEBUG/TESTING: make the unit turn towards map center when idling
-    static bool entered = true;
-    if(entered)
-    {
-        m_TargetDir.x = (Terrain::getInstance()->getSize() >> 1) - m_pUnit->getPosition()->x;;
-        m_TargetDir.y = (Terrain::getInstance()->getSize() >> 1) - m_pUnit->getPosition()->y;;
-        m_TargetDir.z = 0;
-        m_TargetDir.normalize();
-        entered = false;
-    }
-
 
     //DEBUG/TESTING: Wait some time before asking a new path
     static float counter = 0.0f;    
     counter += deltaT;
-    if(counter > (1.0f + (float(rand() % 10))))
+    if(counter > 1.0f)
     {    
         m_State = ASKPATH;
         counter = 0.0f;
-        entered = true;
     }
         
 }
@@ -230,13 +218,16 @@ void GroundMovingLogic::move(float deltaTime)
     }
     else
     {
-        //Heading (pretty much) toward correct direction, hit the pedal to the metal
-        //TODO: Acceleration from data?
-        m_CurrentSpeed += 1.0f * deltaTime;
-        
-        if(m_CurrentSpeed > maxMoveSpeed)
+        if(m_State == FOLLOWPATH)
         {
-            m_CurrentSpeed = maxMoveSpeed;
+            //Heading (pretty much) toward correct direction, hit the pedal to the metal
+            //TODO: Acceleration from data?
+            m_CurrentSpeed += 1.0f * deltaTime;
+            
+            if(m_CurrentSpeed > maxMoveSpeed)
+            {
+                m_CurrentSpeed = maxMoveSpeed;
+            }
         }
     }
 
@@ -244,11 +235,17 @@ void GroundMovingLogic::move(float deltaTime)
     pos->x += m_CurrentSpeed * dir->x;
     pos->y += m_CurrentSpeed * dir->y;
 
-    if(pos->x < 0 || pos->y < 0)
-    {
-        int k = 1;
-    }
+    unsigned short terraSize = Terrain::getInstance()->getSize();
 
+    if(pos->x < 0)    
+        pos->x = 0;
+    if(pos->x + m_pUnit->getWidth() > terraSize)
+        pos->x = terraSize - m_pUnit->getWidth();
+    if(pos->y < 0)    
+        pos->y = 0;
+    if(pos->y + m_pUnit->getHeight() > terraSize)
+        pos->y = terraSize - m_pUnit->getHeight();
+    
 }
 
 

@@ -27,15 +27,19 @@ public:
      * @param pDevice Pointer to Direct3D9-device
      */
     inline static void setDevice(LPDIRECT3DDEVICE9 pDevice)
-    {
-        pInstance->m_ResourceContainer.Create(pDevice);
+    {        
+        getInstance()->m_ResourceContainer.Create(pDevice);
     }
 
     /**
      * Gets the UI3DObjectManager-instance
      * @return Pointer to UI3DObjectManager
      */
-    inline static UI3DObjectManager* getInstance() { return pInstance; }
+    inline static UI3DObjectManager* getInstance() 
+    { 
+        static UI3DObjectManager instance;
+        return &instance; 
+    }
 
     /**
      * Gets the root-object of the C3DObject-hierarchy
@@ -81,11 +85,6 @@ private:
      * @param pUnit Pointer to Unit-instance used in creation
      */
     void createUnit(Unit* pUnit);
-
-    /**
-     * The pointer to singleton instance of this class, automatically created
-     */
-    static UI3DObjectManager* pInstance;
 
     /**
      * Root of the C3DObject-hierarchy

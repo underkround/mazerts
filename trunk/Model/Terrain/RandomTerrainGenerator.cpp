@@ -49,7 +49,7 @@ void RandomTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightDat
     Terrain::getInstance()->smoothMap(10);
 
     //Create mountains
-    int passes = 10 + rand() % 100;
+    int passes = 10 + rand() % 500;
     for(int i = 0; i < passes; i++)
     {
         //Select a random location for the mountain
@@ -66,7 +66,7 @@ void RandomTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightDat
 
 
         //Select a random size for the mountain/river
-        int mountSize = (rand() % 61) + 10;
+        int mountSize = (rand() % 61) + 30;
 
         //Do steps starting from the chosen random x, y -location
         for(int j = 0; j < mountSize; j++)
