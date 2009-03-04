@@ -131,21 +131,21 @@ public:
 protected:
 
     /**
-     * Size of the path
+     * Size of the path, ie. how many tiles must be passable in widht and height
      */
     unsigned char m_Size;
 
     /**
      * Starting tile-coordinates for the search
      */
-    short m_StartX;
-    short m_StartY;
+    unsigned short m_StartX;
+    unsigned short m_StartY;
 
     /**
      * Goal tile-coordinates for the search
      */
-    short m_GoalX;
-    short m_GoalY;
+    unsigned short m_GoalX;
+    unsigned short m_GoalY;
 
     /**
      * Tells the current state of the search

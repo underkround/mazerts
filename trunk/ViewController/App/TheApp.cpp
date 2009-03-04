@@ -17,9 +17,9 @@ CTheApp::CTheApp(void)
 {
     m_Help = true;
 
-    m_fX = 10.0f;
-    m_fY = 10.0f;
-    m_fZ = -40.0f;
+    m_fX = 127.0f;
+    m_fY = -70.0f;
+    m_fZ = -170.0f;
 
     m_TextRow = 0;
 	m_iMouseX = 0;
@@ -71,7 +71,7 @@ HRESULT CTheApp::OnCreate(void)
     m_pManager = UI3DObjectManager::getInstance();
 
     //TEST
-    //for(int i = 0; i < 100; i++)
+    for(int i = 0; i < 50; i++)
     {
         AssetFactory::createUnit(NULL, 0, RandInt(0, 200), RandInt(0, 200));
     }
@@ -187,12 +187,10 @@ void CTheApp::OnFlip(void)
             DrawTextRow(_T("Mouse scroll wheel zooms"), 0xFFFFFFFF);
             DrawTextRow(_T("Use LEFT, RIGHT, UP, DOWN, A and Z to move camera"), 0xFFFFFFFF);
             DrawTextRow(_T("Use space to generate new terrain"), 0xFFFFFFFF);
-            DrawTextRow(_T("1 replaces the texture with passability data"), 0xFFFFFFFF);
-            DrawTextRow(_T("TAB switches fillmode (solid/wireframe)"), 0xFFFFFFFF);
-            DrawTextRow(_T("Enter forces the unit to get a new path"), 0xFFFFFFFF);
-            DrawTextRow(_T("F1 hides/shows this help message"), 0xFFFFFFFF);            
-            DrawTextRow(_T("M & N change terrain detail level"), 0xFFFFFFFF);            
-            
+            DrawTextRow(_T("1 adds the texture with passability data"), 0xFFFFFFFF);
+            DrawTextRow(_T("TAB switches fillmode (solid/wireframe)"), 0xFFFFFFFF);            
+            DrawTextRow(_T("M & N change terrain detail level"), 0xFFFFFFFF);
+            DrawTextRow(_T("F1 hides/shows this help message"), 0xFFFFFFFF);                        
         }
 
         TCHAR text[100];

@@ -400,6 +400,11 @@ D3DXVECTOR3 UITerrain::getNormalAt(float x, float y, int tilesX, int tilesY)
     
     D3DXVECTOR3 result(0, 0, 0);
     
+    if(x < 0 || y < 0 || x + tilesX > m_Size || y + tilesY > m_Size)
+    {
+        return D3DXVECTOR3(0, 0, -1);
+    }
+
     /*
     for(int ix=0; ix<tilesX; ix++) {
         for(int iy=0; iy<tilesY; iy++) {
@@ -507,6 +512,14 @@ void UITerrain::calculateTriangleNormals()
 
 float UITerrain::calculateTriangleHeightAt(float x, float y)
 {
+
+    //Sanity check
+    if(x < 0 || y < 0 || x > m_Size || y > m_Size)
+    {
+        return 0;
+    }
+
+
     float height;
     D3DXVECTOR3 normal;
 

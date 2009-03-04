@@ -29,8 +29,17 @@ void PathFinder::initialize(unsigned short goalX, unsigned short goalY)
     m_Initialized = false;
     m_Prepared = false;
 
+    Terrain* pTerrain = Terrain::getInstance();
+    unsigned short size = pTerrain->getSize();
+
     //CHECKS FOR THINGS THAT PREVENT INITIALIZATION (Or just make it unnecessary)
-    if(!Terrain::getInstance()->isPassable(goalX, goalY, m_Size))
+    if(m_StartX > size-1 || m_StartY > size-1)
+    {
+        m_State = NOT_FOUND;
+        return;
+    }
+
+    if(!pTerrain->isPassable(goalX, goalY, m_Size))
     {
         m_State = NOT_FOUND;
         return;

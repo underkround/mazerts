@@ -9,6 +9,11 @@ GroundMovingLogic::GroundMovingLogic()
     m_pAgent = NULL;
     m_pPathNode = NULL;
     m_State = IDLE;
+
+    m_CurrentSpeed = 0.0f;
+    m_TargetDir.x = 0.0f;
+    m_TargetDir.y = 0.0f;
+    m_TargetDir.z = 0.0f;
 }
 
 GroundMovingLogic::~GroundMovingLogic()
@@ -44,20 +49,43 @@ void GroundMovingLogic::update(Unit* pUnit, const float deltaT)
             waitPath();
             break;
         }
-    case MOVE:
+    case FOLLOWPATH:
         {
-            move(deltaT);
+            followPath();
             break;
         }
     }
 
+    move(deltaT);
 }
 
 void GroundMovingLogic::idle(const float deltaT)
 {
     //TODO: Maybe turning around or something while idling?
     //TODO: Replace with reading targets from commands, after they are implemented
-    m_State = ASKPATH;
+
+    //DEBUG/TESTING: make the unit turn towards map center when idling
+    static bool entered = true;
+    if(entered)
+    {
+        m_TargetDir.x = (Terrain::getInstance()->getSize() >> 1) - m_pUnit->getPosition()->x;;
+        m_TargetDir.y = (Terrain::getInstance()->getSize() >> 1) - m_pUnit->getPosition()->y;;
+        m_TargetDir.z = 0;
+        m_TargetDir.normalize();
+        entered = false;
+    }
+
+
+    //DEBUG/TESTING: Wait some time before asking a new path
+    static float counter = 0.0f;    
+    counter += deltaT;
+    if(counter > (1.0f + (float(rand() % 10))))
+    {    
+        m_State = ASKPATH;
+        counter = 0.0f;
+        entered = true;
+    }
+        
 }
 
 void GroundMovingLogic::askPath()
@@ -93,7 +121,7 @@ void GroundMovingLogic::waitPath()
 {
     if(m_pAgent->getState() == IPathFinder::FOUND)
     {
-        m_State = MOVE;
+        m_State = FOLLOWPATH;
         m_pPathNode = m_pAgent->getPathData();
 
         if(m_pPathNode == NULL)
@@ -110,7 +138,7 @@ void GroundMovingLogic::waitPath()
     }
 }
 
-void GroundMovingLogic::move(const float deltaTime)
+void GroundMovingLogic::followPath()
 {
     Vector3* dir = m_pUnit->getDirection();
     Vector3* pos = m_pUnit->getPosition();
@@ -127,78 +155,86 @@ void GroundMovingLogic::move(const float deltaTime)
         m_State = IDLE;
     }
     else
-    {
-        Vector3 targetDir;
-        targetDir.x = m_pPathNode->x - pos->x;
-        targetDir.y = m_pPathNode->y - pos->y;
-        targetDir.z = 0.0f;
-        targetDir.normalize();
-        
-        //TODO: Maximum turning speed as radians per second to unit TYPE data
-        static const float maxTurnSpeed = 1.0f * 3.1415f;
-        
-        //TODO: Maximum moving speed as units (grid squares) per second to unit TYPE data
-        static const float maxMoveSpeed = 20.0f;
-
-        //TODO: CURRENT moving speed to unit data (not TYPE data)
-        static float currentSpeed = 0.0f;
-
-        //Deceleration
-        currentSpeed *= 0.999f;
-
-
-        //Target direction
-        float targetAngle = atan2(targetDir.y, targetDir.x);
-
-        //Turning speed        
-        float turnSpeed = maxTurnSpeed * deltaTime;
-
-        //Difference between target and current angle
-        float turn = targetAngle - atan2(dir->y, dir->x);
-        
-        
-        //If current direction differs more than 35 degrees, slow down
-        if(fabs(turn) > 0.61f)
-        {
-            //Braking factor to data?
-            currentSpeed *= 0.95f;
-        }
-
-
-        if(turnSpeed > fabs(turn))
-        {
-            turnSpeed = -turn;
-        }
-        if(turn > 0.01f)
-        {
-            dir->x = cos(turnSpeed) * dir->x - sin(turnSpeed) * dir->y;
-            dir->y = cos(turnSpeed) * dir->y + sin(turnSpeed) * dir->x;
-        }
-        else if(turn < -0.01f)
-        {
-            dir->x = cos(-turnSpeed) * dir->x - sin(-turnSpeed) * dir->y;
-            dir->y = cos(-turnSpeed) * dir->y + sin(-turnSpeed) * dir->x;
-        }
-        else
-        {
-            //Heading (pretty much) toward correct direction, hit the pedal to the metal
-            //TODO: Acceleration from data?
-            currentSpeed += 0.5f * deltaTime;
-            
-            if(currentSpeed > maxMoveSpeed)
-            {
-                currentSpeed = maxMoveSpeed;
-            }
-        }
-
-        //Move the unit towards current direction by current speed
-        pos->x += currentSpeed * dir->x;
-        pos->y += currentSpeed * dir->y;
-
-
-        
+    {        
+        m_TargetDir.x = m_pPathNode->x - pos->x;
+        m_TargetDir.y = m_pPathNode->y - pos->y;
+        m_TargetDir.z = 0.0f;
+        m_TargetDir.normalize();
     }
+        
 }
+
+void GroundMovingLogic::move(float deltaTime)
+{
+    Vector3* dir = m_pUnit->getDirection();
+    Vector3* pos = m_pUnit->getPosition();
+
+    //TODO: Maximum turning speed as radians per second to unit TYPE data
+    static const float maxTurnSpeed = 1.0f * 3.1415f;
+
+    //TODO: Maximum moving speed as units (grid squares) per second to unit TYPE data
+    static const float maxMoveSpeed = 6.0f;
+
+    //Static deceleration, due to friction etc.
+    m_CurrentSpeed *= 0.98f;
+
+    //Target direction
+    float targetAngle = atan2(m_TargetDir.y, m_TargetDir.x);
+
+    //Turning speed        
+    float turnSpeed = maxTurnSpeed * deltaTime;
+
+    //Difference between target and current angle
+    float currentAngle = atan2(dir->y, dir->x);
+    float turn = currentAngle - targetAngle;
+    
+    if(fabs(turn) > 3.14159265f)
+    {
+        turn = targetAngle - currentAngle;    
+    }
+    
+    //If current direction differs more than 35 degrees, slow down
+    if(fabs(turn) > 0.61f)
+    {
+        //Braking factor to data?
+        m_CurrentSpeed *= 0.95f;
+    }
+
+
+    if(turnSpeed > fabs(turn))
+    {
+        turnSpeed = -turn;
+    }
+    if(turn < -0.01f)
+    {
+        dir->x = cos(turnSpeed) * dir->x - sin(turnSpeed) * dir->y;
+        dir->y = cos(turnSpeed) * dir->y + sin(turnSpeed) * dir->x;
+    }
+    else if(turn > 0.01f)
+    {
+        dir->x = cos(-turnSpeed) * dir->x - sin(-turnSpeed) * dir->y;
+        dir->y = cos(-turnSpeed) * dir->y + sin(-turnSpeed) * dir->x;
+    }
+    else
+    {
+        //Heading (pretty much) toward correct direction, hit the pedal to the metal
+        //TODO: Acceleration from data?
+        m_CurrentSpeed += 0.5f * deltaTime;
+        
+        if(m_CurrentSpeed > maxMoveSpeed)
+        {
+            m_CurrentSpeed = maxMoveSpeed;
+        }
+    }
+
+    //Move the unit towards current direction by current speed
+    pos->x += m_CurrentSpeed * dir->x;
+    pos->y += m_CurrentSpeed * dir->y;
+
+
+
+}
+
 
 bool GroundMovingLogic::release(Unit* pUnit)
 {

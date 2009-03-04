@@ -27,7 +27,7 @@ public:
         IDLE,
         ASKPATH,
         WAITPATH,
-        MOVE
+        FOLLOWPATH
     };
 
     /**
@@ -106,7 +106,12 @@ private:
     void waitPath();
 
     /**
-     * Moves the actual unit, until path is walked through
+     * Makes the unit follow the path, until path is walked through
+     */
+    void followPath();
+
+    /**
+     * Called no matter what the unit state is, handles actual moving (as in changing coordinates)
      * @param deltaTime Frametime in seconds
      */
     void move(const float deltaTime);
@@ -130,6 +135,17 @@ private:
      * Next node in path, NEVER delete manually, deleting PathAgent removes all the nodes
      */
     IPathFinder::PathNode* m_pPathNode;
+
+    /**
+     * Target direction towards which the unit is turning
+     */
+    Vector3 m_TargetDir;
+
+    /**
+     * Current moving speed of the unit
+     */
+    float m_CurrentSpeed;
+
 };
 
 #endif // __GROUNDMOVINGLOGIC_H__
