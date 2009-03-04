@@ -6,7 +6,7 @@
 
 #include "TheApp.h"
 #include "../../Model/Terrain/Terrain.h"
-#include "../../Model/Terrain/RandomTerrainGenerator.h"
+#include "../../Model/Terrain/AntinTerrainGenerator.h"
 #include "../../Model/PathFinding/PathFinderMaster.h"
 #include "../../Model/Asset/AssetFactory.h"
 
@@ -71,13 +71,13 @@ HRESULT CTheApp::OnCreate(void)
     m_pManager = UI3DObjectManager::getInstance();
 
     //TEST
-    for(int i = 0; i < 50; i++)
+    /*for(int i = 0; i < 50; i++)
     {
         AssetFactory::createUnit(NULL, 0, RandInt(0, 200), RandInt(0, 200));
-    }
+    }*/
 
     Terrain* pTerrain = Terrain::getInstance();
-    RandomTerrainGenerator* pGenerator = new RandomTerrainGenerator(100, 256);
+    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 256);
     pTerrain->initialize(pGenerator);
 
     UITerrain::create(GetDevice());
@@ -401,8 +401,8 @@ void CTheApp::UpdateKeyboard(void)
 void CTheApp::UpdateMouse(void)
 {
 	//read the mouse data
-	DWORD i;
-	TCHAR msg[256];
+	//DWORD i;
+	//TCHAR msg[256];
 
 	if(SUCCEEDED(m_Mouse.Update()))
 	{
