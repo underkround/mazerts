@@ -28,6 +28,8 @@ GroundMovingLogic::~GroundMovingLogic()
 void GroundMovingLogic::attach(Unit* pUnit)
 {
     m_pUnit = pUnit;
+    m_TargetDir.x = m_pUnit->getDirection()->x;
+    m_TargetDir.y = m_pUnit->getDirection()->y;
 }
 
 void GroundMovingLogic::update(Unit* pUnit, const float deltaT)
@@ -159,7 +161,7 @@ void GroundMovingLogic::followPath()
         m_State = IDLE;
     }
     else
-    {        
+    {
         m_TargetDir.x = m_pPathNode->x - pos->x;
         m_TargetDir.y = m_pPathNode->y - pos->y;
         m_TargetDir.z = 0.0f;
@@ -209,12 +211,19 @@ void GroundMovingLogic::move(float deltaTime)
     {
         turnSpeed = -turn;
     }
-    if(turn < -0.01f)
+
+    float turnTreshold = 0.1f; // below this, the dirs are set straight from target
+    if( (turn <= turnTreshold && turn > 0.000001f) || (turn >= -turnTreshold && turn < -0.000001f) )
+    {
+        dir->x = m_TargetDir.x;
+        dir->y = m_TargetDir.y;
+    }
+    else if(turn < -turnTreshold)
     {
         dir->x = cos(turnSpeed) * dir->x - sin(turnSpeed) * dir->y;
         dir->y = cos(turnSpeed) * dir->y + sin(turnSpeed) * dir->x;
     }
-    else if(turn > 0.01f)
+    else if(turn > turnTreshold)
     {
         dir->x = cos(-turnSpeed) * dir->x - sin(-turnSpeed) * dir->y;
         dir->y = cos(-turnSpeed) * dir->y + sin(-turnSpeed) * dir->x;
