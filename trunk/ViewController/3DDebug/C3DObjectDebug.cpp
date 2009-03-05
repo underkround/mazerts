@@ -9,12 +9,15 @@ bool C3DObjectDebug::Update(float fFrameTime)
         m_LifeTime -= fFrameTime;
         if(m_LifeTime < 0.0f)
         {   
-            this->Release();
-            delete m_pMesh; //Debug objects use one mesh per object, so this is safe
-            delete this; //NOT RECOMMENDED! DEBUG PURPOSES ONLY!
-          //If you crashed here, check that you are not using automatic object-variable
             return false;
         }
     }
     return true;
+}
+
+void C3DObjectDebug::Release()
+{
+	m_pMesh->Release();	
+	C3DObject::Release();	
+	m_pMesh = NULL;
 }

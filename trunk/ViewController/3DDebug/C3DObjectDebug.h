@@ -40,6 +40,8 @@ public:
     }
 
 
+	void Release();
+
 	/**	 
 	 * Updates the object
 	 * @param fFrametime application frame time
@@ -59,11 +61,6 @@ private:
      * Time (in seconds) how long this object takes to destruct
      */
     float m_LifeTime;
-
-    /** 
-     * Objects add themselves to this list to be deleted
-     */
-    static DoubleLinkedList<C3DObjectDebug*> deleteList;
 };
 
 #endif //__C3DOBJECTDEBUG_H__
