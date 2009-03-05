@@ -30,7 +30,7 @@ void C3DObject::Create(LPD3DXMESH pMesh)
 void C3DObject::Release(void)
 {
 	m_arrMeshData.clear();
-	I3DObject::Release();    
+	I3DObject::Release(); 
 	m_pMesh = NULL;
 }
 
