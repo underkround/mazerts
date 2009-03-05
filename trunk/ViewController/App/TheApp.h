@@ -100,7 +100,7 @@ private:
     /**
      * UI-terrain pointer, POC
      */
-    UITerrain* pUITerrain;
+    UITerrain* m_pUITerrain;
     
     float m_fX;
     float m_fY;

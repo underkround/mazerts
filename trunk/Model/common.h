@@ -16,7 +16,7 @@
 #endif
 
 #ifndef byte
-#define byte unsigned char
+//#define byte unsigned char
 #endif
 
 

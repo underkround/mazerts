@@ -762,6 +762,14 @@
 				Name="3DDebug"
 				>
 				<File
+					RelativePath=".\3DDebug\C3DObjectDebug.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\3DDebug\C3DObjectDebug.h"
+					>
+				</File>
+				<File
 					RelativePath=".\3DDebug\UI3DDebug.cpp"
 					>
 				</File>

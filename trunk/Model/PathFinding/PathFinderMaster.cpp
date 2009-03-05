@@ -24,28 +24,7 @@ PathFinderMaster::PathFinderMaster()
 
 PathFinderMaster::~PathFinderMaster()
 {
-    //Clear running list
-    PathFinderNode* pCurrent = m_pFinderNodeStart;
-    while(pCurrent != NULL)
-    {
-        //Remove PathFinder
-        delete pCurrent->pFinder;
-        pCurrent->pFinder = NULL;
-
-        //Remove PathFinderNode
-        pCurrent = deletePathFinderNode(pCurrent);
-    }
-
-    //Clear waiting list
-    pCurrent = popWaitingFinderNode();
-    while(pCurrent != NULL)
-    {
-        delete pCurrent->pFinder;
-        delete pCurrent;
-        
-        pCurrent = popWaitingFinderNode();
-    }
-    
+    clearLists();
 
     pthread_mutex_destroy(m_pNodeListMutex);
     delete m_pNodeListMutex;
@@ -124,7 +103,7 @@ void PathFinderMaster::run()
         msleep(1);
     }
 
-    PathFinderMaster::~PathFinderMaster();
+    clearLists();
 }
 
 //Static
@@ -290,4 +269,31 @@ PathFinderMaster::PathFinderNode* PathFinderMaster::deletePathFinderNode(PathFin
     pthread_mutex_unlock(m_pNodeListMutex);
 
     return pReturnNode;
+}
+
+void PathFinderMaster::clearLists()
+{
+    //Clear running list
+    PathFinderNode* pCurrent = m_pFinderNodeStart;
+    while(pCurrent != NULL)
+    {
+        pCurrent->pFinder->cancel();
+        //Remove PathFinder
+        delete pCurrent->pFinder;
+        pCurrent->pFinder = NULL;
+
+        //Remove PathFinderNode
+        pCurrent = deletePathFinderNode(pCurrent);
+    }
+
+    //Clear waiting list
+    pCurrent = popWaitingFinderNode();
+    while(pCurrent != NULL)
+    {
+        pCurrent->pFinder->cancel();
+        delete pCurrent->pFinder;
+        delete pCurrent;
+        
+        pCurrent = popWaitingFinderNode();
+    }
 }

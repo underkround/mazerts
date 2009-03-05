@@ -1,8 +1,7 @@
 #include "Terrain.h"
 //#include "DefaultTerrainGenerator.h"
 
-//Terrain* Terrain::pTerrain = NULL;
-//ITerrainGenerator* Terrain::pTerrainGenerator = new DefaultTerrainGenerator();
+const float Terrain::DIAGONAL_MOVECOST_FACTOR = 1.4142f;
 
 Terrain* Terrain::getInstance()
 {
@@ -205,7 +204,7 @@ short Terrain::getMoveCost(const short x, const short y, const signed char dirX,
 
             if(dirX != 0 && dirY != 0)
             {
-                return (short)(moveCost * 1.4f);
+                return (short)(moveCost * DIAGONAL_MOVECOST_FACTOR);
             }
             else
             {

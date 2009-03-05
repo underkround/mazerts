@@ -1,9 +1,6 @@
 /**
  * I3DObject.h header file
- * Copyright (c) 2009 Jani Immonen
- * www.jani-immonen.net
- * Date: 19.2.2009
- * 
+ *
  * abstract 3d object interface
  */
 
@@ -14,9 +11,7 @@
 // matrices etc from direct3dx
 #include <d3dx9.h>
 
-// stl vector as a dynamic array
-#include <vector>
-using namespace std;
+#include "../../Model/Common/DoubleLinkedList.h"
 
 
 class I3DObject
@@ -37,8 +32,10 @@ public:
 	 * update 3d object hierarchy
 	 * function creates combined matrix from parent&child
 	 * @param fFrametime application frame time
+     * @return True if no action should take place, false if the
+               child removed itself from parent
 	 */
-	virtual void Update(float fFrametime);
+	virtual bool Update(float fFrametime);
 
 
 	/**
@@ -59,6 +56,13 @@ public:
 	 */
 	void AddChild(I3DObject* pChild);
 
+    /**
+     * RemoveChild
+     * Removes the child POINTER from the linked list,
+     * no more owned by this object!
+     * @param pChild Pointer to the I3DObject-child
+     */
+    void RemoveChild(I3DObject* pChild);
 
 	/**
 	 * GetParent
@@ -68,9 +72,9 @@ public:
 
 	/**
 	 * GetChildren
-	 * @return reference to child array
+	 * @return reference to child linkedlist
 	 */
-	inline vector<I3DObject*>& GetChildren(void) { return m_arrChildren; }
+	inline DoubleLinkedList<I3DObject*>& GetChildren(void) { return m_arrChildren; }
 
 	/**
 	 * GetMatrix
@@ -117,8 +121,8 @@ protected:
 	// pointer to parent object
 	I3DObject*			m_pParent;
 
-	// child array
-	vector<I3DObject*>	m_arrChildren;
+	// Child linkedlist
+    DoubleLinkedList<I3DObject*>	m_arrChildren;
 
 	// 3d object matrices
 	// m_mWorld: where object is related to the world

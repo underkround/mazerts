@@ -5,10 +5,11 @@
 //TODO: Move this to manager or somewhere more obvious (Global unit scale)
 float UIUnit::Scale = 0.075f;
 
-void UIUnit::Update(float fFrameTime) 
+bool UIUnit::Update(float fFrameTime) 
 {
     alignToTerrain();
     I3DObject::Update(fFrameTime);
+    return true;
 }
 
 void UIUnit::alignToTerrain()

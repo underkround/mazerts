@@ -31,8 +31,10 @@ public:
     /**
      * Update the unit
      * @param fFrametime Time elapsed in frame as seconds
+     * @return False, if no action should take place, true
+     *         if the child should be removed from parent
      */
-    virtual void Update(float fFrametime);
+    virtual bool Update(float fFrametime);
 
     /**
      * Destructor

@@ -120,6 +120,11 @@ public:
     }
 
     /**
+     * Clears running- and waiting lists
+     */
+    void clearLists();
+
+    /**
      * Tells if the thread is running
      */
     static inline bool isRunning()
@@ -196,12 +201,12 @@ private:
     /**
      * First node in the waiting PathFinderNode-list
      */
-   PathFinderNode* m_pWaitingNodeStart;
+    PathFinderNode* m_pWaitingNodeStart;
 
    /**
     * Last node in the waiting PathFinderNode-list
     */
-   PathFinderNode* m_pWaitingNodeEnd;
+    PathFinderNode* m_pWaitingNodeEnd;
 
     /**
      * Number of nodes waiting for execution

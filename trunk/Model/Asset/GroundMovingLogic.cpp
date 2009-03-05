@@ -3,6 +3,17 @@
 #include "../Common/Vector3.h"
 #include <stdlib.h>  //TODO: REMOVE WHEN COMMANDS ARE IMPLEMENTED
 
+#ifndef PI
+#define PI 3.141592653589793238462f
+#endif
+
+//THE MODEL WON'T COMPILE WITH THIS, COMMENT OUT WHEN NOT TESTING!
+//#define PATH_UI_DEBUG
+#ifdef PATH_UI_DEBUG
+#include "../../ViewController/3DDebug/UI3DDebug.h"
+#include "../../ViewController/Terrain/UITerrain.h"
+#endif
+
 GroundMovingLogic::GroundMovingLogic()
 {
     m_pUnit = NULL;
@@ -116,12 +127,55 @@ void GroundMovingLogic::waitPath()
     if(m_pAgent->getState() == IPathFinder::FOUND)
     {
         m_State = FOLLOWPATH;
-        m_pPathNode = m_pAgent->getPathData();
+        m_pPathNode = m_pAgent->getNextPathNode();
 
         if(m_pPathNode == NULL)
         {
             m_State = IDLE;
+            return;
         }
+
+
+
+
+#ifdef PATH_UI_DEBUG
+
+        /*IPathFinder::PathNode* pNode = m_pAgent->getPathData();        
+        float halfX = m_pUnit->getWidth() * 0.5f;
+        float halfY = m_pUnit->getHeight() * 0.5f;
+        float aliveTime = 5.0f;
+
+        while(pNode)
+        {
+            float x = pNode->x + halfX;
+            float y = pNode->y + halfY;
+            UI3DDebug::addSphere(x, y, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x, y), 0.5f, aliveTime);
+            if(pNode->pChild != NULL)
+            {
+                float cx = pNode->pChild->x + halfX;
+                float cy = pNode->pChild->y + halfY;
+                UI3DDebug::addLine(x, y, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x, y) - 0.3f,
+                        cx, cy, (float)UITerrain::getInstance()->calculateTriangleHeightAt(cx, cy) - 0.3f, 0.2f, aliveTime);
+            }
+            aliveTime += 0.1f;
+            pNode = pNode->pChild;
+        }*/
+
+
+        float halfX = m_pUnit->getWidth() * 0.5f;
+        float halfY = m_pUnit->getHeight() * 0.5f;
+        float x = m_pPathNode->x + halfX;
+        float y = m_pPathNode->y + halfY;        
+        if(m_pPathNode->pChild != NULL)
+        {
+            float cx = m_pPathNode->pChild->x + halfX;
+            float cy = m_pPathNode->pChild->y + halfY;
+            UI3DDebug::addLine(x, y, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x, y) - 0.3f,
+                    cx, cy, (float)UITerrain::getInstance()->calculateTriangleHeightAt(cx, cy) - 0.3f, 0.2f, 5.0f);            
+        }
+#endif
+
+
     }
     else if(m_pAgent->getState() != IPathFinder::NOT_FINISHED)
     {
@@ -138,9 +192,11 @@ void GroundMovingLogic::followPath()
     Vector3* pos = m_pUnit->getPosition();
 
     //If close enough to current, get next target square
-    if( fabs(pos->x  - m_pPathNode->x) < m_pUnit->getWidth() && fabs(pos->y - m_pPathNode->y) < m_pUnit->getHeight())
+    float halfWidth = m_pUnit->getWidth() * 0.5f;
+    float halfHeight = m_pUnit->getHeight() * 0.5f;
+    if( fabs(pos->x  - m_pPathNode->x) < halfWidth && fabs(pos->y - m_pPathNode->y) < halfHeight)
     {
-        m_pPathNode = m_pAgent->getNextPathNode();
+        m_pPathNode = m_pAgent->getNextPathNode();        
     }
 
     //Did we finish the path?
@@ -150,6 +206,21 @@ void GroundMovingLogic::followPath()
     }
     else
     {
+#ifdef PATH_UI_DEBUG
+        float halfX = m_pUnit->getWidth() * 0.5f;
+        float halfY = m_pUnit->getHeight() * 0.5f;
+        float x = m_pPathNode->x + halfX;
+        float y = m_pPathNode->y + halfY;
+        if(m_pPathNode->pChild != NULL)
+        {
+            float cx = m_pPathNode->pChild->x + halfX;
+            float cy = m_pPathNode->pChild->y + halfY;
+            UI3DDebug::addLine(x, y, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x, y) - 0.3f,
+                    cx, cy, (float)UITerrain::getInstance()->calculateTriangleHeightAt(cx, cy) - 0.3f, 0.2f, 5.0f);
+            UI3DDebug::addSphere(cx, cy, (float)UITerrain::getInstance()->calculateTriangleHeightAt(cx, cy), 0.5f, 5.0f);
+        }
+#endif
+
         m_TargetDir.x = m_pPathNode->x - pos->x;
         m_TargetDir.y = m_pPathNode->y - pos->y;
         m_TargetDir.z = 0.0f;
@@ -164,7 +235,7 @@ void GroundMovingLogic::move(float deltaTime)
     Vector3* pos = m_pUnit->getPosition();
 
     //TODO: Maximum turning speed as radians per second to unit TYPE data
-    static const float maxTurnSpeed = 1.0f * 3.1415f;
+    static const float maxTurnSpeed = 1.0f * PI;
 
     //TODO: Maximum moving speed as units (grid squares) per second to unit TYPE data
     static const float maxMoveSpeed = 6.0f;
@@ -182,23 +253,23 @@ void GroundMovingLogic::move(float deltaTime)
     float currentAngle = atan2(dir->y, dir->x);
     float turn = currentAngle - targetAngle;
     
-    if(fabs(turn) > 3.14159265f)
+    if(fabs(turn) > PI)
     {
         turn = targetAngle - currentAngle;    
     }
     
-    //If current direction differs more than 35 degrees, slow down
-    if(fabs(turn) > 0.61f || m_State == IDLE)
+    //If current direction differs more than 45 degrees, slow down
+    if(fabs(turn) > PI * 0.25f || m_State == IDLE)
     {
         //Braking factor to data?
         m_CurrentSpeed *= (0.95f - (0.95f * deltaTime));
     }
 
 
-    if(turnSpeed > fabs(turn))
+    /*if(turnSpeed > fabs(turn))
     {
         turnSpeed = -turn;
-    }
+    }*/
 
     float turnTreshold = 0.1f; // below this, the dirs are set straight from target
     if( (turn <= turnTreshold && turn > 0.000001f) || (turn >= -turnTreshold && turn < -0.000001f) )

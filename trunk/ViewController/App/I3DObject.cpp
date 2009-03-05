@@ -1,8 +1,5 @@
 /**
  * I3DObject.cpp source file
- * Copyright (c) 2009 Jani Immonen
- * www.jani-immonen.net
- * Date: 19.2.2009
  * 
  * abstract 3d object interface
  */
@@ -34,29 +31,37 @@ I3DObject::~I3DObject(void)
 
 void I3DObject::Release(void)
 {
-	DWORD i;
-	for (i=0; i<m_arrChildren.size(); i++)
-	{
-		I3DObject* pChild = m_arrChildren[i];
-		pChild->Release();
-		delete pChild;
-	}
+    ListNode<I3DObject*>* node = m_arrChildren.headNode();    
+    
+    while(node)
+    {
+        I3DObject* pChild = node->item;
+        pChild->Release();
+        delete pChild;
 
-	m_arrChildren.clear();
+        node = node->next;
+    }
+    
+    m_arrChildren.release();
 }
 
 
 void I3DObject::AddChild(I3DObject* pChild)
 {
-	// add child to array
-	m_arrChildren.push_back(pChild);
+	// add child to linked list
+    m_arrChildren.pushTail(pChild);
 
 	// link to the parent
 	pChild->m_pParent = this;
 }
 
+void I3DObject::RemoveChild(I3DObject* pChild)
+{
+    m_arrChildren.remove(pChild);
+    pChild->m_pParent = NULL;
+}
 
-void I3DObject::Update(float fFrametime)
+bool I3DObject::Update(float fFrametime)
 {
 	if (IsActive())
 	{
@@ -91,10 +96,19 @@ void I3DObject::Update(float fFrametime)
 	}
 
 	// update the children
-	DWORD i;
-	for (i=0; i<m_arrChildren.size(); i++)
-	{
-		m_arrChildren[i]->Update(fFrametime);
-	}
+    ListNode<I3DObject*>* node = m_arrChildren.headNode();    
+    
+    while(node)
+    {
+        if(node->item->Update(fFrametime) == false)
+        {
+            ListNode<I3DObject*>* temp = node->prev;
+            m_arrChildren.remove(node);
+            node = temp;
+        }
+        node = node->next;
+    }
+
+    return true;
 }
 

@@ -4,6 +4,7 @@
  * Concrete game application class
  */
 
+
 #include "TheApp.h"
 #include "../../Model/Terrain/Terrain.h"
 #include "../../Model/Terrain/AntinTerrainGenerator.h"
@@ -64,6 +65,9 @@ HRESULT CTheApp::OnCreate(void)
 		m_iMouseY = mousepos.y;
 	}
 
+    //Set device to debug-helper
+    UI3DDebug::setDevice(GetDevice());
+
     //Get the pathfinder running
     PathFinderMaster::getInstance()->start();
 
@@ -72,7 +76,7 @@ HRESULT CTheApp::OnCreate(void)
     m_pManager = UI3DObjectManager::getInstance();
 
     //TEST
-    for(int i = 0; i < 50; i++)
+    for(int i = 0; i < 5; i++)
     {
         AssetFactory::createUnit(NULL, 0, RandInt(0, 200), RandInt(0, 200));
     }
@@ -83,18 +87,10 @@ HRESULT CTheApp::OnCreate(void)
 
     pTerrain->setWaterLevel(0);
 
+
     UITerrain::create(GetDevice());
-    pUITerrain = UITerrain::getInstance();
-
-    //HELPER DEBUG METHODS TO DRAW STUFF INTO SCENE
-    UI3DDebug::setDevice(GetDevice());
-    UI3DDebug::addSphere(0, 0, -100, 1.0f);
-    UI3DDebug::addLine(0, 0, 0, 127.0f, 127.0f, -25.5f, 0.2f);
-    UI3DDebug::addLine(0, 0, 0, 0, 0, -25.5f, 0.4f);
-    UI3DDebug::addLine(0, 0, 0, 255.0f, 255.0f, -25.5f, 0.2f);
+    m_pUITerrain = UITerrain::getInstance();
                               
-
-
     return S_OK;
 }
 
@@ -212,7 +208,7 @@ void CTheApp::OnFlip(void)
         _stprintf_s(text, _T("Update: %.2fms  Render: %.2fms"), timer1->GetElapsedSeconds() * 1000.0f, time * 1000.0f);
         DrawText(500, 20, text, 0xFFFFFFFF);
 
-        _stprintf_s(text, _T("Detail level: %d"), pUITerrain->getDetailLevel());
+        _stprintf_s(text, _T("Detail level: %d"), m_pUITerrain->getDetailLevel());
         DrawText(500, 40, text, 0xFFFFFFFF);
 
         _stprintf_s(text, _T("Pathfinders  Running:%d  Waiting: %d"), PathFinderMaster::getRunningAmount(), PathFinderMaster::getWaitingAmount());
@@ -223,7 +219,7 @@ void CTheApp::OnFlip(void)
 
         pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
         pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-        pUITerrain->render(pDevice);
+        m_pUITerrain->render(pDevice);
                    
         m_pManager->getRootObject()->Render(pDevice);
 
@@ -277,13 +273,20 @@ void CTheApp::OnKeyDown(DWORD dwKey)
 
     if(dwKey == VK_SPACE)
     {
+        //The Right Way(tm) to create new terrain
+        PathFinderMaster* pMaster = PathFinderMaster::getInstance();
+        pMaster->stop();
+        pMaster->wait();
+        
         Terrain::getInstance()->initialize();
         UITerrain::create(GetDevice());
-        pUITerrain = UITerrain::getInstance();
+        m_pUITerrain = UITerrain::getInstance();
+        
+        pMaster->start();
     }
     if(dwKey == '1')
     {
-        pUITerrain->createPassabilityTexture(GetDevice());
+        m_pUITerrain->createPassabilityTexture(GetDevice());
     }
 
 
@@ -294,36 +297,36 @@ void CTheApp::OnKeyDown(DWORD dwKey)
 
     if(dwKey == VK_TAB)
     {
-        D3DFILLMODE f = pUITerrain->getFillMode();
+        D3DFILLMODE f = m_pUITerrain->getFillMode();
         if(f == D3DFILL_SOLID)
         {
-            pUITerrain->setFillMode(D3DFILL_WIREFRAME);
+            m_pUITerrain->setFillMode(D3DFILL_WIREFRAME);
         }
         else
         {
-            pUITerrain->setFillMode(D3DFILL_SOLID);
+            m_pUITerrain->setFillMode(D3DFILL_SOLID);
         }
 
     }
 
     if(dwKey == 'N')
     {
-        unsigned char detail = pUITerrain->getDetailLevel();
+        unsigned char detail = m_pUITerrain->getDetailLevel();
         detail++;
         if(detail < 4)
         {
-            pUITerrain->setDetailLevel2(detail);
+            m_pUITerrain->setDetailLevel2(detail);
         }
     }
 
     if(dwKey == 'M')
     {
-        unsigned char detail = pUITerrain->getDetailLevel();
+        unsigned char detail = m_pUITerrain->getDetailLevel();
         detail--;
         //Wrapping
         if(detail < 4)
         {
-            pUITerrain->setDetailLevel2(detail);
+            m_pUITerrain->setDetailLevel2(detail);
         }
     }
 }

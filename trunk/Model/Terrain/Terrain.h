@@ -68,6 +68,11 @@ public:
      */
     static const short MOVE_OUTOFBOUNDS = 20000;
 
+    /**
+     * Movecost multiplier for diagonal moves
+     */
+    static const float DIAGONAL_MOVECOST_FACTOR;
+
 // =====
 
     /**

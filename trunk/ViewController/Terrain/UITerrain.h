@@ -157,12 +157,12 @@ private:
     /**
      * Vertexbuffers for terrain mesh patches
      */
-    LPDIRECT3DVERTEXBUFFER9** m_pVB;
+    LPDIRECT3DVERTEXBUFFER9** m_pppVB;
 
     /**
      * Indexbuffers for terrain mesh patches
      */ 
-    LPDIRECT3DINDEXBUFFER9** m_pIB;
+    LPDIRECT3DINDEXBUFFER9** m_pppIB;
 
     /**
      * Texture for terrain
@@ -174,6 +174,9 @@ private:
 	 */
 	LPDIRECT3DTEXTURE9 m_pPixelTexture;
 
+    /**
+     * Material
+     */
     D3DMATERIAL9 m_Mat;
 
     /**

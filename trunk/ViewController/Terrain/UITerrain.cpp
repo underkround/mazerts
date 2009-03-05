@@ -14,8 +14,8 @@ UITerrain* UITerrain::getInstance()
 
 UITerrain::UITerrain()
 {
-    m_pIB = NULL;
-    m_pVB = NULL;
+    m_pppIB = NULL;
+    m_pppVB = NULL;
     m_pTexture = NULL;
 	m_pPixelTexture = NULL;
     m_Patches = 0;
@@ -41,11 +41,12 @@ UITerrain::~UITerrain(void)
 
 void UITerrain::release()
 {
+    
     //Triangle normal releases
     for(int i = 0; i < m_Size; i++)
     {
         for(int j = 0; j < m_Size; j++)
-        {
+        {            
             delete [] m_pppTriangleNormals[i][j];
         }
         delete [] m_pppTriangleNormals[i];
@@ -55,7 +56,7 @@ void UITerrain::release()
     //Texture releases
     if (m_pTexture)
     {
-        m_pTexture->Release();
+        m_pTexture->Release();        
         m_pTexture = NULL;
     }
 
@@ -70,23 +71,23 @@ void UITerrain::release()
     {
         for(int j = 0; j < m_Patches; j++)
         {
-            if(m_pIB[i][j])
+            if(m_pppIB[i][j])
             {
-                m_pIB[i][j]->Release();
-                m_pIB[i][j] = NULL;
+                m_pppIB[i][j]->Release();                
+                m_pppIB[i][j] = NULL;
             }
 
-            if (m_pVB[i][j])
+            if (m_pppVB[i][j])
             {
-                m_pVB[i][j]->Release();
-                m_pVB[i][j] = NULL;
+                m_pppVB[i][j]->Release();
+                m_pppVB[i][j] = NULL;
             }
         }
-        delete [] m_pVB[i];
-        delete [] m_pIB[i];
+        delete [] m_pppVB[i];
+        delete [] m_pppIB[i];
     }
-    delete [] m_pVB;
-    delete [] m_pIB;
+    delete [] m_pppVB;
+    delete [] m_pppIB;
 }
 
 void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
@@ -103,8 +104,8 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
         {
             //TEST
             //if((i + j) % 2 == 1)
-            {
-            pDevice->SetStreamSource( 0, m_pVB[i][j], 0, sizeof(VERTEX2UV) );        
+            //{
+            pDevice->SetStreamSource( 0, m_pppVB[i][j], 0, sizeof(VERTEX2UV) );        
     
     
             if(m_pTexture)
@@ -127,11 +128,15 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
 
             pDevice->SetMaterial(&m_Mat);
 
-            if ( m_pIB[i][j] )
+            if ( m_pppIB[i][j] )
             {
-                pDevice->SetIndices( m_pIB[i][j] );
+                pDevice->SetIndices( m_pppIB[i][j] );
                 pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_NumVertices, 0, m_NumPrimitives );
             }
+
+            if(m_pPixelTexture)
+            {
+                pDevice->SetTexture(1, NULL);
             }
         }
 
@@ -142,7 +147,7 @@ HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice)
 {
     //Get rid of old instance, if it exists
     if(pInstance)
-    {        
+    {
         delete pInstance;
         pInstance = NULL;
     }
@@ -180,25 +185,24 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
     calculateTriangleNormals();
     
 
-    //Vertexbuffer (STATIC!)
-    //TODO: Find out how to use dynamic buffers
+    //Vertex and indexbuffers
     HRESULT hres;
 
-    m_pVB = new LPDIRECT3DVERTEXBUFFER9*[m_Patches];
-    m_pIB = new LPDIRECT3DINDEXBUFFER9*[m_Patches];
+    m_pppVB = new LPDIRECT3DVERTEXBUFFER9*[m_Patches];
+    m_pppIB = new LPDIRECT3DINDEXBUFFER9*[m_Patches];
 
     for(int y = 0; y < m_Patches; y++)
     {        
-        m_pVB[y] = new LPDIRECT3DVERTEXBUFFER9[m_Patches];
-        m_pIB[y] = new LPDIRECT3DINDEXBUFFER9[m_Patches];
+        m_pppVB[y] = new LPDIRECT3DVERTEXBUFFER9[m_Patches];
+        m_pppIB[y] = new LPDIRECT3DINDEXBUFFER9[m_Patches];
 
         for(int x = 0; x < m_Patches; x++)
         {
             hres = pDevice->CreateVertexBuffer(    m_NumVertices * sizeof(VERTEX2UV),
                                         0,
                                         VERTEX2UV::GetFVF(),
-                                        D3DPOOL_MANAGED,    //Needs to be something else for dynamic?
-                                        &m_pVB[y][x],
+                                        D3DPOOL_MANAGED,    //Needs to be something else for dynamic buffer?
+                                        &m_pppVB[y][x],
                                         NULL);
             if (FAILED(hres))
             {
@@ -209,7 +213,7 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
             VERTEX2UV* pVertices = NULL;
 
             //Fill vertex-data
-            m_pVB[y][x]->Lock(0, 0, (void**)&pVertices, 0);
+            m_pppVB[y][x]->Lock(0, 0, (void**)&pVertices, 0);
             {
                 for(int i = 0; i < vertexSize; i++)
                 {
@@ -240,7 +244,7 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
                     }
                 }
             }
-            m_pVB[y][x]->Unlock();
+            m_pppVB[y][x]->Unlock();
 
             //Number of needed triangles, 2 per tile
             m_NumPrimitives = PATCHSIZE * PATCHSIZE * 2;
@@ -253,7 +257,7 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
                 D3DUSAGE_WRITEONLY,
                 D3DFMT_INDEX16,
                 D3DPOOL_MANAGED,
-                &m_pIB[y][x],
+                &m_pppIB[y][x],
                 NULL);
 
             USHORT* pIndices = NULL;
@@ -265,7 +269,7 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
             int vIndex = 0;
 
             //Fill index-data
-            m_pIB[y][x]->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD);
+            m_pppIB[y][x]->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD);
             {
                 for(int i = 0; i < PATCHSIZE; i++)
                 {
@@ -283,16 +287,16 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
                     vIndex++;
                 }
             }
-            m_pIB[y][x]->Unlock();
-
-            hres = D3DXCreateTextureFromFile(    pDevice,
-                                        _T("grass01.png"),
-                                        &m_pTexture);
-            if(FAILED(hres))
-            {
-                return hres;
-            }
+            m_pppIB[y][x]->Unlock();
         }
+    }
+
+    hres = D3DXCreateTextureFromFile(    pDevice,
+                                _T("grass01.png"),
+                                &m_pTexture);
+    if(FAILED(hres))
+    {
+        return hres;
     }
 
     return S_OK;
@@ -305,10 +309,11 @@ HRESULT UITerrain::createPassabilityTexture(LPDIRECT3DDEVICE9 pDevice)
     if(m_pPixelTexture)
     {
         m_pPixelTexture->Release();
+        m_pPixelTexture = NULL;
     }
 
     Terrain* pTerrain = Terrain::getInstance();    
-    unsigned short terraSize = pTerrain->getSize() + 1;
+    unsigned short terraSize = pTerrain->getSize();
 
     hres = D3DXCreateTexture(pDevice, terraSize, terraSize, 1, D3DUSAGE_DYNAMIC, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &m_pPixelTexture);
 
@@ -486,6 +491,7 @@ void UITerrain::calculateTriangleNormals()
             D3DXVec3Cross(&m_pppTriangleNormals[i][j][0], &sub1, &sub2);
             D3DXVec3Normalize(&m_pppTriangleNormals[i][j][0], &m_pppTriangleNormals[i][j][0]);
 
+
             //Upper right
             v0.x = (float)x;
             v0.y = (float)y + detail;
@@ -503,6 +509,7 @@ void UITerrain::calculateTriangleNormals()
             D3DXVec3Subtract(&sub2, &v2, &v0);
             D3DXVec3Cross(&m_pppTriangleNormals[i][j][1], &sub1, &sub2);
             D3DXVec3Normalize(&m_pppTriangleNormals[i][j][1], &m_pppTriangleNormals[i][j][1]);
+
         }
     }
 
@@ -613,7 +620,7 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
             int vIndex = 0;
 
             //Fill index-data
-            m_pIB[y][x]->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD);
+            m_pppIB[y][x]->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD);
             {
                 for(int i = 0; i < (PATCHSIZE / detail); i++)
                 {
@@ -632,7 +639,7 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
                     }                               
                 }
             }
-            m_pIB[y][x]->Unlock();
+            m_pppIB[y][x]->Unlock();
         }
     }
 }
@@ -658,7 +665,7 @@ void UITerrain::setDetailLevel2(unsigned char detailLevel)
         for(int x = 0; x < m_Patches; x++)
         {
             //Fill vertex-data
-            m_pVB[y][x]->Lock(0, 0, (void**)&pVertices, D3DLOCK_DISCARD);
+            m_pppVB[y][x]->Lock(0, 0, (void**)&pVertices, D3DLOCK_DISCARD);
             {
                 for(int i = 0; i < vertexSize; i++)
                 {
@@ -689,7 +696,7 @@ void UITerrain::setDetailLevel2(unsigned char detailLevel)
                     }
                 }
             }
-            m_pVB[y][x]->Unlock();
+            m_pppVB[y][x]->Unlock();
 
            
             USHORT* pIndices = NULL;
@@ -702,7 +709,7 @@ void UITerrain::setDetailLevel2(unsigned char detailLevel)
             int loops = (PATCHSIZE / detail);
 
             //Fill index-data
-            m_pIB[y][x]->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD);
+            m_pppIB[y][x]->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD);
             {
                 for(int i = 0; i < loops; i++)
                 {
@@ -721,7 +728,7 @@ void UITerrain::setDetailLevel2(unsigned char detailLevel)
                     }                    
                 }
             }
-            m_pIB[y][x]->Unlock();
+            m_pppIB[y][x]->Unlock();
 
         }
     }

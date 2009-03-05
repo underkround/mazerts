@@ -14,6 +14,9 @@
 
 #include "I3Dobject.h"
 
+#include <vector>
+using namespace std;
+
 
 class C3DObject : public I3DObject
 {

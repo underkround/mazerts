@@ -30,7 +30,7 @@ void C3DObject::Create(LPD3DXMESH pMesh)
 void C3DObject::Release(void)
 {
 	m_arrMeshData.clear();
-	I3DObject::Release();
+	I3DObject::Release();    
 	m_pMesh = NULL;
 }
 
@@ -73,13 +73,14 @@ void C3DObject::Render(LPDIRECT3DDEVICE9 pDevice)
 		}
 	}
 
-
 	// render the children
-	DWORD i;
-	for (i=0; i<m_arrChildren.size(); i++)
-	{
-		m_arrChildren[i]->Render(pDevice);
-	}
+    ListNode<I3DObject*>* node = m_arrChildren.headNode();    
+    
+    while(node)
+    {
+        node->item->Render(pDevice);
+        node = node->next;
+    }
 }
 
 

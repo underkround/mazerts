@@ -14,7 +14,7 @@
 
 #include <d3dx9.h>
 
-class C3DObject;
+class C3DObjectDebug;
 
 class UI3DDebug
 {
@@ -31,24 +31,40 @@ public:
      * @param y Y-coordinate
      * @param z Z-coordinate
      * @param radius Radius of the sphere     
-     * @return Pointer to created C3DObject or NULL if failed
+     * @param lifeTime Time in seconds, if you want the object to self-destruct
+     *        after that amount of time (default = 0, does not destroy itself)
+     * @return Pointer to created C3DObjectDebug or NULL if failed
      */
-    static C3DObject* addSphere(float x, float y, float z, float radius);
+    static C3DObjectDebug* addSphere(float x, float y, float z, float radius, float lifeTime = 0.0f);
 
     /**
      * Adds a "line" (cylinder) from given location to another given location 
      * with given size
-     * @param startPos Position of the sphere
-     * @param radius Radius of the sphere     
-     * @return Pointer to created C3DObject or NULL if failed
+     * @param startX X-coordinate the line starts from
+     * @param startY Y-coordinate the line starts from
+     * @param startZ Z-coordinate the line starts from
+     * @param endX X-coordinate the line ends to
+     * @param endY Y-coordinate the line ends to
+     * @param endZ Z-coordinate the line ends to
+     * @param radius Radius of the line
+     * @param lifeTime Time in seconds, if you want the object to self-destruct
+     *        after that amount of time (default = 0, does not destroy itself)
+     * @return Pointer to created C3DObjectDebug or NULL if failed
      */
-    static C3DObject* addLine(float startX, float startY, float startZ, 
-                              float endX, float endY, float endZ, float radius);
+    static C3DObjectDebug* addLine(float startX, float startY, float startZ, 
+                              float endX, float endY, float endZ, float radius, 
+                              float lifeTime = 0.0f);
 
 
 private:
     UI3DDebug() {};
     ~UI3DDebug() {};
+
+    /**
+     * Sets full bright material and adds the object to container
+     * @param pObject Pointer to C3DObjectDebug to add
+     */
+    static void addObject(C3DObjectDebug* pObject);
 
     /**
      * Device to use
