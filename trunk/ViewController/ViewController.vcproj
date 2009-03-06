@@ -694,6 +694,14 @@
 				Name="Terrain"
 				>
 				<File
+					RelativePath=".\Terrain\TerrainIntersection.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Terrain\TerrainIntersection.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Terrain\UITerrain.cpp"
 					>
 				</File>

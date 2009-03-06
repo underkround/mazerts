@@ -10,7 +10,11 @@
 #include "../../Model/Terrain/AntinTerrainGenerator.h"
 #include "../../Model/PathFinding/PathFinderMaster.h"
 #include "../../Model/Asset/AssetFactory.h"
+
+//DEBUG STUFF
 #include "../3DDebug/UI3DDebug.h"
+#include "../Terrain/TerrainIntersection.h"
+
 
 #define KEYBOARD_CAMSPEED 60.0f
 #define MOUSE_CAMSPEED 2.0f
@@ -28,7 +32,7 @@ CTheApp::CTheApp(void)
 	m_iMouseY = 0;
 	m_iMouseZ = 0;
 
-    m_pManager = NULL;    
+    m_pManager = NULL;
 }
 
 
@@ -137,7 +141,7 @@ void CTheApp::OnFlip(void)
 */
     D3DXMatrixLookAtLH( &view,
                         &D3DXVECTOR3(m_fX, m_fY, m_fZ),
-                        &D3DXVECTOR3(m_fX, m_fY+100.0f, m_fZ + 100.0f),
+                        &D3DXVECTOR3(m_fX, m_fY+100.0f, m_fZ + m_iMouseY),//100.0f),
                         &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
     pDevice->SetTransform(D3DTS_VIEW, &view);
 
@@ -155,16 +159,18 @@ void CTheApp::OnFlip(void)
         timer2->Create();
     }
 
-    timer1->BeginTimer();
+    //timer1->BeginTimer();
     float frameTime = GetFrameTime();
     m_pManager->getRootObject()->Update(frameTime);
     AssetCollection::updateUnits(frameTime);
 
     UpdateKeyboard();
+
+    timer1->BeginTimer();
 	UpdateMouse();
-
-
     timer1->EndTimer();
+
+    //timer1->EndTimer();
 
     D3DLIGHT9 light;
     light.Type = D3DLIGHT_POINT;
@@ -188,6 +194,12 @@ void CTheApp::OnFlip(void)
         // all graphics rendering must happen in between
         // BeginScene and EndScene
         BeginText();
+
+		DrawText(   m_iMouseX,
+				    m_iMouseY,
+				    _T("X"),
+				    0xFFFFFFFF);
+
         
         if(m_Help)
         {
@@ -452,6 +464,40 @@ void CTheApp::UpdateMouse(void)
             m_fY += GetFrameTime() * m_Mouse.GetState().lY * MOUSE_CAMSPEED;
             //TODO: move faster when farther away from terrain
         }
+
+        //Terrain picking test
+        if(m_Mouse.GetButton(0))
+        {
+            float w = GetWindowRect().right;
+            float h = GetWindowRect().bottom;
+
+            D3DXMATRIX matProj;
+            GetDevice()->GetTransform(D3DTS_PROJECTION, &matProj);
+
+            D3DXVECTOR3 v;
+            v.x =  ( ( ( 2.0f * m_iMouseX ) / w  ) - 1 ) / matProj._11;
+            v.y = -( ( ( 2.0f * m_iMouseY ) / h ) - 1 ) / matProj._22;
+            v.z =  1.0f;
+
+            D3DXMATRIX matView;
+            GetDevice()->GetTransform(D3DTS_VIEW, &matView);
+
+            D3DXMATRIX m;
+            D3DXVECTOR3 rayOrigin,rayDir;
+
+            D3DXMatrixInverse( &m, NULL, &matView );
+
+            //Transform the screen space pick ray into 3D space
+            rayDir.x  = v.x*m._11 + v.y*m._21 + v.z*m._31;
+            rayDir.y  = v.x*m._12 + v.y*m._22 + v.z*m._32;
+            rayDir.z  = v.x*m._13 + v.y*m._23 + v.z*m._33;
+            rayOrigin.x = m._41;
+            rayOrigin.y = m._42;
+            rayOrigin.z = m._43;
+
+            TerrainIntersection::pickTerrain(rayOrigin, rayDir);
+        }
+
  
         /*
         #ifdef _DEBUG

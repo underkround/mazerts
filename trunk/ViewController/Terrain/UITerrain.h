@@ -20,6 +20,11 @@ class UITerrain
 public:
 
     /**
+     * Friend class for intersection tests
+     */
+    friend class TerrainIntersection;
+
+    /**
      * Returns the instance of terrain, note that create needs to be called first
      * @return UITerrain-pointer or NULL, if create() hasn't been called
      */
@@ -205,6 +210,13 @@ private:
      * terrain squares
      */
     D3DXVECTOR3*** m_pppTriangleNormals;
+
+    /**
+     * Look-up table of patch axis-aligned bounding boxes (AABB), defined by two
+     * D3DXVECTORS per box, indices are x and y position of the patches ([0][0], [2][1])
+     * with Y as first dimension
+     */
+    D3DXVECTOR3*** m_pppPatchAABBs;
 
     /**
      * Size of terrain, m_Size * m_Size -tiles

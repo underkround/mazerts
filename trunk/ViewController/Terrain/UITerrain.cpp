@@ -53,6 +53,19 @@ void UITerrain::release()
     }
     delete [] m_pppTriangleNormals;
 
+    //AABB releases
+    for(int i = 0; i < m_Patches; i++)
+    {
+        for(int j = 0; j < m_Patches; j++)
+        {            
+            delete [] m_pppPatchAABBs[i][j];
+        }
+        delete [] m_pppPatchAABBs[i];
+    }
+    delete [] m_pppPatchAABBs;
+
+
+
     //Texture releases
     if (m_pTexture)
     {
@@ -183,9 +196,22 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
 
     //Calculate trianglenormals
     calculateTriangleNormals();
+
+
+    //Create AABBs-array
+    m_pppPatchAABBs = new D3DXVECTOR3**[m_Patches];
+    for(int i = 0; i < m_Patches; i++)
+    {
+        m_pppPatchAABBs[i] = new D3DXVECTOR3*[m_Patches];
+
+        for(int j = 0; j < m_Patches; j++)
+        {
+            m_pppPatchAABBs[i][j] = new D3DXVECTOR3[2];
+        }
+    }
     
 
-    //Vertex and indexbuffers
+    //Vertex and indexbuffers for patches
     HRESULT hres;
 
     m_pppVB = new LPDIRECT3DVERTEXBUFFER9*[m_Patches];
@@ -198,6 +224,18 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
 
         for(int x = 0; x < m_Patches; x++)
         {
+            //Min and max height within patch, used to set the AABB-size
+            //Initialize to maximum and minimum that the heights can be
+            float minHeight = (-255.0f * HEIGHTFACTOR);
+            float maxHeight = 0.0f;
+
+            //X- and Y of the AABBs are already known
+            m_pppPatchAABBs[y][x][0].x = (float)(x * PATCHSIZE);
+            m_pppPatchAABBs[y][x][1].x = (float)((x + 1) * PATCHSIZE);
+            m_pppPatchAABBs[y][x][0].y = (float)((y) * PATCHSIZE);
+            m_pppPatchAABBs[y][x][1].y = (float)((y + 1) * PATCHSIZE);
+
+
             hres = pDevice->CreateVertexBuffer(    m_NumVertices * sizeof(VERTEX2UV),
                                         0,
                                         VERTEX2UV::GetFVF(),
@@ -229,6 +267,16 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
                         pVertices[loc].y = (float)offsetY;
                         pVertices[loc].z = -(float)ppTerrainVertexData[offsetY][offsetX] * HEIGHTFACTOR;
                         
+                        //Check for AABBs
+                        if(pVertices[loc].z < minHeight)
+                        {
+                            minHeight = pVertices[loc].z;
+                        }
+                        if(pVertices[loc].z > maxHeight)
+                        {
+                            maxHeight = pVertices[loc].z;
+                        }
+
                         //Calculate normals
                         D3DXVECTOR3 normal = calculateNormalForVertex(offsetX, offsetY);
 
@@ -245,6 +293,10 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
                 }
             }
             m_pppVB[y][x]->Unlock();
+
+            //Set AABBs z-values
+            m_pppPatchAABBs[y][x][0].z = minHeight;
+            m_pppPatchAABBs[y][x][1].z = maxHeight;
 
             //Number of needed triangles, 2 per tile
             m_NumPrimitives = PATCHSIZE * PATCHSIZE * 2;
