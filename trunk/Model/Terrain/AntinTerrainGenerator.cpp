@@ -34,13 +34,16 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
 
     faultLines(ppVertexHeightData, terrainSize, 400, 4);
 
-    flattenArea(    ppVertexHeightData,
-                    terrainSize,
-                    calculateAverageHeight(ppVertexHeightData, terrainSize, 50, 100, 20),
-                    -150,
-                    -150,
-                    40,
-                    60);
+    for(int i=0;i<10;++i)
+    {
+        flattenArea(    ppVertexHeightData,
+                        terrainSize,
+                        calculateAverageHeight(ppVertexHeightData, terrainSize, 50, 100, 20),
+                        -1,
+                        -1,
+                        10,
+                        40);
+    }
 
     flattenArea(ppVertexHeightData, terrainSize, 250, 50, 100, 15, 20);
     flattenArea(ppVertexHeightData, terrainSize, 150, 50, 100, 10, 0);
@@ -164,7 +167,7 @@ void AntinTerrainGenerator::flattenArea(    unsigned char **ppVertexHeightData,
     if(yCenter < 0) yCenter = rand() % terrainSize;
     int innerCir2 = innerRadius*innerRadius;
     int outerCir2 = outerRadius*outerRadius;
-    int donutWidth = outerRadius-innerRadius;
+    float donutWidth = outerRadius-innerRadius;
     for(int x = 0; x < terrainSize-1; ++x)
     {
         for(int y = 0; y < terrainSize-1; ++y)
@@ -175,8 +178,9 @@ void AntinTerrainGenerator::flattenArea(    unsigned char **ppVertexHeightData,
                 ppVertexHeightData[y][x] = height;
             } else if(z < outerCir2 && innerRadius < outerRadius) {
                 float step = sqrt((double)z) - sqrt((double)innerCir2);
-                float stepSize = (float)abs(height - ppVertexHeightData[y][x]) / (float)donutWidth;
-                ppVertexHeightData[y][x] -= step*stepSize;
+                //float stepSize = (float)abs(height - ppVertexHeightData[y][x]) / (float)donutWidth;
+                float ratio = (1/donutWidth)*step;
+                ppVertexHeightData[y][x] = ppVertexHeightData[y][x]*ratio + height*(1-ratio);
             }
         }
     }
