@@ -80,6 +80,36 @@ private:
     void makeHills(unsigned char **ppVertexHeightData, const unsigned short terrainSize, int cirCount, int cirRad, int cirHeight);
 
     /**
+     * invertTerrain
+     * flips terrain around
+     */
+    void invertTerrain(unsigned char **ppVertexHeightData, const unsigned short terrainSize);
+
+    /**
+     * calculateAverageHeight
+     * calculates average height of specified area (circle!)
+     * @param xCenter               center point of area to be flattened
+     * @param yCenter               center point of area to be flattened
+     * @param radius                radius of area
+     * @return                      average height of area
+     */
+    int calculateAverageHeight(unsigned char **ppVertexHeightData, const unsigned short terrainSize, int xCenter, int yCenter, int radius);
+
+    /**
+     * flattenArea
+     * makes circular area flat
+     * @param ppVertexHeightData    height data
+     * @param terrainSize           terrain height/width
+     * @param height                height to flatten to, use with calculateAverageHeight for nice results!
+     * @param xCenter               center point of area to be flattened, use negative value for random location
+     * @param yCenter               center point of area to be flattened, use negative value for random location
+     * @param innerRadius           area that becomes totally flat
+     * @param outerRadius           area that is only flattened by a linear percentage
+     *                              if this is smaller than inner radius it is disabled
+     */
+    void flattenArea(unsigned char **ppVertexHeightData, const unsigned short terrainSize, int height, int xCenter, int yCenter, int innerRadius, int outerRadius);
+
+    /**
      * Our preferred size
      */
     unsigned short      m_Size;

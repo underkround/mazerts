@@ -1,6 +1,7 @@
 #include "AntinTerrainGenerator.h"
 #include "Terrain.h"
 #include <stdlib.h>
+#include <cmath>
 
 #define PII 3.14159265f
 
@@ -22,16 +23,27 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
     //PERUNAPELTOGENERAATTORI aka. just testing algorithms - NOT an actual way to make good terrain!
 
     makeFlat(ppVertexHeightData, terrainSize, Terrain::DEFAULT_FLATHEIGHT);
-    makeHills(ppVertexHeightData, terrainSize, 10, 10, 50);
-    faultLines(ppVertexHeightData, terrainSize, 200, 2);
-
-    Terrain::getInstance()->smoothMap(1);
-
     for(int i=0;i<40;i+=8)
     {
         makeHills(ppVertexHeightData, terrainSize, 2, i, i*5);
     }
+    invertTerrain(ppVertexHeightData, terrainSize);
+    faultLines(ppVertexHeightData, terrainSize, 200, 2);
+
+    Terrain::getInstance()->smoothMap(1);
+
     faultLines(ppVertexHeightData, terrainSize, 400, 4);
+
+    flattenArea(    ppVertexHeightData,
+                    terrainSize,
+                    calculateAverageHeight(ppVertexHeightData, terrainSize, 50, 100, 20),
+                    -150,
+                    -150,
+                    40,
+                    60);
+
+    flattenArea(ppVertexHeightData, terrainSize, 250, 50, 100, 15, 20);
+    flattenArea(ppVertexHeightData, terrainSize, 150, 50, 100, 10, 0);
 
     Terrain::getInstance()->smoothMap(1);
 }
@@ -100,6 +112,71 @@ void AntinTerrainGenerator::makeHills(  unsigned char **ppVertexHeightData,
                     int heightMod = (cirHeight/2)*(1+cos(PII*z/cir2));
                     ppVertexHeightData[y][x] = ((ppVertexHeightData[y][x]+heightMod) < 256) ? ppVertexHeightData[y][x] += heightMod : ppVertexHeightData[y][x] = 255;
                 }
+            }
+        }
+    }
+}
+
+void AntinTerrainGenerator::invertTerrain(unsigned char **ppVertexHeightData, const unsigned short terrainSize)
+{
+    for(int y = 0; y < terrainSize; ++y)
+    {
+        for(int x = 0; x < terrainSize; ++x)
+        {
+            ppVertexHeightData[y][x] = 255-ppVertexHeightData[y][x];
+        }
+    }
+}
+
+int AntinTerrainGenerator::calculateAverageHeight(  unsigned char **ppVertexHeightData,
+                                                    const unsigned short terrainSize,
+                                                    int xCenter,
+                                                    int yCenter,
+                                                    int radius)
+{
+    int total = 0;
+    int i = 0;
+    int radius2 = radius*radius;
+    for(int y = 0; y < terrainSize; ++y)
+    {
+        for(int x = 0; x < terrainSize; ++x)
+        {
+            int z = (xCenter-x)*(xCenter-x)+(yCenter-y)*(yCenter-y);
+            if(z < radius2)
+            {
+                total += ppVertexHeightData[y][x];
+                ++i;
+            }
+        }
+    }
+    return total/i;
+}
+
+void AntinTerrainGenerator::flattenArea(    unsigned char **ppVertexHeightData,
+                                            const unsigned short terrainSize,
+                                            int height,
+                                            int xCenter,
+                                            int yCenter,
+                                            int innerRadius,
+                                            int outerRadius)
+{
+    if(xCenter < 0) xCenter = rand() % terrainSize;
+    if(yCenter < 0) yCenter = rand() % terrainSize;
+    int innerCir2 = innerRadius*innerRadius;
+    int outerCir2 = outerRadius*outerRadius;
+    int donutWidth = outerRadius-innerRadius;
+    for(int x = 0; x < terrainSize-1; ++x)
+    {
+        for(int y = 0; y < terrainSize-1; ++y)
+        {
+            int z = (xCenter-x)*(xCenter-x)+(yCenter-y)*(yCenter-y);
+            if(z < innerCir2)
+            {
+                ppVertexHeightData[y][x] = height;
+            } else if(z < outerCir2 && innerRadius < outerRadius) {
+                float step = sqrt((double)z) - sqrt((double)innerCir2);
+                float stepSize = (float)abs(height - ppVertexHeightData[y][x]) / (float)donutWidth;
+                ppVertexHeightData[y][x] -= step*stepSize;
             }
         }
     }
