@@ -468,8 +468,8 @@ void CTheApp::UpdateMouse(void)
         //Terrain picking test
         if(m_Mouse.GetButton(0))
         {
-            float w = GetWindowRect().right;
-            float h = GetWindowRect().bottom;
+            float w = (float)GetWindowRect().right;
+            float h = (float)GetWindowRect().bottom;
 
             D3DXMATRIX matProj;
             GetDevice()->GetTransform(D3DTS_PROJECTION, &matProj);

@@ -17,7 +17,7 @@ D3DXVECTOR3* TerrainIntersection::pickTerrain(D3DXVECTOR3 rayOrigin, D3DXVECTOR3
     return result;
 
 
-    //Other stuff =)
+    //Other stuff, not used atm =)
 
     //Get two vectors that define points in the plane above and below the terrain
     D3DXVECTOR3* clippedRay = getPointsFromPlaneClippedRay(rayOrigin, rayDir);
@@ -58,6 +58,8 @@ D3DXVECTOR3* TerrainIntersection::pickTerrain(D3DXVECTOR3 rayOrigin, D3DXVECTOR3
         //All culled
         return NULL;
     }
+
+    //Go through remaining patches and find intersection triangle
 }
 
 D3DXVECTOR3* TerrainIntersection::getPointsFromPlaneClippedRay(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
@@ -200,10 +202,9 @@ DoubleLinkedList<TerrainIntersection::INDICES*>* TerrainIntersection::getAABBCul
 D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* patches, D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
 {
 
-    D3DXVECTOR3* result = NULL;
     const unsigned char* const* ppVData = Terrain::getInstance()->getTerrainVertexHeightData();
 
-    //Get the clipped ray, shouldn't return NULL anymore at this point (or something went very badly wrong before)
+    //Get the clipped ray
     D3DXVECTOR3* clippedRay = getPointsFromPlaneClippedRay(rayOrigin, rayDir);
 
     DoubleLinkedList<INDICES*>* squares;
@@ -213,6 +214,7 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
         //Get square indices from clipped ray
         squares = getPatchesBetween((int)clippedRay[0].x, (int)clippedRay[0].y, (int)clippedRay[1].x, (int)clippedRay[1].y,
                     Terrain::getInstance()->getSize() - 1);
+        delete [] clippedRay;
     }
     else
     {
@@ -233,38 +235,47 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
     D3DXVECTOR3 V4;
 
     float dist = 0.0f;
-    float smallestDist = 1000000.0f;;
-    //TODO: Listan siivous patches-datan pohjalta, syvyysjärjestys?
+    float smallestDist = 1000000.0f;
+
+    //Transfer ray-z's to Model-side heights (so I can drop the multiplications from ppVData)
+    rayOrigin.z /= UITerrain::HEIGHTFACTOR;
+    rayDir.z /= UITerrain::HEIGHTFACTOR;
+
+    D3DXVECTOR3* result = new D3DXVECTOR3;
+    //Used to check at the end if any point was found
+    result->z = -1000000.0f;
 
     //Go through the triangles
     while(!squares->empty())
     {
         INDICES* sq = squares->popHead();
 
-        V1.x = sq->x;
-        V1.y = sq->y;
-        V1.z = -ppVData[sq->y][sq->x] * UITerrain::HEIGHTFACTOR;
+        V1.x = (float)sq->x;
+        V1.y = (float)sq->y;
+        V1.z = (float)-ppVData[sq->y][sq->x];
         
-        V2.x = sq->x + 1;
-        V2.y = sq->y;
-        V2.z = -ppVData[sq->y][sq->x + 1] * UITerrain::HEIGHTFACTOR;
+        V2.x = (float)sq->x + 1;
+        V2.y = (float)sq->y;
+        V2.z = (float)-ppVData[sq->y][sq->x + 1];
         
-        V3.x = sq->x;
-        V3.y = sq->y + 1;
-        V3.z = -ppVData[sq->y + 1][sq->x] * UITerrain::HEIGHTFACTOR;
+        V3.x = (float)sq->x;
+        V3.y = (float)sq->y + 1;
+        V3.z = (float)-ppVData[sq->y + 1][sq->x];
         
-        V4.x = sq->x + 1;
-        V4.y = sq->y + 1;
-        V4.z = -ppVData[sq->y + 1][sq->x + 1] * UITerrain::HEIGHTFACTOR;
+        V4.x = (float)sq->x + 1;
+        V4.y = (float)sq->y + 1;
+        V4.z = (float)-ppVData[sq->y + 1][sq->x + 1];
         
         //TODO: Pick the one with lowest distance, build VECTOR and return
         if(D3DXIntersectTri(&V1, &V3, &V2, &rayOrigin, &rayDir, NULL, NULL, &dist))
         {
             if(dist < smallestDist)
             {
-                UI3DDebug::addSphere(V1.x, V1.y, V1.z, 0.5f, 10.0f);
+                //UI3DDebug::addSphere(V1.x, V1.y, V1.z * UITerrain::HEIGHTFACTOR, 0.5f, 10.0f);
                 smallestDist = dist;
-                result = &V1;
+                result->x = V1.x;
+                result->y = V1.y;
+                result->z = V1.z;
             }
         }
         else
@@ -273,9 +284,11 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
             {
                 if(dist < smallestDist)
                 {
-                    UI3DDebug::addSphere(V1.x, V1.y, V1.z, 0.5f, 10.0f);
+                    //UI3DDebug::addSphere(V1.x, V1.y, V1.z * UITerrain::HEIGHTFACTOR, 0.5f, 10.0f);
                     smallestDist = dist;
-                    result = &V1;
+                    result->x = V1.x;
+                    result->y = V1.y;
+                    result->z = V1.z;
                 }
             }
         }
@@ -285,5 +298,12 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
     
     delete squares;
 
-    return result;
+    if(result->z > -1000000.0f)
+    {
+        result->z *= UITerrain::HEIGHTFACTOR;
+        UI3DDebug::addSphere(result->x, result->y, result->z, 0.5f, 10.0f);
+        return result;
+    }
+
+    return NULL;
 }

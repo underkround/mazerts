@@ -311,11 +311,11 @@ void GroundMovingLogic::move(float deltaTime)
     if(pos->x < 0)    
         pos->x = 0;
     if(pos->x + m_pUnit->getWidth() > terraSize)
-        pos->x = terraSize - m_pUnit->getWidth();
+        pos->x = (float)terraSize - m_pUnit->getWidth();
     if(pos->y < 0)    
         pos->y = 0;
     if(pos->y + m_pUnit->getHeight() > terraSize)
-        pos->y = terraSize - m_pUnit->getHeight();
+        pos->y = (float)terraSize - m_pUnit->getHeight();
     
 }
 
