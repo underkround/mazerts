@@ -46,13 +46,13 @@ void C3DObject::Render(LPDIRECT3DDEVICE9 pDevice)
 	if (IsVisible() && m_pMesh)
 	{
         //Frustum culling
-        D3DXVECTOR3 AABBMin(m_AABBMin.x + m_mLocal._41,
-                            m_AABBMin.y + m_mLocal._42,
-                            m_AABBMin.z + m_mLocal._43);
+        D3DXVECTOR3 AABBMin(m_AABBMin.x + m_mWorld._41,
+                            m_AABBMin.y + m_mWorld._42,
+                            m_AABBMin.z + m_mWorld._43);
 
-        D3DXVECTOR3 AABBMax(m_AABBMax.x + m_mLocal._41,
-                            m_AABBMax.y + m_mLocal._42,
-                            m_AABBMax.z + m_mLocal._43);
+        D3DXVECTOR3 AABBMax(m_AABBMax.x + m_mWorld._41,
+                            m_AABBMax.y + m_mWorld._42,
+                            m_AABBMax.z + m_mWorld._43);
         
         if(FrustumCull::cullAABB(AABBMin, AABBMax))
         {

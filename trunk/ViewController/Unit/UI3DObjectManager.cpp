@@ -60,4 +60,58 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
     }
 
     m_RootObject.AddChild(pUIUnit);
+    m_UnitList.pushTail(pUIUnit);
+}
+
+
+UIUnit* UI3DObjectManager::pickUnit(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
+{
+//http://www.toymaker.info/Games/html/picking.html
+
+    UI3DObjectManager* pManager = getInstance();
+
+    ListNode<UIUnit*>* node = pManager->m_UnitList.headNode();
+    
+    UIUnit* result = NULL;
+
+    float dist;
+    float smallestDist = 1000000.0f;
+    D3DXVECTOR3 AABBMin;
+    D3DXVECTOR3 AABBMax;    
+    D3DXMATRIX inverseMat;
+    D3DXVECTOR3 rayObjOrigin;
+    D3DXVECTOR3 rayObjDir;
+
+    while(node)
+    {
+        BOOL hit = false;
+
+        UIUnit* pUnit = node->item;
+
+        pUnit->getAABBVectors(&AABBMin, &AABBMax);
+
+        //AABB-culling
+        if(D3DXBoxBoundProbe(&AABBMin, &AABBMax, &rayOrigin, &rayDir))
+        {
+            //Intersection test
+            D3DXMatrixInverse(&inverseMat, NULL, &pUnit->GetMatrix());
+
+            D3DXVec3TransformCoord(&rayObjOrigin, &rayOrigin, &inverseMat);
+            D3DXVec3TransformNormal(&rayObjDir, &rayDir, &inverseMat);
+            D3DXVec3Normalize(&rayObjDir, &rayObjDir);
+
+            D3DXIntersect(pUnit->GetMesh(), &rayObjOrigin, &rayObjDir, &hit, NULL, NULL, NULL, &dist, NULL, NULL);
+
+            if(hit && dist < smallestDist)
+            {
+                smallestDist = dist;
+                result = node->item;
+            }
+        }
+
+        node = node->next;
+    }
+
+
+    return result;
 }

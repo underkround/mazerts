@@ -35,8 +35,8 @@ public:
 
     /**
      * Picks the terrain with given ray and returns the coordinate of collision point (if any)
-     * @param rayOrigin  Origin of the ray
-     * @param rayDir     Direction of the ray
+     * @param rayOrigin  Origin of the ray (world-space)
+     * @param rayDir     Direction of the ray (world-space)
      * @Return Collision point as D3DXVECTOR or NULL if no collision
      */
     static D3DXVECTOR3* pickTerrain(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir);

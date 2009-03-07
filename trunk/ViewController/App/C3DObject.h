@@ -79,6 +79,21 @@ public:
         m_AABBMax = size * 0.5f;
     }
 
+    /**
+     * Gets the vectors defining the unit AABB at its current location
+     * @param pAABBMin Pointer to fill
+     */
+    inline void getAABBVectors(D3DXVECTOR3* pAABBMin, D3DXVECTOR3* pAABBMax) const
+    {
+        pAABBMin->x = m_AABBMin.x + m_mLocal._41;
+        pAABBMin->y = m_AABBMin.y + m_mLocal._42;
+        pAABBMin->z = m_AABBMin.z + m_mLocal._43;
+
+        pAABBMax->x = m_AABBMax.x + m_mLocal._41;
+        pAABBMax->y = m_AABBMax.y + m_mLocal._42;
+        pAABBMax->z = m_AABBMax.z + m_mLocal._43;
+    }
+
 protected:
 	// an array of mesh data structures
 	vector<MESHDATA>	m_arrMeshData;

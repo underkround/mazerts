@@ -508,10 +508,23 @@ void CTheApp::UpdateMouse(void)
             rayOrigin.y = m._42;
             rayOrigin.z = m._43;
 
-            D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
-            if(hitSquare)
+            UIUnit* pUnit = UI3DObjectManager::pickUnit(rayOrigin, rayDir);
+
+            if(pUnit)
             {
-                delete hitSquare;
+                D3DXMATRIX pMat = pUnit->GetMatrix();
+                C3DObject* pObj = (C3DObject*)UI3DDebug::addSphere(0, 10.0f, 0, 25.0f, 10.0f);
+                //Debug-object, added automatically to root
+                m_pManager->getRootObject()->RemoveChild(pObj);
+                pUnit->AddChild(pObj);
+            }
+            else
+            {
+                D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
+                if(hitSquare)
+                {
+                    delete hitSquare;
+                }
             }
         }
 

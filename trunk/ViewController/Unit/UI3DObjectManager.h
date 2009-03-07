@@ -18,6 +18,9 @@
 #include "../../Model/Asset/AssetCollection.h"
 #include "../../Model/Asset/IAssetCollectionListener.h"
 
+//FORWARD DECLARATIONS
+class UIUnit;
+
 class UI3DObjectManager : public IAssetCollectionListener
 {
 public:
@@ -48,6 +51,15 @@ public:
     inline C3DObject* getRootObject() { return &m_RootObject; }
 
     /**
+     * Picks the units with given ray and returns the picked unit (if any)
+     * @param rayOrigin  Origin of the ray (world-space)
+     * @param rayDir     Direction of the ray (world-space)
+     * @Return UIUnit-pointer to picked unit or NULL if no unit was hit
+     */
+    static UIUnit* pickUnit(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir);
+
+//IAssetCollectionListener
+    /**
      * Handle notification of new asset that has just been created to the game.
      * @param pAsset  pointer to created new asset
      */
@@ -76,7 +88,7 @@ private:
 	    m_RootObject.Create(NULL);
 	    m_RootObject.SetActive(FALSE);
 	    m_RootObject.SetVisible(FALSE);
-        AssetCollection::registerListener(this);
+        AssetCollection::registerListener(this);        
     }
 
     /**
@@ -101,6 +113,10 @@ private:
      */
     C3DResourceContainer m_ResourceContainer;
 
+    /**
+     * List of units
+     */
+    DoubleLinkedList<UIUnit*> m_UnitList;
 };
 
 #endif //__UI3DOBJECTMANAGER_H__
