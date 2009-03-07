@@ -310,7 +310,7 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
     if(result->z > -1000000.0f)
     {
         result->z *= UITerrain::HEIGHTFACTOR;
-        UI3DDebug::addSphere(result->x, result->y, result->z, 1.0f, 10.0f);
+        //UI3DDebug::addSphere(result->x, result->y, result->z, 1.0f, 10.0f);
         return result;
     }
 

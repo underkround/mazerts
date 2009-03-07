@@ -18,7 +18,6 @@
 #include "../3DDebug/UI3DDebug.h"
 #include "../Terrain/TerrainIntersection.h"
 
-
 #define KEYBOARD_CAMSPEED 60.0f
 #define MOUSE_CAMSPEED 2.0f
 
@@ -98,6 +97,9 @@ HRESULT CTheApp::OnCreate(void)
     UITerrain::create(GetDevice());
     m_pUITerrain = UITerrain::getInstance();
                               
+
+    return m_Selector.create(GetDevice());
+
     return S_OK;
 }
 
@@ -136,7 +138,7 @@ void CTheApp::OnFlip(void)
     D3DXMATRIX view;
     D3DXMatrixLookAtLH( &view,
                         &D3DXVECTOR3(m_fX, m_fY, m_fZ),
-                        &D3DXVECTOR3(m_fX, m_fY+100.0f, m_fZ + m_iMouseY),//100.0f),
+                        &D3DXVECTOR3(m_fX, m_fY + 200.0f, m_fZ + m_iMouseY * 0.5f - 100.0f),//100.0f),
                         &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
     pDevice->SetTransform(D3DTS_VIEW, &view);
 
@@ -242,6 +244,8 @@ void CTheApp::OnFlip(void)
         pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
         pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);        
         m_pUITerrain->render(pDevice);
+
+        m_Selector.render(pDevice);
           
         //Antsys models need reverse backface-culling
         pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
@@ -478,9 +482,14 @@ void CTheApp::UpdateMouse(void)
             //TODO: move faster when farther away from terrain
         }
 
+
+        static bool buttonDown = false;
+
         //Terrain picking test
         if(m_Mouse.GetButton(0))
         {
+            buttonDown = true;
+
             float w = (float)GetWindowRect().right;
             float h = (float)GetWindowRect().bottom;
 
@@ -523,9 +532,15 @@ void CTheApp::UpdateMouse(void)
                 D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
                 if(hitSquare)
                 {
+                    m_Selector.setPoint(D3DXVECTOR2(hitSquare->x, hitSquare->y));                    
                     delete hitSquare;
                 }
             }
+        }
+        else
+        {
+            buttonDown = false;
+            m_Selector.buttonUp();
         }
 
  

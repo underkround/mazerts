@@ -5,7 +5,7 @@
 #include "../App/vertices.h"
 #include "../Culling/FrustumCull.h"
 
-const float UITerrain::HEIGHTFACTOR = 0.1f;
+const float UITerrain::HEIGHTFACTOR = 0.15f;
 UITerrain* UITerrain::pInstance = NULL;
 
 UITerrain* UITerrain::getInstance()
@@ -142,7 +142,7 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
             {
                 pDevice->SetStreamSource( 0, m_pppVB[i][j], 0, sizeof(VERTEX2UV) );        
         
-                if ( m_pppIB[i][j] )
+                if(m_pppIB[i][j])
                 {
                     pDevice->SetIndices( m_pppIB[i][j] );
                     pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_NumVertices, 0, m_NumPrimitives );

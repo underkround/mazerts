@@ -22,6 +22,11 @@
 #include "InputKeyboard.h"
 #include "InputMouse.h"
 
+
+//TODO: Remove when finished testing
+#include "Selector.h"
+
+
 class CTheApp : public ID3DApplication
 {
 public:
@@ -109,4 +114,8 @@ private:
     bool m_Help;
 
     UI3DObjectManager* m_pManager;
+
+
+
+    Selector m_Selector;
 };
