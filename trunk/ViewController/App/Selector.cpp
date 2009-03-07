@@ -7,14 +7,11 @@
 
 Selector::SELECTION* Selector::buttonUp()
 {
-    if(m_Render)
-    {
-        //TODO: get units from grid-array
+    //TODO: get units from grid-array
 
 
-        m_Render = false;
-    }
-
+    m_Render = false;
+    m_FirstSet = false;
 
     return NULL;
 }
@@ -25,7 +22,8 @@ HRESULT Selector::create(LPDIRECT3DDEVICE9 pDevice)
 
     m_pDevice = pDevice;
 
-    m_NumVertices = (SELECTOR_WIDTH + 1) * (SELECTOR_HEIGHT + 1);
+    //Vertex buffer
+    m_NumVertices = (SELECTOR_SIZE + 1) * (SELECTOR_SIZE + 1);
     hres = pDevice->CreateVertexBuffer(m_NumVertices * sizeof(VERTEX),
                                         0,
                                         VERTEX::GetFVF(),
@@ -38,9 +36,9 @@ HRESULT Selector::create(LPDIRECT3DDEVICE9 pDevice)
         return hres;
     }
     
-
-    m_NumPrimitives = (SELECTOR_WIDTH) * (SELECTOR_HEIGHT) * 2;
-    hres = pDevice->CreateIndexBuffer(SELECTOR_WIDTH * SELECTOR_HEIGHT * 6 * sizeof(USHORT), 
+    //Index buffer
+    m_NumPrimitives = (SELECTOR_SIZE) * (SELECTOR_SIZE) * 2;
+    hres = pDevice->CreateIndexBuffer(SELECTOR_SIZE * SELECTOR_SIZE * 6 * sizeof(USHORT), 
                                 D3DUSAGE_WRITEONLY,
                                 D3DFMT_INDEX16,
                                 D3DPOOL_MANAGED,
@@ -54,14 +52,14 @@ HRESULT Selector::create(LPDIRECT3DDEVICE9 pDevice)
     USHORT* pIndices = NULL;
     int vIndex = 0;
     int ind = 0;
-    int vertexSize = SELECTOR_WIDTH + 1;
+    int vertexSize = SELECTOR_SIZE + 1;
 
     //Fill index-data
     m_pIB->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD);
     {
-        for(int i = 0; i < SELECTOR_WIDTH; i++)
+        for(int i = 0; i < SELECTOR_SIZE; i++)
         {
-            for(int j = 0; j < SELECTOR_HEIGHT; j++)
+            for(int j = 0; j < SELECTOR_SIZE; j++)
             {
                 pIndices[ind++] = vIndex;
                 pIndices[ind++] = vIndex + vertexSize;
@@ -77,6 +75,8 @@ HRESULT Selector::create(LPDIRECT3DDEVICE9 pDevice)
     }
     m_pIB->Unlock();
 
+    //Load texture
+    //TODO: get from resource container
     hres = D3DXCreateTextureFromFile(pDevice, _T("Selector.tga"), &m_pTexture);
     if(FAILED(hres))
     {
@@ -89,8 +89,8 @@ HRESULT Selector::create(LPDIRECT3DDEVICE9 pDevice)
 
 HRESULT Selector::update()
 {
-    float width = (m_Point2.x - m_Point1.x) / SELECTOR_WIDTH;
-    float height = (m_Point2.y - m_Point1.y) / SELECTOR_HEIGHT;
+    float width = (m_Point2.x - m_Point1.x) / SELECTOR_SIZE;
+    float height = (m_Point2.y - m_Point1.y) / SELECTOR_SIZE;
 
     m_mWorld._41 = m_Point1.x;
     m_mWorld._42 = m_Point1.y;
@@ -100,7 +100,7 @@ HRESULT Selector::update()
    
     VERTEX* pVertices = NULL;
 
-    int vertexSize = SELECTOR_WIDTH + 1;
+    int vertexSize = SELECTOR_SIZE + 1;
     int x = 0;
     int y = 0;
     int loc = 0;
@@ -134,8 +134,6 @@ HRESULT Selector::update()
     }
     m_pVB->Unlock();
 
-    m_Render = true;
-
     return S_OK;
 }
 
@@ -143,29 +141,32 @@ void Selector::render(LPDIRECT3DDEVICE9 pDevice)
 {
     m_pDevice = pDevice;
 
-    if(m_Render)
+    if(m_Render && m_Point1.x != m_Point2.x && m_Point1.y != m_Point2.y)
     {
 
         pDevice->SetTransform(D3DTS_WORLD, &m_mWorld);
         
+        pDevice->SetMaterial(&m_Mat);
+
         pDevice->SetFVF( VERTEX::GetFVF() );    
 
         if(m_pTexture)
         {
-            // set the texturing parameters
             pDevice->SetTexture(0, m_pTexture);
         }
-
+        
         pDevice->SetStreamSource(0, m_pVB, 0, sizeof(VERTEX));
         pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
         pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+        
+        //Render
         if(m_pIB)
         {
             pDevice->SetIndices( m_pIB );
             pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_NumVertices, 0, m_NumPrimitives );
         }
 
-        pDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE);
+        pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
         pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
     }
 }

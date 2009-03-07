@@ -6,8 +6,6 @@
  * $Id$
  */
 
-//TODO: Finish what you started, you lazy bum
-
 #include "d3dx9.h"
 #include "../Unit/UIUnit.h"
 
@@ -18,9 +16,14 @@ class Selector
 {
 public:
 
-    const static int SELECTOR_WIDTH = 32;
-    const static int SELECTOR_HEIGHT = 32;
+    /**
+     * Selector mesh size (quads per side)
+     */
+    const static int SELECTOR_SIZE = 20;    
 
+    /**
+     * Holds data about selected area
+     */
     struct SELECTION
     {
         /** 
@@ -40,9 +43,6 @@ public:
         D3DXVECTOR3 point2;
     };
 
-    /**
-     * Constructor     
-     */
     Selector()
     {
         m_pDevice = NULL;        
@@ -56,7 +56,11 @@ public:
         m_Point2.y = 0;
 
         D3DXMatrixIdentity(&m_mWorld);
+
+        ::memset(&m_Mat, 0, sizeof(D3DMATERIAL9));
+        m_Mat.Emissive = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
         m_Render = false;
+        m_FirstSet = false;
     }
 
     virtual ~Selector()
@@ -81,24 +85,53 @@ public:
     }
   
     /**
-     * Creates the mesh
+     * Creates the index- and vertex-buffers and loads texture
      */
     HRESULT create(LPDIRECT3DDEVICE9 pDevice);
 
     /**
-     * Set the point of the selector
+     * Set the point of the selector, first call sets the start
+     * point, after that the call moves end point, until buttonUp
+     * is called (this is used for mouse dragging)
+     * @param point Point xy-coordinates as D3DXVECTOR2
      */
     void setPoint(D3DXVECTOR2 point)
     {        
-        if(m_Render)
+        if(m_FirstSet)
         {
-            m_Point2 = point;            
+            m_Point2 = point;
+            m_Render = true;
         }
         else
         {
             m_Point1 = point;            
+            m_FirstSet = true;
         }
         update();
+    }
+
+    /**
+     * Set the both points and updates the mesh data to match these
+     * @param point1 D3DXVECTOR2 containing start point xy-coordinates
+     * @param point2 D3DXVECTOR2 containing end point xy-coordinates
+     *        It won't really matter which is the start and which the
+     *        end point, the mesh is drawn correctly both ways
+     */
+    void setPoints(D3DXVECTOR2 point1, D3DXVECTOR2 point2)
+    {
+        m_Point1 = point1;
+        m_Point2 = point2;
+        m_FirstSet = true;
+        update();
+    }
+
+    /**
+     * Sets whether the selector is rendered or not on Render-call
+     * @param render True to enable rendering, false to disable
+     */
+    void setRender(bool render)
+    {
+        m_Render = render;
     }
 
     /**
@@ -108,8 +141,9 @@ public:
     void render(LPDIRECT3DDEVICE9 pDevice);
 
     /**
-     * When the button is released, the selector will return any selected units and two D3DXVectors
-     * representing the selected points in terrain
+     * Called when the mouse button is released, the selector will return any selected units and
+     * two D3DXVECTOR3s representing the selected points in terrain and disable the rendering of
+     * the selector-mesh
      * @return Pointer to SELECTION
      */
     SELECTION* buttonUp();
@@ -153,16 +187,26 @@ private:
      */
     D3DXMATRIX m_mWorld;
 
+    /** 
+     * Material, full emissive
+     */
+    D3DMATERIAL9 m_Mat;
+
     /**
-     * Buffer data amount
+     * Buffer data amount, vertex and primitive count
      */
     DWORD m_NumVertices;
     DWORD m_NumPrimitives;
 
     /**
-     * Used to control whether this is rendered
+     * Used internally to control whether selector is rendered
      */
     bool m_Render;
+
+    /**
+     * Used to control which point to set
+     */
+    bool m_FirstSet;
 };
 
 #endif //__SELECTOR_H__
