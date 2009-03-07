@@ -17,19 +17,16 @@ D3DXVECTOR3* TerrainIntersection::pickTerrain(D3DXVECTOR3 rayOrigin, D3DXVECTOR3
     return result;
 
 
-    //Other stuff, not used atm =)
+    //Other stuff, not used atm, probably not really even needed =)
 
     //Get two vectors that define points in the plane above and below the terrain
-    D3DXVECTOR3* clippedRay = getPointsFromPlaneClippedRay(rayOrigin, rayDir);
+    /*D3DXVECTOR3* clippedRay = getPointsFromPlaneClippedRay(rayOrigin, rayDir);
 
     if(clippedRay == NULL)
     {
         return NULL;
     }
 
-    /*TCHAR msg[1000];
-    _stprintf_s(msg, _T("Clipped:  %d : %d  ->  %d : %d \n"), (int)clippedRay[0].x, (int)clippedRay[0].y, (int)clippedRay[1].x, (int)clippedRay[1].y);
-    ::OutputDebugString(msg);*/
     UI3DDebug::addLine(clippedRay[0].x, clippedRay[0].y, clippedRay[0].z, clippedRay[1].x, clippedRay[1].y, clippedRay[1].z, 0.3f, 5.0f);
     
     float factor = 1.0f/UITerrain::PATCHSIZE;
@@ -41,7 +38,7 @@ D3DXVECTOR3* TerrainIntersection::pickTerrain(D3DXVECTOR3 rayOrigin, D3DXVECTOR3
     delete [] clippedRay;
 
     int maxSize = UITerrain::getInstance()->m_Patches - 1;
-    DoubleLinkedList<INDICES*>* patches = getPatchesBetween(x0, y0, x1, y1, maxSize);
+    DoubleLinkedList<INDICES*>* patches = getSquaresBetween(x0, y0, x1, y1, maxSize);
     
     if(patches == NULL)
     {
@@ -57,15 +54,14 @@ D3DXVECTOR3* TerrainIntersection::pickTerrain(D3DXVECTOR3 rayOrigin, D3DXVECTOR3
     {
         //All culled
         return NULL;
-    }
+    }*/
 
     //Go through remaining patches and find intersection triangle
 }
 
 D3DXVECTOR3* TerrainIntersection::getPointsFromPlaneClippedRay(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
 {
-    //Clip the ray between upper and lower xy-planes, for both planes the
-    //normal will be -1
+    //Z-values of the upper and lower xy-planes
     const float UPPERPLANEZ = -255 * UITerrain::HEIGHTFACTOR;
     const float LOWERPLANEZ = 0.0f;
 
@@ -94,75 +90,6 @@ D3DXVECTOR3* TerrainIntersection::getPointsFromPlaneClippedRay(D3DXVECTOR3 rayOr
     result[1].x = rayOrigin.x + rayDir.x * t;
     result[1].y = rayOrigin.y + rayDir.y * t;
     
-    return result;
-}
-
-DoubleLinkedList<TerrainIntersection::INDICES*>* TerrainIntersection::getPatchesBetween(int x0, int y0, int x1, int y1, int maxSize)
-{
-
-    DoubleLinkedList<INDICES*>* result = new DoubleLinkedList<INDICES*>();
-
-    //Modified from premade Bresenham
-    bool steep = abs(y1 - y0) > abs(x1 - x0);
-    if (steep) 
-    {
-        int temp = x0;
-        x0 = y0;
-        y0 = temp;
-        
-        temp = x1;
-        x1 = y1;
-        y1 = temp;
-    }
-    if (x0 > x1) 
-    {
-        int temp = x0;
-        x0 = x1;
-        x1 = temp;
-
-        temp = y0;
-        y0 = y1;
-        y1 = temp;
-    }
-
-    int deltax = x1 - x0;
-    int deltay = abs(y1 - y0);
-    int error = 0;
-    int ystep;
-    int y = y0;
-    if (y0 < y1)
-    {
-        ystep = 1;
-    }
-    else
-    {
-        ystep = -1;
-    }
-    for (int x = x0; x <= x1; x++) 
-    {
-        //Need to continue the loop, the start of the ray might be outside map
-        if(x < 0 || y < 0 || x > (maxSize) || y > (maxSize))
-        {
-            continue;
-        }
-
-        if (steep)
-        {
-            result->pushTail(new INDICES(y, x));
-        }
-        else
-        {
-            result->pushTail(new INDICES(x, y));
-        }
-        error += deltay;
-        
-        if (2 * error >= deltax) 
-        {
-            y += ystep;
-            error -= deltax;
-        }
-    }
-
     return result;
 }
 
@@ -199,6 +126,88 @@ DoubleLinkedList<TerrainIntersection::INDICES*>* TerrainIntersection::getAABBCul
     return result;
 }
 
+DoubleLinkedList<TerrainIntersection::INDICES*>* TerrainIntersection::getSquaresBetween(int x0, int y0, int x1, int y1, int maxSize)
+{
+/*
+Based on http://www.cs.yorku.ca/~amana/research/grid.pdf
+*/
+
+//Sign-macro
+#define sgn(a) (a > 0) ? 1 : (a < 0) ? -1 : 0
+
+    DoubleLinkedList<INDICES*>* result = new DoubleLinkedList<INDICES*>();
+    
+    //Initialization: stepping directions and startpoint
+    int xDiff = x1 - x0;
+    int yDiff = y1 - y0;
+    int stepX = sgn(xDiff);
+    int stepY = sgn(yDiff);
+    int x = x0;
+    int y = y0;
+    //Delta-values: how much the x and y have to be incremented to hit next grid square
+    //DeltaX = dir.x, deltaY = dir.y        
+    D3DXVECTOR2 delta((float)(x1 - x0), (float)(y1 - y0));
+    //D3DXVec2Normalize(&delta, &delta);
+    if(delta.x < 0.0f)
+    {
+        delta.x = -delta.x;
+    }
+    if(delta.y < 0.0f)
+    {
+        delta.y = -delta.y;
+    }
+
+    //delta * distance = 1  -> distance = 1 / delta
+    delta.x = 1.0f / delta.x;
+    delta.y = 1.0f / delta.y;
+
+    //tMax-values,used to decide whether to increment X or Y
+    //In the original paper, the initial t-values are the length of delta-vector from start position to next intersection with axial edge
+    //of the square on each axis, but in this case we give the starting positions as integers any way
+    float tMaxX = delta.x;
+    float tMaxY = delta.y;
+
+    //Push first square (if within map) to list, because the first step will already move away from it
+    if(x + stepX >= 0 && x + stepX < maxSize && y + stepY >= 0 && y + stepY < maxSize)
+    {
+        result->pushTail(new INDICES(x, y));
+        result->pushTail(new INDICES(x + stepX, y));
+        result->pushTail(new INDICES(x, y + stepY));
+    }
+
+    //Repeat until target square is reached
+    while(!(x == x1 && y == y1) )
+    {
+        if(tMaxX < tMaxY)
+        {            
+            tMaxX += delta.x;
+            x += stepX;
+        }
+        else
+        {
+            tMaxY += delta.y;
+            y += stepY;
+        }
+        if(x >= 0 && x < maxSize && y >= 0 && y < maxSize)
+        {
+            result->pushTail(new INDICES(x, y));
+            
+            //Push also the other, in some (somewhat rare) cases,
+            //the correct square would not end up in the list (probably should fix the initial t-values, eh? =P)
+            if(tMaxX < tMaxY)
+            {
+                result->pushTail(new INDICES(x, y + stepY));
+            }
+            else
+            {
+                result->pushTail(new INDICES(x + stepX, y));                
+            }
+        }
+    }
+
+    return result;
+}
+
 D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* patches, D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
 {
 
@@ -207,17 +216,17 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
     //Get the clipped ray
     D3DXVECTOR3* clippedRay = getPointsFromPlaneClippedRay(rayOrigin, rayDir);
 
-    DoubleLinkedList<INDICES*>* squares;
+    DoubleLinkedList<INDICES*>* squares = NULL;
 
     if(clippedRay)
     {
         //Get square indices from clipped ray
-        squares = getPatchesBetween((int)clippedRay[0].x, (int)clippedRay[0].y, (int)clippedRay[1].x, (int)clippedRay[1].y,
+        squares = getSquaresBetween((int)clippedRay[0].x, (int)clippedRay[0].y, (int)clippedRay[1].x, (int)clippedRay[1].y,
                     Terrain::getInstance()->getSize() - 1);
         delete [] clippedRay;
     }
     else
-    {
+    {        
         return NULL;
     }
     
@@ -234,18 +243,17 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
     D3DXVECTOR3 V3;
     D3DXVECTOR3 V4;
 
-    float dist = 0.0f;
-    float smallestDist = 1000000.0f;
-
-    //Transfer ray-z's to Model-side heights (so I can drop the multiplications from ppVData)
+    //Transfer ray-z's to Model-side heights (so I could drop the HEIGHTFACTOR-multiplications from ppVData)
     rayOrigin.z /= UITerrain::HEIGHTFACTOR;
     rayDir.z /= UITerrain::HEIGHTFACTOR;
 
+    //Store the result here
     D3DXVECTOR3* result = new D3DXVECTOR3;
+
     //Used to check at the end if any point was found
     result->z = -1000000.0f;
 
-    //Go through the triangles
+    //Go through the squares
     while(!squares->empty())
     {
         INDICES* sq = squares->popHead();
@@ -266,44 +274,43 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
         V4.y = (float)sq->y + 1;
         V4.z = (float)-ppVData[sq->y + 1][sq->x + 1];
         
-        //TODO: Pick the one with lowest distance, build VECTOR and return
-        if(D3DXIntersectTri(&V1, &V3, &V2, &rayOrigin, &rayDir, NULL, NULL, &dist))
+        //Uncomment to see which squares were searched
+        //UI3DDebug::addSphere(V1.x, V1.y, V1.z * UITerrain::HEIGHTFACTOR, 0.3f, 10.0f);
+                
+        //Search both triangles within square, no distance needed
+        if(D3DXIntersectTri(&V1, &V3, &V2, &rayOrigin, &rayDir, NULL, NULL, NULL) ||
+            D3DXIntersectTri(&V2, &V3, &V4, &rayOrigin, &rayDir, NULL, NULL, NULL))
         {
-            if(dist < smallestDist)
-            {
-                //UI3DDebug::addSphere(V1.x, V1.y, V1.z * UITerrain::HEIGHTFACTOR, 0.5f, 10.0f);
-                smallestDist = dist;
-                result->x = V1.x;
-                result->y = V1.y;
-                result->z = V1.z;
-            }
-        }
-        else
-        {
-            if(D3DXIntersectTri(&V2, &V3, &V4, &rayOrigin, &rayDir, NULL, NULL, &dist))
-            {
-                if(dist < smallestDist)
-                {
-                    //UI3DDebug::addSphere(V1.x, V1.y, V1.z * UITerrain::HEIGHTFACTOR, 0.5f, 10.0f);
-                    smallestDist = dist;
-                    result->x = V1.x;
-                    result->y = V1.y;
-                    result->z = V1.z;
-                }
-            }
+            result->x = V1.x;
+            result->y = V1.y;
+            result->z = V1.z;
+            
+            //The squares go away from camera, no need to check for farther hits, just clean up        
+            delete sq;            
+            break;
         }
         
         delete sq;
     }
-    
+
+    //If a hit was found, the squares-list might not be empty    
+    ListNode<INDICES*>* node = squares->headNode();
+    while(node)
+    {
+        delete node->item;
+        node = node->next;
+    }
     delete squares;
 
+    //Check if an intersection was found
     if(result->z > -1000000.0f)
     {
         result->z *= UITerrain::HEIGHTFACTOR;
-        UI3DDebug::addSphere(result->x, result->y, result->z, 0.5f, 10.0f);
+        UI3DDebug::addSphere(result->x, result->y, result->z, 1.0f, 10.0f);
         return result;
     }
 
+    //No hit
+    delete result;
     return NULL;
 }

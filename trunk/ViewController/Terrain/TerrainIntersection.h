@@ -20,17 +20,7 @@ class TerrainIntersection
 public:
 
     /**
-     * Picks the terrain with given ray and returns the coordinate of collision point (if any)
-     * @param rayOrigin  Origin of the ray
-     * @param rayDir     Direction of the ray
-     * @Return Collision point as D3DXVECTOR or NULL if no collision
-     */
-    static D3DXVECTOR3* pickTerrain(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir);
-
-private:
-
-    /**
-     * X and Y -indices, used to store lists of terrain patches
+     * X and Y -indices for 2-dimensional arrays, used to store lists of terrain square indices
      */
     struct INDICES
     {
@@ -44,6 +34,26 @@ private:
     };
 
     /**
+     * Picks the terrain with given ray and returns the coordinate of collision point (if any)
+     * @param rayOrigin  Origin of the ray
+     * @param rayDir     Direction of the ray
+     * @Return Collision point as D3DXVECTOR or NULL if no collision
+     */
+    static D3DXVECTOR3* pickTerrain(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir);
+
+    /** 
+     * Finds terrain squares in xy-plane between points (can be used as general grid traversal algorithm)
+     * @param startX X-coordinate of start point
+     * @param startY X-coordinate of start point
+     * @param endX X-coordinate of end point
+     * @param endY Y-coordinate of end point
+     * @return INDICES-list with square indices
+     */
+    static DoubleLinkedList<INDICES*>* getSquaresBetween(int startX, int startY, int endX, int endY, int maxSize);
+
+private:
+
+    /**
      * Cuts the ray between two planes and returns the plane-intersection points
      * @param rayOrigin  Origin of the ray
      * @param rayDir     Direction of the ray     
@@ -51,17 +61,12 @@ private:
      */
     static D3DXVECTOR3* getPointsFromPlaneClippedRay(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir);
 
-    /** 
-     * Finds terrain patches in xy-plane between points
-     * @return INDICES-list with terrain patch indices
-     */
-    static DoubleLinkedList<INDICES*>* getPatchesBetween(int startX, int startY, int endX, int endY, int maxSize);
-
     /**
      * Culls patches based on their AABBs and ray-origin and -direction
-     * @param patches    INDICES-list of patch indices to check
+     * @param patches    INDICES-list of patch indices to check, NOTE: this list will be destroyed inside this method
      * @param rayOrigin  Origin of the ray
      * @param rayDir     Direction of the ray
+     * @return New list of patches left (the entered one is destroyed)
      */
     static DoubleLinkedList<INDICES*>* getAABBCulledPatches(DoubleLinkedList<INDICES*>* patches, D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir);
 

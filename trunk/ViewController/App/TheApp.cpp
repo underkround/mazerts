@@ -157,6 +157,7 @@ void CTheApp::OnFlip(void)
         timer1->Create();
         timer2 = new CTimer();
         timer2->Create();
+        timersCreated = true;
     }
 
     //timer1->BeginTimer();
@@ -495,7 +496,11 @@ void CTheApp::UpdateMouse(void)
             rayOrigin.y = m._42;
             rayOrigin.z = m._43;
 
-            TerrainIntersection::pickTerrain(rayOrigin, rayDir);
+            D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
+            if(hitSquare)
+            {
+                delete hitSquare;
+            }
         }
 
  

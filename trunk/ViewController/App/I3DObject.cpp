@@ -108,7 +108,15 @@ bool I3DObject::Update(float fFrametime)
 			delete pChild;
             node = temp;
         }
-        node = node->next;
+        //If the first node was removed, node will be null
+        if(node == NULL)
+        {
+            node = m_arrChildren.headNode();
+        }
+        else
+        {
+            node = node->next;
+        }
     }
 
     return true;
