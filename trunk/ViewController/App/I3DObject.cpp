@@ -100,22 +100,12 @@ bool I3DObject::Update(float fFrametime)
     
     while(node)
     {
-        if(node->item->Update(fFrametime) == false)
-        {
-            ListNode<I3DObject*>* temp = node->prev;
-            I3DObject* pChild = m_arrChildren.remove(node);
-			pChild->Release();
-			delete pChild;
-            node = temp;
-        }
-        //If the first node was removed, node will be null
-        if(node == NULL)
-        {
-            node = m_arrChildren.headNode();
-        }
-        else
-        {
+        if (node->item->Update(fFrametime))
             node = node->next;
+        else {
+		    node->item->Release();
+            delete node->item;
+            node = m_arrChildren.removeGetNext(node);
         }
     }
 

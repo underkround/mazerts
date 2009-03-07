@@ -18,6 +18,7 @@
 #include "ConfigTest.h"
 #include "PathFinderMasterTest.h"
 //#include "AntinAITest.h"
+#include "testDoubleLinkedList.h"
 
 #include "testAssetCollection.h"
 #include "testAssetFactory.h"
@@ -38,14 +39,15 @@ int main(int arcg, char* argv[])
 
 //    if(VERBOSE) cout << "\n *** Pathfinder ***\n";                  testPathFinder();
 
-    if(VERBOSE) cout << "\n *** PathFinderMaster-thread ***\n";     testPathFinderMaster();
+//    if(VERBOSE) cout << "\n *** PathFinderMaster-thread ***\n";     testPathFinderMaster();
 
 //    if(VERBOSE) cout << "\n *** Antin AI ***\n";                    testAntinAI();
 
-    if(VERBOSE) cout << "\n *** Asset collection ***\n";            testAssetCollection();
+//    if(VERBOSE) cout << "\n *** Asset collection ***\n";            testAssetCollection();
 
-    if(VERBOSE) cout << "\n *** Asset factory ***\n";               testAssetFactory();
+//    if(VERBOSE) cout << "\n *** Asset factory ***\n";               testAssetFactory();
 
+    if(VERBOSE) cout << "\n **** Double Linked List ***\n";        testDoubleLinkedList();
 //    _CrtDumpMemoryLeaks();
     return 0;
 }

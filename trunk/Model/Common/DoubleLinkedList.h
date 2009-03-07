@@ -75,10 +75,27 @@ public:
 
     /**
      * Remove node and fix the list. Used while iterating nodes.
-     * Deletes the node object, but not the item inside.
+     * Deletes the node object, but DOES NOT DELETE THE ITEM!
      * User is responsible for destroying the actual item object.
+     * @return  item inside the deleted node
      */
     T remove(ListNode<T>* node);
+
+    /**
+     * Remove node and fix the list and return next node, or NULL
+     * if there is no next node.
+     * DOES NOT DELETE THE ITEM!
+     * @return  next node from deleted node, or NULL if there is none
+     */
+    ListNode<T>* removeGetNext(ListNode<T>* node);
+
+    /**
+     * Remove node and fix the list and return previous node, or NULL
+     * if there is no previous node.
+     * DOES NOT DELETE THE ITEM!
+     * @return  previous node from deleted node, or NULL if there is none
+     */
+    ListNode<T>* removeGetPrev(ListNode<T>* node);
 
     /**
      * Delete all nodes and set head / tail to NULL.
@@ -230,6 +247,26 @@ T DoubleLinkedList<T>::remove(ListNode<T>* node)
     T item = node->item;
     delete node;
     return item;
+}
+
+template<typename T>
+ListNode<T>* DoubleLinkedList<T>::removeGetNext(ListNode<T>* node)
+{
+    if(!node || empty())
+        return NULL;
+    ListNode<T>* ret = node->next;
+    remove(node);
+    return ret;
+}
+
+template<typename T>
+ListNode<T>* DoubleLinkedList<T>::removeGetPrev(ListNode<T>* node)
+{
+    if(!node || empty())
+        return NULL;
+    ListNode<T>* ret = node->prev;
+    remove(node);
+    return ret;
 }
 
 template<typename T>
