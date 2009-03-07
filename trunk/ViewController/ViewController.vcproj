@@ -765,6 +765,14 @@
 					RelativePath=".\App\InputMouse.h"
 					>
 				</File>
+				<File
+					RelativePath=".\App\Selector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\Selector.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="3DDebug"

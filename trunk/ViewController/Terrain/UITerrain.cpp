@@ -353,9 +353,14 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
         }
     }
 
-    hres = D3DXCreateTextureFromFile(    pDevice,
-                                _T("grass01.png"),
-                                &m_pTexture);
+    hres = D3DXCreateTextureFromFile(pDevice, _T("grass01.png"), &m_pTexture);
+    if(FAILED(hres))
+    {
+        return hres;
+    }
+
+    hres = createColorMapTexture(pDevice);
+
     if(FAILED(hres))
     {
         return hres;
@@ -413,6 +418,63 @@ HRESULT UITerrain::createPassabilityTexture(LPDIRECT3DDEVICE9 pDevice)
     return S_OK;
 
 }
+
+HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice)
+{
+    HRESULT hres;
+
+    if(m_pPixelTexture)
+    {
+        m_pPixelTexture->Release();
+        m_pPixelTexture = NULL;
+    }
+
+    Terrain* pTerrain = Terrain::getInstance();    
+    unsigned short terraSize = pTerrain->getSize();
+
+    hres = D3DXCreateTexture(pDevice, terraSize, terraSize, 1, D3DUSAGE_DYNAMIC, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &m_pPixelTexture);
+
+    if (FAILED(hres))
+    {
+        return hres;
+    }
+
+    unsigned const char* const* ppVData = pTerrain->getTerrainVertexHeightData();
+
+    D3DLOCKED_RECT lockedRect;  
+  
+    hres = m_pPixelTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_DISCARD);
+    
+    if(!FAILED(hres))
+    {
+        for(int y = 0; y < terraSize; y++)
+        {
+            for(int x = 0; x < terraSize; x++)
+            {
+                int i = y * (lockedRect.Pitch / 4) + x;
+                
+			    //Create colordata based on the heightdata
+                if(ppVData[y][x] < pTerrain->getWaterLevel())
+                {
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 7) + (ppVData[y][x]);
+                }
+			    else if(ppVData[y][x] > 192)
+			    {
+				    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 16) + (ppVData[y][x] << 8) + ppVData[y][x];
+                }
+				else
+                {	
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8);// + (ppVData[y][x] >> 1);
+                }
+            }
+        }
+        
+    }
+    m_pPixelTexture->UnlockRect(0);
+
+    return S_OK;
+}
+
 
 D3DXVECTOR3 UITerrain::calculateNormalForVertex(unsigned short x, unsigned short y)
 {

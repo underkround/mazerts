@@ -83,6 +83,12 @@ public:
     HRESULT createPassabilityTexture(LPDIRECT3DDEVICE9 pDevice);
 
     /**
+     * Creates a red/green texture based on passability values of map tiles
+     * @param pDevice LPDIRECT3DDEVICE9 to use for texture creation
+     */
+    HRESULT createColorMapTexture(LPDIRECT3DDEVICE9 pDevice);
+
+    /**
      * Sets the fillmode
      * @param fillMode D3DFILLMODE-enum value
      */
@@ -105,7 +111,7 @@ public:
     /**
      * Sets the detail level for terrain and recalculates vertex- and indexbuffers
      * @param detailLevel Value from 0 upwards, 0 is the most detailed (2 triangles per 
-     * grid square)
+     * grid square), on higher levels, 2^detailLevel squares per axis are combined to one
      */
     void setDetailLevel2(unsigned char detailLevel);
 

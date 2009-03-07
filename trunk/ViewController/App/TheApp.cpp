@@ -83,16 +83,16 @@ HRESULT CTheApp::OnCreate(void)
     m_pManager = UI3DObjectManager::getInstance();
 
     //TEST
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < 100; i++)
     {
         AssetFactory::createUnit(NULL, 0, RandInt(0, 200), RandInt(0, 200));
     }
 
     Terrain* pTerrain = Terrain::getInstance();
-    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 256);
+    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
     pTerrain->initialize(pGenerator);
 
-    pTerrain->setWaterLevel(0);
+    pTerrain->setWaterLevel(50);
 
 
     UITerrain::create(GetDevice());
@@ -185,11 +185,11 @@ void CTheApp::OnFlip(void)
     light.Position = D3DXVECTOR3(100.0f, 100.0f, -100.0f);    
     light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
     light.Specular = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-    light.Ambient = D3DXCOLOR(0.1f, 0.1f, 0.1f, 1.0f);
-    light.Range = 10000.0f;
-    light.Attenuation0 = 0.01f;
-    light.Attenuation1 = 0.001f;
-    light.Attenuation2 = 0.0001f;
+    light.Ambient = D3DXCOLOR(0.2f, 0.2f, 0.2f, 1.0f);
+    light.Range = 10000.0f;    
+    light.Attenuation0 = 0.001f;
+    light.Attenuation1 = 0.0001f;
+    light.Attenuation2 = 0.00001f;
 
     pDevice->SetLight(0, &light);
     pDevice->LightEnable(0, TRUE);
