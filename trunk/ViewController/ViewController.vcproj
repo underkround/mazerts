@@ -786,6 +786,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Culling"
+				>
+				<File
+					RelativePath=".\Culling\FrustumCull.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Culling\FrustumCull.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

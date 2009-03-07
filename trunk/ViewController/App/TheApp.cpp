@@ -11,6 +11,9 @@
 #include "../../Model/PathFinding/PathFinderMaster.h"
 #include "../../Model/Asset/AssetFactory.h"
 
+//Camera related
+#include "../Culling/FrustumCull.h"
+
 //DEBUG STUFF
 #include "../3DDebug/UI3DDebug.h"
 #include "../Terrain/TerrainIntersection.h"
@@ -86,7 +89,7 @@ HRESULT CTheApp::OnCreate(void)
     }
 
     Terrain* pTerrain = Terrain::getInstance();
-    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 256);
+    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 1024);
     pTerrain->initialize(pGenerator);
 
     pTerrain->setWaterLevel(0);
@@ -144,6 +147,10 @@ void CTheApp::OnFlip(void)
                         &D3DXVECTOR3(m_fX, m_fY+100.0f, m_fZ + m_iMouseY),//100.0f),
                         &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
     pDevice->SetTransform(D3DTS_VIEW, &view);
+
+    D3DXMATRIX proj;
+    pDevice->GetTransform(D3DTS_PROJECTION, &proj);
+    FrustumCull::rebuildFrustum(&view, &proj);
 
 
     static bool timersCreated = false;

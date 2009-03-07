@@ -218,11 +218,12 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
 
     DoubleLinkedList<INDICES*>* squares = NULL;
 
+    int maxSize = Terrain::getInstance()->getSize() - 1;
+
     if(clippedRay)
     {
         //Get square indices from clipped ray
-        squares = getSquaresBetween((int)clippedRay[0].x, (int)clippedRay[0].y, (int)clippedRay[1].x, (int)clippedRay[1].y,
-                    Terrain::getInstance()->getSize() - 1);
+        squares = getSquaresBetween((int)clippedRay[0].x, (int)clippedRay[0].y, (int)clippedRay[1].x, (int)clippedRay[1].y, maxSize);
         delete [] clippedRay;
     }
     else
@@ -258,38 +259,41 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
     {
         INDICES* sq = squares->popHead();
 
-        V1.x = (float)sq->x;
-        V1.y = (float)sq->y;
-        V1.z = (float)-ppVData[sq->y][sq->x];
-        
-        V2.x = (float)sq->x + 1;
-        V2.y = (float)sq->y;
-        V2.z = (float)-ppVData[sq->y][sq->x + 1];
-        
-        V3.x = (float)sq->x;
-        V3.y = (float)sq->y + 1;
-        V3.z = (float)-ppVData[sq->y + 1][sq->x];
-        
-        V4.x = (float)sq->x + 1;
-        V4.y = (float)sq->y + 1;
-        V4.z = (float)-ppVData[sq->y + 1][sq->x + 1];
-        
-        //Uncomment to see which squares were searched
-        //UI3DDebug::addSphere(V1.x, V1.y, V1.z * UITerrain::HEIGHTFACTOR, 0.3f, 10.0f);
-                
-        //Search both triangles within square, no distance needed
-        if(D3DXIntersectTri(&V1, &V3, &V2, &rayOrigin, &rayDir, NULL, NULL, NULL) ||
-            D3DXIntersectTri(&V2, &V3, &V4, &rayOrigin, &rayDir, NULL, NULL, NULL))
+        if(sq->x >= 0 && sq->y >= 0 && sq->y < maxSize && sq->y < maxSize)
         {
-            result->x = V1.x;
-            result->y = V1.y;
-            result->z = V1.z;
+            V1.x = (float)sq->x;
+            V1.y = (float)sq->y;
+            V1.z = (float)-ppVData[sq->y][sq->x];
             
-            //The squares go away from camera, no need to check for farther hits, just clean up        
-            delete sq;            
-            break;
+            V2.x = (float)sq->x + 1;
+            V2.y = (float)sq->y;
+            V2.z = (float)-ppVData[sq->y][sq->x + 1];
+            
+            V3.x = (float)sq->x;
+            V3.y = (float)sq->y + 1;
+            V3.z = (float)-ppVData[sq->y + 1][sq->x];
+            
+            V4.x = (float)sq->x + 1;
+            V4.y = (float)sq->y + 1;
+            V4.z = (float)-ppVData[sq->y + 1][sq->x + 1];
+            
+            //Uncomment to see which squares were searched
+            //UI3DDebug::addSphere(V1.x, V1.y, V1.z * UITerrain::HEIGHTFACTOR, 0.3f, 10.0f);
+                    
+            //Search both triangles within square, no distance needed
+            if(D3DXIntersectTri(&V1, &V3, &V2, &rayOrigin, &rayDir, NULL, NULL, NULL) ||
+                D3DXIntersectTri(&V2, &V3, &V4, &rayOrigin, &rayDir, NULL, NULL, NULL))
+            {
+                result->x = V1.x;
+                result->y = V1.y;
+                result->z = V1.z;
+                
+                //The squares go away from camera, no need to check for farther hits, just clean up        
+                delete sq;            
+                break;
+            }
         }
-        
+
         delete sq;
     }
 

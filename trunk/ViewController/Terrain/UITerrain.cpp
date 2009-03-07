@@ -3,6 +3,7 @@
 #include "UITerrain.h"
 #include "../../Model/Terrain/Terrain.h"
 #include "../App/vertices.h"
+#include "../Culling/FrustumCull.h"
 
 const float UITerrain::HEIGHTFACTOR = 0.1f;
 UITerrain* UITerrain::pInstance = NULL;
@@ -111,48 +112,55 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
     pDevice->SetFVF( VERTEX2UV::GetFVF() );
     pDevice->SetRenderState(D3DRS_FILLMODE, m_FillMode);
 
+    if(m_pTexture)
+    {
+        // set the texturing parameters
+        pDevice->SetTexture(0, m_pTexture);
+        //pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+        //pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_CURRENT);
+        //pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+    }
+
+	if(m_pPixelTexture)
+	{
+		pDevice->SetTexture(1, m_pPixelTexture);
+		pDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+		pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE2X);
+        pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_CURRENT);
+        pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+	}
+
+    pDevice->SetMaterial(&m_Mat);
+
+
     for(int i = 0; i < m_Patches; i++)
     {
         for(int j = 0; j < m_Patches; j++)
         {
-            //TEST
-            //if((i + j) % 2 == 1)
-            //{
-            pDevice->SetStreamSource( 0, m_pppVB[i][j], 0, sizeof(VERTEX2UV) );        
-    
-    
-            if(m_pTexture)
+            //Cull against frustum
+            if(FrustumCull::cullAABB(m_pppPatchAABBs[i][j][0], m_pppPatchAABBs[i][j][1]))
             {
-                // set the texturing parameters
-                pDevice->SetTexture(0, m_pTexture);
-                //pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-                //pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_CURRENT);
-                //pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+                pDevice->SetStreamSource( 0, m_pppVB[i][j], 0, sizeof(VERTEX2UV) );        
+        
+                if ( m_pppIB[i][j] )
+                {
+                    pDevice->SetIndices( m_pppIB[i][j] );
+                    pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_NumVertices, 0, m_NumPrimitives );
+                }
+
+                if(m_pPixelTexture)
+                {
+                    pDevice->SetTexture(1, NULL);
+                }
             }
-
-			if(m_pPixelTexture)
-			{
-				pDevice->SetTexture(1, m_pPixelTexture);
-				pDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
-				pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE2X);
-                pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_CURRENT);
-                pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-			}
-
-            pDevice->SetMaterial(&m_Mat);
-
-            if ( m_pppIB[i][j] )
+            else
             {
-                pDevice->SetIndices( m_pppIB[i][j] );
-                pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_NumVertices, 0, m_NumPrimitives );
-            }
-
-            if(m_pPixelTexture)
-            {
-                pDevice->SetTexture(1, NULL);
+                //DEBUG:
+                /*TCHAR msg[256];
+                ::_stprintf_s(msg, _T("Culled terrain patch: %d : %d\n"), i, j);
+                ::OutputDebugString(msg);*/
             }
         }
-
     }
 }
 
