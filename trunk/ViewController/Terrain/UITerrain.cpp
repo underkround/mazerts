@@ -147,11 +147,6 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
                     pDevice->SetIndices( m_pppIB[i][j] );
                     pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_NumVertices, 0, m_NumPrimitives );
                 }
-
-                if(m_pPixelTexture)
-                {
-                    pDevice->SetTexture(1, NULL);
-                }
             }
             else
             {
@@ -162,6 +157,13 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
             }
         }
     }
+
+
+    if(m_pPixelTexture)
+    {
+        pDevice->SetTexture(1, NULL);
+    }
+
 }
 
 HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice)

@@ -10,8 +10,6 @@
  * $Id$
  */
 
-//TODO: This class is unfinished, STC
-
 #ifndef __ITERRAIN_H__
 #define __ITERRAIN_H__
 

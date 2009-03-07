@@ -51,10 +51,6 @@ void PathFinder::initialize(unsigned short goalX, unsigned short goalY)
         return;
     }
 
-
-    //TODO: Remove when not needed anymore
-    //DEBUG_steps = 0;
-
     m_pStartNode = NULL;
 
     m_GoalX = goalX;
@@ -105,8 +101,8 @@ void PathFinder::prepareForExecution()
     //Create needed arrays
     unsigned short size = Terrain::getInstance()->getSize();
         
-    //TODO: Initial size?
-    m_pOpenList = new CHeapTree<PathNode*, unsigned int>(3000);
+    //Initial size sleeve-constant
+    m_pOpenList = new CHeapTree<PathNode*, unsigned int>(size << 3);
 
     m_pppNodeArray = new PathNode**[size];
     m_ppInOpenList = new bool*[size];
@@ -214,7 +210,6 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                         //The node must not be in the closed list and it has to be passable
                         if( Terrain::getInstance()->isPassable(adjaX, adjaY, m_Size) && (!m_pppNodeArray[adjaY][adjaX] || m_pppNodeArray[adjaY][adjaX]->state != NODE_CLOSED) )
                         {
-                            //TODO OPT: getMoveCost? (Maybe not)
                             //Calculate costs                         
                             short cost = Terrain::getInstance()->getMoveCost(currentX, currentY, i, j);
                             G = current->G + cost;

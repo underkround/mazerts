@@ -1,18 +1,24 @@
 /**
  * C3DObject.cpp source file
- * Copyright (c) 2009 Jani Immonen
- * www.jani-immonen.net
- * Date: 19.2.2009
- * 
+ *
  * concrete 3d object that is capable of rendering
  * direct3d mesh objects
  */
 
 #include "C3DObject.h"
+#include "../Culling/FrustumCull.h"
 
 C3DObject::C3DObject(void)
 {
 	m_pMesh = NULL;
+
+    m_AABBMin.x = -0.5f;
+    m_AABBMin.y = -0.5f;
+    m_AABBMin.z = -0.5f;
+
+    m_AABBMax.x = 0.5f;
+    m_AABBMax.y = 0.5f;
+    m_AABBMax.z = 0.5f;
 }
 
 
@@ -39,38 +45,50 @@ void C3DObject::Render(LPDIRECT3DDEVICE9 pDevice)
 {
 	if (IsVisible() && m_pMesh)
 	{
-		// first set the world matrix to device
-		pDevice->SetTransform(D3DTS_WORLD, &m_mWorld);
+        //Frustum culling
+        D3DXVECTOR3 AABBMin(m_AABBMin.x + m_mLocal._41,
+                            m_AABBMin.y + m_mLocal._42,
+                            m_AABBMin.z + m_mLocal._43);
 
-		// render the mesh subsets
-		const DWORD numsubsets = m_arrMeshData.size();
+        D3DXVECTOR3 AABBMax(m_AABBMax.x + m_mLocal._41,
+                            m_AABBMax.y + m_mLocal._42,
+                            m_AABBMax.z + m_mLocal._43);
+        
+        if(FrustumCull::cullAABB(AABBMin, AABBMax))
+        {
+		    // first set the world matrix to device
+		    pDevice->SetTransform(D3DTS_WORLD, &m_mWorld);
 
-		if (numsubsets)
-		{
-			// loop thru materials and render the subsets
-			DWORD i;
-			for (i=0; i<numsubsets; i++)
-			{
-				MESHDATA& data = m_arrMeshData[i];
+		    // render the mesh subsets
+		    const DWORD numsubsets = m_arrMeshData.size();
 
-				// set the texture
-				pDevice->SetTexture(0, data.pTexture);
+		    if (numsubsets)
+		    {
+			    // loop thru materials and render the subsets
+			    DWORD i;
+			    for (i=0; i<numsubsets; i++)
+			    {
+				    MESHDATA& data = m_arrMeshData[i];
 
-				// set material
-				if (data.pMaterial)
-				{
-					pDevice->SetMaterial(data.pMaterial);
-				}
+				    // set the texture
+				    pDevice->SetTexture(0, data.pTexture);
 
-				// render the mesh
-				m_pMesh->DrawSubset(i);
-			}
-		}
-		else
-		{
-			// render the mesh anyways
-			m_pMesh->DrawSubset(0);
-		}
+				    // set material
+				    if (data.pMaterial)
+				    {
+					    pDevice->SetMaterial(data.pMaterial);
+				    }
+
+				    // render the mesh
+				    m_pMesh->DrawSubset(i);
+			    }
+		    }
+		    else
+		    {
+			    // render the mesh anyways
+			    m_pMesh->DrawSubset(0);
+		    }
+        }
 	}
 
 	// render the children

@@ -1,10 +1,6 @@
 /**
  * C3DObject.h header file
- * Interface for the C3DObject class
- * Copyright (c) 2009 Jani Immonen
- * www.jani-immonen.net
- * Date: 19.2.2009
- * 
+ *
  * concrete 3d object that is capable of rendering
  * direct3d mesh objects
  */
@@ -73,12 +69,28 @@ public:
 	 */
 	inline vector<MESHDATA>& GetMeshDataArray(void) { return m_arrMeshData; }
 
+    /**
+     * Sets the axis-aligned bounding box size
+     * @param size D3DXVECTOR3 representing the box-size from 0, 0, 0 to size.x, size.y, size.z     
+     */
+    inline void setAABBSize(D3DXVECTOR3 size)
+    {
+        m_AABBMin = size * -0.5f;
+        m_AABBMax = size * 0.5f;
+    }
+
 protected:
 	// an array of mesh data structures
 	vector<MESHDATA>	m_arrMeshData;
 
 	// object mesh
 	LPD3DXMESH			m_pMesh;
+
+    /**
+     * Axis-aligned bounding box
+     */
+    D3DXVECTOR3 m_AABBMin;
+    D3DXVECTOR3 m_AABBMax;
 };
 
 #endif	// __C3DOBJECT_H__

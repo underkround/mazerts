@@ -60,6 +60,11 @@ public:
      */
     virtual void handleReleasedAsset(IAsset* pAsset);
 
+    /**
+     * Global scaling value
+     */
+    static float globalScale;
+
 private:
 
     /**
@@ -95,6 +100,7 @@ private:
      * Resource container
      */
     C3DResourceContainer m_ResourceContainer;
+
 };
 
 #endif //__UI3DOBJECTMANAGER_H__

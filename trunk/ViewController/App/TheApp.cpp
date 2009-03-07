@@ -89,7 +89,7 @@ HRESULT CTheApp::OnCreate(void)
     }
 
     Terrain* pTerrain = Terrain::getInstance();
-    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 1024);
+    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 256);
     pTerrain->initialize(pGenerator);
 
     pTerrain->setWaterLevel(0);
@@ -131,17 +131,9 @@ void CTheApp::OnFlip(void)
                     1.0f,
                     0);
 
-   // build the rotation matrix and set it to device
-    D3DXMATRIX m;
-    D3DXMATRIX view;
-    /*D3DXMatrixRotationYawPitchRoll(&m, m_fYRotationAngle,
-        m_fXRotationAngle,
-        m_fZRotationAngle);*/
     
-  /*  D3DXMatrixTranslation(&view, m_fYRotationAngle,
-        m_fXRotationAngle,
-        m_fZRotationAngle);
-*/
+    //Camera stuff, separate to own method(s)/class
+    D3DXMATRIX view;
     D3DXMatrixLookAtLH( &view,
                         &D3DXVECTOR3(m_fX, m_fY, m_fZ),
                         &D3DXVECTOR3(m_fX, m_fY+100.0f, m_fZ + m_iMouseY),//100.0f),
@@ -153,6 +145,7 @@ void CTheApp::OnFlip(void)
     FrustumCull::rebuildFrustum(&view, &proj);
 
 
+    //Timers for profiling
     static bool timersCreated = false;
     static CTimer* timer1;
     static CTimer* timer2;
@@ -167,19 +160,26 @@ void CTheApp::OnFlip(void)
         timersCreated = true;
     }
 
-    //timer1->BeginTimer();
+    //Deltatime
     float frameTime = GetFrameTime();
-    m_pManager->getRootObject()->Update(frameTime);
-    AssetCollection::updateUnits(frameTime);
 
+
+    //Input updates
     UpdateKeyboard();
-
     timer1->BeginTimer();
 	UpdateMouse();
     timer1->EndTimer();
 
+    //timer1->BeginTimer();
+
+    //Updating the actual game logic    
+    AssetCollection::updateUnits(frameTime);
+    m_pManager->getRootObject()->Update(frameTime);
+    //End of logic update
+
     //timer1->EndTimer();
 
+    //Light is here for testing (and doesn't need to be set every frame, as it doesn't move anyway)
     D3DLIGHT9 light;
     light.Type = D3DLIGHT_POINT;
     light.Position = D3DXVECTOR3(100.0f, 100.0f, -100.0f);    
@@ -195,12 +195,12 @@ void CTheApp::OnFlip(void)
     pDevice->LightEnable(0, TRUE);
 
 
-
+    
+    //Rendering operations
     timer2->BeginTimer();
     if (SUCCEEDED(pDevice->BeginScene()))
     {
-        // all graphics rendering must happen in between
-        // BeginScene and EndScene
+        //Text drawing
         BeginText();
 
 		DrawText(   m_iMouseX,
@@ -237,10 +237,14 @@ void CTheApp::OnFlip(void)
         m_TextRow = 0;
         EndText();
 
-        pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
-        pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+        
+        //Terrain needs normal backface-culling
+        pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+        pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);        
         m_pUITerrain->render(pDevice);
-                   
+          
+        //Antsys models need reverse backface-culling
+        pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
         m_pManager->getRootObject()->Render(pDevice);
 
         pDevice->EndScene();
@@ -261,93 +265,6 @@ void CTheApp::OnKeyDown(DWORD dwKey)
     if (dwKey == VK_ESCAPE)
     {
         Close();
-    }
-
-    // read keys to rotate the quad
-    if (dwKey == VK_LEFT)
-    {
-        m_fX -= KEYBOARD_CAMSPEED * GetFrameTime();
-    }
-    else if (dwKey == VK_RIGHT)
-    {
-        m_fX += KEYBOARD_CAMSPEED * GetFrameTime();
-    }
-    
-    if (dwKey == VK_UP)
-    {
-        m_fY += KEYBOARD_CAMSPEED * GetFrameTime();
-    }
-    else if (dwKey == VK_DOWN)
-    {
-        m_fY -= KEYBOARD_CAMSPEED * GetFrameTime();
-    }
-    
-    if (dwKey == 'A')
-    {
-        m_fZ += KEYBOARD_CAMSPEED * GetFrameTime();
-    }
-    else if (dwKey == 'Z')
-    {
-        m_fZ -= KEYBOARD_CAMSPEED * GetFrameTime();
-    }
-
-    if(dwKey == VK_SPACE)
-    {
-        //The Right Way(tm) to create new terrain
-        PathFinderMaster* pMaster = PathFinderMaster::getInstance();
-        pMaster->stop();
-        pMaster->wait();
-        
-        Terrain::getInstance()->initialize();
-        UITerrain::create(GetDevice());
-        m_pUITerrain = UITerrain::getInstance();
-        
-        pMaster->start();
-    }
-    if(dwKey == '1')
-    {
-        m_pUITerrain->createPassabilityTexture(GetDevice());
-    }
-
-
-    if(dwKey == VK_F1)
-    {
-        m_Help = !m_Help;
-    }
-
-    if(dwKey == VK_TAB)
-    {
-        D3DFILLMODE f = m_pUITerrain->getFillMode();
-        if(f == D3DFILL_SOLID)
-        {
-            m_pUITerrain->setFillMode(D3DFILL_WIREFRAME);
-        }
-        else
-        {
-            m_pUITerrain->setFillMode(D3DFILL_SOLID);
-        }
-
-    }
-
-    if(dwKey == 'N')
-    {
-        unsigned char detail = m_pUITerrain->getDetailLevel();
-        detail++;
-        if(detail < 4)
-        {
-            m_pUITerrain->setDetailLevel2(detail);
-        }
-    }
-
-    if(dwKey == 'M')
-    {
-        unsigned char detail = m_pUITerrain->getDetailLevel();
-        detail--;
-        //Wrapping
-        if(detail < 4)
-        {
-            m_pUITerrain->setDetailLevel2(detail);
-        }
     }
 }
 
@@ -411,13 +328,101 @@ void CTheApp::UpdateKeyboard(void)
 {
 	//read the keyboard data
 	DWORD i;
-	TCHAR msg[256];
+	//TCHAR msg[256];
  
 	if(SUCCEEDED(m_Keyboard.Update()))
 	{
-		for(i=0; i<m_Keyboard.GetButtonCount(); i++)
+		//for(i=0; i<m_Keyboard.GetButtonCount(); i++)
 		{
-			if(m_Keyboard.GetButton(i))
+
+            if (m_Keyboard.GetButton(203))
+            {
+                m_fX -= KEYBOARD_CAMSPEED * GetFrameTime();
+            }
+            else if (m_Keyboard.GetButton(205))
+            {
+                m_fX += KEYBOARD_CAMSPEED * GetFrameTime();
+            }
+            
+            if (m_Keyboard.GetButton(200))
+            {
+                m_fY += KEYBOARD_CAMSPEED * GetFrameTime();
+            }
+            else if (m_Keyboard.GetButton(208))
+            {
+                m_fY -= KEYBOARD_CAMSPEED * GetFrameTime();
+            }
+            
+            if (m_Keyboard.GetButton(30))
+            {
+                m_fZ += KEYBOARD_CAMSPEED * GetFrameTime();
+            }
+            else if (m_Keyboard.GetButton(44))
+            {
+                m_fZ -= KEYBOARD_CAMSPEED * GetFrameTime();
+            }
+
+            if(m_Keyboard.GetButton(57))
+            {
+                //The Right Way(tm) to create new terrain
+                PathFinderMaster* pMaster = PathFinderMaster::getInstance();
+                pMaster->stop();
+                pMaster->wait();
+                
+                Terrain::getInstance()->initialize();
+                UITerrain::create(GetDevice());
+                m_pUITerrain = UITerrain::getInstance();
+                
+                pMaster->start();
+            }
+
+            if(m_Keyboard.GetButton(2))
+            {
+                m_pUITerrain->createPassabilityTexture(GetDevice());
+            }
+
+
+            if(m_Keyboard.GetButton(59))
+            {
+                m_Help = !m_Help;
+            }
+
+            if(m_Keyboard.GetButton(15))
+            {
+                D3DFILLMODE f = m_pUITerrain->getFillMode();
+                if(f == D3DFILL_SOLID)
+                {
+                    m_pUITerrain->setFillMode(D3DFILL_WIREFRAME);
+                }
+                else
+                {
+                    m_pUITerrain->setFillMode(D3DFILL_SOLID);
+                }
+
+            }
+
+            if(m_Keyboard.GetButton(49))
+            {
+                unsigned char detail = m_pUITerrain->getDetailLevel();
+                detail++;
+                if(detail < 4)
+                {
+                    m_pUITerrain->setDetailLevel2(detail);
+                }
+            }
+
+            if(m_Keyboard.GetButton(50))
+            {
+                unsigned char detail = m_pUITerrain->getDetailLevel();
+                detail--;
+                //Wrapping
+                if(detail < 4)
+                {
+                    m_pUITerrain->setDetailLevel2(detail);
+                }
+            }
+
+			/*if(m_Keyboard.GetButton(i))
 			{
                 #ifdef _DEBUG
 				_stprintf_s(msg, _T("KEYBOARD: %d DOWN"), i);
@@ -427,7 +432,7 @@ void CTheApp::UpdateKeyboard(void)
 						D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f));
 				m_TextRow += GetTextHeight();
                 #endif
-		    }
+		    }*/
 		}
 	}
 	m_TextRow += GetTextHeight();

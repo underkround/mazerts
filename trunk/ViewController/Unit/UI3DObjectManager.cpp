@@ -4,6 +4,8 @@
 
 #include "../../Model/Asset/IAsset.h"
 
+float UI3DObjectManager::globalScale = 0.075f;
+
 void UI3DObjectManager::handleCreatedAsset(IAsset* pAsset)
 {
     IAsset::Type assetType = pAsset->getAssetType();
@@ -38,12 +40,24 @@ void UI3DObjectManager::createBuilding(Building* pBuilding)
 }
 
 void UI3DObjectManager::createUnit(Unit *pUnit)
-{
-    //TODO: Create UIUnit from the pUnit-data and add to hierarchy
+{    
 
+    //Create UIUnit
     UIUnit* pUIUnit = new UIUnit(pUnit);
 
-    CXFileLoader::Load(_T("superTank.x"), m_ResourceContainer, pUIUnit);
+    //Set bounding box-size, z-value defaults to 4 (unless someone makes units to provide their depth)
+    pUIUnit->setAABBSize(D3DXVECTOR3(pUnit->getWidth(), pUnit->getHeight(), 4.0f));
+
+    static int counter = 0;
+    counter++;
+    if(counter < 3)
+    {
+        CXFileLoader::Load(_T("superTank.x"), m_ResourceContainer, pUIUnit);
+    }
+    else
+    {
+        CXFileLoader::Load(_T("car_example.x"), m_ResourceContainer, pUIUnit);
+    }
 
     m_RootObject.AddChild(pUIUnit);
 }

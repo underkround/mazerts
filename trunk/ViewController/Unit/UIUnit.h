@@ -14,8 +14,9 @@
 #include <d3dx9.h>
 #include "../App/C3DObject.h"
 #include "../../Model/Asset/Unit.h"
+#include "../../Model/Asset/IAssetListener.h"
 
-class UIUnit : public C3DObject
+class UIUnit : public C3DObject, IAssetListener
 {
 public:
     /**
@@ -25,14 +26,18 @@ public:
     UIUnit(Unit* pUnit)
     {
         m_pUnit = pUnit;
-        m_HalfSize = pUnit->getWidth() * 0.5f;
+        m_HalfSize = pUnit->getWidth() * 0.5f;        
+        m_Alive = true;
+
+        //Register as listener to pUnit
+        pUnit->registerListener(this);
     }
 
     /**
      * Update the unit
      * @param fFrametime Time elapsed in frame as seconds
      * @return False, if no action should take place, true
-     *         if the child should be removed from parent
+     *         if the child should be removed by parent
      */
     virtual bool Update(float fFrametime);
 
@@ -43,6 +48,25 @@ public:
     {
     }
 
+
+    /**
+     * This gets called when the target assets's state changes.
+     * @param pAsset    The asset of which state has changed
+     * @param newState  The new state of the asset
+     */
+    virtual void handleAssetStateChange(IAsset* pAsset, IAsset::State newState);
+
+    /**
+     * This gets called when the asset object is being released & destroyed.
+     * This notification will also come through AssetCollection
+     * to IAssetCollectionListeners, but if you only need to know
+     * weather this specific unit is being destroyed, use this.
+     * @param pAsset    Pointer to the unit that is to be released & deleted
+     */
+    virtual void handleAssetReleased(IAsset* pAsset)
+    {
+        m_Alive = false;
+    };
 
 protected:
     
@@ -61,7 +85,11 @@ protected:
      */
     float m_HalfSize;
 
-    static float Scale;
+    /**
+     * Set to false by handleAssetReleased
+     */
+    bool m_Alive;
+
 };
 
 #endif //__UIUNIT_H__

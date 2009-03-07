@@ -1,15 +1,14 @@
 #include "UIUnit.h"
 #include "../Terrain/UITerrain.h"
 #include "../App/I3DObject.h"
+#include "UI3DObjectManager.h"
 
-//TODO: Move this to manager or somewhere more obvious (Global unit scale)
-float UIUnit::Scale = 0.075f;
 
 bool UIUnit::Update(float fFrameTime) 
 {
     alignToTerrain();
     I3DObject::Update(fFrameTime);
-    return true;
+    return m_Alive;
 }
 
 void UIUnit::alignToTerrain()
@@ -49,11 +48,16 @@ void UIUnit::alignToTerrain()
     
     D3DXMATRIX scale;
     D3DXMatrixIdentity(&scale);
-    D3DXMatrixScaling(&scale, Scale, Scale, Scale);
+    D3DXMatrixScaling(&scale, UI3DObjectManager::globalScale, UI3DObjectManager::globalScale, UI3DObjectManager::globalScale);
     D3DXMatrixMultiply(&m_mLocal, &m_mLocal, &scale);
 
     m_mLocal._41 = m_pUnit->getPosition()->x + m_HalfSize;
     m_mLocal._42 = m_pUnit->getPosition()->y + m_HalfSize;
     m_mLocal._43 = UITerrain::getInstance()->calculateTriangleHeightAt(m_mLocal._41, m_mLocal._42);
 
+}
+
+void UIUnit::handleAssetStateChange(IAsset* pAsset, IAsset::State newState)
+{
+    //TODO: if needed
 }

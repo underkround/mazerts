@@ -10,8 +10,6 @@
  * $Id$
  */
 
-//TODO: MAX_PATHFINDER_AMOUNT, Queuing
-
 #ifndef __PATHFINDERMASTER_H__
 #define __PATHFINDERMASTER_H__
 

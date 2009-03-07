@@ -3,15 +3,14 @@
  *
  * Stepping A* -pathfinder. NOTE: The PathAgent constructed is _NOT_ 
  * destroyed along with the PathFinder, same goes for found path.
- * The destroying of the PathAgent is left for the user of the pathdata
- *
+ * The destroying of the PathAgent is left for the user,
+ * Agent will take care of destroying the pathdata
  * $Revision$
  * $Date$
  * $Id$
  */
 
-//TODO: canPath + path between two arbitrary points to interface, CALLBACKS!!,
-//  bi-directional search?, reverse search?
+//TODO: bi-directional search?, reverse search?
 
 #ifndef __PATHFINDER_H__
 #define __PATHFINDER_H__
@@ -19,9 +18,7 @@
 #include "IPathFinder.h"
 #include "PathAgent.h"
 #include "../Terrain/Terrain.h"
-//#include "../Unit/Unit.h"
 #include "../Common/HeapTree.h"
-//#include "../Common/Vector3.h"
 
 //Comment to use 4-way search
 #define EIGHTWAYSEARCH
@@ -29,17 +26,6 @@
 class PathFinder : public IPathFinder
 {
 public:
-
-    //TODO: remove when not needed anymore
-    //int DEBUG_steps;
-
-    /**
-     * Constructor
-     * @param pUnit Unit that needs the path
-     * @param goalX X-coordinate of the goal tile
-     * @param goalY Y-coordinate of the goal tile
-     */
-    //PathFinder(Unit* pUnit, unsigned short goalX, unsigned short goalY);
 
     /**
      * Constructor
