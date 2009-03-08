@@ -21,6 +21,9 @@ public:
         keyDown = new bool[256];
         keyOld = new bool[256];
         keyReleased = new bool[256];
+        ::memset(keyDown, 0, 256);
+        ::memset(keyOld, 0, 256);
+        ::memset(keyReleased, 0, 256);
     }
 
     /**

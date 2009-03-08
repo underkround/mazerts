@@ -60,20 +60,21 @@ public:
      */
     inline virtual bool isCreated() { return m_Created; }
 
-    // ARE THESE NEEDED?
     /**
-     * OnDeviceLost
-     * virtual handler is called when 3d device gets
-     * to 'lost' state
+     * Called when the device is "lost" to free any non-managed resources
+     * Note that states that don't use non-managed resources do not need to
+     * implement this
      */
-    //virtual void OnDeviceLost(void) = 0;
+    virtual void onDeviceLost(void) {};
 
     /**
-     * OnRestore
-     * virtual handler is called when 3d device is ready
-     * to restore 'lost' resources
+     * Called when the device is restored from lost-state to recreate any 
+     * non-managed resources
+     * Note that states that don't use non-managed resources do not need to
+     * implement this
+     * @return Error code if recreation failed
      */
-    //virtual HRESULT OnRestore(void) = 0;
+    virtual HRESULT onRestore(void) { return S_OK; };
 
 protected:
 

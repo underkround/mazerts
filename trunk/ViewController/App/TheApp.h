@@ -45,6 +45,37 @@ public:
     virtual void OnFlip(void);
 
     /**
+     * Handles releasing non-managed resources when device is lost
+     */
+    virtual void OnDeviceLost()
+    {
+        ID3DApplication::OnDeviceLost();
+        if(m_pCurrentState)
+        {
+            m_pCurrentState->onDeviceLost();
+        }
+    }
+
+    /**
+     * Handles recreating non-managed resources after device reset
+     */
+    virtual HRESULT OnRestore()
+    {
+        HRESULT hres = ID3DApplication::OnRestore();
+        if(FAILED(hres))
+        {
+            return hres;
+        }
+        
+        if(m_pCurrentState)
+        {
+            hres = m_pCurrentState->onRestore();
+        }
+
+        return hres;
+    }
+
+    /**
      * Destroys current state and switches to next state in the states-list
      */
     virtual void nextState();

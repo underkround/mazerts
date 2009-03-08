@@ -120,6 +120,46 @@ public:
      */
     inline unsigned char getDetailLevel() { return m_DetailLevel; }
 
+    /**
+     * Releases D3DPOOL_DEFAULT -resources
+     * @return S_OK if releasing went fine, otherwise error code
+     */
+    inline HRESULT onLostDevice()
+    {
+        if(m_pPixelTexture)
+        {
+            HRESULT hres = m_pPixelTexture->Release();
+            if(FAILED(hres))
+            {
+                return hres;
+            }
+            m_pPixelTexture = NULL;
+        }
+        return S_OK;
+    }
+
+    /**
+     * Recreates D3DPOOL_DEFAULT -resources
+     * @param pDevice Pointer to D3D-device
+     * @return HRESULT telling if recreation was successful
+     */
+    inline HRESULT onRestore(LPDIRECT3DDEVICE9 pDevice)
+    {
+        if(m_pPixelTexture)
+        {
+            HRESULT hres = m_pPixelTexture->Release();
+            if(FAILED(hres))
+            {
+                return hres;
+            }
+            m_pPixelTexture = NULL;
+        }
+        
+        HRESULT hres = createColorMapTexture(pDevice);
+        
+        return hres; 
+    }
+
 private:
     
     /**

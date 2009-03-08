@@ -52,6 +52,23 @@ public:
      */
     virtual void render(LPDIRECT3DDEVICE9 pDevice);
 
+    /**
+     * Releases D3DPOOL_DEFAULT-stuff on device lost
+     */
+    virtual void onDeviceLost()
+    {
+        m_pUITerrain->onLostDevice();
+    }
+
+    /**
+     * Recreates D3DPOOL_DEFAULT-stuff after device reset
+     * @return HRESULT
+     */
+    virtual HRESULT onRestore()
+    {
+        return m_pUITerrain->onRestore(m_pDevice);
+    }
+
 
 private:
 

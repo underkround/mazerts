@@ -39,7 +39,10 @@ void MouseState::create(IApplication* pApplication)
     mouseButton = new bool[buttons];
     mouseButtonOld = new bool[buttons];
     mouseButtonReleased = new bool[buttons];
-    
+
+    ::memset(&mouseButton[0], 0, buttons);
+    ::memset(&mouseButtonOld[0], 0, buttons);
+    ::memset(&mouseButtonReleased[0], 0, buttons);
 }
 
 
