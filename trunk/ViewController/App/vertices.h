@@ -19,12 +19,12 @@ struct VERTEX
 {
     static DWORD GetFVF()    { return    D3DFVF_XYZ |
                                         D3DFVF_NORMAL |
-                                        D3DFVF_TEX1;										
+                                        D3DFVF_TEX1;                                        
                             }
 
     float            x, y, z;    // vertex coordinate
     float            nx, ny, nz;    // vertex normal
-    float            tu, tv;        // texture coordinates	
+    float            tu, tv;        // texture coordinates    
 };
 
 //Untransformed, unlit vertex with two separate uv-sets (used mainly for terrain, colormap + "roughing texture")
@@ -32,13 +32,13 @@ struct VERTEX2UV
 {
     static DWORD GetFVF()    { return    D3DFVF_XYZ |
                                         D3DFVF_NORMAL |
-                                        D3DFVF_TEX2;										
+                                        D3DFVF_TEX2;                                        
                             }
 
     float            x, y, z;    // vertex coordinate
     float            nx, ny, nz;    // vertex normal
     float            tu, tv;        // First set of texture coordinates
-	float			 tu2, tv2;		// Second set of texture coordinates
+    float             tu2, tv2;        // Second set of texture coordinates
 };
 
 

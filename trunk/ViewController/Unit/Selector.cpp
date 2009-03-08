@@ -153,6 +153,7 @@ void Selector::render(LPDIRECT3DDEVICE9 pDevice)
         if(m_pTexture)
         {
             pDevice->SetTexture(0, m_pTexture);
+            pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_BLENDTEXTUREALPHA);
         }
         
         pDevice->SetStreamSource(0, m_pVB, 0, sizeof(VERTEX));
@@ -164,6 +165,11 @@ void Selector::render(LPDIRECT3DDEVICE9 pDevice)
         {
             pDevice->SetIndices( m_pIB );
             pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_NumVertices, 0, m_NumPrimitives );
+        }
+
+        if(m_pTexture)
+        {
+            pDevice->SetTexture(0, NULL);
         }
 
         pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);

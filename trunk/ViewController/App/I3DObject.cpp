@@ -10,17 +10,17 @@
 
 I3DObject::I3DObject(void)
 {
-	// init the members
-	D3DXMatrixIdentity(&m_mWorld);
-	D3DXMatrixIdentity(&m_mLocal);
+    // init the members
+    D3DXMatrixIdentity(&m_mWorld);
+    D3DXMatrixIdentity(&m_mLocal);
 
-	m_pParent = NULL;
+    m_pParent = NULL;
 
-	m_vVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_vAcceleration = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    m_vVelocity = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+    m_vAcceleration = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-	m_bActive = TRUE;
-	m_bVisible = TRUE;
+    m_bActive = TRUE;
+    m_bVisible = TRUE;
 }
 
 
@@ -48,11 +48,11 @@ void I3DObject::Release(void)
 
 void I3DObject::AddChild(I3DObject* pChild)
 {
-	// add child to linked list
+    // add child to linked list
     m_arrChildren.pushTail(pChild);
 
-	// link to the parent
-	pChild->m_pParent = this;
+    // link to the parent
+    pChild->m_pParent = this;
 }
 
 void I3DObject::RemoveChild(I3DObject* pChild)
@@ -63,39 +63,39 @@ void I3DObject::RemoveChild(I3DObject* pChild)
 
 bool I3DObject::Update(float fFrametime)
 {
-	if (IsActive())
-	{
-		// apply velocity to position
-		m_mLocal._41 += m_vVelocity.x * fFrametime;
-		m_mLocal._42 += m_vVelocity.y * fFrametime;
-		m_mLocal._43 += m_vVelocity.z * fFrametime;
+    if (IsActive())
+    {
+        // apply velocity to position
+        m_mLocal._41 += m_vVelocity.x * fFrametime;
+        m_mLocal._42 += m_vVelocity.y * fFrametime;
+        m_mLocal._43 += m_vVelocity.z * fFrametime;
 
-		// apply the acceleration to velocity
-		m_vVelocity.x += m_vAcceleration.x * fFrametime;
-		m_vVelocity.y += m_vAcceleration.y * fFrametime;
-		m_vVelocity.z += m_vAcceleration.z * fFrametime;
+        // apply the acceleration to velocity
+        m_vVelocity.x += m_vAcceleration.x * fFrametime;
+        m_vVelocity.y += m_vAcceleration.y * fFrametime;
+        m_vVelocity.z += m_vAcceleration.z * fFrametime;
 
-		if (m_pParent)
-		{
-			// we have the parent object:
-			// create combined world matrix from
-			// parent 'world' and our 'local'
-			D3DXMatrixMultiply(	&m_mWorld,
-								&m_mLocal,
-								&m_pParent->m_mWorld);
+        if (m_pParent)
+        {
+            // we have the parent object:
+            // create combined world matrix from
+            // parent 'world' and our 'local'
+            D3DXMatrixMultiply(    &m_mWorld,
+                                &m_mLocal,
+                                &m_pParent->m_mWorld);
 
-		}
-		else
-		{
-			// we don't have the parent object
-			// In sense, 'World' is our parent.
-			// world matrix is the same as our local
-			// matrix
-			::memcpy(&m_mWorld, &m_mLocal, sizeof(D3DXMATRIX));
-		}
-	}
+        }
+        else
+        {
+            // we don't have the parent object
+            // In sense, 'World' is our parent.
+            // world matrix is the same as our local
+            // matrix
+            ::memcpy(&m_mWorld, &m_mLocal, sizeof(D3DXMATRIX));
+        }
+    }
 
-	// update the children
+    // update the children
     ListNode<I3DObject*>* node = m_arrChildren.headNode();    
     
     while(node)
@@ -103,7 +103,7 @@ bool I3DObject::Update(float fFrametime)
         if (node->item->Update(fFrametime))
             node = node->next;
         else {
-		    node->item->Release();
+            node->item->Release();
             delete node->item;
             node = m_arrChildren.removeGetNext(node);
         }

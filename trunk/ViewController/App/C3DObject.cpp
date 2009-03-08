@@ -10,7 +10,7 @@
 
 C3DObject::C3DObject(void)
 {
-	m_pMesh = NULL;
+    m_pMesh = NULL;
 
     m_AABBMin.x = -0.5f;
     m_AABBMin.y = -0.5f;
@@ -29,22 +29,22 @@ C3DObject::~C3DObject(void)
 
 void C3DObject::Create(LPD3DXMESH pMesh)
 {
-	m_pMesh = pMesh;
+    m_pMesh = pMesh;
 }
 
 
 void C3DObject::Release(void)
 {
-	m_arrMeshData.clear();
-	I3DObject::Release(); 
-	m_pMesh = NULL;
+    m_arrMeshData.clear();
+    I3DObject::Release(); 
+    m_pMesh = NULL;
 }
 
 
 void C3DObject::Render(LPDIRECT3DDEVICE9 pDevice)
 {
-	if (IsVisible() && m_pMesh)
-	{
+    if (IsVisible() && m_pMesh)
+    {
         //Frustum culling
         D3DXVECTOR3 AABBMin(m_AABBMin.x + m_mWorld._41,
                             m_AABBMin.y + m_mWorld._42,
@@ -56,42 +56,42 @@ void C3DObject::Render(LPDIRECT3DDEVICE9 pDevice)
         
         if(FrustumCull::cullAABB(AABBMin, AABBMax))
         {
-		    // first set the world matrix to device
-		    pDevice->SetTransform(D3DTS_WORLD, &m_mWorld);
+            // first set the world matrix to device
+            pDevice->SetTransform(D3DTS_WORLD, &m_mWorld);
 
-		    // render the mesh subsets
-		    const DWORD numsubsets = m_arrMeshData.size();
+            // render the mesh subsets
+            const DWORD numsubsets = m_arrMeshData.size();
 
-		    if (numsubsets)
-		    {
-			    // loop thru materials and render the subsets
-			    DWORD i;
-			    for (i=0; i<numsubsets; i++)
-			    {
-				    MESHDATA& data = m_arrMeshData[i];
+            if (numsubsets)
+            {
+                // loop thru materials and render the subsets
+                DWORD i;
+                for (i=0; i<numsubsets; i++)
+                {
+                    MESHDATA& data = m_arrMeshData[i];
 
-				    // set the texture
-				    pDevice->SetTexture(0, data.pTexture);
+                    // set the texture
+                    pDevice->SetTexture(0, data.pTexture);
 
-				    // set material
-				    if (data.pMaterial)
-				    {
-					    pDevice->SetMaterial(data.pMaterial);
-				    }
+                    // set material
+                    if (data.pMaterial)
+                    {
+                        pDevice->SetMaterial(data.pMaterial);
+                    }
 
-				    // render the mesh
-				    m_pMesh->DrawSubset(i);
-			    }
-		    }
-		    else
-		    {
-			    // render the mesh anyways
-			    m_pMesh->DrawSubset(0);
-		    }
+                    // render the mesh
+                    m_pMesh->DrawSubset(i);
+                }
+            }
+            else
+            {
+                // render the mesh anyways
+                m_pMesh->DrawSubset(0);
+            }
         }
-	}
+    }
 
-	// render the children
+    // render the children
     ListNode<I3DObject*>* node = m_arrChildren.headNode();    
     
     while(node)
@@ -104,5 +104,5 @@ void C3DObject::Render(LPDIRECT3DDEVICE9 pDevice)
 
 void C3DObject::AddMeshData(MESHDATA& meshdata)
 {
-	m_arrMeshData.push_back(meshdata);
+    m_arrMeshData.push_back(meshdata);
 }

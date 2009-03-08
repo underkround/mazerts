@@ -14,11 +14,11 @@ Config* Config::pInstance = 0;// initialize pointer
 
 Config* Config::getInstance () 
 {
-	if (pInstance == 0)  // is it the first call?
-	{  
-		pInstance = new Config;
-	}
-	return pInstance;
+    if (pInstance == 0)  // is it the first call?
+    {  
+        pInstance = new Config;
+    }
+    return pInstance;
 }
 
 

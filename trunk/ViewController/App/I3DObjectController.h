@@ -17,31 +17,31 @@
 class I3DObjectController
 {
 public:
-	I3DObjectController(void);
-	virtual ~I3DObjectController(void);
+    I3DObjectController(void);
+    virtual ~I3DObjectController(void);
 
-	/**
-	 * Create
-	 * initialise the object controller
-	 * @param pObject pointer to object to control
-	 */
-	inline virtual void Create(I3DObject* pObject) { m_pObject = pObject; }
+    /**
+     * Create
+     * initialise the object controller
+     * @param pObject pointer to object to control
+     */
+    inline virtual void Create(I3DObject* pObject) { m_pObject = pObject; }
 
-	/**
-	 * Release
-	 * release object controller
-	 */
-	inline virtual void Release(void) { m_pObject = NULL; }
+    /**
+     * Release
+     * release object controller
+     */
+    inline virtual void Release(void) { m_pObject = NULL; }
 
-	/**
-	 * Update
-	 * pure virtual controls update
-	 * @param fFrametime application frame time
-	 */
-	virtual void Update(float fFrametime) = 0;
+    /**
+     * Update
+     * pure virtual controls update
+     * @param fFrametime application frame time
+     */
+    virtual void Update(float fFrametime) = 0;
 
 protected:
-	I3DObject*			m_pObject;
+    I3DObject*            m_pObject;
 };
 
-#endif	// __3DOBJECTCONTROLLER_H__
+#endif    // __3DOBJECTCONTROLLER_H__

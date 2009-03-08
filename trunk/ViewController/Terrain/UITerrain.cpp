@@ -18,7 +18,7 @@ UITerrain::UITerrain()
     m_pppIB = NULL;
     m_pppVB = NULL;
     m_pTexture = NULL;
-	m_pPixelTexture = NULL;
+    m_pPixelTexture = NULL;
     m_Patches = 0;
     m_NumPrimitives = 0;
     m_NumVertices = 0;
@@ -116,19 +116,19 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
     {
         // set the texturing parameters
         pDevice->SetTexture(0, m_pTexture);
-        //pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-        //pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_CURRENT);
-        //pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-    }
-
-	if(m_pPixelTexture)
-	{
-		pDevice->SetTexture(1, m_pPixelTexture);
-		pDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
-		pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE2X);
+        pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
         pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_CURRENT);
         pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-	}
+    }
+
+    if(m_pPixelTexture)
+    {
+        pDevice->SetTexture(1, m_pPixelTexture);
+        pDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
+        pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE2X);
+        pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_CURRENT);
+        pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+    }
 
     pDevice->SetMaterial(&m_Mat);
 
@@ -297,8 +297,8 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
                         //Repeating texture
                         pVertices[loc].tu = (m_TextureRepeat / m_Size) * j;
                         pVertices[loc].tv = (m_TextureRepeat / m_Size) * i;
-						pVertices[loc].tu2 = (1.0f / m_Size) * offsetX;
-						pVertices[loc].tv2 = (1.0f / m_Size) * offsetY;
+                        pVertices[loc].tu2 = (1.0f / m_Size) * offsetX;
+                        pVertices[loc].tv2 = (1.0f / m_Size) * offsetY;
                     }
                 }
             }
@@ -453,17 +453,17 @@ HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice)
             {
                 int i = y * (lockedRect.Pitch / 4) + x;
                 
-			    //Create colordata based on the heightdata
+                //Create colordata based on the heightdata
                 if(ppVData[y][x] < pTerrain->getWaterLevel())
                 {
                     ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 7) + (ppVData[y][x]);
                 }
-			    else if(ppVData[y][x] > 192)
-			    {
-				    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 16) + (ppVData[y][x] << 8) + ppVData[y][x];
+                else if(ppVData[y][x] > 192)
+                {
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 16) + (ppVData[y][x] << 8) + ppVData[y][x];
                 }
-				else
-                {	
+                else
+                {    
                     ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8);// + (ppVData[y][x] >> 1);
                 }
             }
@@ -815,8 +815,8 @@ void UITerrain::setDetailLevel2(unsigned char detailLevel)
                         //Repeating texture
                         pVertices[loc].tu = ((m_TextureRepeat * detail) / m_Size) * j;
                         pVertices[loc].tv = ((m_TextureRepeat * detail) / m_Size) * i;
-				        pVertices[loc].tu2 = (1.0f / m_Size) * offsetX;
-				        pVertices[loc].tv2 = (1.0f / m_Size) * offsetY;
+                        pVertices[loc].tu2 = (1.0f / m_Size) * offsetX;
+                        pVertices[loc].tv2 = (1.0f / m_Size) * offsetY;
                     }
                 }
             }

@@ -180,10 +180,10 @@ private:
      */
     LPDIRECT3DTEXTURE9 m_pTexture;
 
-	/**
-	 * Pixel-texture (colormap)
-	 */
-	LPDIRECT3DTEXTURE9 m_pPixelTexture;
+    /**
+     * Pixel-texture (colormap)
+     */
+    LPDIRECT3DTEXTURE9 m_pPixelTexture;
 
     /**
      * Material

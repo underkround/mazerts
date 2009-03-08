@@ -209,7 +209,7 @@ void Matrix4x3::setupParentToLocal(const Vector3 &pos, const RotationMatrix &ori
  */
 void Matrix4x3::setupRotate(int axis, float theta) {
     // Get sin and cosine of rotation angle
-    float	s, c;
+    float    s, c;
     sinCos(&s, &c, theta);
 
     // Check which axis they are rotating about
@@ -262,14 +262,14 @@ void Matrix4x3::setupRotate(const Vector3 &axis, float theta) {
     assert(fabs(axis*axis - 1.0f) < .01f);
 
     // Get sin and cosine of rotation angle
-    float	s, c;
+    float    s, c;
     sinCos(&s, &c, theta);
 
     // Compute 1 - cos(theta) and some common subexpressions
-    float	a = 1.0f - c;
-    float	ax = a * axis.x;
-    float	ay = a * axis.y;
-    float	az = a * axis.z;
+    float    a = 1.0f - c;
+    float    ax = a * axis.x;
+    float    ay = a * axis.y;
+    float    az = a * axis.z;
 
     // Set the matrix elements.  There is still a little more
     // opportunity for optimization due to the many common
@@ -302,10 +302,10 @@ void Matrix4x3::setupRotate(const Vector3 &axis, float theta) {
  */
 void Matrix4x3::fromQuaternion(const Quaternion &q) {
     // Compute a few values to optimize common subexpressions
-    float	ww = 2.0f * q.w;
-    float	xx = 2.0f * q.x;
-    float	yy = 2.0f * q.y;
-    float	zz = 2.0f * q.z;
+    float    ww = 2.0f * q.w;
+    float    xx = 2.0f * q.x;
+    float    yy = 2.0f * q.y;
+    float    zz = 2.0f * q.z;
 
     // Set the matrix elements.  There is still a little more
     // opportunity for optimization due to the many common
@@ -363,10 +363,10 @@ void Matrix4x3::setupScaleAlongAxis(const Vector3 &axis, float k) {
     assert(fabs(axis*axis - 1.0f) < .01f);
 
     // Compute k-1 and some common subexpressions
-    float	a = k - 1.0f;
-    float	ax = a * axis.x;
-    float	ay = a * axis.y;
-    float	az = a * axis.z;
+    float    a = k - 1.0f;
+    float    ax = a * axis.x;
+    float    ay = a * axis.y;
+    float    az = a * axis.z;
 
     // Fill in the matrix elements.  We'll do the common
     // subexpression optimization ourselves here, since diagonally
@@ -531,9 +531,9 @@ void Matrix4x3::setupReflect(const Vector3 &n) {
     assert(fabs(n*n - 1.0f) < .01f);
 
     // Compute common subexpressions
-    float	ax = -2.0f * n.x;
-    float	ay = -2.0f * n.y;
-    float	az = -2.0f * n.z;
+    float    ax = -2.0f * n.x;
+    float    ay = -2.0f * n.y;
+    float    az = -2.0f * n.z;
 
     // Fill in the matrix elements.  We'll do the common
     // subexpression optimization ourselves here, since diagonally
@@ -640,7 +640,7 @@ float determinant(const Matrix4x3 &m) {
  */
 Matrix4x3 inverse(const Matrix4x3 &m) {
     // Compute the determinant
-    float	det = determinant(m);
+    float    det = determinant(m);
 
     // If we're singular, then the determinant is zero and there's
     // no inverse
@@ -648,11 +648,11 @@ Matrix4x3 inverse(const Matrix4x3 &m) {
 
     // Compute one over the determinant, so we divide once and
     // can *multiply* per element
-    float	oneOverDet = 1.0f / det;
+    float    oneOverDet = 1.0f / det;
 
     // Compute the 3x3 portion of the inverse, by
     // dividing the adjoint by the determinant
-    Matrix4x3	r;
+    Matrix4x3    r;
 
     r.m11 = (m.m22*m.m33 - m.m23*m.m32) * oneOverDet;
     r.m12 = (m.m13*m.m32 - m.m12*m.m33) * oneOverDet;
@@ -715,7 +715,7 @@ Vector3 getPositionFromParentToLocalMatrix(const Matrix4x3 &m) {
  * Extract the position of an object given a local -> parent transformation
  * matrix (such as an object -> world matrix)
  */
-Vector3	getPositionFromLocalToParentMatrix(const Matrix4x3 &m) {
+Vector3    getPositionFromLocalToParentMatrix(const Matrix4x3 &m) {
     // Position is simply the translation portion
     return Vector3(m.t.x, m.t.y, m.t.z);
 }

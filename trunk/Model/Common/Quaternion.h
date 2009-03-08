@@ -33,7 +33,7 @@ public:
      * makes some operations, such as file I/O, unnecessarily
      * complicated.
      */
-    float	w, x, y, z;
+    float    w, x, y, z;
 
 // ========== Public operations
     /**

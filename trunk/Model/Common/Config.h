@@ -26,13 +26,13 @@ class Config {
 
 protected:
     Config(void);
-	virtual ~Config(void);
-	Config(const Config&);
-	Config& operator= (const Config&);
+    virtual ~Config(void);
+    Config(const Config&);
+    Config& operator= (const Config&);
 
   public:
 
-	  static Config* getInstance();
+      static Config* getInstance();
 
   /**
    * Variables used in config file
@@ -125,7 +125,7 @@ protected:
     //** variables **
     string m_strFilename;
     vector<Setting*> settingData;
-	static Config* pInstance;
+    static Config* pInstance;
 
 
     //** metodit **
@@ -133,9 +133,9 @@ protected:
     /**
      * addSetting
      *
-	 * adds a new setting, if it already existed, replaces that
-	 * @param in_name name of setting
-	 * @param in_value value of setting
+     * adds a new setting, if it already existed, replaces that
+     * @param in_name name of setting
+     * @param in_value value of setting
      */
     void addSetting(string in_name, string in_value);
     void addSetting(string in_name, int in_value);
@@ -151,8 +151,8 @@ public:
      * settingExists
      *
      * checks if setting exists
-	 *
-	 * @param name setting to be checked
+     *
+     * @param name setting to be checked
      */
     bool settingExists(string name);
 

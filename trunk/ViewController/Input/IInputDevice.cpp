@@ -7,9 +7,9 @@
  
 IInputDevice::IInputDevice(void)
 {
-	//init members
-	m_pDevice = NULL;
-	m_dwButtonCount = 0;
+    //init members
+    m_pDevice = NULL;
+    m_dwButtonCount = 0;
 }
  
 IInputDevice::~IInputDevice(void)
@@ -18,11 +18,11 @@ IInputDevice::~IInputDevice(void)
  
 void IInputDevice::Release(void)
 {
-	if(m_pDevice)
-	{
-		m_pDevice->Unacquire();
-		m_pDevice->Release();
-		m_pDevice = NULL;
-	}
-	m_dwButtonCount = 0;
+    if(m_pDevice)
+    {
+        m_pDevice->Unacquire();
+        m_pDevice->Release();
+        m_pDevice = NULL;
+    }
+    m_dwButtonCount = 0;
 }

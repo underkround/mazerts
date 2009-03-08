@@ -10,10 +10,10 @@
 class Faction
 {
 public:
-	Faction(void);
-	virtual ~Faction(void);
+    Faction(void);
+    virtual ~Faction(void);
 
 private:
-	int m_Resource;
-	int m_Energy;
+    int m_Resource;
+    int m_Energy;
 };

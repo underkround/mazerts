@@ -17,7 +17,7 @@ bool C3DObjectDebug::Update(float fFrameTime)
 
 void C3DObjectDebug::Release()
 {
-	m_pMesh->Release();	
-	C3DObject::Release();	
-	m_pMesh = NULL;
+    m_pMesh->Release();    
+    C3DObject::Release();    
+    m_pMesh = NULL;
 }

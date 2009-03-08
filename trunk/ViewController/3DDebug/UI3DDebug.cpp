@@ -43,41 +43,41 @@ C3DObjectDebug* UI3DDebug::addLine(float startX, float startY, float startZ,
                               float lifeTime)
 {
     LPD3DXMESH pMesh = NULL;
-		
+        
     const float squared = (endX - startX) * (endX - startX) +
                           (endY - startY) * (endY - startY) +
                           (endZ - startZ) * (endZ - startZ);
     const float len = sqrt(squared);
-	HRESULT hres = D3DXCreateCylinder(pDevice, radius,
-							radius,
-							len,
+    HRESULT hres = D3DXCreateCylinder(pDevice, radius,
+                            radius,
+                            len,
                             6,
                             1,
-							&pMesh,
-							NULL);
-	if (FAILED(hres))
-	{
-		return NULL;
-	}
+                            &pMesh,
+                            NULL);
+    if (FAILED(hres))
+    {
+        return NULL;
+    }
 
     DWORD i;
-	BYTE* pVertices = NULL;
-	pMesh->LockVertexBuffer(0, (void**)&pVertices);
-	DWORD dwStride = pMesh->GetNumBytesPerVertex();
+    BYTE* pVertices = NULL;
+    pMesh->LockVertexBuffer(0, (void**)&pVertices);
+    DWORD dwStride = pMesh->GetNumBytesPerVertex();
 
-	for (i=0; i<pMesh->GetNumVertices(); i++)
-	{
-		//Get vertex position
-		D3DXVECTOR3* pVertexPosition = (D3DXVECTOR3*)pVertices;
+    for (i=0; i<pMesh->GetNumVertices(); i++)
+    {
+        //Get vertex position
+        D3DXVECTOR3* pVertexPosition = (D3DXVECTOR3*)pVertices;
 
-		//Move all vertices forward by half
-		pVertexPosition->z += len * 0.5f;
-		
-		// move vertex pointer to next vertex
-		pVertices += dwStride;
-	}
+        //Move all vertices forward by half
+        pVertexPosition->z += len * 0.5f;
+        
+        // move vertex pointer to next vertex
+        pVertices += dwStride;
+    }
 
-	pMesh->UnlockVertexBuffer();
+    pMesh->UnlockVertexBuffer();
 
 
     C3DObjectDebug* pObject = NULL;

@@ -34,10 +34,10 @@ where .h -files and .lib can be found (trunk\Model\ExternalLibs):
 
 To add the dependency (although the #pragma comment above _should_ take care of it),
 select in Visual Studio:
-	-Project -menu -> <ProjectName> Properties
-	-Change Configuration to "All Configurations"
-	-From the tree, select Configuration Properties->Linker->Input
-	-In the "Additional Dependencies"-field, type "pthreadVC2.lib" (without quotes)
+    -Project -menu -> <ProjectName> Properties
+    -Change Configuration to "All Configurations"
+    -From the tree, select Configuration Properties->Linker->Input
+    -In the "Additional Dependencies"-field, type "pthreadVC2.lib" (without quotes)
 
 The .dll is located in trunk\Model
 */

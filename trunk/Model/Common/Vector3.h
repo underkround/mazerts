@@ -26,7 +26,7 @@ public:
 
 // Public representation:  Not many options here.
 
-	float x,y,z;
+    float x,y,z;
 
 // ========== Constructors
 
@@ -38,37 +38,37 @@ public:
     }
 
     /**
-	 * Copy constructor
+     * Copy constructor
      */
-	Vector3(const Vector3 &a) : x(a.x), y(a.y), z(a.z) {}
+    Vector3(const Vector3 &a) : x(a.x), y(a.y), z(a.z) {}
 
-	/**
+    /**
      * Construct given three values
      */
-	Vector3(float nx, float ny, float nz) : x(nx), y(ny), z(nz) {}
+    Vector3(float nx, float ny, float nz) : x(nx), y(ny), z(nz) {}
 
 // ========== Standard object maintenance
 
-	/**
+    /**
      * Assignment.  We adhere to C convention and
-	 * return reference to the lvalue
+     * return reference to the lvalue
      */
-	Vector3 &operator =(const Vector3 &a) {
-		x = a.x; y = a.y; z = a.z;
-		return *this;
-	}
+    Vector3 &operator =(const Vector3 &a) {
+        x = a.x; y = a.y; z = a.z;
+        return *this;
+    }
 
-	/**
+    /**
      * Check for equality
      */
 
-	bool operator ==(const Vector3 &a) const {
-		return x==a.x && y==a.y && z==a.z;
-	}
+    bool operator ==(const Vector3 &a) const {
+        return x==a.x && y==a.y && z==a.z;
+    }
 
-	bool operator !=(const Vector3 &a) const {
-		return x!=a.x || y!=a.y || z!=a.z;
-	}
+    bool operator !=(const Vector3 &a) const {
+        return x!=a.x || y!=a.y || z!=a.z;
+    }
 
 // ========== Vector operations
 
@@ -105,7 +105,7 @@ public:
     }
 
     Vector3 operator /(float a) const {
-        float	oneOverA = 1.0f / a; // NOTE: no check for divide by zero here
+        float    oneOverA = 1.0f / a; // NOTE: no check for divide by zero here
         return Vector3(x*oneOverA, y*oneOverA, z*oneOverA);
     }
 
@@ -129,7 +129,7 @@ public:
     }
 
     Vector3 &operator /=(float a) {
-        float	oneOverA = 1.0f / a;
+        float    oneOverA = 1.0f / a;
         x *= oneOverA; y *= oneOverA; z *= oneOverA;
         return *this;
     }
@@ -184,17 +184,17 @@ inline Vector3 crossProduct(const Vector3 &a, const Vector3 &b) {
  * Scalar on the left multiplication, for symmetry
  */
 inline Vector3 operator *(float k, const Vector3 &v) {
-	return Vector3(k*v.x, k*v.y, k*v.z);
+    return Vector3(k*v.x, k*v.y, k*v.z);
 }
 
 /**
  * Compute the distance between two points
  */
 inline float distance(const Vector3 &a, const Vector3 &b) {
-	float dx = a.x - b.x;
-	float dy = a.y - b.y;
-	float dz = a.z - b.z;
-	return sqrt(dx*dx + dy*dy + dz*dz);
+    float dx = a.x - b.x;
+    float dy = a.y - b.y;
+    float dz = a.z - b.z;
+    return sqrt(dx*dx + dy*dy + dz*dz);
 }
 
 /**

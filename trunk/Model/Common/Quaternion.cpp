@@ -48,7 +48,7 @@ const Quaternion kQuaternionIdentity = {
  */
 void Quaternion::setToRotateAboutX(float theta) {
     // Compute the half angle
-    float	thetaOver2 = theta * .5f;
+    float    thetaOver2 = theta * .5f;
 
     // Set the values
     w = cos(thetaOver2);
@@ -59,7 +59,7 @@ void Quaternion::setToRotateAboutX(float theta) {
 
 void Quaternion::setToRotateAboutY(float theta) {
     // Compute the half angle
-    float	thetaOver2 = theta * .5f;
+    float    thetaOver2 = theta * .5f;
 
     // Set the values
     w = cos(thetaOver2);
@@ -70,7 +70,7 @@ void Quaternion::setToRotateAboutY(float theta) {
 
 void Quaternion::setToRotateAboutZ(float theta) {
     // Compute the half angle
-    float	thetaOver2 = theta * .5f;
+    float    thetaOver2 = theta * .5f;
 
     // Set the values
     w = cos(thetaOver2);
@@ -84,8 +84,8 @@ void Quaternion::setToRotateAboutAxis(const Vector3 &axis, float theta) {
     assert(fabs(vectorMag(axis) - 1.0f) < .01f);
 
     // Compute the half angle and its sin
-    float	thetaOver2 = theta * .5f;
-    float	sinThetaOver2 = sin(thetaOver2);
+    float    thetaOver2 = theta * .5f;
+    float    sinThetaOver2 = sin(thetaOver2);
 
     // Set the values
     w = cos(thetaOver2);
@@ -104,8 +104,8 @@ void Quaternion::setToRotateAboutAxis(const Vector3 &axis, float theta) {
  */
 void Quaternion::setToRotateObjectToInertial(const EulerAngles &orientation) {
     // Compute sine and cosine of the half angles
-    float	sp, sb, sh;
-    float	cp, cb, ch;
+    float    sp, sb, sh;
+    float    cp, cb, ch;
     sinCos(&sp, &cp, orientation.pitch * 0.5f);
     sinCos(&sb, &cb, orientation.bank * 0.5f);
     sinCos(&sh, &ch, orientation.heading * 0.5f);
@@ -127,8 +127,8 @@ void Quaternion::setToRotateObjectToInertial(const EulerAngles &orientation) {
  */
 void Quaternion::setToRotateInertialToObject(const EulerAngles &orientation) {
     // Compute sine and cosine of the half angles
-    float	sp, sb, sh;
-    float	cp, cb, ch;
+    float    sp, sb, sh;
+    float    cp, cb, ch;
     sinCos(&sp, &cp, orientation.pitch * 0.5f);
     sinCos(&sb, &cb, orientation.bank * 0.5f);
     sinCos(&sh, &ch, orientation.heading * 0.5f);
@@ -186,12 +186,12 @@ Quaternion &Quaternion::operator *=(const Quaternion &a) {
  */
 void Quaternion::normalize() {
     // Compute magnitude of the quaternion
-    float	mag = (float)sqrt(w*w + x*x + y*y + z*z);
+    float    mag = (float)sqrt(w*w + x*x + y*y + z*z);
 
     // Check for bogus length, to protect against divide by zero
     if (mag > 0.0f) {
         // Normalize it
-        float	oneOverMag = 1.0f / mag;
+        float    oneOverMag = 1.0f / mag;
         w *= oneOverMag;
         x *= oneOverMag;
         y *= oneOverMag;
@@ -235,7 +235,7 @@ Vector3 Quaternion::getRotationAxis() const {
     }
 
     // Compute 1 / sin(theta/2)
-    float	oneOverSinThetaOver2 = 1.0f / sqrt(sinThetaOver2Sq);
+    float    oneOverSinThetaOver2 = 1.0f / sqrt(sinThetaOver2Sq);
 
     // Return axis of rotation
     return Vector3(
@@ -369,17 +369,17 @@ Quaternion pow(const Quaternion &q, float exponent) {
     }
 
     // Extract the half angle alpha (alpha = theta/2)
-    float	alpha = acos(q.w);
+    float    alpha = acos(q.w);
 
     // Compute new alpha value
-    float	newAlpha = alpha * exponent;
+    float    newAlpha = alpha * exponent;
 
     // Compute new w value
     Quaternion result;
     result.w = cos(newAlpha);
 
     // Compute new xyz values
-    float	mult = sin(newAlpha) / sin(alpha);
+    float    mult = sin(newAlpha) / sin(alpha);
     result.x = q.x * mult;
     result.y = q.y * mult;
     result.z = q.z * mult;

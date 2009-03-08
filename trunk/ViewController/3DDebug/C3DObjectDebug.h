@@ -40,14 +40,14 @@ public:
     }
 
 
-	void Release();
+    void Release();
 
-	/**	 
-	 * Updates the object
-	 * @param fFrametime application frame time
+    /**     
+     * Updates the object
+     * @param fFrametime application frame time
      * @return True if no action should take place, false if the
                child removed itself from parent
-	 */
+     */
      virtual bool Update(float fFrameTime);
 
 private:

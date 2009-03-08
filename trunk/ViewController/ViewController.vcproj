@@ -714,6 +714,14 @@
 				Name="Unit"
 				>
 				<File
+					RelativePath=".\Unit\Selector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\Selector.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Unit\UI3DObjectManager.cpp"
 					>
 				</File>
@@ -734,43 +742,59 @@
 				Name="Input"
 				>
 				<File
-					RelativePath=".\App\IInputDevice.cpp"
+					RelativePath=".\Input\IInputDevice.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\App\IInputDevice.h"
+					RelativePath=".\Input\IInputDevice.h"
 					>
 				</File>
 				<File
-					RelativePath=".\App\InputEngine.cpp"
+					RelativePath=".\Input\Input.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\App\InputEngine.h"
+					RelativePath=".\Input\Input.h"
 					>
 				</File>
 				<File
-					RelativePath=".\App\InputKeyboard.cpp"
+					RelativePath=".\Input\InputEngine.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\App\InputKeyboard.h"
+					RelativePath=".\Input\InputEngine.h"
 					>
 				</File>
 				<File
-					RelativePath=".\App\InputMouse.cpp"
+					RelativePath=".\Input\InputKeyboard.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\App\InputMouse.h"
+					RelativePath=".\Input\InputKeyboard.h"
 					>
 				</File>
 				<File
-					RelativePath=".\App\Selector.cpp"
+					RelativePath=".\Input\InputMouse.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\App\Selector.h"
+					RelativePath=".\Input\InputMouse.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Input\KeyboardState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Input\KeyboardState.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Input\MouseState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Input\MouseState.h"
 					>
 				</File>
 			</Filter>
@@ -803,6 +827,22 @@
 				</File>
 				<File
 					RelativePath=".\Culling\FrustumCull.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="States"
+				>
+				<File
+					RelativePath=".\States\GameState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\States\GameState.h"
+					>
+				</File>
+				<File
+					RelativePath=".\States\IState.h"
 					>
 				</File>
 			</Filter>

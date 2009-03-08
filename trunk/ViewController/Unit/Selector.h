@@ -7,7 +7,7 @@
  */
 
 #include "d3dx9.h"
-#include "../Unit/UIUnit.h"
+#include "UIUnit.h"
 
 #ifndef __SELECTOR_H__
 #define __SELECTOR_H__
@@ -96,18 +96,23 @@ public:
      * @param point Point xy-coordinates as D3DXVECTOR2
      */
     void setPoint(D3DXVECTOR2 point)
-    {        
-        if(m_FirstSet)
+    {
+        //Don't update unless the point has moved
+        if(point.x != m_Point1.x && point.y != m_Point1.y &&
+           point.x != m_Point2.x && point.y != m_Point2.y)
         {
-            m_Point2 = point;
-            m_Render = true;
+                if(m_FirstSet)
+                {
+                    m_Point2 = point;
+                    m_Render = true;
+                }
+                else
+                {
+                    m_Point1 = point;            
+                    m_FirstSet = true;
+                }
+                update();
         }
-        else
-        {
-            m_Point1 = point;            
-            m_FirstSet = true;
-        }
-        update();
     }
 
     /**

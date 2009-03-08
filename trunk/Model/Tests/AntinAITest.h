@@ -2,5 +2,5 @@
 #include <assert.h>
 
 void testAntinAI() {
-	AntinAI* ai = new AntinAI();
+    AntinAI* ai = new AntinAI();
 }

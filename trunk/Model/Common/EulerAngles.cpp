@@ -113,9 +113,9 @@ void EulerAngles::fromObjectToInertialQuaternion(const Quaternion &q) {
         // Compute angles.  We don't have to use the "safe" asin
         // function because we already checked for range errors when
         // checking for Gimbel lock
-        pitch	= asin(sp);
-        heading	= atan2(q.x*q.z + q.w*q.y, 0.5f - q.x*q.x - q.y*q.y);
-        bank	= atan2(q.x*q.y + q.w*q.z, 0.5f - q.x*q.x - q.z*q.z);
+        pitch    = asin(sp);
+        heading    = atan2(q.x*q.z + q.w*q.y, 0.5f - q.x*q.x - q.y*q.y);
+        bank    = atan2(q.x*q.y + q.w*q.z, 0.5f - q.x*q.x - q.z*q.z);
     }
 }
 
@@ -142,9 +142,9 @@ void EulerAngles::fromInertialToObjectQuaternion(const Quaternion &q) {
         // Compute angles.  We don't have to use the "safe" asin
         // function because we already checked for range errors when
         // checking for Gimbel lock
-        pitch	= asin(sp);
-        heading	= atan2(q.x*q.z - q.w*q.y, 0.5f - q.x*q.x - q.y*q.y);
-        bank	= atan2(q.x*q.y - q.w*q.z, 0.5f - q.x*q.x - q.z*q.z);
+        pitch    = asin(sp);
+        heading    = atan2(q.x*q.z - q.w*q.y, 0.5f - q.x*q.x - q.y*q.y);
+        bank    = atan2(q.x*q.y - q.w*q.z, 0.5f - q.x*q.x - q.z*q.z);
     }
 }
 
@@ -160,7 +160,7 @@ void EulerAngles::fromInertialToObjectQuaternion(const Quaternion &q) {
  */
 void EulerAngles::fromObjectToWorldMatrix(const Matrix4x3 &m) {
     // Extract sin(pitch) from m32.
-    float	sp = -m.m32;
+    float    sp = -m.m32;
 
     // Check for Gimbel lock
     if (fabs(sp) > 9.99999f) {
@@ -192,7 +192,7 @@ void EulerAngles::fromObjectToWorldMatrix(const Matrix4x3 &m) {
  */
 void EulerAngles::fromWorldToObjectMatrix(const Matrix4x3 &m) {
     // Extract sin(pitch) from m23.
-    float	sp = -m.m23;
+    float    sp = -m.m23;
 
     // Check for Gimbel lock
     if (fabs(sp) > 9.99999f) {
@@ -221,7 +221,7 @@ void EulerAngles::fromWorldToObjectMatrix(const Matrix4x3 &m) {
  */
 void EulerAngles::fromRotationMatrix(const RotationMatrix &m) {
     // Extract sin(pitch) from m23.
-    float	sp = -m.m23;
+    float    sp = -m.m23;
 
     // Check for Gimbel lock
     if (fabs(sp) > 9.99999f) {

@@ -128,8 +128,8 @@ public:
     void setupShear(int axis, float s, float t);
 
     /**
-	   * Setup the matrix to perform a projection onto a plane passing
-	   * through the origin
+       * Setup the matrix to perform a projection onto a plane passing
+       * through the origin
      */
     void setupProject(const Vector3 &n);
 

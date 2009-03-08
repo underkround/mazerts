@@ -1,31 +1,17 @@
 /**
- * TheApp.h header file
- * Interface for the CTimer class
- * Copyright (c) 2009 Jani Immonen
- * www.jani-immonen.net
- * Date: 29.1.2009
- * 
- * Concrete game application class
+ * Concrete application class
+ *
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
-#pragma once
+#ifndef __THEAPP_H__
+#define __THEAPP_H__
 
 #include "ID3DApplication.h"
-#include "vertices.h"
-#include "../Terrain/UITerrain.h"
-
-#include "../Unit/UI3DObjectManager.h"
-#include "../Unit/UIUnit.h"
-#include "../../Model/Asset/Unit.h"
-
-#include "InputEngine.h"
-#include "InputKeyboard.h"
-#include "InputMouse.h"
-
-
-//TODO: Remove when finished testing
-#include "Selector.h"
-
+#include "../States/IState.h"
+#include "../../Model/Common/DoubleLinkedList.h"
 
 class CTheApp : public ID3DApplication
 {
@@ -58,16 +44,20 @@ public:
      */
     virtual void OnFlip(void);
 
+    /**
+     * Destroys current state and switches to next state in the states-list
+     */
+    virtual void nextState();
+
+    /**
+     * Puts given state to execution and pushes current
+     * to list as next one (used for entering menu while in-game, as
+     * the menu terminates, game is returned from states-list)
+     */
+    virtual void pushState(IState* pState);
+
+
 private:
-    //Input engine members
-	int							    m_TextRow;
-	int								m_iMouseX;
-	int								m_iMouseY;
-	int								m_iMouseZ;
-    CInputEngine                    m_InputEngine;
-	vector<CInputEngine::DEVICE>	m_arrInputDevices;
-    CInputKeyboard			        m_Keyboard;
-	CInputMouse			            m_Mouse;
 
     /**
      * DrawTextRow
@@ -84,38 +74,22 @@ private:
     virtual void OnKeyDown(DWORD dwKey);
 
     /**
-	 * UpdateKeyboard
-	 * update keyboard status and print it to screen
-	 */
-	void UpdateKeyboard(void);
- 
-	/**
-	 * UpdateKeyboard
-	 * update mouse status and print it to screen
-	 */
-	void UpdateMouse(void);
-
-    /**
      * CheckTexturingCaps
      * check what kind of texturing capabilities
      * the display accelerator has
      */
     void CheckTexturingCaps(void);
 
-    /**
-     * UI-terrain pointer, POC
-     */
-    UITerrain* m_pUITerrain;
-    
-    float m_fX;
-    float m_fY;
-    float m_fZ;
+    IState* m_pCurrentState;
 
+    DoubleLinkedList<IState*>* m_pStates;
+    
+    //Text row for DrawTextRow
+    int m_TextRow;
+
+    //Help texts
     bool m_Help;
 
-    UI3DObjectManager* m_pManager;
-
-
-
-    Selector m_Selector;
 };
+
+#endif //__THEAPP_H__

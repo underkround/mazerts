@@ -26,10 +26,10 @@ class UI3DObjectManager : public IAssetCollectionListener
 public:
 
     /**
-     * THIS HAS TO BE CALLED PRIOR TO USING MANAGER
+     * Creates the instance and resource container for object manager
      * @param pDevice Pointer to Direct3D9-device
      */
-    inline static void setDevice(LPDIRECT3DDEVICE9 pDevice)
+    inline static void create(LPDIRECT3DDEVICE9 pDevice)
     {        
         getInstance()->m_ResourceContainer.Create(pDevice);
     }
@@ -49,6 +49,21 @@ public:
      * @return Pointer to C3DObject representing the root of the hierarchy
      */
     inline C3DObject* getRootObject() { return &m_RootObject; }
+
+    /**
+     * Gets the resource container of the object manager
+     * @return Pointer to C3DResourceContainer
+     */
+    inline C3DResourceContainer* getResourceContainer() { return &m_ResourceContainer; }
+
+    /** 
+     * Releases the children of root-object
+     */ 
+    inline void release()
+    {
+        //Release children
+        m_RootObject.Release();
+    }
 
     /**
      * Picks the units with given ray and returns the picked unit (if any)
@@ -85,9 +100,9 @@ private:
      */
     UI3DObjectManager()
     {
-	    m_RootObject.Create(NULL);
-	    m_RootObject.SetActive(FALSE);
-	    m_RootObject.SetVisible(FALSE);
+        m_RootObject.Create(NULL);
+        m_RootObject.SetActive(FALSE);
+        m_RootObject.SetVisible(FALSE);
         AssetCollection::registerListener(this);        
     }
 

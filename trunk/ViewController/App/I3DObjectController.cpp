@@ -13,7 +13,7 @@
 
 I3DObjectController::I3DObjectController(void)
 {
-	m_pObject = NULL;
+    m_pObject = NULL;
 }
 
 

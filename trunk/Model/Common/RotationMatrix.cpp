@@ -52,15 +52,15 @@
 //
 // Inertial to object:
 //
-//     | m11 m21 m31 | | ix |	| ox |
+//     | m11 m21 m31 | | ix |    | ox |
 //     | m12 m22 m32 | | iy | = | oy |
-//     | m13 m23 m33 | | iz |	| oz |
+//     | m13 m23 m33 | | iz |    | oz |
 //
 // Object to inertial:
 //
-//     | m11 m12 m13 | | ox |	| ix |
+//     | m11 m12 m13 | | ox |    | ix |
 //     | m21 m22 m23 | | oy | = | iy |
-//     | m31 m32 m33 | | oz |	| iz |
+//     | m31 m32 m33 | | oz |    | iz |
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -84,7 +84,7 @@ void RotationMatrix::identity() {
  */
 void RotationMatrix::setup(const EulerAngles &orientation) {
     // Fetch sine and cosine of angles
-    float	sh,ch, sp,cp, sb,cb;
+    float    sh,ch, sp,cp, sb,cb;
     sinCos(&sh, &ch, orientation.heading);
     sinCos(&sp, &cp, orientation.pitch);
     sinCos(&sb, &cb, orientation.bank);

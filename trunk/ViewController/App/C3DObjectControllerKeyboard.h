@@ -16,15 +16,15 @@
 class C3DObjectControllerKeyboard : public I3DObjectController
 {
 public:
-	C3DObjectControllerKeyboard(void);
-	virtual ~C3DObjectControllerKeyboard(void);
+    C3DObjectControllerKeyboard(void);
+    virtual ~C3DObjectControllerKeyboard(void);
 
-	/**
-	 * Update
-	 * simple keyboard object 'fly around' controller
-	 * @param fFrametime application frame time
-	 */
-	virtual void Update(float fFrametime);
+    /**
+     * Update
+     * simple keyboard object 'fly around' controller
+     * @param fFrametime application frame time
+     */
+    virtual void Update(float fFrametime);
 };
 
-#endif	// __3DOBJECTCONTROLLERKEYBOARD_H__
+#endif    // __3DOBJECTCONTROLLERKEYBOARD_H__
