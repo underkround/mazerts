@@ -106,9 +106,12 @@ private:
     /**
      * Camera location
      */
-    float m_MainCameraX;
+    float m_MainCameraX;    //Point the camera looks at
     float m_MainCameraY;
     float m_MainCameraZ;
+    float m_MainCameraDistance; //Distance from point
+    float m_MainCameraYaw;      //Sideways movement around the point
+    float m_MainCameraPitch;    //Vertical movement around the point
 };
 
 #endif //__GAMESTATE_H__

@@ -28,7 +28,7 @@ UITerrain::UITerrain()
 
     m_FillMode = D3DFILL_SOLID;
     
-    m_TextureRepeat = 8.0f;
+    m_TextureRepeat = 24.0f;
     
     ::memset(&m_Mat, 0, sizeof(D3DMATERIAL9));
     m_Mat.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
