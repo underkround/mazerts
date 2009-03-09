@@ -374,16 +374,16 @@ void Terrain::smoothMap(int smoothPasses)
                 //Bounds checking, if the border is reached, we use a value
                 //from the opposite side of the heightmap
                 int xneg = x-1;
-                if(xneg < 0) xneg += size;
+                if(xneg < 0) xneg = 0;//+= size;
 
                 int yneg = y-1;
-                if(yneg < 0) yneg += size;
+                if(yneg < 0) yneg = 0;//+= size;
 
                 int xpos = x+1;
-                if(xpos > m_Size) xpos -= size;
+                if(xpos > m_Size) xpos = m_Size;// xpos -= size;
 
                 int ypos = y+1;
-                if(ypos > m_Size) ypos -= size;
+                if(ypos > m_Size) ypos = m_Size; //ypos -= size;
 
                 //Calculate sum from the diagonal vertices, divide by 16
                 int diagonal = (m_ppVertexHeightData[ypos][xpos] + m_ppVertexHeightData[ypos][xneg]
