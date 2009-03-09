@@ -19,12 +19,23 @@ PathFinderMaster::PathFinderMaster()
     m_pFinderNodeStart = NULL;
     m_pWaitingNodeStart = NULL;
     m_pWaitingNodeEnd = NULL;
+    m_ppCanPath = NULL;
 }
 
 
 PathFinderMaster::~PathFinderMaster()
 {
     clearLists();
+
+    unsigned short size = Terrain::getInstance()->getSize();
+
+    for(int i = 0; i < size; i++)
+    {
+            delete [] m_ppCanPath[i];
+            m_ppCanPath[i] = NULL;
+    }
+    delete [] m_ppCanPath;
+    m_ppCanPath = NULL;
 
     pthread_mutex_destroy(m_pNodeListMutex);
     delete m_pNodeListMutex;
@@ -39,6 +50,9 @@ PathFinderMaster::~PathFinderMaster()
 void PathFinderMaster::run()
 {    
     int steps = 0;
+
+    //TODO: Must be called from GameState, giving player start-position as parameters
+    buildCanPathArray(1, 1);
 
     while(m_Running)
     {
@@ -109,7 +123,12 @@ void PathFinderMaster::run()
 //Static
 PathAgent* PathFinderMaster::findPath(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size)
 {
-    
+    //CanPath-check  DEBUG, "real" canPath is still in the works
+    if(!pInstance->m_ppCanPath[y / CANPATH_BLOCKS][x / CANPATH_BLOCKS])
+    {
+        return NULL;
+    }
+
     PathFinder* pFinder = new PathFinder(x, y, goalX, goalY, size);
     if(pFinder->isInitialized())
     {        
@@ -296,4 +315,105 @@ void PathFinderMaster::clearLists()
         
         pCurrent = popWaitingFinderNode();
     }
+}
+
+void PathFinderMaster::buildCanPathArray(unsigned short x, unsigned short y)
+{
+    unsigned short size = Terrain::getInstance()->getSize();
+    unsigned short blockSize = size / CANPATH_BLOCKS;
+
+    //Clear old canPath-array, if exists
+    if(m_ppCanPath != NULL)
+    {
+        for(int i = 0; i < CANPATH_BLOCKS; i++)
+        {
+            delete [] m_ppCanPath[i];
+            m_ppCanPath[i] = NULL;
+        }
+        delete [] m_ppCanPath;
+        m_ppCanPath = NULL;
+    }
+
+    //Build canPath-array
+    //TODO: CANPATH_BLOCKS * CANPATH_BLOCKS
+    m_ppCanPath = new bool*[CANPATH_BLOCKS];
+    for(int i = 0; i < CANPATH_BLOCKS; i++)
+    {
+        m_ppCanPath[i] = new bool[CANPATH_BLOCKS];
+        memset(m_ppCanPath[i], 0, CANPATH_BLOCKS);
+    }
+
+    //Build map-array
+    bool** pp_MapArray = new bool*[size];
+    for(int i = 0; i < size; i++)
+    {
+        pp_MapArray[i] = new bool[size];
+    }
+    
+
+    //Perform floodfilling from given point  NOTE: Goal must be passable
+    PathFinder* pFinder = new PathFinder(x, y, x+1, y, 1);
+
+    pFinder->prepareForExecution();
+    pFinder->floodFill(x, y);
+
+    IPathFinder::PathNode*** ppp_NodeArray = pFinder->getNodeArray();
+
+    //Go through data, even a single floodfilled square means that
+    //block is marked pathable. Smaller blocksize means that more
+    //unnecessary searches can be culled, but the memory requirement
+    //grows exponentially  (mapsize / canpath-blocksize)^4
+    for(int i = 0; i < CANPATH_BLOCKS; i++)
+    {
+        for(int j = 0; j < CANPATH_BLOCKS; j++)
+        {
+            unsigned short startX = j * blockSize;
+            unsigned short startY = i * blockSize;
+            //Scan block for floodfilled data
+            for(int y = 0; y < blockSize; y++)
+            {
+                for(int x = 0; x < blockSize; x++)
+                {
+                    if(ppp_NodeArray[startY + y][startX + x] != NULL)
+                    {
+                        //SHOULD BE NODE_CLOSED
+                        if(ppp_NodeArray[startY + y][startX + x]->state != IPathFinder::NODE_CLOSED)
+                        {
+                            int k = 1; //BREAKPOINT
+                        }
+                        m_ppCanPath[i][j] = true;
+                    }
+                    else
+                    {
+                        int k = 1;
+                    }
+                }
+            }
+        }
+    }
+
+    //Clean up
+    if(pFinder->getPathAgent())
+    {
+        delete pFinder->getPathAgent();
+    }
+    delete pFinder;
+
+    for(int i = 0; i < size; i++)
+    {
+        delete [] pp_MapArray[i];
+    }    
+    delete [] pp_MapArray;
+
+    /*for(int i = 0; i < CANPATH_BLOCKS; i++)
+    {
+        for(int j = 0; j < CANPATH_BLOCKS; j++)
+        {
+            char msg[10];
+            sprintf(msg, "%d", m_ppCanPath[i][j]);
+            ::OutputDebugStringA(msg);
+        }
+        ::OutputDebugStringA("\r\n");
+    }*/
+    
 }

@@ -51,12 +51,17 @@ public:
     /**
      * How many steps per loop a pathfinder can take
      */
-    static const int STEPS_PER_LOOP = 10000;
+    static const int STEPS_PER_LOOP = 25000;
 
     /**
      * Maximum amount of pathfinders running simultaneously (rest will be in the waiting list)
      */         
-    static const int MAX_FINDERS_RUNNING = 10;
+    static const int MAX_FINDERS_RUNNING = 25;
+
+    /**
+     * Blocks per side for canPath-array, the resulting array will be CANPATH_BLOCKS^4 bytes
+     */
+    static const int CANPATH_BLOCKS = 64;
 
     /**
      * Returns the singleton instance
@@ -148,6 +153,15 @@ public:
         return pInstance->m_WaitingNodes;
     }
 
+    /**
+     * Performs a flood filling from given point (usually some player
+     * start location) to mark non-pathable positions in to CanPath-
+     * array
+     * @param x Start X-coordinate
+     * @param y Start Y-coordinate
+     */
+    void buildCanPathArray(unsigned short x, unsigned short y);
+
 private:
 
     /**
@@ -225,6 +239,12 @@ private:
      * Tells if the thread is running or not
      */
     bool m_Running;
+
+    /**
+     * Simple array for quick checks if there even can exist a path between two points
+     */
+    bool** m_ppCanPath;
+    
 };
 
 

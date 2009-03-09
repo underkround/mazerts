@@ -118,10 +118,17 @@ public:
     }
 
     /**
-     * Returns the nodearray, FOR TESTING PURPOSES ONLY
+     * Returns the nodearray, for floodfill and testing purposes
      * @return two-dimensional array of PathNode-pointers
      */
     PathNode*** getNodeArray() { return m_pppNodeArray; }
+
+    /**
+     * Performs a "floodfill"-search from given map position
+     * @param x X-coordinate to start from
+     * @param y Y-coordinate to start from
+     */
+    void floodFill(unsigned short x, unsigned short y);
 
 private:
 

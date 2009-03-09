@@ -1,4 +1,5 @@
 #include "PathFinder.h"
+#include <string.h> //For memset
 
 /*PathFinder::PathFinder(Unit* pUnit, unsigned short goalX, unsigned short goalY)
 {
@@ -112,17 +113,19 @@ void PathFinder::prepareForExecution()
     {
         m_pppNodeArray[i] = new PathNode*[size];
         m_ppInOpenList[i] = new bool[size];
+        memset(m_pppNodeArray[i], 0, sizeof(PathNode*) * size);
+        memset(m_ppInOpenList[i], 0, sizeof(bool) * size);
     }    
     
-    //Clear lists
-    for(int i = 0; i < size; i++)
+    //Clear lists    
+    /*for(int i = 0; i < size; i++)
     {
         for(int j = 0; j < size; j++)
         {
             m_pppNodeArray[i][j] = NULL;
             m_ppInOpenList[i][j] = false;            
         }
-    }
+    }*/
 
     //Push starting tile to open list
     addNode(m_StartX, m_StartY, 0, 0, NODE_OPEN, NULL);
@@ -143,7 +146,8 @@ IPathFinder::PathingState PathFinder::advance(short steps)
 
     short currentY = 0;
     short currentX = 0;
-    short mapSize = Terrain::getInstance()->getSize();
+    Terrain* pTerrain = Terrain::getInstance();
+    short mapSize = pTerrain->getSize();    
 
     while(steps)
     {
@@ -208,10 +212,10 @@ IPathFinder::PathingState PathFinder::advance(short steps)
                         }
 
                         //The node must not be in the closed list and it has to be passable
-                        if( Terrain::getInstance()->isPassable(adjaX, adjaY, m_Size) && (!m_pppNodeArray[adjaY][adjaX] || m_pppNodeArray[adjaY][adjaX]->state != NODE_CLOSED) )
+                        if( pTerrain->isPassable(adjaX, adjaY, m_Size) && (!m_pppNodeArray[adjaY][adjaX] || m_pppNodeArray[adjaY][adjaX]->state != NODE_CLOSED) )
                         {
                             //Calculate costs                         
-                            short cost = Terrain::getInstance()->getMoveCost(currentX, currentY, i, j);
+                            short cost = pTerrain->getMoveCost(currentX, currentY, i, j);
                             G = current->G + cost;
                             H = heuristic(adjaX, adjaY);
 
@@ -340,4 +344,66 @@ int PathFinder::heuristic(unsigned short x, unsigned short y)
     */
 
     return value;
+}
+
+void PathFinder::floodFill(unsigned short x, unsigned short y)
+{
+    short currentY = 0;
+    short currentX = 0;
+    short mapSize = Terrain::getInstance()->getSize();
+
+
+    while(m_pOpenList->GetSize())
+    {
+        //Get pathnode with lowest F-score from openlist
+        PathNode* current = NULL;
+        m_pOpenList->GetTopID(&current);
+        m_pOpenList->RemoveTop();
+
+        currentY = current->y;
+        currentX = current->x;
+
+        //Mark as removed from open, insert it into closed
+        m_ppInOpenList[currentY][currentX] = false;
+        m_pppNodeArray[currentY][currentX]->state = NODE_CLOSED;
+
+        //Push adjacent into openlist
+        unsigned short adjaX = 0;
+        unsigned short adjaY = 0;
+        
+        for(int i = -1; i < 2; i++)
+        {
+            for(int j = -1; j < 2; j++)
+            {
+#ifdef EIGHTWAYSEARCH
+                if(!(i == 0 && j == 0))
+#else
+                if((i == 0 || j == 0) && (!(i == 0 && j == 0))) //Is this correct?
+#endif
+                {
+                    adjaX = currentX+i;
+                    adjaY = currentY+j;
+
+                    //The node must not be in the closed list and it has to be passable
+                    if( Terrain::getInstance()->isPassable(adjaX, adjaY, m_Size) && (!m_pppNodeArray[adjaY][adjaX] || m_pppNodeArray[adjaY][adjaX]->state != NODE_CLOSED) )
+                    {
+                        if(Terrain::getInstance()->getMoveCost(currentX, currentY, i, j) != Terrain::MOVE_ILLEGAL)
+                        {
+                            //If the node hasn't been in the open list yet, add it there
+                            if(!m_ppInOpenList[adjaY][adjaX])                            
+                            {
+                                //Add to list and mark InOpenList
+                                addNode(adjaX, adjaY, 1, 1, NODE_OPEN, current);
+                                m_ppInOpenList[adjaY][adjaX] = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //Openlist is empty, flood fill complete
+    return;
+
 }

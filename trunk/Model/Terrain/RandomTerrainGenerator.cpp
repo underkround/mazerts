@@ -33,7 +33,7 @@ void RandomTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightDat
             ppVertexHeightData[y][x] = x + y + Terrain::DEFAULT_WATERLEVEL;
         }
     }
-    //return;
+    return;
 
     //TODO: uncomment
     //srand((unsigned int)m_Seed);

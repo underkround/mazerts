@@ -51,19 +51,9 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     m_pDevice = pDevice;
 
-     //Get the pathfinder running
-    PathFinderMaster::getInstance()->start();
-
     //Prepare manager
     UI3DObjectManager::create(pDevice);
     m_pManager = UI3DObjectManager::getInstance();
-
-
-    //TEST
-    for(int i = 0; i < 100; i++)
-    {
-        AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, 200), m_pApp->RandInt(0, 200));
-    }
 
     //Model-terrain
     Terrain* pTerrain = Terrain::getInstance();
@@ -71,6 +61,13 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     pTerrain->initialize(pGenerator);
 
     pTerrain->setWaterLevel(50);
+
+    //TEST
+    for(int i = 0; i < 500; i++)
+    {
+        AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, 200), m_pApp->RandInt(0, 200));
+    }
+
 
     //UI-Terrain
     hres = UITerrain::create(pDevice);
@@ -87,6 +84,9 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     {
         return hres;
     }
+
+     //Get the pathfinder running
+    PathFinderMaster::getInstance()->start();
 
     m_Created = true;
 
