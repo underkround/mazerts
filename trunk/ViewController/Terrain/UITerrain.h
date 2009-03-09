@@ -104,16 +104,11 @@ public:
     inline D3DFILLMODE getFillMode() { return m_FillMode; }
         
     /**
-     * Sets the detail level for terrain and recalculates indexbuffers
-     */
-    void setDetailLevel(unsigned char detailLevel);
-
-    /**
      * Sets the detail level for terrain and recalculates vertex- and indexbuffers
      * @param detailLevel Value from 0 upwards, 0 is the most detailed (2 triangles per 
      * grid square), on higher levels, 2^detailLevel squares per axis are combined to one
      */
-    void setDetailLevel2(unsigned char detailLevel);
+    void setDetailLevel(unsigned char detailLevel);
 
     /**
      * Returns the detail level, smaller is better

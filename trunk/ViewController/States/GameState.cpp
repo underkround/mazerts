@@ -139,8 +139,10 @@ void GameState::prepareForRender(LPDIRECT3DDEVICE9 pDevice, float frameTime)
 
     //Light is here for testing (and doesn't need to be set every frame, as it doesn't move anyway)
     D3DLIGHT9 light;
-    light.Type = D3DLIGHT_POINT;
-    light.Position = D3DXVECTOR3(100.0f, 100.0f, -100.0f);    
+    //light.Type = D3DLIGHT_POINT;
+    //light.Position = D3DXVECTOR3(300.0f, 100.0f, -100.0f);    
+    light.Type = D3DLIGHT_DIRECTIONAL;
+    light.Direction = D3DXVECTOR3(0.5777f, 0.5777f, 0.5777f);
     light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
     light.Specular = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
     light.Ambient = D3DXCOLOR(0.2f, 0.2f, 0.2f, 1.0f);
@@ -238,7 +240,7 @@ void GameState::updateControls(float frameTime)
         detail++;
         if(detail < 4)
         {
-            m_pUITerrain->setDetailLevel2(detail);
+            m_pUITerrain->setDetailLevel(detail);
         }
     }
 
@@ -249,7 +251,7 @@ void GameState::updateControls(float frameTime)
         //Wrapping
         if(detail < 4)
         {
-            m_pUITerrain->setDetailLevel2(detail);
+            m_pUITerrain->setDetailLevel(detail);
         }
     }
 

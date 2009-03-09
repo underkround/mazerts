@@ -238,7 +238,7 @@ void GroundMovingLogic::move(float deltaTime)
     static const float maxTurnSpeed = 1.0f * PI;
 
     //TODO: Maximum moving speed as units (grid squares) per second to unit TYPE data
-    static const float maxMoveSpeed = 6.0f;
+    static const float maxMoveSpeed = 20.0f;
 
     //Static deceleration, due to friction etc.
     m_CurrentSpeed *= (0.99f - (0.99f * deltaTime));
@@ -293,7 +293,7 @@ void GroundMovingLogic::move(float deltaTime)
         {
             //Heading (pretty much) toward correct direction, hit the pedal to the metal
             //TODO: Acceleration from data?
-            m_CurrentSpeed += 1.0f * deltaTime;
+            m_CurrentSpeed += 10.0f * deltaTime;
             
             if(m_CurrentSpeed > maxMoveSpeed)
             {
@@ -303,8 +303,8 @@ void GroundMovingLogic::move(float deltaTime)
     }
 
     //Move the unit towards current direction by current speed
-    pos->x += m_CurrentSpeed * dir->x;
-    pos->y += m_CurrentSpeed * dir->y;
+    pos->x += m_CurrentSpeed * dir->x * deltaTime;
+    pos->y += m_CurrentSpeed * dir->y * deltaTime;
 
     unsigned short terraSize = Terrain::getInstance()->getSize();
 

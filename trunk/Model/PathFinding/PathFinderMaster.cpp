@@ -29,13 +29,16 @@ PathFinderMaster::~PathFinderMaster()
 
     unsigned short size = Terrain::getInstance()->getSize();
 
-    for(int i = 0; i < size; i++)
+    if(m_ppCanPath)
     {
-            delete [] m_ppCanPath[i];
-            m_ppCanPath[i] = NULL;
+        for(int i = 0; i < size; i++)
+        {
+                delete [] m_ppCanPath[i];
+                m_ppCanPath[i] = NULL;
+        }
+        delete [] m_ppCanPath;
+        m_ppCanPath = NULL;
     }
-    delete [] m_ppCanPath;
-    m_ppCanPath = NULL;
 
     pthread_mutex_destroy(m_pNodeListMutex);
     delete m_pNodeListMutex;
@@ -50,9 +53,6 @@ PathFinderMaster::~PathFinderMaster()
 void PathFinderMaster::run()
 {    
     int steps = 0;
-
-    //TODO: Must be called from GameState, giving player start-position as parameters
-    buildCanPathArray(1, 1);
 
     while(m_Running)
     {
@@ -124,10 +124,10 @@ void PathFinderMaster::run()
 PathAgent* PathFinderMaster::findPath(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size)
 {
     //CanPath-check  DEBUG, "real" canPath is still in the works
-    if(!pInstance->m_ppCanPath[y / CANPATH_BLOCKS][x / CANPATH_BLOCKS])
+    /*if(!pInstance->m_ppCanPath[y / CANPATH_BLOCKS][x / CANPATH_BLOCKS])
     {
         return NULL;
-    }
+    }*/
 
     PathFinder* pFinder = new PathFinder(x, y, goalX, goalY, size);
     if(pFinder->isInitialized())
