@@ -123,7 +123,7 @@ void CTheApp::OnFlip(void)
 
 
     //Tell state to prepare for rendering
-    m_pCurrentState->prepareForRender(pDevice);
+    m_pCurrentState->prepareForRender(pDevice, frameTime);
     
     //Rendering operations
     timer2->BeginTimer();

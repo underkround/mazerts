@@ -122,7 +122,7 @@ bool GameState::update(float frameTime)
     return true;
 }
 
-void GameState::prepareForRender(LPDIRECT3DDEVICE9 pDevice)
+void GameState::prepareForRender(LPDIRECT3DDEVICE9 pDevice, float frameTime)
 {
     //Camera stuff
     D3DXMATRIX view;

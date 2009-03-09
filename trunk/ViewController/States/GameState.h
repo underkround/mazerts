@@ -44,7 +44,7 @@ public:
      * Sets lights and camera
      * @param pDevice Pointer to D3d-device
      */
-    virtual void prepareForRender(LPDIRECT3DDEVICE9 pDevice);
+    virtual void prepareForRender(LPDIRECT3DDEVICE9 pDevice, float frameTime);
 
     /**
      * Renders the game

@@ -46,7 +46,7 @@ public:
      * Called before BeginScene, set view-matrix, lights etc., whatever is needed
      * @param pDevice Pointer to D3d-device
      */
-    virtual void prepareForRender(LPDIRECT3DDEVICE9 pDevice) = 0;
+    virtual void prepareForRender(LPDIRECT3DDEVICE9 pDevice, float frameTime) = 0;
 
     /**
      * Renders the state, BeginScene will already be called before entering and
