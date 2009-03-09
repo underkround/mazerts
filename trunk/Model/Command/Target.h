@@ -16,8 +16,9 @@
 
 #include "../Asset/IAsset.h"
 #include "../Asset/AssetCollection.h"
+#include "../Asset/IAssetListener.h"
 
-class Target
+class Target : public IAssetListener
 {
 public:
 
@@ -33,15 +34,16 @@ public:
      * Create target as coordinate target. If contextSensitive flag is set
      * to true, search for asset in the grid and lock to it if found.
      */
-    inline Target(short x, short y, bool contextSensitive)
+    Target(short x, short y, bool contextSensitive)
     {
+        m_TargetAsset = NULL;
         setTarget(x, y, contextSensitive);
     }
 
     /**
      * Create target that is locked to given asset.
      */
-    inline Target(IAsset* target)
+    Target(IAsset* target)
     {
         setTarget(target);
     }
@@ -53,11 +55,26 @@ public:
     /**
      * Update the target by locking to given asset.
      */
-    inline void setTarget(IAsset* target)
+    void setTarget(IAsset* target)
     {
-        m_TargetX = target->getGridX();
-        m_TargetY = target->getGridY();
-        m_TargetAsset = target;
+        if(!target)
+        {
+            // store target from old in case NULL was given as new target
+            m_TargetX = m_TargetAsset->getGridX();
+            m_TargetY = m_TargetAsset->getGridY();
+            m_TargetAsset = NULL;
+            m_TargetType = COORDINATE;
+        }
+        else
+        {
+            // proper target asset given
+            m_TargetX = target->getGridX();
+            m_TargetY = target->getGridY();
+            m_TargetAsset = target;
+            m_TargetType = ASSET;
+            // register as listener to target (in case it is destroyed while tracking)
+            m_TargetAsset->registerListener(this);
+        }
     }
 
     /**
@@ -65,25 +82,29 @@ public:
      * flag is set to true, search for asset in the coordinate, and lock
      * to it if found.
      */
-    inline void setTarget(short x, short y, bool contextSensitive)
+    void setTarget(short x, short y, bool contextSensitive)
     {
         m_TargetX = x;
         m_TargetY = y;
         m_TargetAsset = NULL;
-//        if(contextSensitive)
-//            m_TargetAsset = AssetCollection::getAssetAt(x, y);
+        if(contextSensitive)
+            m_TargetAsset = AssetCollection::getAssetAt(x, y);
     }
 
     /**
      * Return the type of this target
      */
-    inline Type getType()           { return m_TargetType; }
+    Type getType() {
+        return m_TargetType;
+    }
 
     /**
      * Return the asset that this target is locked to, if any.
      * If the target is static coordinates, this returns NULL.
      */
-    inline IAsset* getTargetAsset() { return m_TargetAsset; }
+    IAsset* getTargetAsset() {
+        return m_TargetAsset;
+    }
 
     /**
      * Target is NOT static if it's set to point asset that can move (unit).
@@ -92,13 +113,15 @@ public:
      * @return  true, if this target is static, and coordinates are not
      *          subject to change
      */
-    inline bool isStatic()          { return (m_TargetAsset) ? false : true; }
+    bool isStatic()          {
+        return (m_TargetAsset) ? false : true;
+    }
 
     /**
      * Return target's y-coordinate, which is either static with
      * target, or from the target's asset
      */
-    inline short getTargetX() {
+    short getTargetX() {
         if(m_TargetType == ASSET && m_TargetAsset)
             return m_TargetAsset->getGridX();
         return m_TargetX;
@@ -108,10 +131,25 @@ public:
      * Return target's y-coordinate, which is either static with
      * target, or from the target's asset
      */
-    inline short getTargetY() {
+    short getTargetY() {
         if(m_TargetType == ASSET && m_TargetAsset)
             return m_TargetAsset->getGridY();
         return m_TargetY;
+    }
+
+// ===== Listener implementation
+
+    virtual void handleAssetStateChange(IAsset* pAsset, IAsset::State newState)
+    {
+        // not needed
+    }
+
+    virtual void handleAssetReleased(IAsset* pAsset)
+    {
+        if(pAsset == m_TargetAsset)
+        {
+            setTarget(NULL);
+        }
     }
 
 private:

@@ -10,6 +10,7 @@
 #include <iostream>
 
 #define VERBOSE 1
+#define DEBUG 1
 
 
 #include "TerrainTest.h"
@@ -22,6 +23,7 @@
 
 #include "testAssetCollection.h"
 #include "testAssetFactory.h"
+#include "testBitArray.h"
 
 using namespace std;
 
@@ -47,7 +49,9 @@ int main(int arcg, char* argv[])
 
 //    if(VERBOSE) cout << "\n *** Asset factory ***\n";               testAssetFactory();
 
-    if(VERBOSE) cout << "\n **** Double Linked List ***\n";        testDoubleLinkedList();
+    if(VERBOSE) cout << "\n **** Double Linked List ***\n";         testDoubleLinkedList();
+
+    if(VERBOSE) cout << "\n **** BitArray ***\n";                   testBitArray();    
 //    _CrtDumpMemoryLeaks();
     return 0;
 }

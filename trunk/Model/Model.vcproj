@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Tests\testBitArray.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Tests\testDoubleLinkedList.h"
 				>
 			</File>
@@ -424,6 +428,10 @@
 			<Filter
 				Name="Common"
 				>
+				<File
+					RelativePath=".\Common\BitArray.h"
+					>
+				</File>
 				<File
 					RelativePath=".\Common\CConsole.cpp"
 					>

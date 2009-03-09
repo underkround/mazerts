@@ -366,6 +366,10 @@
 				Name="Common"
 				>
 				<File
+					RelativePath="..\Model\Common\BitArray.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Model\Common\CConsole.cpp"
 					>
 				</File>

@@ -103,7 +103,8 @@ void AssetCollection::releaseAll()
     // release buildings
     ListNode<Unit*>* uNode = units.headNode();
     ListNode<Unit*>* uTemp;
-    while(uNode) {
+    while(uNode)
+    {
         uTemp = uNode;
         uNode = uTemp->next;
         // remove item
@@ -117,7 +118,8 @@ void AssetCollection::releaseAll()
     // release units
     ListNode<Building*>* bNode = buildings.headNode();
     ListNode<Building*>* bTemp;
-    while(bNode) {
+    while(bNode)
+    {
         bTemp = bNode;
         bNode = bTemp->next;
         // remove item
@@ -152,9 +154,11 @@ Unit* AssetCollection::getUnitAt(const short x, const short y)
     ListNode<Unit*>* node = units.headNode();
     while(node) {
         tmpX = node->item->getGridX();
-        if( (tmpX >= x)  &&  (tmpX + node->item->getWidth() <= x) ) {
+        if( (tmpX >= x)  &&  (tmpX + node->item->getWidth() <= x) )
+        {
             tmpY = node->item->getGridY();
-            if( (tmpY >= y)  &&  (tmpY + node->item->getHeight() <= y) ) {
+            if( (tmpY >= y)  &&  (tmpY + node->item->getHeight() <= y) )
+            {
                 return node->item;
             }
         }
@@ -171,9 +175,11 @@ Building* AssetCollection::getBuildingAt(const short x, const short y)
     ListNode<Building*>* node = buildings.headNode();
     while(node) {
         tmpX = node->item->getGridX();
-        if( (tmpX >= x)  &&  (tmpX + node->item->getWidth() <= x) ) {
+        if( (tmpX >= x)  &&  (tmpX + node->item->getWidth() <= x) )
+        {
             tmpY = node->item->getGridY();
-            if( (tmpY >= y)  &&  (tmpY + node->item->getHeight() <= y) ) {
+            if( (tmpY >= y)  &&  (tmpY + node->item->getHeight() <= y) )
+            {
                 return node->item;
             }
         }
