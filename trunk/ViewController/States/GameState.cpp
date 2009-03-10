@@ -7,12 +7,12 @@
 
 #include "../Input/MouseState.h"
 #include "../Input/KeyboardState.h"
+#include "../Common/Config.h"
 
 //Camera related
 #include "../Culling/FrustumCull.h"
 #include "../Terrain/TerrainIntersection.h"
 
-#include "../../Model/Common/Config.h"
 
 //DEBUG
 #include "../3DDebug/UI3DDebug.h"
@@ -147,7 +147,7 @@ void GameState::prepareForRender(LPDIRECT3DDEVICE9 pDevice, float frameTime)
     D3DXMatrixLookAtLH( &view,
                         &D3DXVECTOR3(x, y, z),
                         &D3DXVECTOR3(m_MainCameraX, m_MainCameraY, m_MainCameraZ),
-                        &D3DXVECTOR3(0.0f, 0.0f, -1.0f));
+                        &D3DXVECTOR3(0.0f, 0.0f, -1.0f));    
     pDevice->SetTransform(D3DTS_VIEW, &view);
 
     D3DXMATRIX proj;
@@ -194,24 +194,20 @@ void GameState::updateControls(float frameTime)
 {
     if (KeyboardState::keyDown[m_KeyCameraPanUp])
     {
-        m_MainCameraX += KEYBOARD_CAMSPEED * frameTime * cos(m_MainCameraYaw);  //* cos(m_MainCameraPitch);
-        m_MainCameraY += KEYBOARD_CAMSPEED * frameTime * sin(m_MainCameraYaw); // * cos(m_MainCameraPitch);
+        m_MainCameraX -= KEYBOARD_CAMSPEED * frameTime;
     }
     else if (KeyboardState::keyDown[m_KeyCameraPanDown])
     {
-        m_MainCameraX -= KEYBOARD_CAMSPEED * frameTime * cos(m_MainCameraYaw);  //* cos(m_MainCameraPitch);
-        m_MainCameraY -= KEYBOARD_CAMSPEED * frameTime * sin(m_MainCameraYaw); // * cos(m_MainCameraPitch);
+        m_MainCameraX += KEYBOARD_CAMSPEED * frameTime;
     }
     
     if (KeyboardState::keyDown[m_KeyCameraPanRight])
     {
-        m_MainCameraX -= KEYBOARD_CAMSPEED * frameTime * -sin(m_MainCameraYaw);  //* cos(m_MainCameraPitch);
-        m_MainCameraY -= KEYBOARD_CAMSPEED * frameTime *  cos(m_MainCameraYaw); // * cos(m_MainCameraPitch);
+        m_MainCameraY += KEYBOARD_CAMSPEED * frameTime;
     }
     else if (KeyboardState::keyDown[m_KeyCameraPanLeft])
     {
-        m_MainCameraX += KEYBOARD_CAMSPEED * frameTime * -sin(m_MainCameraYaw);  //* cos(m_MainCameraPitch);
-        m_MainCameraY += KEYBOARD_CAMSPEED * frameTime *  cos(m_MainCameraYaw); // * cos(m_MainCameraPitch);
+        m_MainCameraY -= KEYBOARD_CAMSPEED * frameTime;
     }
     
     if (KeyboardState::keyDown[m_KeyCameraZoomIn])
@@ -296,18 +292,11 @@ void GameState::updateControls(float frameTime)
         //m_MainCameraZ += MouseState::mouseZSpeed * MOUSE_CAMSPEED * view._33;
     }
 
-    //camera mouse rotation
-    if(MouseState::mouseButton[m_KeyMouseRotateButton])
-    {
-        m_MainCameraX += -sin(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseRotationX + cos(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseRotationY;
-        m_MainCameraY +=  cos(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseRotationX + sin(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseRotationY;
-    }
-
     //camera mouse panning
     if(MouseState::mouseButton[m_KeyMouseDragButton])
     {
-        m_MainCameraX += MouseState::mouseXSpeed * m_ModifyMouseDragX;
-        m_MainCameraY += MouseState::mouseYSpeed * m_ModifyMouseDragY;
+        m_MainCameraX += -sin(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseDragX + cos(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseDragX;
+        m_MainCameraY += cos(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseDragY + sin(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseDragY;
     }
 
     //Camera pitching
