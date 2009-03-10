@@ -219,3 +219,29 @@ bool Config::parseRow(string row) {
   }
   return true;
 }
+
+void Config::loadDefaults(void)
+{
+#pragma region defaultsettings
+    addSetting("camera pan up", 200);
+    addSetting("camera pan down", 208);
+    addSetting("camera pan right", 205);
+    addSetting("camera pan left", 203);
+    addSetting("camera zoom in", 30);
+    addSetting("camera zoom out", 44);
+    addSetting("camera reset", 14);
+    addSetting("generate new terrain", 57);
+    addSetting("generate passability terrain", 2);
+    addSetting("toggle wireframe", 15);
+    addSetting("terrain detail up", 49);
+    addSetting("terrain detail down", 50);
+    addSetting("mouse drag button", 1);
+    addSetting("mouse pick button", 0);
+    addSetting("mouse rotate button", 2);
+    addSetting("modify mouse panning horizontal", 10);
+    addSetting("modify mouse panning vertical", 10);
+    addSetting("modify mouse rotation horizontal", -10);
+    addSetting("modify mouse rotation vertical", 10);
+    addSetting("modify mouse zoom", 10);
+#pragma endregion
+}

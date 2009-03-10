@@ -121,6 +121,12 @@ protected:
    */
   string getValueAsString(string in_name);
 
+  /**
+   * mazerts specific configuration default values
+   * remember to add any new configuration variables here also
+   */
+  void loadDefaults(void);
+
   private:
     //** variables **
     string m_strFilename;
