@@ -24,6 +24,7 @@ CTheApp::CTheApp(void)
     m_pStates = NULL;
     Config::getInstance()->loadDefaults();
     handleConfig();
+	::CoInitialize(NULL);
 }
 
 

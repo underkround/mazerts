@@ -88,16 +88,20 @@ void SoundManager::update()
 {
     SoundManager* pInstance = getInstance();
 
-	// loop music
-	if (pInstance->m_MusicPlayer.IsAtEnd() && pInstance->m_LoopMusic)
-	{
-		pInstance->m_MusicPlayer.Stop();
-		pInstance->m_MusicPlayer.Play();
-	}
-    else if (pInstance->m_MusicPlayer.IsAtEnd())
-    {
-        // music has ended but looping is off
-        pInstance->m_MusicPlayer.Release();
+    if (pInstance->m_MusicEnabled)
+        {
+	    // loop music
+	    if (pInstance->m_MusicPlayer.IsAtEnd() && pInstance->m_LoopMusic)
+	    {
+//		    pInstance->m_MusicPlayer.Stop();
+//		    pInstance->m_MusicPlayer.Play();
+            pInstance->m_MusicPlayer.SetPosition(0);
+	    }
+        else if (pInstance->m_MusicPlayer.IsAtEnd())
+        {
+            // music has ended but looping is off
+            pInstance->m_MusicPlayer.Release();
+        }
     }
 }
 
