@@ -79,6 +79,11 @@ private:
     void updateControls(float frameTime);
 
     /**
+     * initializes controls
+     */
+    void loadConfiguration(void);
+
+    /**
      * Main application
      */
     ID3DApplication* m_pApp;
@@ -112,6 +117,30 @@ private:
     float m_MainCameraDistance; //Distance from point
     float m_MainCameraYaw;      //Sideways movement around the point
     float m_MainCameraPitch;    //Vertical movement around the point
+
+    /**
+     * Key configuration
+     */
+     int m_KeyCameraPanUp;
+     int m_KeyCameraPanDown;
+     int m_KeyCameraPanRight;
+     int m_KeyCameraPanLeft;
+     int m_KeyCameraZoomIn;
+     int m_KeyCameraZoomOut;
+     int m_KeyGenerateNewTerrain;
+     int m_KeyGeneratePassability;
+     int m_KeyToggleWireframe;
+     int m_KeyTerrainDetailUp;
+     int m_KeyTerrainDetailDown;
+     int m_KeyMouseDragButton;
+     int m_KeyMousePickButton;
+     int m_KeyMouseRotateButton;
+     int m_KeyCameraReset;
+     float m_ModifyMouseDragX;
+     float m_ModifyMouseDragY;
+     float m_ModifyMouseRotationX;
+     float m_ModifyMouseRotationY;
+     float m_ModifyMouseZoom;
 };
 
 #endif //__GAMESTATE_H__

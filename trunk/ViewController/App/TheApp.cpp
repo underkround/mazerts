@@ -142,6 +142,7 @@ void CTheApp::OnFlip(void)
         if(m_Help)
         {
             DrawTextRow(_T("Drag with right mouse button pressed to pan view"), 0xFFFFFFFF);
+            DrawTextRow(_T("Drag with third mouse button pressed to rotate view"), 0xFFFFFFFF);
             DrawTextRow(_T("Mouse scroll wheel zooms"), 0xFFFFFFFF);
             DrawTextRow(_T("Use LEFT, RIGHT, UP, DOWN, A and Z to move camera"), 0xFFFFFFFF);
             DrawTextRow(_T("Use space to generate new terrain"), 0xFFFFFFFF);

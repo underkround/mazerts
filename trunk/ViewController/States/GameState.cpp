@@ -18,10 +18,12 @@
 
 
 #define KEYBOARD_CAMSPEED 60.0f
-#define MOUSE_CAMSPEED 0.1f
+#define MOUSE_CAMSPEED 0.01f
 
 GameState::GameState()
 {
+    loadConfiguration();
+
     m_MainCameraX = 256.0f;
     m_MainCameraY = 256.0f;
     m_MainCameraZ = 0.0f;
@@ -189,34 +191,34 @@ void GameState::render(LPDIRECT3DDEVICE9 pDevice)
 
 void GameState::updateControls(float frameTime)
 {
-    if (KeyboardState::keyDown[203])
+    if (KeyboardState::keyDown[m_KeyCameraPanUp])
     {
         m_MainCameraX -= KEYBOARD_CAMSPEED * frameTime;
     }
-    else if (KeyboardState::keyDown[205])
+    else if (KeyboardState::keyDown[m_KeyCameraPanDown])
     {
         m_MainCameraX += KEYBOARD_CAMSPEED * frameTime;
     }
     
-    if (KeyboardState::keyDown[200])
+    if (KeyboardState::keyDown[m_KeyCameraPanRight])
     {
         m_MainCameraY += KEYBOARD_CAMSPEED * frameTime;
     }
-    else if (KeyboardState::keyDown[208])
+    else if (KeyboardState::keyDown[m_KeyCameraPanLeft])
     {
         m_MainCameraY -= KEYBOARD_CAMSPEED * frameTime;
     }
     
-    if (KeyboardState::keyDown[30])
+    if (KeyboardState::keyDown[m_KeyCameraZoomIn])
     {
         m_MainCameraZ += KEYBOARD_CAMSPEED * frameTime;
     }
-    else if (KeyboardState::keyDown[44])
+    else if (KeyboardState::keyDown[m_KeyCameraZoomOut])
     {
         m_MainCameraZ -= KEYBOARD_CAMSPEED * frameTime;
     }
 
-    if(KeyboardState::keyReleased[57])
+    if(KeyboardState::keyReleased[m_KeyGenerateNewTerrain])
     {
         //The Right Way(tm) to create new terrain
         PathFinderMaster* pMaster = PathFinderMaster::getInstance();
@@ -230,12 +232,12 @@ void GameState::updateControls(float frameTime)
         pMaster->start();
     }
 
-    if(KeyboardState::keyDown[2])
+    if(KeyboardState::keyDown[m_KeyGeneratePassability])
     {
         m_pUITerrain->createPassabilityTexture(m_pDevice);
     }
 
-    if(KeyboardState::keyReleased[15])
+    if(KeyboardState::keyReleased[m_KeyToggleWireframe])
     {
         D3DFILLMODE f = m_pUITerrain->getFillMode();
         if(f == D3DFILL_SOLID)
@@ -249,7 +251,7 @@ void GameState::updateControls(float frameTime)
 
     }
 
-    if(KeyboardState::keyReleased[49])
+    if(KeyboardState::keyReleased[m_KeyTerrainDetailUp])
     {
         unsigned char detail = m_pUITerrain->getDetailLevel();
         detail++;
@@ -259,7 +261,7 @@ void GameState::updateControls(float frameTime)
         }
     }
 
-    if(KeyboardState::keyReleased[50])
+    if(KeyboardState::keyReleased[m_KeyTerrainDetailDown])
     {
         unsigned char detail = m_pUITerrain->getDetailLevel();
         detail--;
@@ -271,7 +273,7 @@ void GameState::updateControls(float frameTime)
     }
 
     //Reset camera
-    if(KeyboardState::keyDown[14])
+    if(KeyboardState::keyDown[m_KeyCameraReset])
     {
         m_MainCameraDistance = 100.0f;
         m_MainCameraPitch = 0.9f;
@@ -281,7 +283,7 @@ void GameState::updateControls(float frameTime)
     //mouse zoom
     if(MouseState::mouseZSpeed)
     {
-        m_MainCameraDistance -= MouseState::mouseZSpeed * 0.01f;
+        m_MainCameraDistance -= MouseState::mouseZSpeed * m_ModifyMouseZoom;
         //D3DXMATRIX view;
         //m_pDevice->GetTransform(D3DTS_VIEW, &view);
         //m_MainCameraX -= MouseState::mouseZSpeed * MOUSE_CAMSPEED * view._21;
@@ -289,15 +291,22 @@ void GameState::updateControls(float frameTime)
         //m_MainCameraZ += MouseState::mouseZSpeed * MOUSE_CAMSPEED * view._33;
     }
 
-    //mouse dragging
-    if(MouseState::mouseButton[1])
+    //camera mouse rotation
+    if(MouseState::mouseButton[m_KeyMouseRotateButton])
     {
-        m_MainCameraX += -sin(m_MainCameraYaw) * MouseState::mouseXSpeed * MOUSE_CAMSPEED + cos(m_MainCameraYaw) * MouseState::mouseYSpeed * MOUSE_CAMSPEED;
-        m_MainCameraY += cos(m_MainCameraYaw) * MouseState::mouseXSpeed * MOUSE_CAMSPEED + sin(m_MainCameraYaw) * MouseState::mouseYSpeed * MOUSE_CAMSPEED;
+        m_MainCameraX += -sin(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseRotationX + cos(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseRotationY;
+        m_MainCameraY += cos(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseRotationX + sin(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseRotationY;
     }
 
-    //Camera rotation
-    if(MouseState::mouseButton[2])
+    //camera mouse panning
+    if(MouseState::mouseButton[m_KeyMouseDragButton])
+    {
+        m_MainCameraX += MouseState::mouseXSpeed * m_ModifyMouseDragX;
+        m_MainCameraY += MouseState::mouseYSpeed * m_ModifyMouseDragY;
+    }
+
+    //Camera pitching
+    if(MouseState::mouseButton[m_KeyMouseRotateButton])
     {
         m_MainCameraYaw += MouseState::mouseXSpeed * 0.05f;        
         m_MainCameraPitch += MouseState::mouseYSpeed * 0.01f;
@@ -314,7 +323,7 @@ void GameState::updateControls(float frameTime)
     }
 
     //Terrain picking test
-    if(MouseState::mouseButton[0])
+    if(MouseState::mouseButton[m_KeyMousePickButton])
     {
         D3DXMATRIX matProj;
         m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
@@ -346,9 +355,38 @@ void GameState::updateControls(float frameTime)
             }
         }
     }
-    else if(MouseState::mouseButtonReleased[0])
+    else if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
     {       
         m_Selector.buttonUp();
     }
 
+}
+
+void GameState::loadConfiguration()
+{
+    Config & c = * Config::getInstance();
+    c.setFilename("controls.ini");
+    c.readFile();
+
+    m_KeyCameraPanUp = c.getValueAsInt("camera pan up");
+    m_KeyCameraPanDown = c.getValueAsInt("camera pan down");
+    m_KeyCameraPanRight = c.getValueAsInt("camera pan right");
+    m_KeyCameraPanLeft = c.getValueAsInt("camera pan left");
+    m_KeyCameraZoomIn = c.getValueAsInt("camera zoom in");
+    m_KeyCameraZoomOut = c.getValueAsInt("camera zoom out");
+    m_KeyGenerateNewTerrain = c.getValueAsInt("generate new terrain");
+    m_KeyGeneratePassability = c.getValueAsInt("generate passability terrain");
+    m_KeyToggleWireframe = c.getValueAsInt("toggle wireframe");
+    m_KeyTerrainDetailUp = c.getValueAsInt("terrain detail up");
+    m_KeyTerrainDetailDown = c.getValueAsInt("terrain detail down");
+    m_KeyMouseDragButton = c.getValueAsInt("mouse drag button");
+    m_KeyMousePickButton = c.getValueAsInt("mouse pick button");
+    m_KeyMouseRotateButton = c.getValueAsInt("mouse rotate button");
+    m_KeyCameraReset = c.getValueAsInt("camera reset");
+    //please note the global MOUSE_CAMSPEED modifier!
+    m_ModifyMouseDragX = c.getValueAsInt("modify mouse panning horizontal") * MOUSE_CAMSPEED;
+    m_ModifyMouseDragY = c.getValueAsInt("modify mouse panning vertical") * MOUSE_CAMSPEED;
+    m_ModifyMouseRotationX = c.getValueAsInt("modify mouse rotation horizontal") * MOUSE_CAMSPEED;
+    m_ModifyMouseRotationY = c.getValueAsInt("modify mouse rotation vertical") * MOUSE_CAMSPEED;
+    m_ModifyMouseZoom = c.getValueAsInt("modify mouse zoom") * MOUSE_CAMSPEED;
 }
