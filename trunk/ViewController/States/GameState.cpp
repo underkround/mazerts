@@ -10,7 +10,7 @@
 #include "../Common/Config.h"
 
 //Camera related
-#include "../Culling/FrustumCull.h"
+#include "../Camera/SphereCamera.h"
 #include "../Terrain/TerrainIntersection.h"
 
 
@@ -24,13 +24,6 @@
 GameState::GameState()
 {
     loadConfiguration();
-
-    m_MainCameraX = 256.0f;
-    m_MainCameraY = 256.0f;
-    m_MainCameraZ = 0.0f;
-    m_MainCameraDistance = 100.0f;
-    m_MainCameraPitch = 0.9f;
-    m_MainCameraYaw = 0.5f * D3DX_PI;
 
     m_pManager = NULL;
     m_pUITerrain = NULL;
@@ -94,14 +87,10 @@ HRESULT GameState::create(ID3DApplication* pApplication)
      //Get the pathfinder running
     PathFinderMaster::getInstance()->start();
 
-    //Set camera
-    /*D3DXMATRIX view;
-    D3DXMatrixLookAtLH( &view,
-                        &D3DXVECTOR3(m_MainCameraX, m_MainCameraY, m_MainCameraZ),
-                        &D3DXVECTOR3(m_MainCameraX, m_MainCameraY + 100.0f, -100),
-                        &D3DXVECTOR3(0.0f, 0.0f, -1.0f));
-    pDevice->SetTransform(D3DTS_VIEW, &view);*/
-
+    //Camera
+    Camera::create(pDevice);
+    m_pCamera = new SphereCamera();
+    m_pCamera->setPosition(127.0f, 127.0f, -200.0f);
 
     m_Created = true;
 
@@ -139,21 +128,8 @@ bool GameState::update(float frameTime)
 
 void GameState::prepareForRender(LPDIRECT3DDEVICE9 pDevice, float frameTime)
 {
-    //Camera stuff
-    D3DXMATRIX view;
-    float x = m_MainCameraX - m_MainCameraDistance * cos(m_MainCameraYaw) * cos(m_MainCameraPitch);
-    float y = m_MainCameraY + m_MainCameraDistance * -sin(m_MainCameraYaw) * cos(m_MainCameraPitch);
-    float z = m_MainCameraZ - m_MainCameraDistance * sin(m_MainCameraPitch);
-    D3DXMatrixLookAtLH( &view,
-                        &D3DXVECTOR3(x, y, z),
-                        &D3DXVECTOR3(m_MainCameraX, m_MainCameraY, m_MainCameraZ),
-                        &D3DXVECTOR3(0.0f, 0.0f, -1.0f));    
-    pDevice->SetTransform(D3DTS_VIEW, &view);
-
-    D3DXMATRIX proj;
-    pDevice->GetTransform(D3DTS_PROJECTION, &proj);
-    FrustumCull::rebuildFrustum(&view, &proj);
-
+    //Updates view-matrix and frustum, if necessary
+    m_pCamera->update();
 
     //Light is here for testing (and doesn't need to be set every frame, as it doesn't move anyway)
     D3DLIGHT9 light;
@@ -194,33 +170,29 @@ void GameState::updateControls(float frameTime)
 {
     if (KeyboardState::keyDown[m_KeyCameraPanUp])
     {
-        m_MainCameraX += KEYBOARD_CAMSPEED * frameTime * cos(m_MainCameraYaw);
-        m_MainCameraY += KEYBOARD_CAMSPEED * frameTime * sin(m_MainCameraYaw);
+        m_pCamera->move(KEYBOARD_CAMSPEED * frameTime, 0, 0);
     }
     else if (KeyboardState::keyDown[m_KeyCameraPanDown])
     {
-        m_MainCameraX -= KEYBOARD_CAMSPEED * frameTime * cos(m_MainCameraYaw);
-        m_MainCameraY -= KEYBOARD_CAMSPEED * frameTime * sin(m_MainCameraYaw);
+        m_pCamera->move(-KEYBOARD_CAMSPEED * frameTime, 0, 0);
     }
     
     if (KeyboardState::keyDown[m_KeyCameraPanRight])
     {
-        m_MainCameraX -= KEYBOARD_CAMSPEED * frameTime * -sin(m_MainCameraYaw);
-        m_MainCameraY -= KEYBOARD_CAMSPEED * frameTime *  cos(m_MainCameraYaw);
+        m_pCamera->move(0, KEYBOARD_CAMSPEED * frameTime, 0);
     }
     else if (KeyboardState::keyDown[m_KeyCameraPanLeft])
     {
-        m_MainCameraX += KEYBOARD_CAMSPEED * frameTime * -sin(m_MainCameraYaw);
-        m_MainCameraY += KEYBOARD_CAMSPEED * frameTime *  cos(m_MainCameraYaw);
+        m_pCamera->move(0, -KEYBOARD_CAMSPEED * frameTime, 0);
     }
     
     if (KeyboardState::keyDown[m_KeyCameraZoomIn])
     {
-        m_MainCameraZ += KEYBOARD_CAMSPEED * frameTime;
+        m_pCamera->move(0, 0, KEYBOARD_CAMSPEED * frameTime);
     }
     else if (KeyboardState::keyDown[m_KeyCameraZoomOut])
     {
-        m_MainCameraZ -= KEYBOARD_CAMSPEED * frameTime;
+        m_pCamera->move(0, 0, -KEYBOARD_CAMSPEED * frameTime);
     }
 
     if(KeyboardState::keyReleased[m_KeyGenerateNewTerrain])
@@ -280,15 +252,20 @@ void GameState::updateControls(float frameTime)
     //Reset camera
     if(KeyboardState::keyDown[m_KeyCameraReset])
     {
-        m_MainCameraDistance = 100.0f;
-        m_MainCameraPitch = 0.9f;
-        m_MainCameraYaw = 0.5f * D3DX_PI;
+        m_pCamera->setZoom(100.0f);
+        m_pCamera->setRotation(0, 0.9f);
     }
 
     //mouse zoom
     if(MouseState::mouseZSpeed)
     {
-        m_MainCameraDistance -= MouseState::mouseZSpeed * m_ModifyMouseZoom;
+        m_pCamera->zoom(-MouseState::mouseZSpeed * m_ModifyMouseZoom);
+        /*m_MainCameraDistance -= MouseState::mouseZSpeed * m_ModifyMouseZoom;
+
+        if(m_MainCameraDistance < 10.0f)
+        {
+            m_MainCameraDistance = 10.0f;
+        }*/
         //D3DXMATRIX view;
         //m_pDevice->GetTransform(D3DTS_VIEW, &view);
         //m_MainCameraX -= MouseState::mouseZSpeed * MOUSE_CAMSPEED * view._21;
@@ -299,14 +276,16 @@ void GameState::updateControls(float frameTime)
     //camera mouse panning
     if(MouseState::mouseButton[m_KeyMouseDragButton])
     {
-        m_MainCameraX += -sin(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseDragX + cos(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseDragX;
-        m_MainCameraY += cos(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseDragY + sin(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseDragY;
+        m_pCamera->move(MouseState::mouseYSpeed * m_ModifyMouseDragY, -MouseState::mouseXSpeed * m_ModifyMouseDragX, 0);
+        //m_MainCameraX += -sin(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseDragX + cos(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseDragX;
+        //m_MainCameraY += cos(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseDragY + sin(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseDragY;
     }
 
     //Camera pitching
     if(MouseState::mouseButton[m_KeyMouseRotateButton])
     {
-        m_MainCameraYaw += MouseState::mouseXSpeed * 0.05f;        
+        m_pCamera->rotate(MouseState::mouseXSpeed * 0.05f, MouseState::mouseYSpeed * 0.01f);
+        /*m_MainCameraYaw += MouseState::mouseXSpeed * 0.05f;        
         m_MainCameraPitch += MouseState::mouseYSpeed * 0.01f;
         
         if(m_MainCameraPitch < 0.4f)
@@ -316,7 +295,7 @@ void GameState::updateControls(float frameTime)
         else if(m_MainCameraPitch > (0.47f * D3DX_PI))
         {
             m_MainCameraPitch = 0.47f * D3DX_PI;
-        }
+        }*/
 
     }
 

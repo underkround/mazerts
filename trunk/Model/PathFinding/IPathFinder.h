@@ -31,7 +31,7 @@ public:
         NOT_FOUND,
         CANCELLED,
         FOUND,
-        __END = 0xFF
+        __PATHINGEND = 0xFF
     };
 
     /**
@@ -39,8 +39,9 @@ public:
      */
     enum NodeState
     {             
-        NODE_OPEN,
-        NODE_CLOSED
+        NODE_OPEN = 0,
+        NODE_CLOSED,
+        __NODEEND = 0xFF
     };
 
     /**

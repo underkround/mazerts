@@ -14,6 +14,7 @@
 #include "../Unit/UI3DObjectManager.h"
 #include "../Unit/Selector.h"
 #include "../Terrain/UITerrain.h"
+#include "../Camera/Camera.h"
 
 class GameState : public IState
 {
@@ -66,6 +67,7 @@ public:
      */
     virtual HRESULT onRestore()
     {
+        m_pCamera->forceUpdate();
         return m_pUITerrain->onRestore(m_pDevice);
     }
 
@@ -109,14 +111,9 @@ private:
     Selector m_Selector;
 
     /**
-     * Camera location
+     * Camera-pointer
      */
-    float m_MainCameraX;    //Point the camera looks at
-    float m_MainCameraY;
-    float m_MainCameraZ;
-    float m_MainCameraDistance; //Distance from point
-    float m_MainCameraYaw;      //Sideways movement around the point
-    float m_MainCameraPitch;    //Vertical movement around the point
+    Camera* m_pCamera;
 
     /**
      * Key configuration

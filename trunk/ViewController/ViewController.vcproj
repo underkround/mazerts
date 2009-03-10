@@ -823,14 +823,30 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Culling"
+				Name="Camera"
 				>
 				<File
-					RelativePath=".\Culling\FrustumCull.cpp"
+					RelativePath=".\Camera\Camera.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Culling\FrustumCull.h"
+					RelativePath=".\Camera\Camera.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Camera\FrustumCull.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Camera\FrustumCull.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Camera\SphereCamera.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Camera\SphereCamera.h"
 					>
 				</File>
 			</Filter>
