@@ -80,6 +80,8 @@ bool Config::isNumeric(string str) {
   for(unsigned int i = 0;i < str.length();i++) {
     merkki = str.at(i);
     switch(merkki) {
+      case '-':
+          if(i != 0) out = false;
       case '1':
       case '2':
       case '3':
