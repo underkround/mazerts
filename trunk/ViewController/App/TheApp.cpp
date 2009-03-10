@@ -7,6 +7,7 @@
 
 #include "TheApp.h"
 #include "../Input/Input.h"
+#include "../Common/Config.h"
 
 //DEBUG-stuff
 #include "../3DDebug/UI3DDebug.h"
@@ -20,6 +21,7 @@ CTheApp::CTheApp(void)
     m_TextRow = 0;
     m_pCurrentState = NULL;
     m_pStates = NULL;
+    Config::getInstance()->loadDefaults();
 }
 
 

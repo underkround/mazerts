@@ -45,8 +45,8 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
                         40);
     }
 
-    flattenArea(ppVertexHeightData, terrainSize, 250, 50, 100, 15, 20);
-    flattenArea(ppVertexHeightData, terrainSize, 150, 50, 100, 10, 0);
+    flattenArea(ppVertexHeightData, terrainSize, 0, 50, 100, 15, 20);
+    flattenArea(ppVertexHeightData, terrainSize, 255, 50, 100, 10, 0);
 
     Terrain::getInstance()->smoothMap(1);
 }
@@ -57,7 +57,7 @@ void AntinTerrainGenerator::makeFlat(unsigned char **ppVertexHeightData, const u
     {
         for(int x = 0; x < m_Size; x++)
         {
-            ppVertexHeightData[y][x] = height;
+            ppVertexHeightData[y][x] = (unsigned char)height;
         }
     }
 }
@@ -112,7 +112,7 @@ void AntinTerrainGenerator::makeHills(  unsigned char **ppVertexHeightData,
                 int z = (x0-x)*(x0-x)+(y0-y)*(y0-y);
                 if(z < cir2)
                 {
-                    int heightMod = (cirHeight/2)*(1+cos(PII*z/cir2));
+                    int heightMod = (int)((cirHeight/2)*(1+cos(PII*z/cir2)));
                     ppVertexHeightData[y][x] = ((ppVertexHeightData[y][x]+heightMod) < 256) ? ppVertexHeightData[y][x] += heightMod : ppVertexHeightData[y][x] = 255;
                 }
             }
@@ -167,7 +167,7 @@ void AntinTerrainGenerator::flattenArea(    unsigned char **ppVertexHeightData,
     if(yCenter < 0) yCenter = rand() % terrainSize;
     int innerCir2 = innerRadius*innerRadius;
     int outerCir2 = outerRadius*outerRadius;
-    float donutWidth = outerRadius-innerRadius;
+    float donutWidth = (float)(outerRadius-innerRadius);
     for(int x = 0; x < terrainSize-1; ++x)
     {
         for(int y = 0; y < terrainSize-1; ++y)
@@ -177,10 +177,10 @@ void AntinTerrainGenerator::flattenArea(    unsigned char **ppVertexHeightData,
             {
                 ppVertexHeightData[y][x] = height;
             } else if(z < outerCir2 && innerRadius < outerRadius) {
-                float step = sqrt((double)z) - sqrt((double)innerCir2);
+                float step = (float)(sqrt((double)z) - sqrt((double)innerCir2));
                 //float stepSize = (float)abs(height - ppVertexHeightData[y][x]) / (float)donutWidth;
                 float ratio = (1/donutWidth)*step;
-                ppVertexHeightData[y][x] = ppVertexHeightData[y][x]*ratio + height*(1-ratio);
+                ppVertexHeightData[y][x] = (unsigned char)(ppVertexHeightData[y][x]*ratio + height*(1-ratio));
             }
         }
     }
