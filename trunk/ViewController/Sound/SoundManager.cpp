@@ -93,9 +93,9 @@ void SoundManager::update()
 	    // loop music
 	    if (pInstance->m_MusicPlayer.IsAtEnd() && pInstance->m_LoopMusic)
 	    {
-//		    pInstance->m_MusicPlayer.Stop();
-//		    pInstance->m_MusicPlayer.Play();
+		    pInstance->m_MusicPlayer.Stop();
             pInstance->m_MusicPlayer.SetPosition(0);
+		    pInstance->m_MusicPlayer.Play();
 	    }
         else if (pInstance->m_MusicPlayer.IsAtEnd())
         {
