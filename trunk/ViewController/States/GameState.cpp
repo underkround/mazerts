@@ -194,13 +194,26 @@ void GameState::updateControls(float frameTime)
 {
     if (KeyboardState::keyDown[m_KeyCameraPanUp])
     {
-        m_MainCameraX -= KEYBOARD_CAMSPEED * frameTime;
+        m_MainCameraX += KEYBOARD_CAMSPEED * frameTime * cos(m_MainCameraYaw);  //* cos(m_MainCameraPitch);
+        m_MainCameraY += KEYBOARD_CAMSPEED * frameTime * sin(m_MainCameraYaw); // * cos(m_MainCameraPitch);
     }
     else if (KeyboardState::keyDown[m_KeyCameraPanDown])
     {
-        m_MainCameraX += KEYBOARD_CAMSPEED * frameTime;
+        m_MainCameraX -= KEYBOARD_CAMSPEED * frameTime * cos(m_MainCameraYaw);  //* cos(m_MainCameraPitch);
+        m_MainCameraY -= KEYBOARD_CAMSPEED * frameTime * sin(m_MainCameraYaw); // * cos(m_MainCameraPitch);
     }
     
+    if (KeyboardState::keyDown[m_KeyCameraPanRight])
+    {
+        m_MainCameraX -= KEYBOARD_CAMSPEED * frameTime * -sin(m_MainCameraYaw);  //* cos(m_MainCameraPitch);
+        m_MainCameraY -= KEYBOARD_CAMSPEED * frameTime *  cos(m_MainCameraYaw); // * cos(m_MainCameraPitch);
+    }
+    else if (KeyboardState::keyDown[m_KeyCameraPanLeft])
+    {
+        m_MainCameraX += KEYBOARD_CAMSPEED * frameTime * -sin(m_MainCameraYaw);  //* cos(m_MainCameraPitch);
+        m_MainCameraY += KEYBOARD_CAMSPEED * frameTime *  cos(m_MainCameraYaw); // * cos(m_MainCameraPitch);
+    }
+        
     if (KeyboardState::keyDown[m_KeyCameraPanRight])
     {
         m_MainCameraY += KEYBOARD_CAMSPEED * frameTime;
