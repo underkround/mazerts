@@ -3,7 +3,7 @@
 #include "UITerrain.h"
 #include "../../Model/Terrain/Terrain.h"
 #include "../App/vertices.h"
-#include "../Culling/FrustumCull.h"
+#include "../Camera/FrustumCull.h"
 
 const float UITerrain::HEIGHTFACTOR = 0.15f;
 UITerrain* UITerrain::pInstance = NULL;

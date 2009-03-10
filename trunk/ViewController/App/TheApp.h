@@ -111,6 +111,12 @@ private:
      */
     void CheckTexturingCaps(void);
 
+    /**
+     * handleConfig
+     * loads config.ini hand handles settings if needed
+     */
+    void handleConfig(void);
+
     IState* m_pCurrentState;
 
     DoubleLinkedList<IState*>* m_pStates;

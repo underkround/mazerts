@@ -7,12 +7,13 @@
 
 #include "TheApp.h"
 #include "../Input/Input.h"
-#include "../Common/Config.h"
+#include "../../Model/Common/Config.h"
 
 //DEBUG-stuff
 #include "../3DDebug/UI3DDebug.h"
 #include "../../Model/PathFinding/PathFinderMaster.h"
 #include "../States/GameState.h"
+#include "../Sound/SoundManager.h"
 
 CTheApp::CTheApp(void)
 {
@@ -22,6 +23,7 @@ CTheApp::CTheApp(void)
     m_pCurrentState = NULL;
     m_pStates = NULL;
     Config::getInstance()->loadDefaults();
+    handleConfig();
 }
 
 
@@ -39,6 +41,14 @@ HRESULT CTheApp::OnCreate(void)
     if(FAILED(hres))
     {
         ::MessageBox( GetWindow(), _T("failed to init input engine."), _T("error"), MB_OK);
+    }
+
+    //Initialize sound system
+    hres = SoundManager::create(this);
+    if(FAILED(hres))
+    {
+        ::MessageBox( GetWindow(), _T("failed to init sound engine."), _T("error"), MB_OK);
+        return hres;
     }
 
     //Set device to debug-helper
@@ -79,6 +89,7 @@ void CTheApp::OnRelease(void)
     m_pStates->release();
 
     Input::release();
+    SoundManager::release();
 }
 
 
@@ -110,7 +121,10 @@ void CTheApp::OnFlip(void)
 
 
     //Input updates    
-    Input::update();    
+    Input::update();
+
+    //Sound updates
+    SoundManager::update();
 
     
     timer1->BeginTimer();
@@ -151,6 +165,7 @@ void CTheApp::OnFlip(void)
             DrawTextRow(_T("1 adds the texture with passability data"), 0xFFFFFFFF);
             DrawTextRow(_T("TAB switches fillmode (solid/wireframe)"), 0xFFFFFFFF);            
             DrawTextRow(_T("M & N change terrain detail level"), 0xFFFFFFFF);
+            DrawTextRow(_T("F5 toggles sound, f6 toggles music, numpad +/- changes master volume"), 0xFFFFFFFF);                        
             DrawTextRow(_T("F1 hides/shows this help message"), 0xFFFFFFFF);                        
         }
 
@@ -228,6 +243,7 @@ void CTheApp::OnKeyDown(DWORD dwKey)
     if(dwKey == VK_F1)
     {
         m_Help = !m_Help;
+        SoundManager::playSound(SoundManager::EXPLOSION, 0.0f);
     }
 }
 
@@ -285,3 +301,19 @@ void CTheApp::CheckTexturingCaps(void)
     ::OutputDebugString(msg);
 
 } 
+
+void CTheApp::handleConfig()
+{
+    Config& c = *Config::getInstance();
+    c.setFilename("config.ini");
+    c.readFile();
+
+    bool sounds = c.getValueAsBool("sound enabled");
+    bool music = c.getValueAsBool("music enabled");
+    int svol = c.getValueAsInt("master volume");
+    int mvol = c.getValueAsInt("music volume");
+    SoundManager::setSoundsEnabled(sounds);
+    SoundManager::setMusicEnabled(music);
+    SoundManager::setMasterVolume(svol);
+    SoundManager::setMusicVolume(mvol);
+}

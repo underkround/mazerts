@@ -6,7 +6,7 @@
  */
 
 #include "C3DObject.h"
-#include "../Culling/FrustumCull.h"
+#include "../Camera/FrustumCull.h"
 
 C3DObject::C3DObject(void)
 {

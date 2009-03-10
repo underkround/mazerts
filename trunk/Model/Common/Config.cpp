@@ -243,5 +243,13 @@ void Config::loadDefaults(void)
     addSetting("modify mouse rotation horizontal", -10);
     addSetting("modify mouse rotation vertical", 10);
     addSetting("modify mouse zoom", 10);
+    addSetting("toggle sound", 63);
+    addSetting("toggle music", 64);
+    addSetting("master volume up", 78);
+    addSetting("master volume down", 74);
+    addSetting("sound enabled", 1);
+    addSetting("music enabled", 1);
+    addSetting("master volume", 0);
+    addSetting("music volume", 0);
 #pragma endregion
 }

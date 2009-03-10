@@ -138,6 +138,11 @@ private:
      float m_ModifyMouseRotationX;
      float m_ModifyMouseRotationY;
      float m_ModifyMouseZoom;
+
+     int m_KeySoundToggle;
+     int m_KeyMusicToggle;
+     int m_KeyVolumeUp;
+     int m_KeyVolumeDown;
 };
 
 #endif //__GAMESTATE_H__

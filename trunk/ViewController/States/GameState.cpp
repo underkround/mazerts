@@ -7,11 +7,13 @@
 
 #include "../Input/MouseState.h"
 #include "../Input/KeyboardState.h"
-#include "../Common/Config.h"
+#include "../../Model/Common/Config.h"
 
 //Camera related
 #include "../Camera/SphereCamera.h"
 #include "../Terrain/TerrainIntersection.h"
+
+#include "../Sound/SoundManager.h"
 
 
 //DEBUG
@@ -93,6 +95,9 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     m_pCamera->setPosition(127.0f, 127.0f, -200.0f);
 
     m_Created = true;
+
+    // Play music
+    SoundManager::playMusic(SoundManager::BACKGROUND, true);
 
     return S_OK;
 }
@@ -256,6 +261,16 @@ void GameState::updateControls(float frameTime)
         m_pCamera->setRotation(0, 0.9f);
     }
 
+    // sound things
+    if (KeyboardState::keyReleased[m_KeySoundToggle])
+        SoundManager::setSoundsEnabled(!SoundManager::getSoundsEnabled());
+    if (KeyboardState::keyReleased[m_KeyMusicToggle])
+        SoundManager::setMusicEnabled(!SoundManager::getMusicEnabled());
+    if (KeyboardState::keyDown[m_KeyVolumeUp])
+        SoundManager::setMasterVolume(SoundManager::getMasterVolume() + 50);
+    if (KeyboardState::keyDown[m_KeyVolumeDown])
+        SoundManager::setMasterVolume(SoundManager::getMasterVolume() - 50);
+
     //mouse zoom
     if(MouseState::mouseZSpeed)
     {
@@ -321,6 +336,7 @@ void GameState::updateControls(float frameTime)
             //Debug-object, added automatically to root
             m_pManager->getRootObject()->RemoveChild(pObj);
             pUnit->AddChild(pObj);
+            SoundManager::playSound(SoundManager::READY, 0.1f);
         }
         else
         {
@@ -366,4 +382,11 @@ void GameState::loadConfiguration()
     m_ModifyMouseRotationX = c.getValueAsInt("modify mouse rotation horizontal") * MOUSE_CAMSPEED;
     m_ModifyMouseRotationY = c.getValueAsInt("modify mouse rotation vertical") * MOUSE_CAMSPEED;
     m_ModifyMouseZoom = c.getValueAsInt("modify mouse zoom") * MOUSE_CAMSPEED;
+
+    // sound keys
+    m_KeySoundToggle = c.getValueAsInt("toggle sound");
+    m_KeyMusicToggle = c.getValueAsInt("toggle music");
+    m_KeyVolumeUp = c.getValueAsInt("master volume up");
+    m_KeyVolumeDown = c.getValueAsInt("master volume down");
+    
 }

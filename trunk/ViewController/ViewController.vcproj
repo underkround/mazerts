@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="DIRECT3D_VERSION=0x900;DIRECTINPUT_VERSION=0x900"
+				PreprocessorDefinitions="DIRECT3D_VERSION=0x900;DIRECTINPUT_VERSION=0x900;DIRECTSOUND_VERSION=0x900"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dxguid.lib d3d9.lib d3dx9.lib dinput8.lib"
+				AdditionalDependencies="dxguid.lib d3d9.lib d3dx9.lib dinput8.lib dsound.lib winmm.lib strmiids.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -115,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="DIRECT3D_VERSION=0x900;DIRECTINPUT_VERSION=0x900"
+				PreprocessorDefinitions="DIRECT3D_VERSION=0x900;DIRECTINPUT_VERSION=0x900;DIRECTSOUND_VERSION=0x900"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="dxguid.lib d3d9.lib d3dx9.lib dinput8.lib"
+				AdditionalDependencies="dxguid.lib d3d9.lib d3dx9.lib dinput8.lib dsound.lib winmm.lib strmiids.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -602,10 +602,6 @@
 		<Filter
 			Name="UI"
 			>
-			<File
-				RelativePath=".\main.cpp"
-				>
-			</File>
 			<Filter
 				Name="App"
 				>
@@ -717,6 +713,10 @@
 			<Filter
 				Name="Unit"
 				>
+				<File
+					RelativePath=".\main.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\Unit\Selector.cpp"
 					>
@@ -863,6 +863,50 @@
 				</File>
 				<File
 					RelativePath=".\States\IState.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Sound"
+				>
+				<File
+					RelativePath=".\Sound\SoundEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Sound\SoundEngine.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sound\SoundManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Sound\SoundManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sound\SoundMP3Player.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Sound\SoundMP3Player.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sound\SoundWave.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Sound\SoundWave.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sound\WaveLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Sound\WaveLoader.h"
 					>
 				</File>
 			</Filter>
