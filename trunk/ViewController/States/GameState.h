@@ -39,19 +39,19 @@ public:
      * @param fFrameTime Time passed since last update in seconds
      * @return True, if the game keeps running, false if it is terminated
      */
-    virtual bool update(float frameTime);
+    virtual bool update(const float frameTime);
 
     /**
      * Sets lights and camera
      * @param pDevice Pointer to D3d-device
      */
-    virtual void prepareForRender(LPDIRECT3DDEVICE9 pDevice, float frameTime);
+    virtual void prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float frameTime);
 
     /**
      * Renders the game
      * @param pDevice Pointer to D3d-device
      */
-    virtual void render(LPDIRECT3DDEVICE9 pDevice);
+    virtual void render(const LPDIRECT3DDEVICE9 pDevice);
 
     /**
      * Releases D3DPOOL_DEFAULT-stuff on device lost
@@ -78,7 +78,7 @@ private:
      * Updates keyboard and mouse controls
      * @param fFrameTime Time passed since last update in seconds
      */
-    void updateControls(float frameTime);
+    void updateControls(const float frameTime);
 
     /**
      * initializes controls

@@ -40,20 +40,20 @@ public:
      * @return True, if the state is kept running, false if the state should be switched
      *         to next in list (like transitioning from intro to menu)
      */
-    virtual bool update(float frameTime) = 0;
+    virtual bool update(const float frameTime) = 0;
 
     /**
      * Called before BeginScene, set view-matrix, lights etc., whatever is needed
      * @param pDevice Pointer to D3d-device
      */
-    virtual void prepareForRender(LPDIRECT3DDEVICE9 pDevice, float frameTime) = 0;
+    virtual void prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float frameTime) = 0;
 
     /**
      * Renders the state, BeginScene will already be called before entering and
      * EndScene will be called after this method exits
      * @param pDevice Pointer to D3D-device
      */
-    virtual void render(LPDIRECT3DDEVICE9 pDevice) = 0;
+    virtual void render(const LPDIRECT3DDEVICE9 pDevice) = 0;
 
     /**
      * Tells if the state has been initialized or not

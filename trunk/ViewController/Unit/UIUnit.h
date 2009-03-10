@@ -34,6 +34,13 @@ public:
     }
 
     /**
+     * Destructor
+     */
+    virtual ~UIUnit()
+    {
+    }
+
+    /**
      * Update the unit
      * @param fFrametime Time elapsed in frame as seconds
      * @return False, if no action should take place, true
@@ -42,12 +49,10 @@ public:
     virtual bool Update(float fFrametime);
 
     /**
-     * Destructor
+     * Render the unit
+     * @param pDevice pointer to Direct3D-device to use
      */
-    virtual ~UIUnit()
-    {
-    }
-
+    virtual void Render(LPDIRECT3DDEVICE9 pDevice);
 
     /**
      * This gets called when the target assets's state changes.

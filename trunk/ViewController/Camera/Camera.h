@@ -1,5 +1,5 @@
 /**
- * Basic Camera-object, controls the view-matrix
+ * Basic Camera-object
  *
  * $Revision$
  * $Date$
@@ -8,6 +8,8 @@
 
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
+
+//TODO: Camera rotation, zoom...
 
 #include "d3dx9.h"
 
@@ -94,6 +96,24 @@ public:
      * Sets view-matrix and updates frustum-planes
      */
     virtual void update();
+
+    /**
+     * Sets the view-matrix to use
+     * @param view View-matrix
+     */
+    inline void setMatrix(const D3DXMATRIX& view)
+    {
+        m_View = view;
+    }
+
+    /**
+     * Returns the current view-matrix
+     * @return the view-matrix
+     */
+    inline D3DXMATRIX& getMatrix()
+    {
+        return m_View;
+    }
 
 protected:
 

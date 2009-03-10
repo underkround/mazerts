@@ -64,7 +64,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     pTerrain->setWaterLevel(50);
 
     //TEST
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < 100; i++)
     {
         AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, 200), m_pApp->RandInt(0, 200));
     }
@@ -119,7 +119,7 @@ void GameState::release()
     m_pUITerrain->release();
 }
 
-bool GameState::update(float frameTime)
+bool GameState::update(const float frameTime)
 {
     updateControls(frameTime);
 
@@ -131,7 +131,7 @@ bool GameState::update(float frameTime)
     return true;
 }
 
-void GameState::prepareForRender(LPDIRECT3DDEVICE9 pDevice, float frameTime)
+void GameState::prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float frameTime)
 {
     //Updates view-matrix and frustum, if necessary
     m_pCamera->update();
@@ -154,7 +154,7 @@ void GameState::prepareForRender(LPDIRECT3DDEVICE9 pDevice, float frameTime)
     pDevice->LightEnable(0, TRUE);
 }
 
-void GameState::render(LPDIRECT3DDEVICE9 pDevice)
+void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 {
     
     //Terrain needs normal backface-culling
@@ -171,7 +171,7 @@ void GameState::render(LPDIRECT3DDEVICE9 pDevice)
 }
 
 
-void GameState::updateControls(float frameTime)
+void GameState::updateControls(const float frameTime)
 {
     if (KeyboardState::keyDown[m_KeyCameraPanUp])
     {
