@@ -170,6 +170,12 @@ private:
      */
     float m_CurrentSpeed;
 
+    /**
+     * Temporary values used to determine if the target has reached since we reached it.
+     */
+    int m_CachedReachedTargetX;
+    int m_CachedReachedTargetY;
+
 };
 
 #endif // __GROUNDMOVINGLOGIC_H__

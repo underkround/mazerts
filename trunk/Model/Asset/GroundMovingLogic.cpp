@@ -26,6 +26,9 @@ GroundMovingLogic::GroundMovingLogic()
     m_TargetDir.x = 0.0f;
     m_TargetDir.y = 0.0f;
     m_TargetDir.z = 0.0f;
+
+    m_CachedReachedTargetX = -1;
+    m_CachedReachedTargetY = -1;
 }
 
 GroundMovingLogic::~GroundMovingLogic()
@@ -76,11 +79,22 @@ void GroundMovingLogic::update(Unit* pUnit, const float deltaT)
 
 void GroundMovingLogic::idle(const float deltaT)
 {
-    //TODO: Maybe turning around or something while idling?
     //TODO: Replace with reading targets from commands, after they are implemented
+    // ... or, commands in unit, unit dispatching target from current command to this
 
-    if(m_pTarget)
-        m_State = ASKPATH;
+    // do we have a target?
+    if(m_pTarget) {
+        // is the target reached?
+        if( m_CachedReachedTargetX != m_pTarget->getTargetX() ||
+            m_CachedReachedTargetY != m_pTarget->getTargetY()
+        )
+        {
+            // target has changed since we reached it
+            m_CachedReachedTargetX = -1;
+            m_CachedReachedTargetY = -1;
+            m_State = ASKPATH;
+        }
+    }
 /*
     //DEBUG/TESTING: Wait some time before asking a new path
     static float counter = 0.0f;    
@@ -119,19 +133,35 @@ void GroundMovingLogic::askPath()
     unsigned short m_TargetY = m_pTarget->getTargetY();
 
     // is the target reached?
+/*
     if( m_pUnit->getGridX() >= m_TargetX && (m_pUnit->getGridX() + m_pUnit->getWidth()) <= m_TargetY &&
         m_pUnit->getGridY() >= m_TargetY && (m_pUnit->getGridY() + m_pUnit->getHeight()) <= m_TargetY)
     {
+*/
+    if( m_pUnit->getGridX() == m_TargetX && m_pUnit->getGridY() == m_TargetY ) {
+        // if the target was static coordinates - not tracking asset,
+        // we can remove it when it's reached
         if(m_pTarget->isStatic())
+        {
+            m_CachedReachedTargetX = -1;
+            m_CachedReachedTargetY = -1;
             clearTarget();
-        // TEMP: if tracking target, do not delete it
+        }
+        // if the target is locked to asset, do not delete it
         else
+        {
+            // cache current position of the target that is reached for
+            // determing later if the target has moved
+            m_CachedReachedTargetX = m_pTarget->getTargetX();
+            m_CachedReachedTargetY = m_pTarget->getTargetY();
             return;
+        }
     }
 
-    m_pAgent = PathFinderMaster::getInstance()->findPath((unsigned short)m_pUnit->getPosition()->x, (unsigned short)m_pUnit->getPosition()->y,
-                                                          m_TargetX, m_TargetY,
-                                                          m_pUnit->getWidth()); //TODO: NOTE: Remember to set the widht & height of unit to same value!
+    m_pAgent = PathFinderMaster::getInstance()->findPath(   (unsigned short)m_pUnit->getPosition()->x,
+                                                            (unsigned short)m_pUnit->getPosition()->y,
+                                                            m_TargetX, m_TargetY,
+                                                            m_pUnit->getWidth()); //TODO: NOTE: Remember to set the widht & height of unit to same value!
     
     //If no agent is found, there is no path (goal is same as start location or goal is unpassable)
     if(m_pAgent != NULL)
@@ -363,7 +393,7 @@ void GroundMovingLogic::setTarget(Target* target)
     if(m_pTarget)
         clearTarget();
     m_pTarget = target;
-    m_State = ASKPATH;
+//    m_State = ASKPATH;
 }
 
 
@@ -376,9 +406,12 @@ void GroundMovingLogic::clearTarget()
         // TODO: what? set state to idle?
         if(m_pAgent)
         {
+            m_pAgent->cancel();
             delete m_pAgent;
             m_pAgent = NULL;
         }
+        m_CachedReachedTargetX = -1;
+        m_CachedReachedTargetY = -1;
         m_State = IDLE;
     }
 }

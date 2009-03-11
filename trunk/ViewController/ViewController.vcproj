@@ -694,6 +694,14 @@
 				Name="Terrain"
 				>
 				<File
+					RelativePath=".\Terrain\MiniMap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Terrain\MiniMap.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Terrain\TerrainIntersection.cpp"
 					>
 				</File>
