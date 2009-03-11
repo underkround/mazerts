@@ -14,6 +14,7 @@
 
 
 #include <d3dx9.h>
+#include "MiniMap.h"
 
 class UITerrain
 {
@@ -88,6 +89,12 @@ public:
      */
     HRESULT createColorMapTexture(LPDIRECT3DDEVICE9 pDevice);
 
+	/**
+	 * Gets the colormap texture of the terrain
+	 * @param LPDIRECT3DTEXTURE9 to texture
+	 */
+	LPDIRECT3DTEXTURE9 getColorMapTexture() { return m_pPixelTexture; }
+
     /**
      * Sets the fillmode
      * @param fillMode D3DFILLMODE-enum value
@@ -122,7 +129,7 @@ public:
     inline HRESULT onLostDevice()
     {
         if(m_pPixelTexture)
-        {
+        {			
             HRESULT hres = m_pPixelTexture->Release();
             if(FAILED(hres))
             {
@@ -152,6 +159,15 @@ public:
         
         HRESULT hres = createColorMapTexture(pDevice);
         
+		if(SUCCEEDED(hres))
+		{
+			m_MiniMap.setTexture(m_pPixelTexture);
+		}
+		else
+		{
+			m_MiniMap.setTexture(NULL);
+		}
+
         return hres; 
     }
 
@@ -273,6 +289,11 @@ private:
      * Global detail-level of terrain patches, how many tiles are represented by a quad
      */
     unsigned char m_DetailLevel;
+
+	/**
+	 * MiniMap
+	 */
+	MiniMap m_MiniMap;
 };
 
 #endif // __UITERRAIN_H__

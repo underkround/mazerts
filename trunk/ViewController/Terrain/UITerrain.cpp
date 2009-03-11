@@ -42,7 +42,9 @@ UITerrain::~UITerrain(void)
 
 void UITerrain::release()
 {
-    
+    //Release minimap
+	pInstance->m_MiniMap.release();
+
     //Triangle normal releases
     for(int i = 0; i < m_Size; i++)
     {
@@ -158,19 +160,19 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
         }
     }
 
-
     if(m_pPixelTexture)
     {
         pDevice->SetTexture(1, NULL);
     }
 
+	m_MiniMap.render(pDevice);
 }
 
 HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice)
 {
     //Get rid of old instance, if it exists
     if(pInstance)
-    {
+    {		
         delete pInstance;
         pInstance = NULL;
     }
@@ -265,20 +267,27 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
         }
     }
 
+	//Setting detail level creates the contents of the index- and vertexbuffers
     setDetailLevel(m_DetailLevel);
 
+	//TODO: Multiple different "ground" textures?
     hres = D3DXCreateTextureFromFile(pDevice, _T("grass01.png"), &m_pTexture);
     if(FAILED(hres))
     {
         return hres;
     }
 
+	//Create colormap
     hres = createColorMapTexture(pDevice);
 
     if(FAILED(hres))
     {
         return hres;
     }
+
+	//Create minimap and set it to use the colormap-texture
+	m_MiniMap.create();
+	m_MiniMap.setTexture(m_pPixelTexture);
 
     return S_OK;
 }
@@ -375,6 +384,10 @@ HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice)
                 else if(ppVData[y][x] > 192)
                 {
                     ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 16) + (ppVData[y][x] << 8) + ppVData[y][x];
+                }
+                else if(ppVData[y][x] > 128)
+                {    
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8) + (ppVData[y][x] >> 1);// + (ppVData[y][x] >> 1);
                 }
                 else
                 {    
