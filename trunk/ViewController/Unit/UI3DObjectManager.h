@@ -91,11 +91,6 @@ public:
      */
     virtual void handleReleasedAsset(IAsset* pAsset);
 
-    /**
-     * Global scaling value
-     */
-    static float globalScale;
-
     void loadMeshes(void);
 
 private:

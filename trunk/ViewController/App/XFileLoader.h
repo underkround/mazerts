@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __XFILELOADER_H__
+#define __XFILELOADER_H__
 
 
 #include <tchar.h>
@@ -9,6 +10,8 @@
 class CXFileLoader
 {
 public:
+    const static float SCALEFACTOR;
+
     CXFileLoader(void);
     virtual ~CXFileLoader(void);
 
@@ -27,4 +30,12 @@ public:
                             C3DResourceContainer& container,
                             C3DObject* pObject);
 
+    /**
+     * Scales the given mesh by given amount
+     * @param pMesh Pointer to mesh
+     * @param scale Scale-factor
+     */
+    static HRESULT scaleMesh(ID3DXMesh* pMesh, const float scale);
 };
+
+#endif

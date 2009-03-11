@@ -1,5 +1,8 @@
 #include "XFileLoader.h"
 
+//GLOBAL SCALE FACTOR
+const float CXFileLoader::SCALEFACTOR = 0.075f;
+
 CXFileLoader::CXFileLoader(void)
 {
 }
@@ -36,9 +39,10 @@ HRESULT CXFileLoader::Load(    LPCTSTR strFilename,
         return hres;
     }
 
+    hres = container.AddResource(strFilename, pMesh);
 
     // add loaded mesh into the resource container
-    if (FAILED(container.AddResource(strFilename, pMesh)))
+    if (FAILED(hres))
     {
         // failed to add, maybe it is already there
         pMesh->Release();
@@ -50,6 +54,10 @@ HRESULT CXFileLoader::Load(    LPCTSTR strFilename,
             // it doesn't have mesh with same name...
             return E_FAIL;
         }
+    }
+    else
+    {
+        scaleMesh(pMesh, SCALEFACTOR);
     }
 
 
@@ -143,4 +151,40 @@ HRESULT CXFileLoader::Load(    LPCTSTR strFilename,
     return S_OK;
 }
 
+HRESULT CXFileLoader::scaleMesh(ID3DXMesh* pMesh, const float scale)
+{
+    //Pointer to vertexbuffer
+    BYTE* pBuf = NULL;
+	HRESULT hres;
 
+	DWORD numVertices = pMesh->GetNumVertices();
+	DWORD fvf = pMesh->GetFVF();
+	DWORD vertSize = D3DXGetFVFVertexSize(fvf);
+
+    hres = pMesh->LockVertexBuffer(0, (void**)&pBuf);
+	if (FAILED(hres))
+    {
+        return hres;
+    }
+
+	for (DWORD i = 0; i < numVertices; i++) 
+    {
+		D3DXVECTOR3* pVert=(D3DXVECTOR3 *)pBuf;
+
+		//Scale vertices
+		pVert->x *= scale;
+		pVert->y *= scale;
+		pVert->z *= scale;
+
+		//Next vertex
+		pBuf += vertSize;
+	}
+    hres = pMesh->UnlockVertexBuffer();
+	
+	if (FAILED(hres))
+    {
+		return hres;
+    }	
+
+	return S_OK;
+}

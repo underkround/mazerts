@@ -4,8 +4,6 @@
 
 #include "../../Model/Asset/IAsset.h"
 
-float UI3DObjectManager::globalScale = 0.075f;
-
 void UI3DObjectManager::handleCreatedAsset(IAsset* pAsset)
 {
     IAsset::Type assetType = pAsset->getAssetType();

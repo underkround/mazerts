@@ -341,7 +341,7 @@ void GameState::updateControls(const float frameTime)
         else if(pUnit)
         {
             D3DXMATRIX pMat = pUnit->GetMatrix();
-            C3DObject* pObj = (C3DObject*)UI3DDebug::addSphere(0, 10.0f, -2.0f, 25.0f, 1.0f);
+            C3DObject* pObj = (C3DObject*)UI3DDebug::addSphere(0, 2.0f, 0.0f, 1.0f, 1.0f);
             //Debug-object, added automatically to root
             m_pManager->getRootObject()->RemoveChild(pObj);
             pUnit->AddChild(pObj);

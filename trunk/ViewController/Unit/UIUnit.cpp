@@ -46,11 +46,6 @@ void UIUnit::alignToTerrain()
     m_mLocal._23 = normal.z;
     m_mLocal._33 = forward.z;
     
-    D3DXMATRIX scale;
-    D3DXMatrixIdentity(&scale);
-    D3DXMatrixScaling(&scale, UI3DObjectManager::globalScale, UI3DObjectManager::globalScale, UI3DObjectManager::globalScale);
-    D3DXMatrixMultiply(&m_mLocal, &m_mLocal, &scale);
-
     m_mLocal._41 = m_pUnit->getPosition()->x + m_HalfSize;
     m_mLocal._42 = m_pUnit->getPosition()->y + m_HalfSize;
     m_mLocal._43 = UITerrain::getInstance()->calculateTriangleHeightAt(m_mLocal._41, m_mLocal._42);
