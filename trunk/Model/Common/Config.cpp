@@ -74,6 +74,13 @@ string Config::getValueAsString(string in_name) {
   return "";
 }
 
+wstring Config::getValueAsWString(string in_name)
+{
+    std::wstring wstrname;
+    wstrname.assign(in_name.begin(), in_name.end());
+    return wstrname;
+}
+
 bool Config::isNumeric(string str) {
   char merkki;
   bool out = true;

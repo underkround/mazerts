@@ -17,6 +17,7 @@
 #include "../App/C3DResourceContainer.h"
 #include "../../Model/Asset/AssetCollection.h"
 #include "../../Model/Asset/IAssetCollectionListener.h"
+#include "../../Model/Common/Config.h"
 
 //FORWARD DECLARATIONS
 class UIUnit;
@@ -32,6 +33,9 @@ public:
     inline static void create(LPDIRECT3DDEVICE9 pDevice)
     {        
         getInstance()->m_ResourceContainer.Create(pDevice);
+        getInstance()->loadMeshes();
+        Config::getInstance()->setFilename("meshes.ini");
+        Config::getInstance()->readFile();
     }
 
     /**
@@ -91,6 +95,8 @@ public:
      * Global scaling value
      */
     static float globalScale;
+
+    void loadMeshes(void);
 
 private:
 

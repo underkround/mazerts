@@ -15,9 +15,9 @@ void UIUnit::alignToTerrain()
 
     //Terrain normal
     D3DXVECTOR3 normal = UITerrain::getInstance()->getNormalAt(
-                                    m_pUnit->getPosition()->x, 
-                                    m_pUnit->getPosition()->y, 
-                                    m_pUnit->getWidth(), 
+                                    m_pUnit->getPosition()->x,
+                                    m_pUnit->getPosition()->y,
+                                    m_pUnit->getWidth(),
                                     m_pUnit->getWidth()
                                     );
 

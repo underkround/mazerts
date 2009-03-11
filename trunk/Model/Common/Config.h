@@ -121,6 +121,8 @@ protected:
    */
   string getValueAsString(string in_name);
 
+  wstring getValueAsWString(string in_name);
+
   /**
    * mazerts specific configuration default values
    * remember to add any new configuration variables here also

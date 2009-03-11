@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <cmath>
 
-#define PII 3.14159265f
+#ifndef PI
+#define PI 3.141592653589793238462f
+#endif
 
 AntinTerrainGenerator::AntinTerrainGenerator(const unsigned int seed, const unsigned short size)
 {
@@ -73,9 +75,9 @@ void AntinTerrainGenerator::faultLines(unsigned char **ppVertexHeightData, const
         y0 = rand() % terrainSize;
         x1 = rand() % terrainSize;
         y1 = rand() % terrainSize;
-        for(int x = 0; x < terrainSize-1; ++x)
+        for(int x = 0; x < terrainSize; ++x)
         {
-            for(int y = 0; y < terrainSize-1; ++y)
+            for(int y = 0; y < terrainSize; ++y)
             {
                 if( (x1-x0)*(x-y0)-(y1-y0)*(y-x0) > 0)
                 {
@@ -104,14 +106,14 @@ void AntinTerrainGenerator::makeHills(  unsigned char **ppVertexHeightData,
     {
         x0 = rand() % terrainSize;
         y0 = rand() % terrainSize;
-        for(int x = 0; x < terrainSize-1; ++x)
+        for(int x = 0; x < terrainSize; ++x)
         {
-            for(int y = 0; y < terrainSize-1; ++y)
+            for(int y = 0; y < terrainSize; ++y)
             {
                 int z = (x0-x)*(x0-x)+(y0-y)*(y0-y);
                 if(z < cir2)
                 {
-                    int heightMod = (int)((cirHeight/2)*(1+cos(PII*z/cir2)));
+                    int heightMod = (int)((cirHeight/2)*(1+cos(PI*z/cir2)));
                     ppVertexHeightData[y][x] = ((ppVertexHeightData[y][x]+heightMod) < 256) ? ppVertexHeightData[y][x] += heightMod : ppVertexHeightData[y][x] = 255;
                 }
             }
@@ -167,9 +169,9 @@ void AntinTerrainGenerator::flattenArea(    unsigned char **ppVertexHeightData,
     int innerCir2 = innerRadius*innerRadius;
     int outerCir2 = outerRadius*outerRadius;
     float donutWidth = (float)(outerRadius-innerRadius);
-    for(int x = 0; x < terrainSize-1; ++x)
+    for(int x = 0; x < terrainSize; ++x)
     {
-        for(int y = 0; y < terrainSize-1; ++y)
+        for(int y = 0; y < terrainSize; ++y)
         {
             int z = (xCenter-x)*(xCenter-x)+(yCenter-y)*(yCenter-y);
             if(z < innerCir2)

@@ -8,17 +8,16 @@ CXFileLoader::~CXFileLoader(void)
 {
 }
 
-
 HRESULT CXFileLoader::Load(    LPCTSTR strFilename,
-                            C3DResourceContainer& container,
-                            C3DObject* pObject)
+                               C3DResourceContainer& container,
+                               C3DObject* pObject)
 {
-    DWORD            i;
+    DWORD              i;
     HRESULT            hres;
-    LPD3DXBUFFER    pMaterialBuffer = NULL;
-    DWORD            dwNumMaterials = 0;
-    LPD3DXMESH        pMesh = NULL;
-    TCHAR            resname[256];
+    LPD3DXBUFFER       pMaterialBuffer = NULL;
+    DWORD              dwNumMaterials = 0;
+    LPD3DXMESH         pMesh = NULL;
+    TCHAR              resname[256];
 
 
     // load the x-file
@@ -87,7 +86,7 @@ HRESULT CXFileLoader::Load(    LPCTSTR strFilename,
 
         // load the material texture
         LPDIRECT3DTEXTURE9 pTexture = NULL;
-        hres = D3DXCreateTextureFromFileA(    container.GetDevice(),
+        hres = D3DXCreateTextureFromFileA(  container.GetDevice(),
                                             pMaterial[i].pTextureFilename,
                                             &pTexture);
         if (FAILED(hres))
