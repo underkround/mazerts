@@ -98,7 +98,7 @@ void IAsset::changeState(State newState)
 
 void IAsset::registerListener(IAssetListener* listener)
 {
-    m_pListeners.pushTail(listener);
+    m_pListeners.pushHead(listener);
 }
 
 void IAsset::unregisterListener(IAssetListener* listener)
@@ -129,5 +129,6 @@ void IAsset::notifyDestroyed()
             node->item->handleAssetReleased(this);
             node = node->next;
         }
+        m_pListeners.release();
     }
 }

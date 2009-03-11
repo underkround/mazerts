@@ -34,6 +34,7 @@
 #define __IMOVINGLOGIC_H__
 
 class Unit;
+class Target;
 
 class IMovingLogic
 {
@@ -93,6 +94,22 @@ public:
      * ..can the logic go in the target, is it passable?
      */
     //const int getActionFlags(Target* t);
+
+    /**
+     * @return current target to which to move, or NULL if none
+     */
+    virtual Target* getTarget() = 0;
+
+    /**
+     * Set new target towards which to move to, clear old.
+     * The ownership of the target object will transfer to this class
+     */
+    virtual void setTarget(Target* target) = 0;
+
+    /**
+     * Clear current target
+     */
+    virtual void clearTarget() = 0;
 
 };
 

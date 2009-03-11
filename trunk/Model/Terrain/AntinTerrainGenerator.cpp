@@ -21,7 +21,6 @@ AntinTerrainGenerator::~AntinTerrainGenerator()
 void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData, const unsigned short terrainSize)
 {
     //PERUNAPELTOGENERAATTORI aka. just testing algorithms - NOT an actual way to make good terrain!
-
     makeFlat(ppVertexHeightData, terrainSize, Terrain::DEFAULT_FLATHEIGHT);
     for(int i=0;i<40;i+=8)
     {

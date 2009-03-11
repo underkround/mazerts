@@ -100,40 +100,43 @@ void AssetCollection::releaseBuilding(Building* b)
 
 void AssetCollection::releaseAll()
 {
-    // release buildings
+    // release all units
     ListNode<Unit*>* uNode = units.headNode();
-    ListNode<Unit*>* uTemp;
     while(uNode)
     {
-        uTemp = uNode;
-        uNode = uTemp->next;
-        // remove item
-        notifyAssetReleased(uTemp->item);
-        uTemp->item->release();
-        delete uTemp->item;
-        units.remove(uTemp);
+        notifyAssetReleased(uNode->item);
+        uNode->item->release();
+        uNode = uNode->next;
+    }
+    // do the actual deletion of the objects
+    uNode = units.headNode();
+    while(uNode)
+    {
+        delete uNode->item;
+        uNode = uNode->next;
     }
     units.release(); // not really needed? just in case
 
-    // release units
+    // release buildings
     ListNode<Building*>* bNode = buildings.headNode();
-    ListNode<Building*>* bTemp;
     while(bNode)
     {
-        bTemp = bNode;
-        bNode = bTemp->next;
-        // remove item
-        notifyAssetReleased(bTemp->item);
-        bTemp->item->release();
-        delete bTemp->item;
-        buildings.remove(bTemp);
+        notifyAssetReleased(bNode->item);
+        bNode->item->release();
+        bNode = bNode->next;
+    }
+    // do the actual deletion of the objects
+    while(bNode)
+    {
+        delete bNode->item;
+        bNode = bNode->next;
     }
     buildings.release(); // not really needed? just in case
 }
 
 // ===== SEARCHING
 
-IAsset* AssetCollection::getAssetAt(const short x, const short y)
+IAsset* AssetCollection::getAssetAt(const unsigned short x, const unsigned short y)
 {
     // @TODO: location based data structure
     IAsset* result = NULL;
@@ -147,17 +150,17 @@ IAsset* AssetCollection::getAssetAt(const short x, const short y)
 }
 
 
-Unit* AssetCollection::getUnitAt(const short x, const short y)
+Unit* AssetCollection::getUnitAt(const unsigned short x, const unsigned short y)
 {
     // @TODO: location based data structure
-    short tmpX, tmpY;
+    unsigned short tmpX, tmpY;
     ListNode<Unit*>* node = units.headNode();
     while(node) {
         tmpX = node->item->getGridX();
-        if( (tmpX >= x)  &&  (tmpX + node->item->getWidth() <= x) )
+        if( (tmpX <= x)  &&  (tmpX >= x + node->item->getWidth()) )
         {
             tmpY = node->item->getGridY();
-            if( (tmpY >= y)  &&  (tmpY + node->item->getHeight() <= y) )
+            if( (tmpY <= y)  &&  (tmpY >= y + node->item->getHeight()) )
             {
                 return node->item;
             }
@@ -168,10 +171,10 @@ Unit* AssetCollection::getUnitAt(const short x, const short y)
 }
 
 
-Building* AssetCollection::getBuildingAt(const short x, const short y)
+Building* AssetCollection::getBuildingAt(const unsigned short x, const unsigned short y)
 {
     // @TODO: location based data structure
-    short tmpX, tmpY;
+    unsigned short tmpX, tmpY;
     ListNode<Building*>* node = buildings.headNode();
     while(node) {
         tmpX = node->item->getGridX();

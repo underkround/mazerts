@@ -13,6 +13,8 @@
 #ifndef __DOUBLELINKEDLIST_H__
 #define __DOUBLELINKEDLIST_H__
 
+#include "../common.h"
+
 /**
  * Double linked list itemnode
  */

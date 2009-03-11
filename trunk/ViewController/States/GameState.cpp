@@ -31,6 +31,8 @@ GameState::GameState()
     m_pUITerrain = NULL;
     m_pApp = NULL;
     m_Created = false;
+
+    m_tmpSelectedUnit = NULL; // TEMP
 }
 
 GameState::~GameState()
@@ -64,7 +66,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     pTerrain->setWaterLevel(50);
 
     //TEST
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < 50; i++)
     {
         AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, 200), m_pApp->RandInt(0, 200));
     }
@@ -315,7 +317,8 @@ void GameState::updateControls(const float frameTime)
     }
 
     //Terrain picking test
-    if(MouseState::mouseButton[m_KeyMousePickButton])
+    //if(MouseState::mouseButton[m_KeyMousePickButton])
+    if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
     {
         D3DXMATRIX matProj;
         m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
@@ -329,29 +332,48 @@ void GameState::updateControls(const float frameTime)
 
         UIUnit* pUnit = UI3DObjectManager::pickUnit(rayOrigin, rayDir);
 
-        if(pUnit)
+        // if unit selected, give target to it
+        if(m_tmpSelectedUnit)
+        {
+            // TODO: remove after testing single unit moving
+            D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
+            if(pUnit)
+            {
+                m_tmpSelectedUnit->getUnit()->getMovingLogic()->setTarget(new Target(pUnit->getUnit()));
+                m_tmpSelectedUnit = NULL;
+            }
+            else if(hitSquare)
+            {
+                unsigned short targetX = (unsigned short)hitSquare->x;
+                unsigned short targetY = (unsigned short)hitSquare->y;
+                m_tmpSelectedUnit->getUnit()->getMovingLogic()->setTarget(new Target(targetX, targetY, true));
+                // clear selection
+                m_tmpSelectedUnit = NULL;
+                //m_Selector.setPoint(D3DXVECTOR2(hitSquare->x, hitSquare->y));    
+            }
+
+            delete hitSquare;
+        }
+
+        // try to pick unit to control
+        else if(pUnit)
         {
             D3DXMATRIX pMat = pUnit->GetMatrix();
-            C3DObject* pObj = (C3DObject*)UI3DDebug::addSphere(0, 10.0f, 0, 25.0f, 10.0f);
+            C3DObject* pObj = (C3DObject*)UI3DDebug::addSphere(0, 10.0f, -2.0f, 25.0f, 1.0f);
             //Debug-object, added automatically to root
             m_pManager->getRootObject()->RemoveChild(pObj);
             pUnit->AddChild(pObj);
             SoundManager::playSound(SoundManager::READY, 0.1f);
-        }
-        else
-        {
-            D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
-            if(hitSquare)
-            {
-                m_Selector.setPoint(D3DXVECTOR2(hitSquare->x, hitSquare->y));                    
-                delete hitSquare;
-            }
+
+            m_tmpSelectedUnit = pUnit; // TODO: remove after testing single unit moving
         }
     }
+    /*
     else if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
     {       
         m_Selector.buttonUp();
     }
+    */
 
 }
 

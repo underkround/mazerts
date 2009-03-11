@@ -20,6 +20,7 @@ GroundMovingLogic::GroundMovingLogic()
     m_pAgent = NULL;
     m_pPathNode = NULL;
     m_State = IDLE;
+    m_pTarget = NULL;
 
     m_CurrentSpeed = 0.0f;
     m_TargetDir.x = 0.0f;
@@ -34,6 +35,7 @@ GroundMovingLogic::~GroundMovingLogic()
         delete m_pAgent;
         m_pAgent = NULL;
     }
+    clearTarget();
 }
 
 void GroundMovingLogic::attach(Unit* pUnit)
@@ -77,7 +79,9 @@ void GroundMovingLogic::idle(const float deltaT)
     //TODO: Maybe turning around or something while idling?
     //TODO: Replace with reading targets from commands, after they are implemented
 
-
+    if(m_pTarget)
+        m_State = ASKPATH;
+/*
     //DEBUG/TESTING: Wait some time before asking a new path
     static float counter = 0.0f;    
     counter += deltaT;
@@ -86,7 +90,8 @@ void GroundMovingLogic::idle(const float deltaT)
         m_State = ASKPATH;
         counter = 0.0f;
     }
-        
+*/
+
 }
 
 void GroundMovingLogic::askPath()
@@ -98,15 +103,32 @@ void GroundMovingLogic::askPath()
         delete m_pAgent;
         m_pAgent = NULL;                
     }
-    
 
-    unsigned short terraSize = Terrain::getInstance()->getSize();
-
+//    unsigned short terraSize = Terrain::getInstance()->getSize();
     //TODO: Replace with reading targets from commands, after they are implemented
-    static unsigned short m_TargetX;
-    static unsigned short m_TargetY;
-    m_TargetX = rand() % terraSize;
-    m_TargetY = rand() % terraSize;
+//    static unsigned short m_TargetX;
+//    static unsigned short m_TargetY;
+//    m_TargetX = rand() % terraSize;
+//    m_TargetY = rand() % terraSize;
+    if(!m_pTarget)
+    {
+        m_State = IDLE;
+        return;
+    }
+    unsigned short m_TargetX = m_pTarget->getTargetX();
+    unsigned short m_TargetY = m_pTarget->getTargetY();
+
+    // is the target reached?
+    if( m_pUnit->getGridX() >= m_TargetX && (m_pUnit->getGridX() + m_pUnit->getWidth()) <= m_TargetY &&
+        m_pUnit->getGridY() >= m_TargetY && (m_pUnit->getGridY() + m_pUnit->getHeight()) <= m_TargetY)
+    {
+        if(m_pTarget->isStatic())
+            clearTarget();
+        // TEMP: if tracking target, do not delete it
+        else
+            return;
+    }
+
     m_pAgent = PathFinderMaster::getInstance()->findPath((unsigned short)m_pUnit->getPosition()->x, (unsigned short)m_pUnit->getPosition()->y,
                                                           m_TargetX, m_TargetY,
                                                           m_pUnit->getWidth()); //TODO: NOTE: Remember to set the widht & height of unit to same value!
@@ -322,5 +344,41 @@ void GroundMovingLogic::move(float deltaTime)
 
 bool GroundMovingLogic::release(Unit* pUnit)
 {
+    clearTarget();
     return true;
+}
+
+
+// ===== Target functionality
+
+
+Target* GroundMovingLogic::getTarget()
+{
+    return m_pTarget;
+}
+
+
+void GroundMovingLogic::setTarget(Target* target)
+{
+    if(m_pTarget)
+        clearTarget();
+    m_pTarget = target;
+    m_State = ASKPATH;
+}
+
+
+void GroundMovingLogic::clearTarget()
+{
+    if(m_pTarget) {
+        m_pTarget->release();
+        delete m_pTarget;
+        m_pTarget = NULL;
+        // TODO: what? set state to idle?
+        if(m_pAgent)
+        {
+            delete m_pAgent;
+            m_pAgent = NULL;
+        }
+        m_State = IDLE;
+    }
 }

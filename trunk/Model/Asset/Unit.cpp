@@ -40,8 +40,8 @@ void Unit::create()
 
 void Unit::release()
 {
-    IAsset::release(); // release weapon & radar
     releaseMovingLogic();
+    IAsset::release(); // release weapon & radar
 }
 
 void Unit::releaseMovingLogic()
@@ -74,3 +74,54 @@ char Unit::update(const float deltaT)
     //return RESULT_DELETEME; // unit will be deleted when returning this value
     return RESULT_OK; // normal return value
 }
+
+// ===== Targets
+
+/*
+bool Unit::hasTarget()
+{
+    return (!m_TargetQueue.empty());
+}
+
+void Unit::addTarget(Target* target)
+{
+    m_TargetQueue.pushTail(target);
+}
+
+void Unit::setTarget(Target* target)
+{
+    clearAllTargets();
+    m_TargetQueue.pushTail(target);
+}
+
+Target* Unit::getCurrentTarget()
+{
+    if(m_TargetQueue.empty())
+        return NULL;
+    return m_TargetQueue.headNode()->item;
+}
+
+void Unit::clearCurrentTarget()
+{
+    if(!m_TargetQueue.empty())
+    {
+        delete m_TargetQueue.headNode()->item;
+        m_TargetQueue.remove(m_TargetQueue.headNode());
+    }
+}
+
+void Unit::clearAllTargets()
+{
+    ListNode<Target*>* node = m_TargetQueue.headNode();
+    while(node)
+    {
+        delete node->item;
+        node = m_TargetQueue.removeGetNext();
+    }
+}
+
+DoubleLinkedList<Target*> Unit::getTargetQueue()
+{
+    return &m_TargetQueue;
+}
+*/

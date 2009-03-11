@@ -10,7 +10,6 @@
  * $Date$
  * $Id$
  */
-
 #ifndef __TARGET_H__
 #define __TARGET_H__
 
@@ -22,7 +21,7 @@ class Target : public IAssetListener
 {
 public:
 
-    enum Type
+    enum TargetType
     {
         COORDINATE,
         ASSET
@@ -34,7 +33,7 @@ public:
      * Create target as coordinate target. If contextSensitive flag is set
      * to true, search for asset in the grid and lock to it if found.
      */
-    Target(short x, short y, bool contextSensitive)
+    Target(const unsigned short x, const unsigned short y, const bool contextSensitive)
     {
         m_TargetAsset = NULL;
         setTarget(x, y, contextSensitive);
@@ -45,6 +44,9 @@ public:
      */
     Target(IAsset* target)
     {
+        m_TargetAsset = NULL;
+        m_TargetX = m_TargetY = 0;
+        m_Range = 0.0f;
         setTarget(target);
     }
 
@@ -52,27 +54,25 @@ public:
     {
     }
 
+    void release()
+    {
+        clearAssetTarget();
+    }
+
     /**
-     * Update the target by locking to given asset.
+     * Update this target to track given asset.
      */
     void setTarget(IAsset* target)
     {
-        if(!target)
-        {
-            // store target from old in case NULL was given as new target
-            m_TargetX = m_TargetAsset->getGridX();
-            m_TargetY = m_TargetAsset->getGridY();
-            m_TargetAsset = NULL;
-            m_TargetType = COORDINATE;
-        }
-        else
+        clearAssetTarget();
+        if(target)
         {
             // proper target asset given
             m_TargetX = target->getGridX();
             m_TargetY = target->getGridY();
             m_TargetAsset = target;
             m_TargetType = ASSET;
-            // register as listener to target (in case it is destroyed while tracking)
+            // register as listener to target (in case asset is destroyed while we are tracking it)
             m_TargetAsset->registerListener(this);
         }
     }
@@ -82,19 +82,44 @@ public:
      * flag is set to true, search for asset in the coordinate, and lock
      * to it if found.
      */
-    void setTarget(short x, short y, bool contextSensitive)
+    void setTarget(const unsigned short x, const unsigned short y, const bool contextSensitive)
     {
         m_TargetX = x;
         m_TargetY = y;
         m_TargetAsset = NULL;
+        m_TargetType = COORDINATE;
         if(contextSensitive)
-            m_TargetAsset = AssetCollection::getAssetAt(x, y);
+        {
+            IAsset* newTarget = AssetCollection::getAssetAt(x, y);
+            if(newTarget)
+            {
+                // if we found asset from coordinate, lock to it
+                setTarget(newTarget);
+            }
+        }
+        m_Range = 0.0f;
     }
 
     /**
-     * Return the type of this target
+     * Set range to maintain to the target
      */
-    Type getType() {
+    void setRange(float range)
+    {
+        m_Range = range;
+    }
+
+    /**
+     * Return the range associated with the target
+     */
+    const float getRange() {
+        return m_Range;
+    }
+
+    /**
+     * Return the type of target we are currently locked to.
+     * @return  indication of what this target is tracking
+     */
+    const TargetType getTargetType() const {
         return m_TargetType;
     }
 
@@ -113,7 +138,7 @@ public:
      * @return  true, if this target is static, and coordinates are not
      *          subject to change
      */
-    bool isStatic()          {
+    const bool isStatic() const {
         return (m_TargetAsset) ? false : true;
     }
 
@@ -121,9 +146,10 @@ public:
      * Return target's y-coordinate, which is either static with
      * target, or from the target's asset
      */
-    short getTargetX() {
-        if(m_TargetType == ASSET && m_TargetAsset)
-            return m_TargetAsset->getGridX();
+    const unsigned short getTargetX() const {
+        if(m_TargetAsset)
+            if(m_TargetType == ASSET)
+                return m_TargetAsset->getGridX();
         return m_TargetX;
     }
 
@@ -131,10 +157,30 @@ public:
      * Return target's y-coordinate, which is either static with
      * target, or from the target's asset
      */
-    short getTargetY() {
-        if(m_TargetType == ASSET && m_TargetAsset)
-            return m_TargetAsset->getGridY();
+    const unsigned short getTargetY() const {
+        if(m_TargetAsset)
+            if(m_TargetType == ASSET)
+                return m_TargetAsset->getGridY();
         return m_TargetY;
+    }
+
+    /**
+     * If our target is asset, stop tracking it and set target to coordinates
+     * where the target asset was when we lost it (where it is now, that is).
+     * This function is safe to call even when we are not locked to asset.
+     */
+    void clearAssetTarget()
+    {
+        if(m_TargetAsset)
+        {
+            // store target from old in case NULL was given as new target
+            m_TargetX = m_TargetAsset->getGridX();
+            m_TargetY = m_TargetAsset->getGridY();
+            // remove us from asset's listeners and clear target asset
+            m_TargetAsset->unregisterListener(this);
+            m_TargetAsset = NULL;
+            m_TargetType = COORDINATE;
+        }
     }
 
 // ===== Listener implementation
@@ -146,22 +192,27 @@ public:
 
     virtual void handleAssetReleased(IAsset* pAsset)
     {
-        if(pAsset == m_TargetAsset)
-        {
-            setTarget(NULL);
-        }
+//        clearAssetTarget();   // DO NOT DO THIS - CONTAINS LISTENER UNREGISTERING, WHICH LEADS TO
+                                // ALL HELL BREAKING LOOSE (- 2 hours of debugging behind ^^)
+        m_TargetX = m_TargetAsset->getGridX();
+        m_TargetY = m_TargetAsset->getGridY();
+        m_TargetAsset = NULL;
+        m_TargetType = COORDINATE;
     }
 
 private:
 
+    // range to maintain to the target
+    float           m_Range;    
+
     // determines if the target is asset or coordinate
-    Type        m_TargetType;
+    TargetType      m_TargetType;
 
     // target's data comes from either these coordinates...
-    short       m_TargetX;
-    short       m_TargetY;
+    unsigned short  m_TargetX;
+    unsigned short  m_TargetY;
     // ...or from this target, depending from the target's type
-    IAsset*     m_TargetAsset;
+    IAsset*         m_TargetAsset;
 
 };
 

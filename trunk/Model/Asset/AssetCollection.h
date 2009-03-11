@@ -67,17 +67,17 @@ public:
     /**
      * Return asset at coordinate, if any
      */
-    static IAsset* getAssetAt(const short x, const short y);
+    static IAsset* getAssetAt(const unsigned short x, const unsigned short y);
 
     /**
      * Return unit at coordinate, or NULL if none
      */
-    static Unit* getUnitAt(const short x, const short y);
+    static Unit* getUnitAt(const unsigned short x, const unsigned short y);
 
     /**
      * Return building at coordinate, or NULL if none
      */
-    static Building* getBuildingAt(const short x, const short y);
+    static Building* getBuildingAt(const unsigned short x, const unsigned short y);
 
 // ===== OBSERVER FUNCTIONALITY
 

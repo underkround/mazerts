@@ -60,6 +60,18 @@ public:
      */
     virtual char update(const float deltaT);
 
+// ===== Targets
+
+/*
+    bool hasTarget();
+    void addTarget(Target* target);
+    void setTarget(Target* target);
+    Target* getCurrentTarget();
+    void clearCurrentTarget();
+    void clearAllTargets();
+    DoubleLinkedList<Target*> getTargetQueue();
+*/
+
 private:
 
     /**
@@ -72,17 +84,20 @@ private:
 // ===== MEMBERS
 
     // the type-flag of this unit, used by resource-loading etc
-    int             m_UnitType;
+    int                         m_UnitType;
 
     // the logic responsible of moving this unit, altering the
     // position and direction -vectors of this unit
-    IMovingLogic*   m_pMovingLogic;
+    IMovingLogic*               m_pMovingLogic;
 
     // the weapon & radar are in the IAsset
 
     // flag for weather this unit is created to prevent registration
     // to the collection multiple times
-    bool m_Created;
+    bool                        m_Created;
+
+    // Targets queued for this unit
+    DoubleLinkedList<Target*>   m_TargetQueue;
 
 };
 

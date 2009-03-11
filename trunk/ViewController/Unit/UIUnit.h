@@ -73,6 +73,14 @@ public:
         m_Alive = false;
     };
 
+    /**
+     * @return pointer to the model-size unit that this UiUnit represents
+     */
+    Unit* getUnit()
+    {
+        return m_pUnit;
+    }
+
 protected:
     
     /**

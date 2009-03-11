@@ -85,6 +85,9 @@ private:
      */
     void loadConfiguration(void);
 
+    // TODO: remove after testing single unit moving
+    UIUnit* m_tmpSelectedUnit;
+
     /**
      * Main application
      */

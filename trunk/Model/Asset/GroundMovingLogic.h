@@ -15,6 +15,7 @@
 #include "../PathFinding/PathAgent.h"
 #include "../PathFinding/IPathFinder.h"
 #include "../PathFinding/PathFinderMaster.h"
+#include "../Command/Target.h"
 
 class GroundMovingLogic : public IMovingLogic
 {
@@ -86,7 +87,30 @@ public:
      */
     virtual bool release(Unit* pUnit);
 
+// ===== Targets
+
+    /**
+     * @return current target to which to move, or NULL if none
+     */
+    virtual Target* getTarget();
+
+    /**
+     * Set new target towards which to move to, clear old.
+     * The ownership of the target object will transfer to this class
+     */
+    virtual void setTarget(Target* target);
+
+    /**
+     * Clear current target
+     */
+    virtual void clearTarget();
+
 private:
+
+    /**
+     * Current target to move to
+     */
+    Target* m_pTarget;
 
     /**
      * Idling when the unit has no orders
