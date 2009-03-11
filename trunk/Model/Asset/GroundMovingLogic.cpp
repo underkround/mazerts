@@ -244,8 +244,9 @@ void GroundMovingLogic::followPath()
     Vector3* pos = m_pUnit->getPosition();
 
     //If close enough to current, get next target square
-    float halfWidth = m_pUnit->getWidth() * 0.5f;
-    float halfHeight = m_pUnit->getHeight() * 0.5f;
+    //TODO: fixes for offsets (unit halfwidth)
+    float halfWidth = m_pUnit->getWidth() * 0.1f;
+    float halfHeight = m_pUnit->getHeight() * 0.1f;
     if( fabs(m_pPathNode->x - pos->x) < halfWidth && fabs(m_pPathNode->y - pos->y) < halfHeight)
     {
         m_pPathNode = m_pAgent->getNextPathNode();        

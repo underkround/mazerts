@@ -27,6 +27,7 @@ public:
     {
         m_pFinder = pFinder;
         m_pNode = NULL;
+        m_pNextNode = NULL;
         m_State = IPathFinder::NOT_FINISHED;
         m_pMutex = new pthread_mutex_t;
         pthread_mutex_init(m_pMutex, NULL);
@@ -53,6 +54,7 @@ public:
      */
     IPathFinder::PathingState getState()
     {
+        //Mutexes not needed? (Read only)
         //pthread_mutex_lock(m_pMutex);
         {
             
@@ -101,31 +103,16 @@ public:
     inline IPathFinder::PathNode* getNextPathNode()
     {
         IPathFinder::PathNode* pNode = NULL;
-        pthread_mutex_lock(m_pMutex);
+        //Are the mutexes needed here? (Read only)
+        //pthread_mutex_lock(m_pMutex);
         {
-            if(m_pNode)
+            if(m_pNextNode)
             {                
-                pNode = m_pNode;
-
-                if(m_pNode->pParent != NULL)
-                {
-                    delete m_pNode->pParent;
-                    m_pNode->pParent = NULL;
-                }
-
-                if(m_pNode->pChild != NULL)
-                {
-                    m_pNode = m_pNode->pChild;
-                }
-                else
-                {
-                    delete m_pNode;
-                    m_pNode = NULL;
-                    pNode = NULL;
-                }
+                pNode = m_pNextNode;
+                m_pNextNode = m_pNextNode->pChild;
             }
         }
-        pthread_mutex_unlock(m_pMutex);
+        //pthread_mutex_unlock(m_pMutex);
         
         return pNode;
     }
@@ -139,6 +126,7 @@ public:
         pthread_mutex_lock(m_pMutex);
         {
             m_pNode = pNode;
+            m_pNextNode = pNode;
         }
         pthread_mutex_unlock(m_pMutex);
     }
@@ -216,6 +204,11 @@ private:
      * The starting node of the path, or NULL if not (yet) found
      */
     IPathFinder::PathNode* m_pNode;
+
+    /**
+     * The current node for getNextPathNode()
+     */
+    IPathFinder::PathNode* m_pNextNode;
 
     /**
      * IPathFinder-instance this agent is associated with
