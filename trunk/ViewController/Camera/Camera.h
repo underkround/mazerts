@@ -33,6 +33,7 @@ public:
         m_Position.y = y;
         m_Position.z = z;
         m_NeedsUpdate = true;
+        m_Test = true;
     }
     
     virtual inline void setPosition(const D3DXVECTOR3& pos)
@@ -114,7 +115,7 @@ public:
     {
         return m_View;
     }
-
+    bool m_Test;
 protected:
 
     /**
@@ -145,6 +146,8 @@ protected:
      * (done only when necessary)
      */
     bool m_NeedsUpdate;
+
+
 };
 
 #endif //__CAMERA_H__

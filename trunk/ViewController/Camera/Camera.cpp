@@ -50,7 +50,12 @@ void Camera::update()
 
         D3DXMATRIX proj;
         pDevice->GetTransform(D3DTS_PROJECTION, &proj);
-        FrustumCull::rebuildFrustum(&m_View, &proj);
+        
+        //TEST
+        if(m_Test)
+        {
+            FrustumCull::rebuildFrustum(&m_View, &proj);
+        }
 
         m_NeedsUpdate = false;
     }

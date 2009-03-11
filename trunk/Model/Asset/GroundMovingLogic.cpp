@@ -216,7 +216,7 @@ void GroundMovingLogic::followPath()
     //If close enough to current, get next target square
     float halfWidth = m_pUnit->getWidth() * 0.5f;
     float halfHeight = m_pUnit->getHeight() * 0.5f;
-    if( fabs(pos->x  - m_pPathNode->x) < halfWidth && fabs(pos->y - m_pPathNode->y) < halfHeight)
+    if( fabs(m_pPathNode->x - pos->x) < halfWidth && fabs(m_pPathNode->y - pos->y) < halfHeight)
     {
         m_pPathNode = m_pAgent->getNextPathNode();        
     }

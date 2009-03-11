@@ -63,6 +63,11 @@ void UIUnit::Render(LPDIRECT3DDEVICE9 pDevice)
 {
     if (IsVisible() && m_pMesh)
     {
+        //Position is updated here so frustum culling won't bug
+        m_mLocal._41 = m_pUnit->getPosition()->x + m_HalfSize;
+        m_mLocal._42 = m_pUnit->getPosition()->y + m_HalfSize;
+        m_mLocal._43 = UITerrain::getInstance()->calculateTriangleHeightAt(m_mLocal._41, m_mLocal._42);
+
         //Frustum culling
         D3DXVECTOR3 AABBMin(m_AABBMin.x + m_mWorld._41,
                             m_AABBMin.y + m_mWorld._42,

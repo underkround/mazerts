@@ -260,7 +260,7 @@ void GameState::updateControls(const float frameTime)
     if(KeyboardState::keyDown[m_KeyCameraReset])
     {
         m_pCamera->setZoom(100.0f);
-        m_pCamera->setRotation(0, 0.9f);
+        m_pCamera->setRotation(0.5f * D3DX_PI, 0.9f);
     }
 
     // sound things
@@ -277,43 +277,23 @@ void GameState::updateControls(const float frameTime)
     if(MouseState::mouseZSpeed)
     {
         m_pCamera->zoom(-MouseState::mouseZSpeed * m_ModifyMouseZoom);
-        /*m_MainCameraDistance -= MouseState::mouseZSpeed * m_ModifyMouseZoom;
-
-        if(m_MainCameraDistance < 10.0f)
-        {
-            m_MainCameraDistance = 10.0f;
-        }*/
-        //D3DXMATRIX view;
-        //m_pDevice->GetTransform(D3DTS_VIEW, &view);
-        //m_MainCameraX -= MouseState::mouseZSpeed * MOUSE_CAMSPEED * view._21;
-        //m_MainCameraY += MouseState::mouseZSpeed * MOUSE_CAMSPEED * view._11;
-        //m_MainCameraZ += MouseState::mouseZSpeed * MOUSE_CAMSPEED * view._33;
     }
 
     //camera mouse panning
     if(MouseState::mouseButton[m_KeyMouseDragButton])
     {
         m_pCamera->move(MouseState::mouseYSpeed * m_ModifyMouseDragY, -MouseState::mouseXSpeed * m_ModifyMouseDragX, 0);
-        //m_MainCameraX += -sin(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseDragX + cos(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseDragX;
-        //m_MainCameraY += cos(m_MainCameraYaw) * MouseState::mouseXSpeed * m_ModifyMouseDragY + sin(m_MainCameraYaw) * MouseState::mouseYSpeed * m_ModifyMouseDragY;
     }
 
     //Camera pitching
     if(MouseState::mouseButton[m_KeyMouseRotateButton])
     {
         m_pCamera->rotate(MouseState::mouseXSpeed * 0.05f, MouseState::mouseYSpeed * 0.01f);
-        /*m_MainCameraYaw += MouseState::mouseXSpeed * 0.05f;        
-        m_MainCameraPitch += MouseState::mouseYSpeed * 0.01f;
-        
-        if(m_MainCameraPitch < 0.4f)
-        {
-            m_MainCameraPitch = 0.4f;
-        }
-        else if(m_MainCameraPitch > (0.47f * D3DX_PI))
-        {
-            m_MainCameraPitch = 0.47f * D3DX_PI;
-        }*/
+    }
 
+    if(KeyboardState::keyReleased[28])
+    {
+        m_pCamera->m_Test = !m_pCamera->m_Test;
     }
 
     //Terrain picking test
@@ -368,12 +348,10 @@ void GameState::updateControls(const float frameTime)
             m_tmpSelectedUnit = pUnit; // TODO: remove after testing single unit moving
         }
     }
-    /*
     else if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
     {       
         m_Selector.buttonUp();
     }
-    */
 
 }
 
