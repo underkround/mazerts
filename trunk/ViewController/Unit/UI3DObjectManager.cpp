@@ -120,6 +120,7 @@ void UI3DObjectManager::loadMeshes(void)
     Config & conf = * Config::getInstance();
 
     //Create UIUnit
+    Unit * pUnit = new Unit();
     UIUnit* pUIUnit = new UIUnit(pUnit);
 
     //Set bounding box-size, z-value defaults to 4 (unless someone makes units to provide their depth)
