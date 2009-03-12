@@ -1,7 +1,6 @@
 #include "GroundMovingLogic.h"
 #include "../Terrain/Terrain.h"
 #include "../Common/Vector3.h"
-#include <stdlib.h>  //TODO: REMOVE WHEN COMMANDS ARE IMPLEMENTED
 
 #ifndef PI
 #define PI 3.141592653589793238462f
@@ -46,6 +45,8 @@ void GroundMovingLogic::attach(Unit* pUnit)
     m_pUnit = pUnit;
     m_TargetDir.x = m_pUnit->getDirection()->x;
     m_TargetDir.y = m_pUnit->getDirection()->y;
+
+    m_HalfSize = m_pUnit->getWidth() * 0.5f;
 }
 
 void GroundMovingLogic::update(Unit* pUnit, const float deltaT)
@@ -83,11 +84,11 @@ void GroundMovingLogic::idle(const float deltaT)
     // ... or, commands in unit, unit dispatching target from current command to this
 
     // do we have a target?
-    if(m_pTarget) {
+    if(m_pTarget) 
+    {
         // is the target reached?
         if( m_CachedReachedTargetX != m_pTarget->getTargetX() ||
-            m_CachedReachedTargetY != m_pTarget->getTargetY()
-        )
+            m_CachedReachedTargetY != m_pTarget->getTargetY()   )
         {
             // target has changed since we reached it
             m_CachedReachedTargetX = -1;
@@ -95,17 +96,6 @@ void GroundMovingLogic::idle(const float deltaT)
             m_State = ASKPATH;
         }
     }
-/*
-    //DEBUG/TESTING: Wait some time before asking a new path
-    static float counter = 0.0f;    
-    counter += deltaT;
-    if(counter > 1.0f)
-    {    
-        m_State = ASKPATH;
-        counter = 0.0f;
-    }
-*/
-
 }
 
 void GroundMovingLogic::askPath()
@@ -118,12 +108,6 @@ void GroundMovingLogic::askPath()
         m_pAgent = NULL;                
     }
 
-//    unsigned short terraSize = Terrain::getInstance()->getSize();
-    //TODO: Replace with reading targets from commands, after they are implemented
-//    static unsigned short m_TargetX;
-//    static unsigned short m_TargetY;
-//    m_TargetX = rand() % terraSize;
-//    m_TargetY = rand() % terraSize;
     if(!m_pTarget)
     {
         m_State = IDLE;
@@ -132,13 +116,9 @@ void GroundMovingLogic::askPath()
     unsigned short m_TargetX = m_pTarget->getTargetX();
     unsigned short m_TargetY = m_pTarget->getTargetY();
 
-    // is the target reached?
-/*
-    if( m_pUnit->getGridX() >= m_TargetX && (m_pUnit->getGridX() + m_pUnit->getWidth()) <= m_TargetY &&
-        m_pUnit->getGridY() >= m_TargetY && (m_pUnit->getGridY() + m_pUnit->getHeight()) <= m_TargetY)
+    // is the target reached? (Can differ by 1 square)
+    if( abs(m_pUnit->getGridX() - m_TargetX) < 2 && abs(m_pUnit->getGridY() == m_TargetY) < 2)
     {
-*/
-    if( m_pUnit->getGridX() == m_TargetX && m_pUnit->getGridY() == m_TargetY ) {
         // if the target was static coordinates - not tracking asset,
         // we can remove it when it's reached
         if(m_pTarget->isStatic())
@@ -244,10 +224,7 @@ void GroundMovingLogic::followPath()
     Vector3* pos = m_pUnit->getPosition();
 
     //If close enough to current, get next target square
-    //TODO: fixes for offsets (unit halfwidth)
-    float halfWidth = m_pUnit->getWidth() * 0.1f;
-    float halfHeight = m_pUnit->getHeight() * 0.1f;
-    if( fabs(m_pPathNode->x - pos->x) < halfWidth && fabs(m_pPathNode->y - pos->y) < halfHeight)
+    if( fabs(m_pPathNode->x - pos->x) < 1.0f && fabs(m_pPathNode->y - pos->y) < 1.0f)
     {
         m_pPathNode = m_pAgent->getNextPathNode();        
     }
@@ -291,7 +268,7 @@ void GroundMovingLogic::move(float deltaTime)
     static const float maxTurnSpeed = 1.0f * PI;
 
     //TODO: Maximum moving speed as units (grid squares) per second to unit TYPE data
-    static const float maxMoveSpeed = 20.0f;
+    static const float maxMoveSpeed = 10.0f;
 
     //Static deceleration, due to friction etc.
     m_CurrentSpeed *= (0.99f - (0.99f * deltaTime));
@@ -306,6 +283,7 @@ void GroundMovingLogic::move(float deltaTime)
     float currentAngle = atan2(dir->y, dir->x);
     float turn = currentAngle - targetAngle;
     
+    //Pick shorter turn route if necessary
     if(fabs(turn) > PI)
     {
         turn = targetAngle - currentAngle;    
@@ -315,7 +293,7 @@ void GroundMovingLogic::move(float deltaTime)
     if(fabs(turn) > PI * 0.25f || m_State == IDLE)
     {
         //Braking factor to data?
-        m_CurrentSpeed *= (0.95f - (0.95f * deltaTime));
+        m_CurrentSpeed *= (0.97f - (0.97f * deltaTime));
     }
 
 
@@ -324,7 +302,7 @@ void GroundMovingLogic::move(float deltaTime)
         turnSpeed = -turn;
     }*/
 
-    float turnTreshold = 0.1f; // below this, the dirs are set straight from target
+    float turnTreshold = 0.03f; // below this, the dirs are set straight from target
     if( (turn <= turnTreshold && turn > 0.000001f) || (turn >= -turnTreshold && turn < -0.000001f) )
     {
         dir->x = m_TargetDir.x;
@@ -344,14 +322,13 @@ void GroundMovingLogic::move(float deltaTime)
     {
         if(m_State == FOLLOWPATH)
         {
-            //Heading (pretty much) toward correct direction, hit the pedal to the metal
-            //TODO: Acceleration from data?
-            m_CurrentSpeed += 10.0f * deltaTime;
-            
-            if(m_CurrentSpeed > maxMoveSpeed)
-            {
-                m_CurrentSpeed = maxMoveSpeed;
-            }
+            //Heading (pretty much) toward correct direction, hit the pedal to the metal            
+            //Offsets (m_HalfSize) are needed because the speed is calculated from "center" of unit
+            float factor = Terrain::getInstance()->getUnitMoveSpeed( (short)(pos->x + m_HalfSize), (short)(pos->y + m_HalfSize), (char)floor(dir->x + 0.5f), (char)floor(dir->y + 0.5f));            
+            m_CurrentSpeed = factor * maxMoveSpeed;
+            /*TCHAR msg[256];            
+            _stprintf_s(msg, _T("FACTOR: %.3f   SPEED: %.3f\n"), factor, m_CurrentSpeed);
+            ::OutputDebugStr(msg);*/
         }
     }
 

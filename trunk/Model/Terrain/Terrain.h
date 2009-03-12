@@ -50,7 +50,7 @@ public:
 
     /**
      * Movecost-threshold: this value is the maximum amount
-     * the movecost can differ from threshold
+     * the movecost can differ from offset
      */
     static const short MOVECOST_THRESHOLD = 10;
     static const short MOVECOST_MAX = MOVECOST_OFFSET + MOVECOST_THRESHOLD;
@@ -179,6 +179,16 @@ public:
                is not possible (too big height difference)
      */
     short getMoveCost(const short x, const short y, const signed char dirX, const signed char dirY) const;
+
+    /**
+     * Calculates speed factor from tile x, y to tile x+dirX, y+dirY
+     * @param x X-position in the map to move from
+     * @param y Y-position in the map to move from
+     * @param dirX X-direction to move in (-1, 0, 1)
+     * @param dirY Y-direction to move in (-1, 0, 1)
+     * @return Movespeed-factor at current position from 0.1 to 1.0f
+     */
+    float getUnitMoveSpeed(const short x, const short y, const signed char dirX, const signed char dirY) const;
 
     /**
      * Returns the water-level of the map

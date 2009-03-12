@@ -44,8 +44,8 @@ void UIUnit::alignToTerrain()
 
     m_mLocal._13 = right.z;
     m_mLocal._23 = normal.z;
-    m_mLocal._33 = forward.z;
-    
+    m_mLocal._33 = forward.z;    
+
     m_mLocal._41 = m_pUnit->getPosition()->x + m_HalfSize;
     m_mLocal._42 = m_pUnit->getPosition()->y + m_HalfSize;
     m_mLocal._43 = UITerrain::getInstance()->calculateTriangleHeightAt(m_mLocal._41, m_mLocal._42);

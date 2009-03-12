@@ -214,6 +214,42 @@ short Terrain::getMoveCost(const short x, const short y, const signed char dirX,
     }
 }
 
+float Terrain::getUnitMoveSpeed(const short x, const short y, const signed char dirX, const signed char dirY) const
+{
+
+    short targetX = x + dirX;
+    short targetY = y + dirY;
+    
+    //Bounds check
+    if(targetX < 0 ||targetX >= m_Size || targetY < 0 ||targetY >= m_Size)
+    {
+        return 0.0f;
+    }
+    else
+    {
+        //Check if the tile is passable
+        if(!m_ppPassableTile[targetY][targetX])
+        {
+            return 0.1f;
+        }
+        else
+        {
+            //Calculate speed factor
+            float moveSpeed = (m_ppTerrainHeightData[y][x] - m_ppTerrainHeightData[targetY][targetX] + MOVECOST_THRESHOLD) / (MOVECOST_THRESHOLD * 2.0f);
+            
+            if(moveSpeed <= 0.1f)
+            {
+                moveSpeed = 0.1f;
+            }
+            if(moveSpeed > 1.0f)
+            {
+                moveSpeed = 1.0f;
+            }
+
+            return moveSpeed;
+        }
+    }
+}
 
 void Terrain::setTerrainVertexHeight(const short x, const short y, const unsigned char height)
 {
