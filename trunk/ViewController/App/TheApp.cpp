@@ -177,7 +177,7 @@ void CTheApp::OnFlip(void)
         if(m_CatchInput)
         {
             GameConsole & c = *GameConsole::getInstance();
-            c.drawLines(GetWindowRect().left);
+            DrawText(100, 400, _T("IMEKÄÄ MUN SYKKIVÄÄ!"), 0xFFFFFFFF);
         }
 
         TCHAR text[100];

@@ -36,11 +36,7 @@ public:
      */
     void clear(void);
 
-    /**
-     * print messages to screen
-     * MUST BE BETWEEN BeginText and EndText!
-     */
-    void drawLines(int bottom);
+    inline int getSize() { return CONSOLE_LENGTH; }
 
 protected:
 
@@ -48,9 +44,10 @@ protected:
 
     ~GameConsole(void);
 
+private:
 // *** MEMBERS ***
 
-    static TCHAR m_arrMessages[128][CONSOLE_LENGTH];
+    static TCHAR m_arrMessages[CONSOLE_LENGTH][128];
     static GameConsole* pInstance;
 };
 

@@ -49,6 +49,8 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
     flattenArea(ppVertexHeightData, terrainSize, 255, 50, 100, 15, 20);
     flattenArea(ppVertexHeightData, terrainSize, 0, 50, 100, 10, 0);
 
+    makeIsland(ppVertexHeightData, terrainSize, 50);
+
     Terrain::getInstance()->smoothMap(1);
 }
 
@@ -182,6 +184,26 @@ void AntinTerrainGenerator::flattenArea(    unsigned char **ppVertexHeightData,
                 //float stepSize = (float)abs(height - ppVertexHeightData[y][x]) / (float)donutWidth;
                 float ratio = (1/donutWidth)*step;
                 ppVertexHeightData[y][x] = (unsigned char)(ppVertexHeightData[y][x]*ratio + height*(1-ratio));
+            }
+        }
+    }
+}
+
+void AntinTerrainGenerator::makeIsland(unsigned char **ppVertexHeightData, const unsigned short terrainSize, int borders)
+{
+    int x0 = terrainSize/2;
+    int y0 = terrainSize/2;
+    int cir2 = (x0-borders)*(y0-borders);
+    
+    for(int x = 0; x < terrainSize; ++x)
+    {
+        for(int y = 0; y < terrainSize; ++y)
+        {
+            int z = (x0-x)*(x0-x)+(y0-y)*(y0-y);
+            if(z > cir2)
+            {
+                float heightdrop = (float)(sqrt((double)z) - sqrt((double)cir2))+(ppVertexHeightData[y][x]*0.8f);
+                ppVertexHeightData[y][x] = (ppVertexHeightData[y][x]-heightdrop > 0) ? ppVertexHeightData[y][x] -= heightdrop : 0;
             }
         }
     }

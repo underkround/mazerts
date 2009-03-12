@@ -110,6 +110,12 @@ private:
     void flattenArea(unsigned char **ppVertexHeightData, const unsigned short terrainSize, int height, int xCenter, int yCenter, int innerRadius, int outerRadius);
 
     /**
+     * makeIsland
+     * lowers the borders of map to make it an island
+     */
+    void makeIsland(unsigned char **ppVertexHeightData, const unsigned short terrainSize, int borders);
+
+    /**
      * Our preferred size
      */
     unsigned short      m_Size;

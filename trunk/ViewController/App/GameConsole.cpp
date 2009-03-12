@@ -24,12 +24,3 @@ void GameConsole::input(char* input)
 void GameConsole::clear(void)
 {
 }
-
-void GameConsole::drawLines(int bottom)
-{
-    for(int i=0;i<CONSOLE_LENGTH;++i)
-    {
-        //DrawText(0, bottom-i*20, _T("jihu!"), 0xFFFFFFFF);        
-    }
-}
-
