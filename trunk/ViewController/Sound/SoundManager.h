@@ -110,16 +110,16 @@ public:
      * @param volume    how loud the sound is (0 = max, -10000 = mute)
      * @param pan       left<->right speaker, (-10k = full left, 10k full right)
      */
-    static void playSound(const SoundTypes type, const float distort, int volume, int pan);
+    static void playSound(const SoundTypes type, const float distort, const int volume, const int pan);
 
     /**
      * Plays sound. Calculates panning and volume according to camera & target.
      * @param type      which sound to play
      * @param distort   how much sound is to be distorted (in percents)
-     * @param soundPos  where in world the sound is coming from
-     * @param camera    pointer to camera
+     * @param pSoundPos  where in world the sound is coming from
+     * @param pCamera    pointer to camera
      */
-    static void playSound(const SoundTypes type, const float distort, D3DXVECTOR3* pSoundPos, Camera* pCamera);
+    static void playSound(const SoundTypes type, const float distort, const D3DXVECTOR3* pSoundPos, Camera* pCamera);
 
     /**
      * Stops all currently playing sound effects.
@@ -135,7 +135,7 @@ public:
      * @param type          which music to play
      * @param looping       if music should be looped
      */
-    static void playMusic(const MusicTypes type, bool looping);
+    static void playMusic(const MusicTypes type, const bool looping);
 
     /**
      * Stops music playing

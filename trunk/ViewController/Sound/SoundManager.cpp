@@ -110,7 +110,7 @@ void SoundManager::playSound(const SoundTypes type, const float distort)
     playSound(type, distort, 0, 0);
 }
 
-void SoundManager::playSound(const SoundTypes type, const float distort, int volume, int pan)
+void SoundManager::playSound(const SoundTypes type, const float distort, const int volume, const int pan)
 {
     SoundManager* pInstance = getInstance();
     if (!pInstance->m_SoundsEnabled) return;
@@ -128,7 +128,7 @@ void SoundManager::playSound(const SoundTypes type, const float distort, int vol
     pWave->Play(false, duplicate);
 }
 
-void SoundManager::playSound(const SoundTypes type, const float distort, D3DXVECTOR3* pSoundPos, Camera* pCamera)
+void SoundManager::playSound(const SoundTypes type, const float distort, const D3DXVECTOR3* pSoundPos, Camera* pCamera)
 {
     // calculate distance
     D3DXVECTOR3 distvect;
@@ -142,11 +142,11 @@ void SoundManager::playSound(const SoundTypes type, const float distort, D3DXVEC
     D3DXVECTOR2 right(pCamera->getMatrix()._11, -pCamera->getMatrix()._12); // second parameter is inversed because of hitler, seems like _21 would work too
     float dot = D3DXVec2Dot(&normpos, &right);
 
-    int pan = 2000 * dot;
+    int pan = (int)(2000 * dot);
     int volume = 0;
-    int third = 0.33 * HEARING_DISTANCE;
+    int third = (int)(0.33f * HEARING_DISTANCE);
     if (dist > third)
-        volume = -((dist - third) / (HEARING_DISTANCE >> 1) * 3000);
+        volume = -(int)((dist - third) / (HEARING_DISTANCE >> 1) * 3000);
 
     playSound(type, distort, volume, pan);
 }
