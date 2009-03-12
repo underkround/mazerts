@@ -66,7 +66,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     pTerrain->setWaterLevel(50);
 
     //TEST
-    for(int i = 0; i < 50; i++)
+    for(int i = 0; i < 5; i++)
     {
         AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, pTerrain->getSize()), m_pApp->RandInt(0, pTerrain->getSize()));
     }

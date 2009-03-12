@@ -84,9 +84,10 @@ public:
 protected:
     
     /**
-     * Aligns the model to the terrain below it
+     * Handles updating the unit-matrix and (if ground unit)
+     * aligns the model to the terrain below it
      */
-    void alignToTerrain();
+    void updatePosition();
 
     /**
      * Pointer to Model-side Unit-instance this is a representation of
