@@ -146,6 +146,7 @@ private:
      int m_KeyMusicToggle;
      int m_KeyVolumeUp;
      int m_KeyVolumeDown;
+
 };
 
 #endif //__GAMESTATE_H__

@@ -483,34 +483,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="GameConsole"
-				>
-				<File
-					RelativePath="..\Model\GameConsole\ConsoleBuffer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Model\GameConsole\ConsoleBufferIterator.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Model\GameConsole\DefaultConsoleParser.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Model\GameConsole\GameConsole.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Model\GameConsole\GameConsole.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Model\GameConsole\IGameConsoleParser.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="PathFinding"
 				>
 				<File
@@ -635,6 +607,14 @@
 				</File>
 				<File
 					RelativePath=".\App\C3DResourceContainer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\App\GameConsole.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\GameConsole.h"
 					>
 				</File>
 				<File

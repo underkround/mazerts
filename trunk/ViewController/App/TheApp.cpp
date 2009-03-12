@@ -24,6 +24,7 @@ CTheApp::CTheApp(void)
     m_pStates = NULL;
     Config::getInstance()->loadDefaults();
     handleConfig();
+    m_CatchInput = false;
 	::CoInitialize(NULL);
 }
 
@@ -121,8 +122,12 @@ void CTheApp::OnFlip(void)
     const float frameTime = GetFrameTime();
 
 
-    //Input updates    
-    Input::update();
+    //Input updates
+    if(!m_CatchInput) {
+        Input::update();
+    } else {
+        //(if console mode is enabled then all input should be listened by game console)
+    }
 
     //Sound updates
     SoundManager::update();
@@ -168,6 +173,11 @@ void CTheApp::OnFlip(void)
             DrawTextRow(_T("M & N change terrain detail level"), 0xFFFFFFFF);
             DrawTextRow(_T("F5 toggles sound, f6 toggles music, numpad +/- changes master volume"), 0xFFFFFFFF);                        
             DrawTextRow(_T("F1 hides/shows this help message"), 0xFFFFFFFF);                        
+        }
+        if(m_CatchInput)
+        {
+            GameConsole & c = *GameConsole::getInstance();
+            c.drawLines(GetWindowRect().left);
         }
 
         TCHAR text[100];
@@ -245,6 +255,16 @@ void CTheApp::OnKeyDown(DWORD dwKey)
     {
         m_Help = !m_Help;
         SoundManager::playSound(SoundManager::EXPLOSION, 0.0f);
+    }
+
+    if(dwKey == VK_F2)
+    {
+        if(m_CatchInput) {
+            m_CatchInput = false;
+        }
+        else {
+            m_CatchInput = true;
+        }
     }
 }
 

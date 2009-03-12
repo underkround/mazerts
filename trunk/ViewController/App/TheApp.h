@@ -12,6 +12,7 @@
 #include "ID3DApplication.h"
 #include "../States/IState.h"
 #include "../../Model/Common/DoubleLinkedList.h"
+#include "GameConsole.h"
 
 class CTheApp : public ID3DApplication
 {
@@ -123,6 +124,9 @@ private:
     
     //Text row for DrawTextRow
     int m_TextRow;
+
+    //for game console mode
+    bool m_CatchInput;
 
     //Help texts
     bool m_Help;

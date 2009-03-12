@@ -275,6 +275,7 @@ void GameState::updateControls(const float frameTime)
     if (KeyboardState::keyDown[m_KeyVolumeDown])
         SoundManager::setMasterVolume(SoundManager::getMasterVolume() - 50);
 
+
     //mouse zoom
     if(MouseState::mouseZSpeed)
     {
