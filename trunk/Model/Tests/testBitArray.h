@@ -5,12 +5,12 @@
 #include <iostream>
 
 #include "../Common/BitArray.h"
+#include "CTimer.h"
 
 using namespace std;
 
 void testBitArray() {
     BitArray* b;
-
 // test initialization to zero
     b = new BitArray(500);
     int sum = 0;
@@ -82,6 +82,7 @@ void testBitArray() {
     assert( b->getBool(3));
     assert(!b->getBool(4));
     assert( b->getBool(15));
+    delete b;
 
     BitArray ba(2);
     ba.setBit(0, 1);
@@ -89,8 +90,27 @@ void testBitArray() {
     assert(ba[1] == 0);
     for(unsigned int i=0; i<ba.getSize(); i++)
         cout << ba[i];
-
     ba.debug(true);
+
+    const int bigsize = 1048576; // 1024x1024
+    cout << " - creating bitarray of " << bigsize << " bits\n";
+    b = new BitArray(bigsize);
+    CTimer timer;
+    timer.Create();
+    timer.BeginTimer();
+    for(unsigned int i=0; i<b->getSize(); i++)
+        b->setBit(i, 1);
+    timer.EndTimer();
+    cout << "   -> setting all bits from 0 to 1 took " << timer.GetElapsedSeconds() << " seconds\n";
+
+    char* arr = new char[bigsize];
+    timer.BeginTimer();
+    for(int i=0; i<bigsize; i++)
+        arr[i] = 1;
+    timer.EndTimer();
+    cout << " - setting char* with " << bigsize << " elements to 1 took " << timer.GetElapsedSeconds() << " seconds\n";
+    delete [] arr;
+
     cout << "\n";
     delete b;
 };

@@ -528,58 +528,6 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="Tests"
-			>
-			<File
-				RelativePath="..\Model\Tests\AntinAITest.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\ConfigTest.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\CTimer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\DebugAssetCollectionListener.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\PathFinderMasterTest.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\PathFinderTest.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\TerrainTest.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\testAssetCollection.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\testAssetFactory.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\testi.ini"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\TestsMain.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Model\Tests\VectorAndMatriceTest.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="UI"
 			>
 			<Filter
