@@ -290,7 +290,7 @@ void GameState::updateControls(const float frameTime)
     //Camera pitching
     if(MouseState::mouseButton[m_KeyMouseRotateButton])
     {
-        m_pCamera->rotate(MouseState::mouseXSpeed * 0.05f, MouseState::mouseYSpeed * 0.01f);
+        m_pCamera->rotate(MouseState::mouseXSpeed * 0.05f * m_ModifyMouseRotationX, MouseState::mouseYSpeed * 0.01f * m_ModifyMouseRotationY);
     }
 
     if(KeyboardState::keyReleased[28])
