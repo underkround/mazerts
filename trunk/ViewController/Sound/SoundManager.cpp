@@ -107,6 +107,11 @@ void SoundManager::update()
 
 void SoundManager::playSound(const SoundTypes type, const float distort)
 {
+    playSound(type, distort, 0, 0);
+}
+
+void SoundManager::playSound(const SoundTypes type, const float distort, int volume, int pan)
+{
     SoundManager* pInstance = getInstance();
     if (!pInstance->m_SoundsEnabled) return;
 
@@ -117,18 +122,34 @@ void SoundManager::playSound(const SoundTypes type, const float distort)
     const int maxDistort = pWave->getOriginalFrequency() + dist;
 
     pWave->SetFrequency(IApplication::RandInt(minDistort, maxDistort), duplicate);
-	//pWave->SetVolume(0, dwDuplicate);
-	//pWave->SetPan(0, dwDuplicate);
+	pWave->SetVolume(volume, duplicate);
+	pWave->SetPan(pan, duplicate);
 	//pWave.RePlay(FALSE, dwDuplicate);    
     pWave->Play(false, duplicate);
 }
 
-/*
-void playSound3D(const SoundTypes type, const D3DXVECTOR3 position, const float distort)
+void SoundManager::playSound(const SoundTypes type, const float distort, D3DXVECTOR3* pSoundPos, Camera* pCamera)
 {
-    playSound(type, distort);
+    // calculate distance
+    D3DXVECTOR3 distvect;
+    D3DXVec3Subtract(&distvect, pSoundPos, &pCamera->getPosition());
+    float dist = D3DXVec3Length(&distvect);
+    if (dist > HEARING_DISTANCE) return; // sound is too far away
+
+    // calculate angle
+    D3DXVECTOR2 normpos(distvect.x, distvect.y);
+    D3DXVec2Normalize(&normpos, &normpos);
+    D3DXVECTOR2 right(pCamera->getMatrix()._11, -pCamera->getMatrix()._12); // second parameter is inversed because of hitler, seems like _21 would work too
+    float dot = D3DXVec2Dot(&normpos, &right);
+
+    int pan = 2000 * dot;
+    int volume = 0;
+    int third = 0.33 * HEARING_DISTANCE;
+    if (dist > third)
+        volume = -((dist - third) / (HEARING_DISTANCE >> 1) * 3000);
+
+    playSound(type, distort, volume, pan);
 }
-*/
 
 void SoundManager::stopSounds()
 {

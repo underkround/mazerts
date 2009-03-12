@@ -107,6 +107,8 @@ public:
         m_View = view;
     }
 
+    inline D3DXVECTOR3& getPosition() { return m_Position; }
+
     /**
      * Returns the current view-matrix
      * @return the view-matrix

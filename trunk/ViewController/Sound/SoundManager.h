@@ -4,15 +4,18 @@
 #include "../App/IApplication.h"
 #include "SoundWave.h"
 #include "SoundMP3Player.h"
+#include "../Camera/Camera.h"
 
 #include <tchar.h>
 #include <map>
+#include <d3dx9.h>
 
 #define DEFAULT_FREQUENCY 44100
 #define DEFAULT_BPS 16
 #define DEFAULT_CHANNELS 2
 #define DEFAULT_FLAGS 0
 #define DEFAULT_DUPLICATE_AMOUNT 0
+#define HEARING_DISTANCE 300
 
 #define MAX_TEXT_LENGTH 64
 
@@ -94,19 +97,29 @@ public:
 
 
     /**
-     * Plays sound.
+     * Plays sound. Uses max volume and center pan.
      * @param type      which sound to play
      * @param distort   how much sound is to be distorted (in percents)
      */
     static void playSound(const SoundTypes type, const float distort);
 
     /**
-     * Plays sound in 3d space.
-     * @param type          which sound to play
-     * @param position      where the sound is to be played
-     * @param distort       how much sound is to be distorted (in percents)
+     * Plays sound with provided volume and pan.
+     * @param type      which sound to play
+     * @param distort   how much sound is to be distorted (in percents)
+     * @param volume    how loud the sound is (0 = max, -10000 = mute)
+     * @param pan       left<->right speaker, (-10k = full left, 10k full right)
      */
-//    static void playSound3D(const SoundTypes type, const D3DXVECTOR3 position, const float distort);
+    static void playSound(const SoundTypes type, const float distort, int volume, int pan);
+
+    /**
+     * Plays sound. Calculates panning and volume according to camera & target.
+     * @param type      which sound to play
+     * @param distort   how much sound is to be distorted (in percents)
+     * @param soundPos  where in world the sound is coming from
+     * @param camera    pointer to camera
+     */
+    static void playSound(const SoundTypes type, const float distort, D3DXVECTOR3* pSoundPos, Camera* pCamera);
 
     /**
      * Stops all currently playing sound effects.

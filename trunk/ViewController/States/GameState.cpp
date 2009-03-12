@@ -171,7 +171,6 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
     //pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
     m_pManager->getRootObject()->Render(pDevice);
-
 }
 
 
@@ -267,7 +266,8 @@ void GameState::updateControls(const float frameTime)
 
     // sound things
     if (KeyboardState::keyReleased[m_KeySoundToggle])
-        SoundManager::setSoundsEnabled(!SoundManager::getSoundsEnabled());
+        SoundManager::playSound(SoundManager::EXPLOSION, 0.1f, &D3DXVECTOR3(50, 100, 0), m_pCamera);
+//        SoundManager::setSoundsEnabled(!SoundManager::getSoundsEnabled());
     if (KeyboardState::keyReleased[m_KeyMusicToggle])
         SoundManager::setMusicEnabled(!SoundManager::getMusicEnabled());
     if (KeyboardState::keyDown[m_KeyVolumeUp])
@@ -345,7 +345,7 @@ void GameState::updateControls(const float frameTime)
             //Debug-object, added automatically to root
             m_pManager->getRootObject()->RemoveChild(pObj);
             pUnit->AddChild(pObj);
-            SoundManager::playSound(SoundManager::READY, 0.1f);
+            SoundManager::playSound(SoundManager::READY, 0.1f, (D3DXVECTOR3*)&pUnit->GetMatrix()._41, m_pCamera);
 
             m_tmpSelectedUnit = pUnit; // TODO: remove after testing single unit moving
         }
