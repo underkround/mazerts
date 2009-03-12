@@ -28,11 +28,11 @@ void AntinAI::Release(void)
 void AntinAI::LoadConfigFromFile(void)
 {
     Config & c = * Config::getInstance();
-    c.setFilename("AntinAI.ini");
+    c.setFilename("", "AntinAI.ini");
     c.readFile();
-    c.setFilename("Buildings.ini");
+    c.setFilename("", "Buildings.ini");
     c.readFile();
-    c.setFilename("Units.ini");
+    c.setFilename("", "Units.ini");
     c.readFile();
     //test
     //ChooseUnitToBuild();

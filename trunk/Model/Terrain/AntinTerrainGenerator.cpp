@@ -24,18 +24,18 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
 {
     //PERUNAPELTOGENERAATTORI aka. just testing algorithms - NOT an actual way to make good terrain!
     makeFlat(ppVertexHeightData, terrainSize, Terrain::DEFAULT_FLATHEIGHT);
-    for(int i=0;i<40;i+=8)
+    for(int i=0;i<80;i+=8)
     {
-        makeHills(ppVertexHeightData, terrainSize, 2, i, i*5);
+        makeHills(ppVertexHeightData, terrainSize, 2, i, i*2);
     }
-    invertTerrain(ppVertexHeightData, terrainSize);
-    faultLines(ppVertexHeightData, terrainSize, 200, 2);
+    //invertTerrain(ppVertexHeightData, terrainSize);
+    faultLines(ppVertexHeightData, terrainSize, 4, 50);
 
-    Terrain::getInstance()->smoothMap(1);
+    //Terrain::getInstance()->smoothMap(1);
 
-    faultLines(ppVertexHeightData, terrainSize, 400, 4);
+    faultLines(ppVertexHeightData, terrainSize, 400, 1);
 
-    for(int i=0;i<10;++i)
+    /*for(int i=0;i<10;++i)
     {
         flattenArea(    ppVertexHeightData,
                         terrainSize,
@@ -44,10 +44,10 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
                         -1,
                         10,
                         40);
-    }
+    }*/
 
-    flattenArea(ppVertexHeightData, terrainSize, 0, 50, 100, 15, 20);
-    flattenArea(ppVertexHeightData, terrainSize, 255, 50, 100, 10, 0);
+    flattenArea(ppVertexHeightData, terrainSize, 255, 50, 100, 15, 20);
+    flattenArea(ppVertexHeightData, terrainSize, 0, 50, 100, 10, 0);
 
     Terrain::getInstance()->smoothMap(1);
 }

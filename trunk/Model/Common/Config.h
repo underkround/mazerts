@@ -41,6 +41,8 @@ protected:
 
   struct Setting {
     string name;
+    string file;
+    string section;
     VARIABLE_TYPE type;
   };
 
@@ -95,7 +97,9 @@ protected:
    */
   void readFile();
 
-  inline void setFilename(string filename) { m_strFilename = filename; };
+  inline void setFilename(string filename) { m_strFilename = filename; m_strFilepath = ""; };
+  inline void setFilename(string path, string filename) { m_strFilename = filename; m_strFilepath = path; };
+  inline void setCurrentSection(string section) { m_strCurrentSection = section; };
 
   /**
    * getValueAsInt
@@ -104,6 +108,8 @@ protected:
    * @return setting as integer
    */
   int getValueAsInt(string in_name);
+  int getValueAsInt(string in_filename, string in_name);
+  int getValueAsInt(string in_filename, string in_section, string in_name);
 
   /**
    * getValueAsBool
@@ -112,6 +118,8 @@ protected:
    * @return setting as boolean
    */
   bool getValueAsBool(string in_name);
+  bool getValueAsBool(string in_filename, string in_name);
+  bool getValueAsBool(string in_filename, string in_section, string in_name);
 
   /**
    * getValueAsString
@@ -120,8 +128,12 @@ protected:
    * @return setting as string
    */
   string getValueAsString(string in_name);
+  string getValueAsString(string in_filename, string in_name);
+  string getValueAsString(string in_filename, string in_section, string in_name);
 
   wstring getValueAsWString(string in_name);
+  wstring getValueAsWString(string in_filename, string in_name);
+  wstring getValueAsWString(string in_filename, string in_section, string in_name);
 
   /**
    * mazerts specific configuration default values
@@ -132,6 +144,8 @@ protected:
   private:
     //** variables **
     string m_strFilename;
+    string m_strFilepath;
+    string m_strCurrentSection;
     vector<Setting*> settingData;
     static Config* pInstance;
 
@@ -144,16 +158,23 @@ protected:
      * adds a new setting, if it already existed, replaces that
      * @param in_name name of setting
      * @param in_value value of setting
+     * @param in_file current filename
+     * @param in_section current section
      */
     void addSetting(string in_name, string in_value);
     void addSetting(string in_name, int in_value);
+    void addSetting(string in_file, string in_section, string in_name, string in_value);
+    void addSetting(string in_file, string in_section, string in_name, int in_value);
+
 public:
     /**
      * deleteSetting
      *
      * removes setting
      */
-    void deleteSetting(string name);
+    void deleteSetting(string in_name);
+    void deleteSetting(string in_filename, string in_name);
+    void deleteSetting(string in_filename, string in_section, string in_name);
 
     /**
      * settingExists
@@ -162,7 +183,9 @@ public:
      *
      * @param name setting to be checked
      */
-    bool settingExists(string name);
+    bool settingExists(string in_name);
+    bool settingExists(string in_filename, string in_name);
+    bool settingExists(string in_filename, string in_section, string in_name);
 
     /**
      * printSetting

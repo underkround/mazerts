@@ -37,7 +37,7 @@ int main(int arcg, char* argv[])
 
 //    if(VERBOSE) cout << "\n *** vector & matrix ***\n";             testVectorAndMatrice ();
 
-//    if(VERBOSE) cout << "\n *** config from file ***\n";            testConfig();
+    if(VERBOSE) cout << "\n *** config from file ***\n";            testConfig();
 
 //    if(VERBOSE) cout << "\n *** Pathfinder ***\n";                  testPathFinder();
 
@@ -49,9 +49,9 @@ int main(int arcg, char* argv[])
 
 //    if(VERBOSE) cout << "\n *** Asset factory ***\n";               testAssetFactory();
 
-    if(VERBOSE) cout << "\n **** Double Linked List ***\n";         testDoubleLinkedList();
+   // if(VERBOSE) cout << "\n **** Double Linked List ***\n";         testDoubleLinkedList();
 
-    if(VERBOSE) cout << "\n **** BitArray ***\n";                   testBitArray();    
+    //if(VERBOSE) cout << "\n **** BitArray ***\n";                   testBitArray();    
 //    _CrtDumpMemoryLeaks();
     return 0;
 }

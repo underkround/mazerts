@@ -254,6 +254,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Terrain\MiniMap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Terrain\MiniMap.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Model\Terrain\RandomTerrainGenerator.cpp"
 					>
 				</File>
@@ -919,6 +927,18 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath="..\..\docs\maze.ico"
+			>
+		</File>
+		<File
+			RelativePath=".\resource.h"
+			>
+		</File>
+		<File
+			RelativePath=".\ViewController.rc"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

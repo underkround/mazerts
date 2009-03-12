@@ -31,20 +31,21 @@ Config::~Config(void) {
 //*** Public ***
 
 void Config::readFile(void) {
-  //TODO: tutustu voiko lukea tiedostosta jotenkin hienommin
+  m_strCurrentSection = "";
   string rivi;
-  ifstream kahva (m_strFilename.c_str());
+  string filename = m_strFilepath.append(m_strFilename);
+  ifstream kahva (filename.c_str());
   if (kahva.is_open())
   {
     while (! kahva.eof() )
     {
       getline(kahva, rivi);
-      //cout << rivi << "\n";
       parseRow(rivi);
     }
     kahva.close();
   }
   else cout << "Configuration file \"" << m_strFilename << "\" could not be loaded."; //TODO: where to log errors?
+  m_strCurrentSection = "";
 }
 
 int Config::getValueAsInt(string in_name) {
@@ -56,6 +57,25 @@ int Config::getValueAsInt(string in_name) {
   return 0;
 }
 
+int Config::getValueAsInt(string in_filename, string in_name) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename) {
+      return static_cast<SettingInt*>(*iter)->value;
+    }
+  }
+  return 0;
+}
+
+int Config::getValueAsInt(string in_filename, string in_section, string in_name){
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
+      return static_cast<SettingInt*>(*iter)->value;
+    }
+  }
+  return 0;
+}
+
+
 bool Config::getValueAsBool(string in_name) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name) {
@@ -64,6 +84,25 @@ bool Config::getValueAsBool(string in_name) {
   }
   return false;
 }
+
+bool Config::getValueAsBool(string in_filename, string in_name) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename) {
+      return (bool)static_cast<SettingInt*>(*iter)->value;
+    }
+  }
+  return false;
+}
+
+bool Config::getValueAsBool(string in_filename, string in_section, string in_name) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
+      return (bool)static_cast<SettingInt*>(*iter)->value;
+    }
+  }
+  return false;
+}
+
 
 string Config::getValueAsString(string in_name) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
@@ -74,12 +113,62 @@ string Config::getValueAsString(string in_name) {
   return "";
 }
 
+string Config::getValueAsString(string in_filename, string in_name) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename) {
+      return static_cast<SettingString*>(*iter)->value;
+    }
+  }
+  return "";
+}
+
+string Config::getValueAsString(string in_filename, string in_section, string in_name) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
+      return static_cast<SettingString*>(*iter)->value;
+    }
+  }
+  return "";
+}
+
+
 wstring Config::getValueAsWString(string in_name)
 {
-    std::wstring wstrname;
-    wstrname.assign(in_name.begin(), in_name.end());
-    return wstrname;
+  std::wstring wstrname;
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name) {
+      string tmpname = static_cast<SettingString*>(*iter)->value;
+      wstrname.assign(tmpname.begin(), tmpname.end());
+      return wstrname;
+    }
+  }
+  return wstrname;
 }
+wstring Config::getValueAsWString(string in_filename, string in_name) {
+  std::wstring wstrname;
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename) {
+      string tmpname = static_cast<SettingString*>(*iter)->value;
+      wstrname.assign(tmpname.begin(), tmpname.end());
+      return wstrname;
+    }
+  }
+  return wstrname;
+}
+
+wstring Config::getValueAsWString(string in_filename, string in_section, string in_name) {
+  std::wstring wstrname;
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
+      string tmpname = static_cast<SettingString*>(*iter)->value;
+      wstrname.assign(tmpname.begin(), tmpname.end());
+      return wstrname;
+    }
+  }
+  return wstrname;
+}
+
+
 
 bool Config::isNumeric(string str) {
   char merkki;
@@ -142,7 +231,7 @@ void Config::printSettings() {
 //*** Private ***
 
 void Config::printSetting(Setting * set) {
-  cout << "Nimi:\t" << set->name << endl;
+    cout << "[" << set->section << "] Nimi: " << set->name << "\tTiedostosta: " << set->file << endl;
   switch(set->type) {
     case VARIABLE_INTEGER:
       cout << "Tyyppi:\t" << "kokonaisluku" << endl;
@@ -162,6 +251,8 @@ void Config::addSetting(string in_name, string in_value) {
   static_cast<SettingString*>(set)->name = in_name;
   static_cast<SettingString*>(set)->type = tyyppi;
   static_cast<SettingString*>(set)->value = in_value;
+  static_cast<SettingString*>(set)->file = m_strFilename;
+  static_cast<SettingString*>(set)->section = m_strCurrentSection;
   settingData.push_back(set);
 }
 
@@ -172,8 +263,35 @@ void Config::addSetting(string in_name, int in_value) {
   static_cast<SettingInt*>(set)->name = in_name;
   static_cast<SettingInt*>(set)->type = tyyppi;
   static_cast<SettingInt*>(set)->value = in_value;
+  static_cast<SettingInt*>(set)->file = m_strFilename;
+  static_cast<SettingInt*>(set)->section = m_strCurrentSection;
   settingData.push_back(set);
 }
+
+void Config::addSetting(string in_file, string in_section, string in_name, string in_value) {
+  deleteSetting(in_name);
+  VARIABLE_TYPE tyyppi = VARIABLE_STRING;
+  Setting * set = new SettingString();
+  static_cast<SettingString*>(set)->name = in_name;
+  static_cast<SettingString*>(set)->type = tyyppi;
+  static_cast<SettingString*>(set)->value = in_value;
+  static_cast<SettingString*>(set)->file = in_file;
+  static_cast<SettingString*>(set)->section = in_section;
+  settingData.push_back(set);
+}
+
+void Config::addSetting(string in_file, string in_section, string in_name, int in_value) {
+  deleteSetting(in_name);
+  VARIABLE_TYPE tyyppi = VARIABLE_INTEGER;
+  Setting * set = new SettingString();
+  static_cast<SettingInt*>(set)->name = in_name;
+  static_cast<SettingInt*>(set)->type = tyyppi;
+  static_cast<SettingInt*>(set)->value = in_value;
+  static_cast<SettingInt*>(set)->file = in_file;
+  static_cast<SettingInt*>(set)->section = in_section;
+  settingData.push_back(set);
+}
+
 
 void Config::deleteSetting(string in_name) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
@@ -181,6 +299,24 @@ void Config::deleteSetting(string in_name) {
       //cout << "poistetaan : " << (*iter)->name << endl;
       settingData.erase(iter);
       break; //ei voida enää iteroida koska iteraattori tuhottiin samalla kuin vektorialkio johon se viittasi :D
+    }
+  }
+}
+
+void Config::deleteSetting(string in_filename, string in_name) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename) {
+      settingData.erase(iter);
+      break;
+    }
+  }
+}
+
+void Config::deleteSetting(string in_filename, string in_section, string in_name) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
+      settingData.erase(iter);
+      break;
     }
   }
 }
@@ -194,6 +330,25 @@ bool Config::settingExists(string in_name) {
   return false;
 }
 
+bool Config::settingExists(string in_filename, string in_name) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool Config::settingExists(string in_filename, string in_section, string in_name) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
 bool Config::parseRow(string row) {
   row = trim(row);  
   if(row.length() == 0) {
@@ -202,6 +357,7 @@ bool Config::parseRow(string row) {
   }
   else if(row.substr(0,1) == "[") {
     //[osasto]
+    m_strCurrentSection = row.substr(1,row.length()-2);
     return true;
   }
   else if(row.substr(0,1) == "#") {
@@ -219,10 +375,10 @@ bool Config::parseRow(string row) {
   string name = trim(row.substr(0, i++));
   string value = trim(row.substr(i, row.length()-i));
   if(isNumeric(value)) {
-    addSetting(name, stringToInteger(value));
+    addSetting(m_strFilename, m_strCurrentSection, name, stringToInteger(value));
   }
   else {
-    addSetting(name, value);
+    addSetting(m_strFilename, m_strCurrentSection, name, value);
   }
   return true;
 }

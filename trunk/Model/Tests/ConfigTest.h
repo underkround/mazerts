@@ -4,7 +4,7 @@
 void testConfig() {
     Config & c = * Config::getInstance();
 
-    c.setFilename("..\\Model\\Tests\\testi.ini");
+    c.setFilename("..\\Model\\Tests\\", "testi.ini");
     c.readFile();
     c.printSettings();
     assert(c.getValueAsBool("bool") == true);
