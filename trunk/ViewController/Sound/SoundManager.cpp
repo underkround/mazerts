@@ -201,7 +201,8 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const D
     {
         pWave->Play(false, duplicate);
         pInstance->m_CurrentSounds.pushTail(sn);
-    }
+    } else
+        delete sn;
 }
 
 bool SoundManager::fixPanVol(SoundNode* sn)
