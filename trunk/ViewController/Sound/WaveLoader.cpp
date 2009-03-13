@@ -36,14 +36,14 @@ CWaveLoader::~CWaveLoader()
     Close();
 
     if( !m_bIsReadingFromMemory )
-	{
-		if (m_pwfx)
-		{
-			delete [] m_pwfx;
-			m_pwfx = NULL;
-		}
+    {
+        if (m_pwfx)
+        {
+            delete [] m_pwfx;
+            m_pwfx = NULL;
+        }
         //SAFE_DELETE_ARRAY( m_pwfx );
-	}
+    }
 }
 
 
@@ -64,11 +64,11 @@ HRESULT CWaveLoader::Open( LPTSTR strFileName, WAVEFORMATEX* pwfx, DWORD dwFlags
     {
         if( strFileName == NULL )
             return E_INVALIDARG;
-		if (m_pwfx)
-		{
-			delete [] m_pwfx;
-			m_pwfx = NULL;
-		}
+        if (m_pwfx)
+        {
+            delete [] m_pwfx;
+            m_pwfx = NULL;
+        }
         //SAFE_DELETE_ARRAY( m_pwfx );
 
         m_hmmio = mmioOpen( strFileName, NULL, MMIO_ALLOCBUF | MMIO_READ );
@@ -234,11 +234,11 @@ HRESULT CWaveLoader::ReadMMIO()
         if( mmioRead( m_hmmio, (CHAR*)(((BYTE*)&(m_pwfx->cbSize))+sizeof(WORD)),
                       cbExtraBytes ) != cbExtraBytes )
         {
-			if (m_pwfx)
-			{
-				delete m_pwfx;
-				m_pwfx = NULL;
-			}
+            if (m_pwfx)
+            {
+                delete m_pwfx;
+                m_pwfx = NULL;
+            }
             //SAFE_DELETE( m_pwfx );
             return E_FAIL; //DXTRACE_ERR( TEXT("mmioRead"), E_FAIL );
         }
@@ -247,11 +247,11 @@ HRESULT CWaveLoader::ReadMMIO()
     // Ascend the input file out of the 'fmt ' chunk.
     if( 0 != mmioAscend( m_hmmio, &ckIn, 0 ) )
     {
-		if (m_pwfx)
-		{
-			delete m_pwfx;
-			m_pwfx = NULL;
-		}
+        if (m_pwfx)
+        {
+            delete m_pwfx;
+            m_pwfx = NULL;
+        }
         //SAFE_DELETE( m_pwfx );
         return E_FAIL; //DXTRACE_ERR( TEXT("mmioAscend"), E_FAIL );
     }
@@ -413,11 +413,11 @@ HRESULT CWaveLoader::Close()
     {
         mmioClose( m_hmmio, 0 );
         m_hmmio = NULL;
-		if (m_pResourceBuffer)
-		{
-			delete [] m_pResourceBuffer;
-			m_pResourceBuffer = NULL;
-		}
+        if (m_pResourceBuffer)
+        {
+            delete [] m_pResourceBuffer;
+            m_pResourceBuffer = NULL;
+        }
         //SAFE_DELETE_ARRAY( m_pResourceBuffer );
     }
     else

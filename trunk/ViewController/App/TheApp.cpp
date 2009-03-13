@@ -25,7 +25,7 @@ CTheApp::CTheApp(void)
     Config::getInstance()->loadDefaults();
     handleConfig();
     m_CatchInput = false;
-	::CoInitialize(NULL);
+    ::CoInitialize(NULL);
 }
 
 

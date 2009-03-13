@@ -5,8 +5,8 @@
  * $Date$
  * $Id$
  */
-
-#pragma once
+#ifndef __ANTINTERRAINGENERATOR_H__
+#define __ANTINTERRAINGENERATOR_H__
 
 #include "ITerrainGenerator.h"
  
@@ -17,7 +17,7 @@ public:
     /**
      * Default constructor
      */
-    AntinTerrainGenerator(const unsigned int seed, const unsigned short size);
+    AntinTerrainGenerator(const unsigned int seed, const unsigned short size, const bool islands);
 
     /**
      * Destructor
@@ -125,4 +125,9 @@ private:
      */
     unsigned int        m_Seed;
 
+    // islands or continent?
+    bool                m_Islands;
+
 };
+
+#endif // __ANTINTERRAINGENERATOR_H__

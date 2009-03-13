@@ -1,4 +1,12 @@
-#pragma once
+/**
+ *
+ *
+ * $Revision$
+ * $Date$
+ * $Id$
+ */
+#ifndef __SOUNDMANAGER_H__
+#define __SOUNDMANAGER_H__
 
 #include "SoundEngine.h"
 #include "../App/IApplication.h"
@@ -48,8 +56,8 @@ public:
      */
     struct Sound
     {
-	    TCHAR		text[MAX_TEXT_LENGTH];
-	    SoundTypes	type;
+        TCHAR        text[MAX_TEXT_LENGTH];
+        SoundTypes    type;
     };
 
     /**
@@ -57,8 +65,8 @@ public:
      */
     struct Music
     {
-	    TCHAR		text[MAX_TEXT_LENGTH];
-	    MusicTypes	type;
+        TCHAR        text[MAX_TEXT_LENGTH];
+        MusicTypes    type;
     };
 
 
@@ -147,21 +155,21 @@ public:
 
 
     /**
-	 * SetMasterVolume
-	 * set volume of the entire sound system
-	 * @param iVolume is value in range 0 to -10000
-	 * where 0 is maximum volume and -10000 is mute
-	 */
+     * SetMasterVolume
+     * set volume of the entire sound system
+     * @param iVolume is value in range 0 to -10000
+     * where 0 is maximum volume and -10000 is mute
+     */
     inline static void setMasterVolume(const int volume) { getInstance()->m_SoundEngine.SetMasterVolume(volume); }
     inline static const int getMasterVolume() { return getInstance()->m_SoundEngine.GetMasterVolume(); }
 
-	/**
-	 * SetMusicVolume
-	 * set the volume of music
-	 * @param iVolume range of
-	 * 0 to -10000, where 0 is max volume
-	 * and -10000 is mute
-	 */
+    /**
+     * SetMusicVolume
+     * set the volume of music
+     * @param iVolume range of
+     * 0 to -10000, where 0 is max volume
+     * and -10000 is mute
+     */
     inline static void setMusicVolume(const int volume) { getInstance()->m_MusicPlayer.SetVolume(volume); }
     inline static  const int getMusicVolume() { return getInstance()->m_MusicPlayer.GetVolume(); }
 
@@ -209,3 +217,5 @@ private:
     MusicTypes m_CurrentMusic; // currently playing music
 
 };
+
+#endif // __SOUNDMANAGER_H__

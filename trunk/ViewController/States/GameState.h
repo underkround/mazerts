@@ -20,7 +20,7 @@ class GameState : public IState
 {
 public:
     GameState();
-	virtual ~GameState();
+    virtual ~GameState();
 
     /**
      * Called when the state is created

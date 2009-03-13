@@ -37,10 +37,10 @@ HRESULT SoundManager::create(IApplication* pApp)
     for (int i = 0; i < amount; i++)
     {
         CSoundWave* pWave = new CSoundWave;
-        hres = pWave->Load(	pInstance->m_SoundEngine,
+        hres = pWave->Load(    pInstance->m_SoundEngine,
                             soundsList[i].text,
-					        DEFAULT_DUPLICATE_AMOUNT,
-					        DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPAN | DSBCAPS_CTRLFX);
+                            DEFAULT_DUPLICATE_AMOUNT,
+                            DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLPAN | DSBCAPS_CTRLFX);
         if (FAILED(hres))
             return hres;
 
@@ -90,13 +90,13 @@ void SoundManager::update()
 
     if (pInstance->m_MusicEnabled)
         {
-	    // loop music
-	    if (pInstance->m_MusicPlayer.IsAtEnd() && pInstance->m_LoopMusic)
-	    {
-		    pInstance->m_MusicPlayer.Stop();
+        // loop music
+        if (pInstance->m_MusicPlayer.IsAtEnd() && pInstance->m_LoopMusic)
+        {
+            pInstance->m_MusicPlayer.Stop();
             pInstance->m_MusicPlayer.SetPosition(0);
-		    pInstance->m_MusicPlayer.Play();
-	    }
+            pInstance->m_MusicPlayer.Play();
+        }
         else if (pInstance->m_MusicPlayer.IsAtEnd())
         {
             // music has ended but looping is off
@@ -116,15 +116,15 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const i
     if (!pInstance->m_SoundsEnabled) return;
 
     CSoundWave* pWave = pInstance->m_SoundsMap[type];
-	DWORD duplicate = pWave->GetNextFreeDuplicate();
+    DWORD duplicate = pWave->GetNextFreeDuplicate();
     const int dist = (int)(pWave->getOriginalFrequency() * distort);
     const int minDistort = pWave->getOriginalFrequency() - dist;
     const int maxDistort = pWave->getOriginalFrequency() + dist;
 
     pWave->SetFrequency(IApplication::RandInt(minDistort, maxDistort), duplicate);
-	pWave->SetVolume(volume, duplicate);
-	pWave->SetPan(pan, duplicate);
-	//pWave.RePlay(FALSE, dwDuplicate);    
+    pWave->SetVolume(volume, duplicate);
+    pWave->SetPan(pan, duplicate);
+    //pWave.RePlay(FALSE, dwDuplicate);    
     pWave->Play(false, duplicate);
 }
 

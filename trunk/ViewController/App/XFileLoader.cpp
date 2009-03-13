@@ -155,36 +155,36 @@ HRESULT CXFileLoader::scaleMesh(ID3DXMesh* pMesh, const float scale)
 {
     //Pointer to vertexbuffer
     BYTE* pBuf = NULL;
-	HRESULT hres;
+    HRESULT hres;
 
-	DWORD numVertices = pMesh->GetNumVertices();
-	DWORD fvf = pMesh->GetFVF();
-	DWORD vertSize = D3DXGetFVFVertexSize(fvf);
+    DWORD numVertices = pMesh->GetNumVertices();
+    DWORD fvf = pMesh->GetFVF();
+    DWORD vertSize = D3DXGetFVFVertexSize(fvf);
 
     hres = pMesh->LockVertexBuffer(0, (void**)&pBuf);
-	if (FAILED(hres))
+    if (FAILED(hres))
     {
         return hres;
     }
 
-	for (DWORD i = 0; i < numVertices; i++) 
+    for (DWORD i = 0; i < numVertices; i++) 
     {
-		D3DXVECTOR3* pVert=(D3DXVECTOR3 *)pBuf;
+        D3DXVECTOR3* pVert=(D3DXVECTOR3 *)pBuf;
 
-		//Scale vertices
-		pVert->x *= scale;
-		pVert->y *= scale;
-		pVert->z *= scale;
+        //Scale vertices
+        pVert->x *= scale;
+        pVert->y *= scale;
+        pVert->z *= scale;
 
-		//Next vertex
-		pBuf += vertSize;
-	}
+        //Next vertex
+        pBuf += vertSize;
+    }
     hres = pMesh->UnlockVertexBuffer();
-	
-	if (FAILED(hres))
+    
+    if (FAILED(hres))
     {
-		return hres;
-    }	
+        return hres;
+    }    
 
-	return S_OK;
+    return S_OK;
 }

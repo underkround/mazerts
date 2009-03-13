@@ -59,8 +59,8 @@ void testDoubleLinkedList()
             {
                 ListNode<Foo*>* temp = node->next;
                 Foo* pChild = m_arrChildren.remove(node);
-			    //pChild->Release();
-			    delete pChild;
+                //pChild->Release();
+                delete pChild;
                 node = temp;
             }
             else
@@ -87,7 +87,7 @@ void testDoubleLinkedList()
             if (node->item->Update(fFrametime))
                 node = node->next;
             else {
-			    //node->item->Release();
+                //node->item->Release();
                 delete node->item;
                 node = m_arrChildren.removeGetNext(node);
             }
