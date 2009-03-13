@@ -4,7 +4,6 @@
  * Concrete game application class
  */
 
-
 #include "TheApp.h"
 #include "../Input/Input.h"
 #include "../../Model/Common/Config.h"
@@ -125,8 +124,6 @@ void CTheApp::OnFlip(void)
     //Input updates
     if(!m_CatchInput) {
         Input::update();
-    } else {
-        //(if console mode is enabled then all input should be listened by game console)
     }
 
     //Sound updates
@@ -176,8 +173,9 @@ void CTheApp::OnFlip(void)
         }
         if(m_CatchInput)
         {
-            GameConsole & c = *GameConsole::getInstance();
-            DrawText(100, 400, _T("IMEKÄÄ MUN SYKKIVÄÄ!"), 0xFFFFFFFF);
+            GameConsole & co = *GameConsole::getInstance();
+            DrawText(100, 400, _T("konsoli päällä"), 0xFFFFFFFF);
+            DrawText(100, 450, (LPCTSTR)co.output(), 0xFFFFFFFF);
         }
 
         TCHAR text[100];
@@ -265,6 +263,15 @@ void CTheApp::OnKeyDown(DWORD dwKey)
         else {
             m_CatchInput = true;
         }
+    }
+}
+
+void CTheApp::OnChar(TCHAR c)
+{
+    if(m_CatchInput)
+    {
+        GameConsole & co = *GameConsole::getInstance();
+        co.input(c);
     }
 }
 

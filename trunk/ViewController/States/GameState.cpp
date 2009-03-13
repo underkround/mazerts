@@ -64,7 +64,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     //Model-terrain
     Terrain* pTerrain = Terrain::getInstance();
-    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512, true);
+    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
     pTerrain->initialize(pGenerator);
 
     pTerrain->setWaterLevel(50);

@@ -17,7 +17,7 @@ public:
     /**
      * Default constructor
      */
-    AntinTerrainGenerator(const unsigned int seed, const unsigned short size, const bool islands);
+    AntinTerrainGenerator(const unsigned int seed, const unsigned short size);
 
     /**
      * Destructor
@@ -124,9 +124,6 @@ private:
      * Our seed
      */
     unsigned int        m_Seed;
-
-    // islands or continent?
-    bool                m_Islands;
 
 };
 

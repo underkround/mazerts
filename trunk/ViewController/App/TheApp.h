@@ -106,6 +106,12 @@ private:
     virtual void OnKeyDown(DWORD dwKey);
 
     /**
+     * OnChar
+     * character input handler
+     */
+    virtual void OnChar(TCHAR c);
+
+    /**
      * CheckTexturingCaps
      * check what kind of texturing capabilities
      * the display accelerator has

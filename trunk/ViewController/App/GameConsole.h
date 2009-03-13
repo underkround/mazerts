@@ -18,7 +18,7 @@
 #include <tchar.h>
 #include "ID3DApplication.h"
 
-#define CONSOLE_LENGTH 10
+#define CONSOLE_BUFFERLENGTH 10
 
 class GameConsole
 {
@@ -29,14 +29,16 @@ public:
      */
     static GameConsole* getInstance(void);
 
-    void input(char* input);
+    static void input(TCHAR input);
+
+    inline static TCHAR output() { return *m_arrMessage; }
 
     /**
      * Clear messages
      */
-    void clear(void);
+    static void clear(void);
 
-    inline int getSize() { return CONSOLE_LENGTH; }
+    inline int getSize() { return CONSOLE_BUFFERLENGTH; }
 
 protected:
 
@@ -47,7 +49,9 @@ protected:
 private:
 // *** MEMBERS ***
 
-    static TCHAR m_arrMessages[CONSOLE_LENGTH][128];
+    static TCHAR m_arrMessageBuffer[CONSOLE_BUFFERLENGTH][128];
+    static TCHAR m_arrMessage[128];
+    static int m_MessageLength;
     static GameConsole* pInstance;
 };
 

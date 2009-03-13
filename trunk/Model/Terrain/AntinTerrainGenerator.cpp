@@ -7,11 +7,10 @@
 #define PI 3.141592653589793238462f
 #endif
 
-AntinTerrainGenerator::AntinTerrainGenerator(const unsigned int seed, const unsigned short size, const bool islands)
+AntinTerrainGenerator::AntinTerrainGenerator(const unsigned int seed, const unsigned short size)
 {
     m_Size = size;
     m_Seed = seed;
-    m_Islands = islands;
 }
 
 
@@ -49,9 +48,6 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
 
     flattenArea(ppVertexHeightData, terrainSize, 255, 50, 100, 15, 20);
     flattenArea(ppVertexHeightData, terrainSize, 0, 50, 100, 10, 0);
-
-    if(m_Islands)
-        makeIsland(ppVertexHeightData, terrainSize, 50);
 
     Terrain::getInstance()->smoothMap(1);
 }
