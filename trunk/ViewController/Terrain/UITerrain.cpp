@@ -165,7 +165,7 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
         pDevice->SetTexture(1, NULL);
     }
 
-    m_MiniMap.render(pDevice);
+    m_MiniMap.render(pDevice, m_pPixelTexture);
 }
 
 HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice)
@@ -292,8 +292,6 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
     {
         return hres;
     }
-
-    m_MiniMap.setTexture(m_pPixelTexture);
 
     return S_OK;
 }

@@ -165,15 +165,6 @@ public:
         
         HRESULT hres = createColorMapTexture(pDevice);
         
-        if(SUCCEEDED(hres))
-        {
-            m_MiniMap.setTexture(m_pPixelTexture);
-        }
-        else
-        {
-            m_MiniMap.setTexture(NULL);
-        }
-
         return hres; 
     }
 

@@ -38,15 +38,6 @@ public:
     void release();
 
     /**
-     * Set the base texture used by minimap
-     * @param pTexture Pointer to texture used as base colormap (usually terrain colormap)
-     */
-    inline void setTexture(LPDIRECT3DTEXTURE9 pTexture)
-    {
-        m_pTexture = pTexture;
-    }
-
-    /**
      * Set the position of minimap (in pixels from upperleft corner)
      * @param x
      * @param y
@@ -74,8 +65,10 @@ public:
 
     /**
      * Render the minimap
+     * @param pDevice Device to render with
+     * @param pTexture Texture to use as background
      */
-    void render(LPDIRECT3DDEVICE9 pDevice);
+    void render(LPDIRECT3DDEVICE9 pDevice, LPDIRECT3DTEXTURE9 pTexture);
 
 private:
 
@@ -93,11 +86,6 @@ private:
      * Factor for positioning unit markers, minimapsize / terrainsize
      */
     float m_SizeFactor;
-
-    /**
-     * Minimap uses terrain pixel-texture directly, so only pointer to texture is needed
-     */
-    LPDIRECT3DTEXTURE9 m_pTexture;
 
     /**
      * Background (map-textured quad) vertexbuffer

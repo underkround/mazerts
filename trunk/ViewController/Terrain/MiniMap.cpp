@@ -13,7 +13,6 @@
 
 MiniMap::MiniMap()
 {
-    m_pTexture = NULL;
     m_pUnitVB = NULL;
     m_pBackVB = NULL;
 
@@ -188,10 +187,10 @@ void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
 
 
 
-void MiniMap::render(LPDIRECT3DDEVICE9 pDevice)
+void MiniMap::render(LPDIRECT3DDEVICE9 pDevice, LPDIRECT3DTEXTURE9 pTexture)
 {
 
-    pDevice->SetTexture(0, m_pTexture);
+    pDevice->SetTexture(0, pTexture);
 
     pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     
