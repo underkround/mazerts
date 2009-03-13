@@ -15,6 +15,10 @@
 
 #include "../Sound/SoundManager.h"
 
+// Controllers
+#include "../Controller/UIAssetController.h"
+#include "../Controller/CameraController.h"
+#include "../Controller/SoundController.h"
 
 //DEBUG
 #include "../3DDebug/UI3DDebug.h"
@@ -96,19 +100,37 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     m_pCamera = new SphereCamera();
     m_pCamera->setPosition(127.0f, 127.0f, -200.0f);
 
-    m_Created = true;
+    // Controllers
+    m_UIControllers.pushHead(new SoundController(m_pCamera));
+    m_UIControllers.pushHead(new CameraController(m_pCamera));
+    // Load configurations for the controllers
+    ListNode<IUIController*>* node = m_UIControllers.headNode();
+    while(node)
+    {
+        node->item->loadConfiguration();
+        node = node->next;
+    }
 
-    // Play music
-    SoundManager::playMusic(SoundManager::BACKGROUND, true);
+    m_Created = true;
 
     return S_OK;
 }
+
 
 void GameState::release()
 {
     //Tell the PathFinder-thread to stop and wait for it to finish
     PathFinderMaster::getInstance()->stop();
     PathFinderMaster::getInstance()->wait();
+
+    //Release controllers
+    ListNode<IUIController*>* node = m_UIControllers.headNode();
+    while(node)
+    {
+        node->item->release();
+        delete node->item;
+        node = m_UIControllers.removeGetNext(node);
+    }
 
     //The children of the Object Manager root object are listeners to model-side
     //AssetCollection, and will be released via listener-interface, but they have
@@ -120,6 +142,7 @@ void GameState::release()
     
     m_pUITerrain->release();
 }
+
 
 bool GameState::update(const float frameTime)
 {
@@ -135,6 +158,7 @@ bool GameState::update(const float frameTime)
     //Keep running
     return true;
 }
+
 
 void GameState::prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float frameTime)
 {
@@ -157,20 +181,18 @@ void GameState::prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float fr
 
     pDevice->SetLight(0, &light);
     pDevice->LightEnable(0, TRUE);
-
-
 }
+
 
 void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 {
-    
     //Terrain needs normal backface-culling
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-    pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);        
+    pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
     m_pUITerrain->render(pDevice);
 
     m_Selector.render(pDevice);
-      
+
     //Antsys models need reverse backface-culling
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
     //pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
@@ -181,32 +203,15 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 
 void GameState::updateControls(const float frameTime)
 {
-    if (KeyboardState::keyDown[m_KeyCameraPanUp])
+    // Controllers
+    ListNode<IUIController*>* node = m_UIControllers.headNode();
+    while(node)
     {
-        m_pCamera->move(KEYBOARD_CAMSPEED * frameTime, 0, 0);
+        node->item->updateControls(frameTime);
+        node = node->next;
     }
-    else if (KeyboardState::keyDown[m_KeyCameraPanDown])
-    {
-        m_pCamera->move(-KEYBOARD_CAMSPEED * frameTime, 0, 0);
-    }
-    
-    if (KeyboardState::keyDown[m_KeyCameraPanRight])
-    {
-        m_pCamera->move(0, KEYBOARD_CAMSPEED * frameTime, 0);
-    }
-    else if (KeyboardState::keyDown[m_KeyCameraPanLeft])
-    {
-        m_pCamera->move(0, -KEYBOARD_CAMSPEED * frameTime, 0);
-    }
-    
-    if (KeyboardState::keyDown[m_KeyCameraZoomIn])
-    {
-        m_pCamera->move(0, 0, KEYBOARD_CAMSPEED * frameTime);
-    }
-    else if (KeyboardState::keyDown[m_KeyCameraZoomOut])
-    {
-        m_pCamera->move(0, 0, -KEYBOARD_CAMSPEED * frameTime);
-    }
+
+    // Terrain
 
     if(KeyboardState::keyReleased[m_KeyGenerateNewTerrain])
     {
@@ -214,11 +219,11 @@ void GameState::updateControls(const float frameTime)
         PathFinderMaster* pMaster = PathFinderMaster::getInstance();
         pMaster->stop();
         pMaster->wait();
-        
+
         Terrain::getInstance()->initialize();
         UITerrain::create(m_pDevice);
         m_pUITerrain = UITerrain::getInstance();
-        
+
         pMaster->start();
     }
 
@@ -238,7 +243,6 @@ void GameState::updateControls(const float frameTime)
         {
             m_pUITerrain->setFillMode(D3DFILL_SOLID);
         }
-
     }
 
     if(KeyboardState::keyReleased[m_KeyTerrainDetailUp])
@@ -262,47 +266,6 @@ void GameState::updateControls(const float frameTime)
         }
     }
 
-    //Reset camera
-    if(KeyboardState::keyDown[m_KeyCameraReset])
-    {
-        m_pCamera->setZoom(100.0f);
-        m_pCamera->setRotation(0.5f * D3DX_PI, 0.9f);
-    }
-
-    // sound things
-    if (KeyboardState::keyReleased[m_KeySoundToggle])
-        SoundManager::playSound(SoundManager::EXPLOSION, 0.1f, &D3DXVECTOR3(50, 100, 0), m_pCamera);
-//        SoundManager::setSoundsEnabled(!SoundManager::getSoundsEnabled());
-    if (KeyboardState::keyReleased[m_KeyMusicToggle])
-        SoundManager::setMusicEnabled(!SoundManager::getMusicEnabled());
-    if (KeyboardState::keyDown[m_KeyVolumeUp])
-        SoundManager::setMasterVolume(SoundManager::getMasterVolume() + 50);
-    if (KeyboardState::keyDown[m_KeyVolumeDown])
-        SoundManager::setMasterVolume(SoundManager::getMasterVolume() - 50);
-
-
-    //mouse zoom
-    if(MouseState::mouseZSpeed)
-    {
-        m_pCamera->zoom(-MouseState::mouseZSpeed * m_ModifyMouseZoom);
-    }
-
-    //camera mouse panning
-    if(MouseState::mouseButton[m_KeyMouseDragButton])
-    {
-        m_pCamera->move(MouseState::mouseYSpeed * m_ModifyMouseDragY, -MouseState::mouseXSpeed * m_ModifyMouseDragX, 0);
-    }
-
-    //Camera pitching
-    if(MouseState::mouseButton[m_KeyMouseRotateButton])
-    {
-        m_pCamera->rotate(MouseState::mouseXSpeed * 0.05f * m_ModifyMouseRotationX, MouseState::mouseYSpeed * 0.01f * m_ModifyMouseRotationY);
-    }
-
-    if(KeyboardState::keyReleased[28])
-    {
-        m_pCamera->m_Test = !m_pCamera->m_Test;
-    }
 
     //Terrain picking test
     //if(MouseState::mouseButton[m_KeyMousePickButton])
@@ -369,12 +332,6 @@ void GameState::loadConfiguration()
     c.setFilename("controls.ini");
     c.readFile();
 
-    m_KeyCameraPanUp = c.getValueAsInt("camera pan up");
-    m_KeyCameraPanDown = c.getValueAsInt("camera pan down");
-    m_KeyCameraPanRight = c.getValueAsInt("camera pan right");
-    m_KeyCameraPanLeft = c.getValueAsInt("camera pan left");
-    m_KeyCameraZoomIn = c.getValueAsInt("camera zoom in");
-    m_KeyCameraZoomOut = c.getValueAsInt("camera zoom out");
     m_KeyGenerateNewTerrain = c.getValueAsInt("generate new terrain");
     m_KeyGeneratePassability = c.getValueAsInt("generate passability terrain");
     m_KeyToggleWireframe = c.getValueAsInt("toggle wireframe");
@@ -383,18 +340,12 @@ void GameState::loadConfiguration()
     m_KeyMouseDragButton = c.getValueAsInt("mouse drag button");
     m_KeyMousePickButton = c.getValueAsInt("mouse pick button");
     m_KeyMouseRotateButton = c.getValueAsInt("mouse rotate button");
-    m_KeyCameraReset = c.getValueAsInt("camera reset");
-    //please note the global MOUSE_CAMSPEED modifier!
-    m_ModifyMouseDragX = c.getValueAsInt("modify mouse panning horizontal") * MOUSE_CAMSPEED;
-    m_ModifyMouseDragY = c.getValueAsInt("modify mouse panning vertical") * MOUSE_CAMSPEED;
-    m_ModifyMouseRotationX = c.getValueAsInt("modify mouse rotation horizontal") * MOUSE_CAMSPEED;
-    m_ModifyMouseRotationY = c.getValueAsInt("modify mouse rotation vertical") * MOUSE_CAMSPEED;
-    m_ModifyMouseZoom = c.getValueAsInt("modify mouse zoom") * MOUSE_CAMSPEED;
 
-    // sound keys
-    m_KeySoundToggle = c.getValueAsInt("toggle sound");
-    m_KeyMusicToggle = c.getValueAsInt("toggle music");
-    m_KeyVolumeUp = c.getValueAsInt("master volume up");
-    m_KeyVolumeDown = c.getValueAsInt("master volume down");
-    
+    // update configurations of the controllers
+    ListNode<IUIController*>* node = m_UIControllers.headNode();
+    while(node)
+    {
+        node->item->loadConfiguration();
+        node = node->next;
+    }
 }

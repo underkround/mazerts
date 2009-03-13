@@ -369,6 +369,14 @@
 					RelativePath="..\Model\Command\Target.h"
 					>
 				</File>
+				<File
+					RelativePath="..\Model\Command\UnitCommandDispatcher.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Command\UnitCommandDispatcher.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Common"
@@ -851,6 +859,38 @@
 				</File>
 				<File
 					RelativePath=".\Sound\WaveLoader.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Controller"
+				>
+				<File
+					RelativePath=".\Controller\CameraController.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\CameraController.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\IUIController.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\SoundController.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\SoundController.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\UIAssetController.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\UIAssetController.h"
 					>
 				</File>
 			</Filter>

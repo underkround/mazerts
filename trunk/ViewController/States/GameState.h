@@ -16,6 +16,8 @@
 #include "../Terrain/UITerrain.h"
 #include "../Camera/Camera.h"
 
+#include "../Controller/IUIController.h"
+
 class GameState : public IState
 {
 public:
@@ -119,33 +121,21 @@ private:
     Camera* m_pCamera;
 
     /**
+     * Controllers that receive updateControls -calls
+     */
+    DoubleLinkedList<IUIController*> m_UIControllers;
+
+    /**
      * Key configuration
      */
-     int m_KeyCameraPanUp;
-     int m_KeyCameraPanDown;
-     int m_KeyCameraPanRight;
-     int m_KeyCameraPanLeft;
-     int m_KeyCameraZoomIn;
-     int m_KeyCameraZoomOut;
-     int m_KeyGenerateNewTerrain;
-     int m_KeyGeneratePassability;
-     int m_KeyToggleWireframe;
-     int m_KeyTerrainDetailUp;
-     int m_KeyTerrainDetailDown;
-     int m_KeyMouseDragButton;
-     int m_KeyMousePickButton;
-     int m_KeyMouseRotateButton;
-     int m_KeyCameraReset;
-     float m_ModifyMouseDragX;
-     float m_ModifyMouseDragY;
-     float m_ModifyMouseRotationX;
-     float m_ModifyMouseRotationY;
-     float m_ModifyMouseZoom;
-
-     int m_KeySoundToggle;
-     int m_KeyMusicToggle;
-     int m_KeyVolumeUp;
-     int m_KeyVolumeDown;
+    int m_KeyGenerateNewTerrain;
+    int m_KeyGeneratePassability;
+    int m_KeyToggleWireframe;
+    int m_KeyTerrainDetailUp;
+    int m_KeyTerrainDetailDown;
+    int m_KeyMouseDragButton;
+    int m_KeyMousePickButton;
+    int m_KeyMouseRotateButton;
 
 };
 
