@@ -24,7 +24,7 @@ C3DObjectDebug* UI3DDebug::addSphere(float x, float y, float z, float radius, fl
     }
     else
     {
-           pObject = new C3DObjectDebug(lifeTime);
+        pObject = new C3DObjectDebug(lifeTime);
     }
 
     pObject->Create(pMesh);

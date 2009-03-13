@@ -17,7 +17,23 @@ bool C3DObjectDebug::Update(float fFrameTime)
 
 void C3DObjectDebug::Release()
 {
-    m_pMesh->Release();    
+    for(unsigned int i = 0; i < m_arrMeshData.size(); i++)
+    {
+        if(m_arrMeshData[i].pMaterial)
+        {
+            delete m_arrMeshData[i].pMaterial;
+            m_arrMeshData[i].pMaterial = NULL;
+        }
+        if(m_arrMeshData[i].pTexture)
+        {
+            m_arrMeshData[i].pTexture->Release();
+            delete m_arrMeshData[i].pTexture;
+            m_arrMeshData[i].pTexture = NULL;
+        }
+
+    }
+
+    m_pMesh->Release();
     C3DObject::Release();    
     m_pMesh = NULL;
 }
