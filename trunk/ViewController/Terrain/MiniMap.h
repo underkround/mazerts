@@ -14,6 +14,11 @@
 #include "../../Model/Common/DoubleLinkedList.h"
 #include "../Unit/UiUnit.h"
 
+
+//Maximum amount of unit-markers the minimap allocates vertexbuffer for
+#define MINIMAP_MAX_UNITS 2000
+
+
 class MiniMap
 {
 public:
@@ -22,8 +27,10 @@ public:
 
     /**
      * Creates the minimap vertex-array
+     * @param pDevice Direct3D-device to use
+     * @return S_OK or error code
      */
-    void create();
+    HRESULT create(LPDIRECT3DDEVICE9 pDevice);
 
     /**
      * Release minimap resources
@@ -88,19 +95,19 @@ private:
     float m_SizeFactor;
 
     /**
-     * Minimap uses terrain pixel-texture direcly, so only pointer to texture is needed
+     * Minimap uses terrain pixel-texture directly, so only pointer to texture is needed
      */
     LPDIRECT3DTEXTURE9 m_pTexture;
 
     /**
-     * Vertices of the back quad
+     * Background (map-textured quad) vertexbuffer
      */
-    TRANSLITVERTEX* m_pBackVertices;
+    LPDIRECT3DVERTEXBUFFER9 m_pBackVB;
 
     /**
-     * Vertices of the unit-markers
+     * Unit-marker vertexbuffer
      */
-    TRANSLITVERTEX* m_pUnitVertices;
+    LPDIRECT3DVERTEXBUFFER9 m_pUnitVB;
 
     /**
      * Number of unit primitives

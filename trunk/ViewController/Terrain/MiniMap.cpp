@@ -14,10 +14,10 @@
 MiniMap::MiniMap()
 {
     m_pTexture = NULL;
-    m_pUnitVertices = NULL;
-    m_pBackVertices = NULL;
+    m_pUnitVB = NULL;
+    m_pBackVB = NULL;
 
-    m_UpdateCounter = 0.0f;
+    m_UpdateCounter = 100.0f;
 
     //Sleeve-defaults
     setSize(300);
@@ -30,6 +30,7 @@ MiniMap::MiniMap()
 
 MiniMap::~MiniMap()
 {
+    release();
 }
 
 void MiniMap::setPosition(const int x, const int y)
@@ -45,56 +46,76 @@ void MiniMap::setSize(const int size)
 }
 
 
-void MiniMap::create()
+HRESULT MiniMap::create(LPDIRECT3DDEVICE9 pDevice)
 {
-    m_pBackVertices = new TRANSLITVERTEX[4];
+    HRESULT hres = pDevice->CreateVertexBuffer(4 * sizeof(TRANSLITVERTEX), NULL, TRANSLITVERTEX::GetFVF(), D3DPOOL_MANAGED, &m_pBackVB, NULL);
 
-    m_pBackVertices[0].x = m_Position.x;
-    m_pBackVertices[0].y = m_Position.y;
-    m_pBackVertices[0].z = 0.000001f;
-    m_pBackVertices[0].tu = 0.0f;
-    m_pBackVertices[0].tv = 1.0f;
-    m_pBackVertices[0].dwColor = 0xFFFFFFFF;
-    m_pBackVertices[0].rhw = 0.99f;
+    if(FAILED(hres))
+    {
+        return hres;
+    }
 
-    m_pBackVertices[1].x = m_Position.x + m_Size;
-    m_pBackVertices[1].y = m_Position.y;
-    m_pBackVertices[1].z = 0.000001f;
-    m_pBackVertices[1].tu = 1.0f;
-    m_pBackVertices[1].tv = 1.0f;
-    m_pBackVertices[1].dwColor = 0xFFFFFFFF;
-    m_pBackVertices[1].rhw = 0.99f;
+    TRANSLITVERTEX* pBackVertices = NULL;
 
-    m_pBackVertices[2].x = m_Position.x + m_Size;
-    m_pBackVertices[2].y = m_Position.y + m_Size;
-    m_pBackVertices[2].z = 0.000001f;
-    m_pBackVertices[2].tu = 1.0f;
-    m_pBackVertices[2].tv = 0.0f;
-    m_pBackVertices[2].dwColor = 0xFFFFFFFF;
-    m_pBackVertices[2].rhw = 0.99f;
+    m_pBackVB->Lock(0, 0, (void**)&pBackVertices, D3DLOCK_DISCARD);
+    {
+        pBackVertices[0].x = m_Position.x;
+        pBackVertices[0].y = m_Position.y;
+        pBackVertices[0].z = 0.000001f;
+        pBackVertices[0].tu = 0.0f;
+        pBackVertices[0].tv = 1.0f;
+        pBackVertices[0].dwColor = 0xFFFFFFFF;
+        pBackVertices[0].rhw = 0.99f;
 
-    m_pBackVertices[3].x = m_Position.x;
-    m_pBackVertices[3].y = m_Position.y + m_Size;
-    m_pBackVertices[3].z = 0.000001f;
-    m_pBackVertices[3].tu = 0.0f;
-    m_pBackVertices[3].tv = 0.0f;
-    m_pBackVertices[3].dwColor = 0xFFFFFFFF;
-    m_pBackVertices[3].rhw = 0.99f;
+        pBackVertices[1].x = m_Position.x + m_Size;
+        pBackVertices[1].y = m_Position.y;
+        pBackVertices[1].z = 0.000001f;
+        pBackVertices[1].tu = 1.0f;
+        pBackVertices[1].tv = 1.0f;
+        pBackVertices[1].dwColor = 0xFFFFFFFF;
+        pBackVertices[1].rhw = 0.99f;
 
+        pBackVertices[2].x = m_Position.x + m_Size;
+        pBackVertices[2].y = m_Position.y + m_Size;
+        pBackVertices[2].z = 0.000001f;
+        pBackVertices[2].tu = 1.0f;
+        pBackVertices[2].tv = 0.0f;
+        pBackVertices[2].dwColor = 0xFFFFFFFF;
+        pBackVertices[2].rhw = 0.99f;
+
+        pBackVertices[3].x = m_Position.x;
+        pBackVertices[3].y = m_Position.y + m_Size;
+        pBackVertices[3].z = 0.000001f;
+        pBackVertices[3].tu = 0.0f;
+        pBackVertices[3].tv = 0.0f;
+        pBackVertices[3].dwColor = 0xFFFFFFFF;
+        pBackVertices[3].rhw = 0.99f;
+    }
+    m_pBackVB->Unlock();
+
+    
+    hres = pDevice->CreateVertexBuffer(MINIMAP_MAX_UNITS * 3 * sizeof(TRANSLITVERTEX), NULL, TRANSLITVERTEX::GetFVF(), D3DPOOL_MANAGED, &m_pUnitVB, NULL);
+
+    if(FAILED(hres))
+    {
+        return hres;
+    }
+
+    return S_OK;
 }
 
 void MiniMap::release()
 {
-    if(m_pBackVertices)
+    if(m_pBackVB)
     {
-        delete [] m_pBackVertices;
-        m_pBackVertices = NULL;
+        m_pBackVB->Release();
+        m_pBackVB = NULL;
     }
 
-    if(m_pUnitVertices)
+    if(m_pUnitVB)
     {
-        delete [] m_pUnitVertices;
-        m_pUnitVertices = NULL;
+        m_pUnitVB->Release();        
+        m_pUnitVB = NULL;
     }
 }
 
@@ -106,18 +127,17 @@ void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
     {
         m_UpdateCounter = 0.0f;
 
-        if(m_pUnitVertices)
-        {
-            delete [] m_pUnitVertices;
-        }
+        m_UnitPrimitiveCount = pUnitList->count();
         
-        m_pUnitVertices = new TRANSLITVERTEX[pUnitList->count() << 2];
+        TRANSLITVERTEX* pUnitVertices;
 
         ListNode<UIUnit*>* pNode = pUnitList->headNode();
 
-        int count = 0;
+        //int count = 0;
+        const float MARKERSIZE = 3.0f;
+        int index = 0;
 
-        const float MARKERSIZE = 5.0f;
+        m_pUnitVB->Lock(0, m_UnitPrimitiveCount * 3 * sizeof(TRANSLITVERTEX), (void**)&pUnitVertices, D3DLOCK_DISCARD);
 
         while(pNode)
         {        
@@ -126,41 +146,43 @@ void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
             {
                 D3DXVECTOR2* pos = (D3DXVECTOR2*)pNode->item->getUnit()->getPosition();
 
-                int index = count * 3;
+                //int index = count * 3;
                 float posX = m_Position.x + (pos->x * m_SizeFactor);
                 float posY = m_Position.y + m_Size - (pos->y * m_SizeFactor);
 
-                m_pUnitVertices[index].x = posX;
-                m_pUnitVertices[index].y = posY - MARKERSIZE;
-                m_pUnitVertices[index].z = 0.0f;
-                m_pUnitVertices[index].tu = 0.5f;
-                m_pUnitVertices[index].tv = 0.0f;
-                m_pUnitVertices[index].rhw = 0.999f;
+                pUnitVertices[index].x = posX;
+                pUnitVertices[index].y = posY;
+                pUnitVertices[index].z = 0.0f;
+                pUnitVertices[index].tu = 0.5f;
+                pUnitVertices[index].tv = 0.0f;
+                pUnitVertices[index].rhw = 0.999f;
                 //TODO: Colors from unit owner
-                m_pUnitVertices[index++].dwColor = 0xFFFF0000;
+                pUnitVertices[index++].dwColor = 0xFFFF0000;
                 
-                m_pUnitVertices[index].x = posX + MARKERSIZE;
-                m_pUnitVertices[index].y = posY + MARKERSIZE;
-                m_pUnitVertices[index].z = 0.0f;
-                m_pUnitVertices[index].tu = 1.0f;
-                m_pUnitVertices[index].tv = 1.0f;
-                m_pUnitVertices[index].rhw = 0.999f;
-                m_pUnitVertices[index++].dwColor = 0xFFFF0000;
+                pUnitVertices[index].x = posX - MARKERSIZE;
+                pUnitVertices[index].y = posY - (MARKERSIZE * 2.0f);
+                pUnitVertices[index].z = 0.0f;
+                pUnitVertices[index].tu = 1.0f;
+                pUnitVertices[index].tv = 1.0f;
+                pUnitVertices[index].rhw = 0.999f;
+                pUnitVertices[index++].dwColor = 0xFFFF0000;
 
-                m_pUnitVertices[index].x = posX - MARKERSIZE;
-                m_pUnitVertices[index].y = posY + MARKERSIZE;
-                m_pUnitVertices[index].z = 0.0f;
-                m_pUnitVertices[index].tu = 0.0f;
-                m_pUnitVertices[index].tv = 1.0f;
-                m_pUnitVertices[index].rhw = 0.999f;
-                m_pUnitVertices[index++].dwColor = 0xFFFF0000;
+                pUnitVertices[index].x = posX + MARKERSIZE;
+                pUnitVertices[index].y = posY - (MARKERSIZE * 2.0f);
+                pUnitVertices[index].z = 0.0f;
+                pUnitVertices[index].tu = 0.0f;
+                pUnitVertices[index].tv = 1.0f;
+                pUnitVertices[index].rhw = 0.999f;
+                pUnitVertices[index++].dwColor = 0xFFFF0000;
 
             }
             pNode = pNode->next;
-            ++count;
+            //++count;
         }
 
-        m_UnitPrimitiveCount = count;
+        m_pUnitVB->Unlock();
+
+        //m_UnitPrimitiveCount = count;
     }
 }
 
@@ -168,13 +190,18 @@ void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
 
 void MiniMap::render(LPDIRECT3DDEVICE9 pDevice)
 {
-    pDevice->SetFVF(TRANSLITVERTEX::GetFVF());    
+
     pDevice->SetTexture(0, m_pTexture);
 
     pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-    pDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, m_pBackVertices, sizeof(TRANSLITVERTEX));
+    
+    pDevice->SetFVF(TRANSLITVERTEX::GetFVF());        
+    pDevice->SetStreamSource(0, m_pBackVB, 0, sizeof(TRANSLITVERTEX));
+    pDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
 
     pDevice->SetTexture(0, NULL);
-    pDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, m_UnitPrimitiveCount, m_pUnitVertices, sizeof(TRANSLITVERTEX));
+
+
+    pDevice->SetStreamSource(0, m_pUnitVB, 0, sizeof(TRANSLITVERTEX));
+    pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, m_UnitPrimitiveCount);
 }

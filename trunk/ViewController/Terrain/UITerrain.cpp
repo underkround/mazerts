@@ -286,7 +286,13 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
     }
 
     //Create minimap and set it to use the colormap-texture
-    m_MiniMap.create();
+    hres = m_MiniMap.create(pDevice);
+
+    if(FAILED(hres))
+    {
+        return hres;
+    }
+
     m_MiniMap.setTexture(m_pPixelTexture);
 
     return S_OK;
