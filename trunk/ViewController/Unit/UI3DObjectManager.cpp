@@ -117,69 +117,60 @@ void UI3DObjectManager::loadMeshes(void)
 {
     Config & conf = * Config::getInstance();
 
-    //Create UIUnit
-    Unit * pUnit = new Unit();
-    UIUnit* pUIUnit = new UIUnit(pUnit);
-
-    //Set bounding box-size, z-value defaults to 4 (unless someone makes units to provide their depth)
-    pUIUnit->setAABBSize(D3DXVECTOR3(pUnit->getWidth(), pUnit->getHeight(), 4.0f));
-
-
     switch(0) {
 
             /** units **/
 
         case 0:
-            CXFileLoader::Load((conf.getValueAsWString("FN_car_base")).c_str(), m_ResourceContainer, pUIUnit);
-            CXFileLoader::Load((conf.getValueAsWString("FN_car_gun")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_car_base")).c_str(), m_ResourceContainer, NULL);
+            CXFileLoader::Load((conf.getValueAsWString("FN_car_gun")).c_str(), m_ResourceContainer, NULL);
             break;
         case 1:
-            CXFileLoader::Load((conf.getValueAsWString("FN_car_base")).c_str(), m_ResourceContainer, pUIUnit);
-            CXFileLoader::Load((conf.getValueAsWString("FN_car_gun")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_car_base")).c_str(), m_ResourceContainer, NULL);
+            CXFileLoader::Load((conf.getValueAsWString("FN_car_gun")).c_str(), m_ResourceContainer, NULL);
             break;
         case 2:
-            CXFileLoader::Load((conf.getValueAsWString("FN_launcher")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_launcher")).c_str(), m_ResourceContainer, NULL);
             break;
         case 3:
-            CXFileLoader::Load((conf.getValueAsWString("FN_supertank_base")).c_str(), m_ResourceContainer, pUIUnit);
-            CXFileLoader::Load((conf.getValueAsWString("FN_supertank_turret")).c_str(), m_ResourceContainer, pUIUnit);
-            CXFileLoader::Load((conf.getValueAsWString("FN_supertank_gun")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_supertank_base")).c_str(), m_ResourceContainer, NULL);
+            CXFileLoader::Load((conf.getValueAsWString("FN_supertank_turret")).c_str(), m_ResourceContainer, NULL);
+            CXFileLoader::Load((conf.getValueAsWString("FN_supertank_gun")).c_str(), m_ResourceContainer, NULL);
             break;
 
 
             /** other game objects **/
 
         case 10:
-            CXFileLoader::Load((conf.getValueAsWString("FN_rocket")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_rocket")).c_str(), m_ResourceContainer, NULL);
             break;
 
             /** buildings **/
 
         case 20:
-            CXFileLoader::Load((conf.getValueAsWString("FN_mine")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_mine")).c_str(), m_ResourceContainer, NULL);
             break;
         case 21:
-            CXFileLoader::Load((conf.getValueAsWString("FN_science")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_science")).c_str(), m_ResourceContainer, NULL);
             break;
         case 22:
-            CXFileLoader::Load((conf.getValueAsWString("FN_factory")).c_str(), m_ResourceContainer, pUIUnit);
-            CXFileLoader::Load((conf.getValueAsWString("FN_science")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_factory")).c_str(), m_ResourceContainer, NULL);
+            CXFileLoader::Load((conf.getValueAsWString("FN_science")).c_str(), m_ResourceContainer, NULL);
             break;
         case 23:
-            CXFileLoader::Load((conf.getValueAsWString("FN_radar_building")).c_str(), m_ResourceContainer, pUIUnit);
-            CXFileLoader::Load((conf.getValueAsWString("FN_radar_plate")).c_str(), m_ResourceContainer, pUIUnit);
-            CXFileLoader::Load((conf.getValueAsWString("FN_science")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_radar_building")).c_str(), m_ResourceContainer, NULL);
+            CXFileLoader::Load((conf.getValueAsWString("FN_radar_plate")).c_str(), m_ResourceContainer, NULL);
+            CXFileLoader::Load((conf.getValueAsWString("FN_science")).c_str(), m_ResourceContainer, NULL);
             break;
         case 24:
-            CXFileLoader::Load((conf.getValueAsWString("FN_guntower_gun")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_guntower_gun")).c_str(), m_ResourceContainer, NULL);
             break;
 
             /** default **/
 
         default:
-            CXFileLoader::Load((conf.getValueAsWString("FN_supertankexample")).c_str(), m_ResourceContainer, pUIUnit);
+            CXFileLoader::Load((conf.getValueAsWString("FN_supertankexample")).c_str(), m_ResourceContainer, NULL);
             break;
         }
-    m_RootObject.AddChild(pUIUnit);
-    m_UnitList.pushTail(pUIUnit);
+
 }
