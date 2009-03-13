@@ -13,6 +13,7 @@
 #include "SoundWave.h"
 #include "SoundMP3Player.h"
 #include "../Camera/Camera.h"
+#include "../../Model/Common/DoubleLinkedList.h"
 
 #include <tchar.h>
 #include <map>
@@ -22,8 +23,9 @@
 #define DEFAULT_BPS 16
 #define DEFAULT_CHANNELS 2
 #define DEFAULT_FLAGS 0
-#define DEFAULT_DUPLICATE_AMOUNT 0
-#define HEARING_DISTANCE 300
+#define DEFAULT_DUPLICATE_AMOUNT 5
+#define HEARING_DISTANCE 400
+#define UPDATE_INTERVAL 0.1f
 
 #define MAX_TEXT_LENGTH 64
 
@@ -57,7 +59,7 @@ public:
     struct Sound
     {
         TCHAR        text[MAX_TEXT_LENGTH];
-        SoundTypes    type;
+        SoundTypes   type;
     };
 
     /**
@@ -66,7 +68,18 @@ public:
     struct Music
     {
         TCHAR        text[MAX_TEXT_LENGTH];
-        MusicTypes    type;
+        MusicTypes   type;
+    };
+
+    /**
+     * Symbolises one sound effect
+     */
+    struct SoundNode
+    {
+        CSoundWave*     pWave;
+        Camera*         pCamera;
+        D3DXVECTOR3     position;
+        DWORD           duplicate;
     };
 
 
@@ -87,8 +100,9 @@ public:
 
     /**
      * Checks if sounds/music needs anything done.
+     * @param deltaT frame time
      */
-    static void update();
+    static void update(const float deltaT);
 
     /**
      * Gets the SoundManager-instance
@@ -127,12 +141,19 @@ public:
      * @param pSoundPos  where in world the sound is coming from
      * @param pCamera    pointer to camera
      */
-    static void playSound(const SoundTypes type, const float distort, const D3DXVECTOR3* pSoundPos, Camera* pCamera);
+    static void playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos, Camera* pCamera);
 
     /**
      * Stops all currently playing sound effects.
      */
     static void stopSounds();
+
+    /**
+     * Sets panning and volume according to data stored in SoundNode
+     * @param SoundNode contains position, camera and wave data
+     * @return true if sound is still in range, false if sound is out of range
+     */
+    static bool fixPanVol(SoundNode* sn);
 
 
 
@@ -215,6 +236,10 @@ private:
     bool m_LoopMusic;
 
     MusicTypes m_CurrentMusic; // currently playing music
+    DoubleLinkedList<SoundNode*> m_CurrentSounds;
+
+    // when last updated
+    float m_LastUpdated;
 
 };
 

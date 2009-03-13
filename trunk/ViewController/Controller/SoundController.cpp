@@ -39,7 +39,7 @@ void SoundController::updateControls(float frameTime)
 {
     // sound things
     if (KeyboardState::keyReleased[m_KeySoundToggle])
-        SoundManager::playSound(SoundManager::EXPLOSION, 0.1f, &D3DXVECTOR3(50, 100, 0), m_pCamera);
+        SoundManager::playSound(SoundManager::EXPLOSION, 0.1f, D3DXVECTOR3(50, 100, 0), m_pCamera);
 //        SoundManager::setSoundsEnabled(!SoundManager::getSoundsEnabled());
     if (KeyboardState::keyReleased[m_KeyMusicToggle])
         SoundManager::setMusicEnabled(!SoundManager::getMusicEnabled());

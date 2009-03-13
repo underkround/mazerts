@@ -33,6 +33,10 @@ void Unit::create()
         return;
     // transfer the ownership to the collection
     AssetCollection::registerUnit(this);
+    // set "old" position (current)
+    m_OldPosX = (unsigned short)getPosition()->x;
+    m_OldPosY = (unsigned short)getPosition()->y;
+
     m_Created = true;
 }
 
@@ -70,6 +74,14 @@ char Unit::update(const float deltaT)
     // update our moving
     if(m_pMovingLogic)
         m_pMovingLogic->update(this, deltaT);
+
+    // check if coordinate changed
+    if (m_OldPosX != (unsigned short)getPosition()->x || m_OldPosY != (unsigned short)getPosition()->y)
+    {
+        AssetCollection::updatePosition(this, m_OldPosX, m_OldPosY);
+        m_OldPosX = (unsigned short)getPosition()->x;
+        m_OldPosY = (unsigned short)getPosition()->y;
+    }
 
     //return RESULT_DELETEME; // unit will be deleted when returning this value
     return RESULT_OK; // normal return value

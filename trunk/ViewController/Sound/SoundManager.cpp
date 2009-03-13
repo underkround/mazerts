@@ -82,11 +82,25 @@ void SoundManager::release()
 
     // release music player
     stopMusic();
+
+    // release currently playing list
+    DoubleLinkedList<SoundNode*>* list = &pInstance->m_CurrentSounds;
+    ListNode<SoundNode*>* ln = list->headNode();
+    while (ln)
+    {
+        SoundNode* sn = ln->item;
+        delete sn;
+        ln = list->removeGetNext(ln);
+    }
 }
 
-void SoundManager::update()
+void SoundManager::update(const float deltaT)
 {
     SoundManager* pInstance = getInstance();
+
+    pInstance->m_LastUpdated += deltaT;
+    if (pInstance->m_LastUpdated < UPDATE_INTERVAL) return;
+    pInstance->m_LastUpdated = 0.0f;
 
     if (pInstance->m_MusicEnabled)
         {
@@ -101,6 +115,43 @@ void SoundManager::update()
         {
             // music has ended but looping is off
             pInstance->m_MusicPlayer.Release();
+        }
+    }
+
+    // TODO: This should go into its own thread
+    DoubleLinkedList<SoundNode*>* list = &pInstance->m_CurrentSounds;
+    if (pInstance->m_SoundsEnabled)
+    {
+        if (!list->empty()) {
+            ListNode<SoundNode*>* ln = list->headNode();
+            while (ln)
+            {
+                SoundNode* sn = ln->item;
+                if (sn->pWave->IsPlaying(sn->duplicate))
+                {
+                    fixPanVol(sn);
+                    /*
+                     * remove these comment marks to make sounds end if source gets
+                     * too far away
+                    if (!fixPanVol(sn))
+                    {
+                        // sound is too far away
+                        sn->pWave->Stop(sn->duplicate);
+                        sn->pWave->SetPosition(0, sn->duplicate);
+                        ln = list->removeGetNext(ln);
+                        delete sn;
+                    }
+                    else
+                        */
+                        ln = ln->next;
+                }
+                else
+                {
+                    // sound is at end
+                    ln = list->removeGetNext(ln);
+                    delete sn;
+                }
+            }
         }
     }
 }
@@ -128,18 +179,46 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const i
     pWave->Play(false, duplicate);
 }
 
-void SoundManager::playSound(const SoundTypes type, const float distort, const D3DXVECTOR3* pSoundPos, Camera* pCamera)
+void SoundManager::playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos, Camera* pCamera)
+{
+    SoundManager* pInstance = getInstance();
+    if (!pInstance->m_SoundsEnabled) return;
+
+    CSoundWave* pWave = pInstance->m_SoundsMap[type];
+	DWORD duplicate = pWave->GetNextFreeDuplicate();
+    const int dist = (int)(pWave->getOriginalFrequency() * distort);
+    const int minDistort = pWave->getOriginalFrequency() - dist;
+    const int maxDistort = pWave->getOriginalFrequency() + dist;
+
+    pWave->SetFrequency(IApplication::RandInt(minDistort, maxDistort), duplicate);
+
+    SoundNode* sn = new SoundNode();
+    sn->pWave = pWave;
+    sn->pCamera = pCamera;
+    sn->position = soundPos;
+    sn->duplicate = duplicate;
+    if (fixPanVol(sn))
+    {
+        pWave->Play(false, duplicate);
+        pInstance->m_CurrentSounds.pushTail(sn);
+    }
+}
+
+bool SoundManager::fixPanVol(SoundNode* sn)
 {
     // calculate distance
     D3DXVECTOR3 distvect;
-    D3DXVec3Subtract(&distvect, pSoundPos, &pCamera->getPosition());
+    D3DXVec3Subtract(&distvect, &sn->position, &sn->pCamera->getPosition());
     float dist = D3DXVec3Length(&distvect);
-    if (dist > HEARING_DISTANCE) return; // sound is too far away
+    if (dist > HEARING_DISTANCE) {
+        // sound is too far away
+        return false;
+    }
 
     // calculate angle
     D3DXVECTOR2 normpos(distvect.x, distvect.y);
     D3DXVec2Normalize(&normpos, &normpos);
-    D3DXVECTOR2 right(pCamera->getMatrix()._11, -pCamera->getMatrix()._12); // second parameter is inversed because of hitler, seems like _21 would work too
+    D3DXVECTOR2 right(sn->pCamera->getMatrix()._11, -sn->pCamera->getMatrix()._12); // second parameter is inversed because of hitler, seems like _21 would work too
     float dot = D3DXVec2Dot(&normpos, &right);
 
     int pan = (int)(2000 * dot);
@@ -148,7 +227,10 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const D
     if (dist > third)
         volume = -(int)((dist - third) / (HEARING_DISTANCE >> 1) * 3000);
 
-    playSound(type, distort, volume, pan);
+    CSoundWave* pWave = sn->pWave;
+    pWave->SetPan(pan, sn->duplicate);
+    pWave->SetVolume(volume, sn->duplicate);
+    return true;
 }
 
 void SoundManager::stopSounds()

@@ -23,6 +23,10 @@ public:
 
     //static AssetCollection* getInstance(); // @DEPRECATED: not singleton anymore
 
+// ===== CREATE
+
+    static void create(const unsigned int mapSize);
+
 // ===== UPDATE
 
     /**
@@ -89,6 +93,10 @@ public:
 
     static void debugPrintCollection();
 
+// ===== UPDATES
+
+    static void updatePosition(Unit* u, const unsigned short oldPosX, const unsigned short oldPosY);
+
 private:
 
     AssetCollection();
@@ -99,6 +107,12 @@ private:
     // can be implemented to gain speed in searches etc
     static DoubleLinkedList<Unit*>      units;
     static DoubleLinkedList<Building*>  buildings;
+
+    // pointer arrays of units & buildings. This is not primary unit container,
+    // do not delete units through this (use lists)
+    static Unit***                      m_pppUnitArray;
+    static Building***                  m_pppBuildingArray;
+    static unsigned short               m_MapSize; // used to delete arrays
 
 // ===== OBSERVER FUNCTIONALITY
 

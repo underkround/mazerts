@@ -130,7 +130,7 @@ void CTheApp::OnFlip(void)
     }
 
     //Sound updates
-    SoundManager::update();
+    SoundManager::update(frameTime);
 
     
     timer1->BeginTimer();

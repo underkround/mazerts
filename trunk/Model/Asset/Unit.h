@@ -99,6 +99,10 @@ private:
     // Targets queued for this unit
     DoubleLinkedList<Target*>   m_TargetQueue;
 
+    // old position, used to check if coordinate has changed
+    unsigned short              m_OldPosX;
+    unsigned short              m_OldPosY;
+
 };
 
 #endif // __UNIT_H__

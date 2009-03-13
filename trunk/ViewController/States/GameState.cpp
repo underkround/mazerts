@@ -69,6 +69,9 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     pTerrain->setWaterLevel(50);
 
+    // initialize asset collection
+    AssetCollection::create(pTerrain->getSize());
+
     //TEST
     for(int i = 0; i < 5; i++)
     {
@@ -314,7 +317,7 @@ void GameState::updateControls(const float frameTime)
             //Debug-object, added automatically to root
             m_pManager->getRootObject()->RemoveChild(pObj);
             pUnit->AddChild(pObj);
-            SoundManager::playSound(SoundManager::READY, 0.1f, (D3DXVECTOR3*)&pUnit->GetMatrix()._41, m_pCamera);
+            SoundManager::playSound(SoundManager::READY, 0.1f, (D3DXVECTOR3)&pUnit->GetMatrix()._41, m_pCamera);
 
             m_tmpSelectedUnit = pUnit; // TODO: remove after testing single unit moving
         }
