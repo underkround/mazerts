@@ -1,3 +1,13 @@
+/**
+ *
+ * Changelog:
+ *  r143: changed rhw:s from 0.0f to 0.99f and working now with intel GMA 945
+ *
+ * $Revision$
+ * $Date$
+ * $Id$
+ */
+
 #include "MiniMap.h"
 
 MiniMap::MiniMap()
@@ -19,7 +29,7 @@ void MiniMap::create()
 	m_pVertices[0].tu = 0.0f;
 	m_pVertices[0].tv = 1.0f;
 	m_pVertices[0].dwColor = 0xFFFFFFFF;
-	m_pVertices[0].rhw = 0.0f;
+	m_pVertices[0].rhw = 0.99f;
 
 	m_pVertices[1].x = 310.0f;
 	m_pVertices[1].y = 10.0f;
@@ -27,7 +37,7 @@ void MiniMap::create()
 	m_pVertices[1].tu = 1.0f;
 	m_pVertices[1].tv = 1.0f;
 	m_pVertices[1].dwColor = 0xFFFFFFFF;
-	m_pVertices[1].rhw = 0.0f;
+	m_pVertices[1].rhw = 0.99f;
 
 	m_pVertices[2].x = 310.0f;
 	m_pVertices[2].y = 310.0f;
@@ -35,7 +45,7 @@ void MiniMap::create()
 	m_pVertices[2].tu = 1.0f;
 	m_pVertices[2].tv = 0.0f;
 	m_pVertices[2].dwColor = 0xFFFFFFFF;
-	m_pVertices[2].rhw = 0.0f;
+	m_pVertices[2].rhw = 0.99f;
 
 	m_pVertices[3].x = 10.0f;
 	m_pVertices[3].y = 310.0f;
@@ -43,7 +53,7 @@ void MiniMap::create()
 	m_pVertices[3].tu = 0.0f;
 	m_pVertices[3].tv = 0.0f;
 	m_pVertices[3].dwColor = 0xFFFFFFFF;
-	m_pVertices[3].rhw = 0.0f;
+	m_pVertices[3].rhw = 0.99f;
 
 }
 

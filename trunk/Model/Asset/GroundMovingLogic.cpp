@@ -86,6 +86,11 @@ void GroundMovingLogic::idle(const float deltaT)
     // do we have a target?
     if(m_pTarget) 
     {
+        // if the target is unit itself, remove the target
+        if(m_pTarget->getTargetType() == Target::ASSET && m_pTarget->getTargetAsset() == m_pUnit)
+        {
+            clearTarget();
+        }
         // is the target reached?
         if( m_CachedReachedTargetX != m_pTarget->getTargetX() ||
             m_CachedReachedTargetY != m_pTarget->getTargetY()   )

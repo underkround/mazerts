@@ -4,8 +4,8 @@
 /**
  * Config.h
  *
- * $Id: Config.h 136 2008-05-06 13:48:14Z antsy $
- * $Revision: 136 $
+ * $Id$
+ * $Revision$
  *
  * This class originally written by Antti for Yazatrix project contains configurations
  *

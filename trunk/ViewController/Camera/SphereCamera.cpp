@@ -8,8 +8,8 @@ const float SphereCamera::CAM_MAXPITCH = 0.47f * D3DX_PI;
 
 SphereCamera::SphereCamera() : Camera()
 {
-    m_LookAt.x = 0.0f;
-    m_LookAt.y = 0.0f;
+    m_LookAt.x = 100.0f;
+    m_LookAt.y = 100.0f;
     m_LookAt.z = 0.0f;
 
     m_Zoom = 100.0f;

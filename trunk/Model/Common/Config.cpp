@@ -79,7 +79,8 @@ int Config::getValueAsInt(string in_filename, string in_section, string in_name)
 bool Config::getValueAsBool(string in_name) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name) {
-      return (bool)static_cast<SettingInt*>(*iter)->value;
+      //return (bool)static_cast<SettingInt*>(*iter)->value;
+      return (((SettingInt*)(*iter))->value) ? true : false;
     }
   }
   return false;
@@ -88,7 +89,8 @@ bool Config::getValueAsBool(string in_name) {
 bool Config::getValueAsBool(string in_filename, string in_name) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name && (*iter)->file == in_filename) {
-      return (bool)static_cast<SettingInt*>(*iter)->value;
+      //return (bool)static_cast<SettingInt*>(*iter)->value;
+      return (((SettingInt*)(*iter))->value) ? true : false;
     }
   }
   return false;
@@ -97,7 +99,8 @@ bool Config::getValueAsBool(string in_filename, string in_name) {
 bool Config::getValueAsBool(string in_filename, string in_section, string in_name) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
-      return (bool)static_cast<SettingInt*>(*iter)->value;
+      //return (bool)static_cast<SettingInt*>(*iter)->value;
+      return (((SettingInt*)(*iter))->value) ? true : false;
     }
   }
   return false;

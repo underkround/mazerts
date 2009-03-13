@@ -8,6 +8,7 @@ void testConfig() {
     c.readFile();
     c.printSettings();
     assert(c.getValueAsBool("bool") == true);
+    assert(c.getValueAsBool("int") == true);
     assert(c.getValueAsInt("int") == 2);
     assert(c.getValueAsString("str") == "testi");
 }

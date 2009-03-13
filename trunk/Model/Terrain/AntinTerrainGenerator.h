@@ -1,7 +1,7 @@
 /**
  * AntinTerrainGenerator
  *
- * $Revision: 31 $
+ * $Revision$
  * $Date$
  * $Id$
  */

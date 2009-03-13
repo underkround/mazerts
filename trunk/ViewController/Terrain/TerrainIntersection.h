@@ -4,9 +4,9 @@
  * Handles intersection-checks with terrain
  * friend of UITerrain
  *
- * $Revision: 89 $
- * $Date: 2009-03-05 05:41:56 +0200 (to, 05 maalis 2009) $
- * $Id: UITerrain.h 89 2009-03-05 03:41:56Z ezbe $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __TERRAININTERSECTION_H__

@@ -5,9 +5,9 @@
  * that stores messages from different sources, and can be used interactive
  * with registered parsers.
  *
- * $Revision: 33 $
- * $Date: 2009-02-16 03:03:31 +0200 (ma, 16 helmi 2009) $
- * $Id: GameConsole.h 33 2009-02-16 01:03:31Z zem $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 //TODO: This class is unfinished, STC

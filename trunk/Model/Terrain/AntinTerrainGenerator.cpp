@@ -203,7 +203,7 @@ void AntinTerrainGenerator::makeIsland(unsigned char **ppVertexHeightData, const
             if(z > cir2)
             {
                 float heightdrop = (float)(sqrt((double)z) - sqrt((double)cir2))+(ppVertexHeightData[y][x]*0.8f);
-                ppVertexHeightData[y][x] = (ppVertexHeightData[y][x]-heightdrop > 0) ? ppVertexHeightData[y][x] -= heightdrop : 0;
+                ppVertexHeightData[y][x] = (ppVertexHeightData[y][x]-heightdrop > 0) ? ppVertexHeightData[y][x] -= (unsigned char)(heightdrop) : 0;
             }
         }
     }

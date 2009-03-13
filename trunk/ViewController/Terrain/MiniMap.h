@@ -1,9 +1,9 @@
 /**
  * Minimap showing the terrain with visible unit and building locations
  *
- * $Revision:$
- * $Date:$
- * $Id:$
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __MINIMAP_H__
