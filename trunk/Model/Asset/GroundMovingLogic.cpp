@@ -92,7 +92,7 @@ void GroundMovingLogic::idle(const float deltaT)
             clearTarget();
         }
         // is the target reached?
-        if( m_CachedReachedTargetX != m_pTarget->getTargetX() ||
+        else if( m_CachedReachedTargetX != m_pTarget->getTargetX() ||
             m_CachedReachedTargetY != m_pTarget->getTargetY()   )
         {
             // target has changed since we reached it

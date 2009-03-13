@@ -37,7 +37,10 @@ class DoubleLinkedList
 
 public:
 
-    DoubleLinkedList() : head( NULL ), tail ( NULL ) {}
+    DoubleLinkedList() : head( NULL ), tail ( NULL ) 
+    {
+        m_Count = 0;
+    }
 
     ~DoubleLinkedList();
 
@@ -106,6 +109,12 @@ public:
     void release();
 
     /**
+     * Returns the count of items in list
+     * @return Number of items
+     */
+    inline int count() { return m_Count; }
+
+    /**
      * @TODO:
      * if you need the list to return next or previous nodes when deleting node
      * while iterating, implement methods such as:
@@ -130,6 +139,10 @@ private:
     ListNode<T>* head;
     ListNode<T>* tail;
 
+    /**
+     * Count of items in list
+     */
+    int m_Count;
 };
 
 
@@ -153,6 +166,7 @@ void DoubleLinkedList<T>::release()
     }
     head = NULL;
     tail = NULL;
+    m_Count = 0;
 }
 
 // ===== push
@@ -165,6 +179,8 @@ void DoubleLinkedList<T>::pushTail(T item)
         tail->prev->next = tail;
     if( !head )
         head = tail;
+
+    ++m_Count;
 }
 
 template <typename T>
@@ -175,6 +191,8 @@ void DoubleLinkedList<T>::pushHead(T item)
         head->next->prev = head;
     if( !tail )
         tail = head;
+
+    ++m_Count;
 }
 
 // ===== pop
@@ -193,6 +211,9 @@ T DoubleLinkedList<T>::popTail()
     else
         head = NULL ;
     delete temp;
+
+    --m_Count;
+
     return item;
 }
 
@@ -210,6 +231,9 @@ T DoubleLinkedList<T>::popHead()
     else
         tail = NULL;
     delete temp;
+
+    --m_Count;
+
     return item;
 }
 
@@ -248,6 +272,9 @@ T DoubleLinkedList<T>::remove(ListNode<T>* node)
         tail = node->prev;
     T item = node->item;
     delete node;
+
+    --m_Count;
+
     return item;
 }
 

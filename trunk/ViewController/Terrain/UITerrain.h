@@ -123,6 +123,12 @@ public:
     inline unsigned char getDetailLevel() { return m_DetailLevel; }
 
     /**
+     * Returns the minimap associated with the terrain
+     * @return Pointer to MiniMap -instance
+     */
+    inline MiniMap* getMiniMap() { return &m_MiniMap; }
+
+    /**
      * Releases D3DPOOL_DEFAULT -resources
      * @return S_OK if releasing went fine, otherwise error code
      */

@@ -60,6 +60,12 @@ public:
      */
     inline C3DResourceContainer* getResourceContainer() { return &m_ResourceContainer; }
 
+    /**
+     * Gets the list of units within the object manager
+     * @return Pointer to unit list
+     */
+    inline DoubleLinkedList<UIUnit*>* getUnitList() { return &m_UnitList; }
+
     /** 
      * Releases the children of root-object
      */ 

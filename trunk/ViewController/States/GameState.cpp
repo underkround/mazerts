@@ -129,6 +129,9 @@ bool GameState::update(const float frameTime)
     AssetCollection::updateUnits(frameTime);
     m_pManager->getRootObject()->Update(frameTime);
 
+    //Update minimap
+    m_pUITerrain->getMiniMap()->updateUnits(m_pManager->getUnitList(), frameTime);
+
     //Keep running
     return true;
 }
@@ -154,6 +157,8 @@ void GameState::prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float fr
 
     pDevice->SetLight(0, &light);
     pDevice->LightEnable(0, TRUE);
+
+
 }
 
 void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
