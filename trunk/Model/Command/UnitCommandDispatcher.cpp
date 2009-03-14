@@ -12,6 +12,11 @@ UnitCommandDispatcher::~UnitCommandDispatcher()
     // TODO?
 }
 
+void UnitCommandDispatcher::release()
+{
+    m_Target.release();
+}
+
 
 Target* UnitCommandDispatcher::getTarget() {
     return &m_Target;

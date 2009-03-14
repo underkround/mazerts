@@ -49,7 +49,7 @@ void CameraController::loadConfiguration()
 }
 
 
-void CameraController::updateControls(float frameTime)
+void CameraController::updateControls(const float frameTime)
 {
 
     // ===== Keyboard

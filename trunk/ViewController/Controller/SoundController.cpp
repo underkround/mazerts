@@ -35,7 +35,7 @@ void SoundController::loadConfiguration()
     m_KeyVolumeDown = c.getValueAsInt("master volume down");
 }
 
-void SoundController::updateControls(float frameTime)
+void SoundController::updateControls(const float frameTime)
 {
     // sound things
     if (KeyboardState::keyReleased[m_KeySoundToggle])

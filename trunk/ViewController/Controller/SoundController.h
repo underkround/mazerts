@@ -23,7 +23,7 @@ public:
     /**
      * @see IUIController
      */
-    virtual void updateControls(float frameTime);
+    virtual void updateControls(const float frameTime);
 
     /**
      * @see IUIController

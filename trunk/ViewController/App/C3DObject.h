@@ -21,8 +21,8 @@ public:
     // textures
     struct MESHDATA
     {
-        D3DMATERIAL9*        pMaterial;
-        LPDIRECT3DTEXTURE9    pTexture;
+        D3DMATERIAL9*           pMaterial;
+        LPDIRECT3DTEXTURE9      pTexture;
     };
 
     C3DObject(void);
@@ -96,10 +96,10 @@ public:
 
 protected:
     // an array of mesh data structures
-    vector<MESHDATA>    m_arrMeshData;
+    vector<MESHDATA>        m_arrMeshData;
 
     // object mesh
-    LPD3DXMESH            m_pMesh;
+    LPD3DXMESH              m_pMesh;
 
     /**
      * Axis-aligned bounding box

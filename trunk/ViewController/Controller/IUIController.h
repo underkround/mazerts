@@ -27,7 +27,7 @@ public:
      * devices and do something.
      * @param frameTime seconds elapsed from previous call
      */
-    virtual void updateControls(float frameTime) = 0;
+    virtual void updateControls(const float frameTime) = 0;
 
     /**
      * Load configurations from config object

@@ -117,6 +117,10 @@ public:
 
 
 
+    /**
+     * Set default camera to use with panning
+     */
+    static void setDefaultCamera(Camera* pCamera);
 
     /**
      * Plays sound. Uses max volume and center pan.
@@ -138,10 +142,19 @@ public:
      * Plays sound. Calculates panning and volume according to camera & target.
      * @param type      which sound to play
      * @param distort   how much sound is to be distorted (in percents)
-     * @param pSoundPos  where in world the sound is coming from
-     * @param pCamera    pointer to camera
+     * @param pSoundPos where in world the sound is coming from
+     * @param pCamera   pointer to camera or NULL/unset to use current default camera
      */
     static void playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos, Camera* pCamera);
+
+    /**
+     * Plays sound with default camera, if any. Calculates panning and volume
+     * according to camera & target.
+     * @param type      which sound to play
+     * @param distort   how much sound is to be distorted (in percents)
+     * @param pSoundPos where in world the sound is coming from
+     */
+    static void playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos);
 
     /**
      * Stops all currently playing sound effects.
@@ -155,14 +168,10 @@ public:
      */
     static bool fixPanVol(SoundNode* sn);
 
-
-
-
-
     /**
      * Plays music. If music is already played, stops that and starts playing new one.
-     * @param type          which music to play
-     * @param looping       if music should be looped
+     * @param type      which music to play
+     * @param looping   if music should be looped
      */
     static void playMusic(const MusicTypes type, const bool looping);
 
@@ -221,6 +230,9 @@ private:
     SoundManager(void);
 
     CSoundEngine m_SoundEngine;
+
+    // Default camera to use with panning, if no overriding camera given
+    Camera* m_DefaultCamera;
 
     // containers for sound & music
     map<SoundTypes, CSoundWave*> m_SoundsMap;

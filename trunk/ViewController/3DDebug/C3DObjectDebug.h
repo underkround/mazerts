@@ -42,6 +42,15 @@ public:
 
     void Release();
 
+    /**
+     * Sets the selfdestruct to true, and the object will be destroyed
+     * in the next update.
+     */
+    void selfDestruct() {
+        m_SelfDestructing = true;
+        m_LifeTime = -1.0f;
+    }
+
     /**     
      * Updates the object
      * @param fFrametime application frame time

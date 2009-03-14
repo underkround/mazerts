@@ -31,7 +31,9 @@ public:
 
     UnitCommandDispatcher(Player* owner);
 
-    virtual ~UnitCommandDispatcher();
+    ~UnitCommandDispatcher();
+
+    void release();
 
 // ===== Subject control - subject is asset currently under control
 

@@ -9,9 +9,8 @@
 #include "../Input/KeyboardState.h"
 #include "../../Model/Common/Config.h"
 
-//Camera related
+// Camera related
 #include "../Camera/SphereCamera.h"
-#include "../Terrain/TerrainIntersection.h"
 
 #include "../Sound/SoundManager.h"
 
@@ -35,8 +34,6 @@ GameState::GameState()
     m_pUITerrain = NULL;
     m_pApp = NULL;
     m_Created = false;
-
-    m_tmpSelectedUnit = NULL; // TEMP
 }
 
 GameState::~GameState()
@@ -103,7 +100,11 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     m_pCamera = new SphereCamera();
     m_pCamera->setPosition(127.0f, 127.0f, -200.0f);
 
+    // Set default camera to the soundmanager
+    SoundManager::setDefaultCamera(m_pCamera);
+
     // Controllers
+    m_UIControllers.pushHead(new UIAssetController(pDevice, m_pCamera, &m_Selector));
     m_UIControllers.pushHead(new SoundController(m_pCamera));
     m_UIControllers.pushHead(new CameraController(m_pCamera));
     // Load configurations for the controllers
@@ -134,6 +135,9 @@ void GameState::release()
         delete node->item;
         node = m_UIControllers.removeGetNext(node);
     }
+
+    // Remove our camera from sound manager
+    SoundManager::setDefaultCamera(NULL);
 
     //The children of the Object Manager root object are listeners to model-side
     //AssetCollection, and will be released via listener-interface, but they have
@@ -269,7 +273,7 @@ void GameState::updateControls(const float frameTime)
         }
     }
 
-
+/*
     //Terrain picking test
     //if(MouseState::mouseButton[m_KeyMousePickButton])
     if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
@@ -326,6 +330,7 @@ void GameState::updateControls(const float frameTime)
     {       
         m_Selector.buttonUp();
     }
+*/
 
 }
 

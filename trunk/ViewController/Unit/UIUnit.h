@@ -16,6 +16,9 @@
 #include "../../Model/Asset/Unit.h"
 #include "../../Model/Asset/IAssetListener.h"
 
+// TODO: remove when implementing real marker object
+#include "../3DDebug/C3DObjectDebug.h"
+
 class UIUnit : public C3DObject, IAssetListener
 {
 public:
@@ -28,6 +31,8 @@ public:
         m_pUnit = pUnit;
         m_HalfSize = pUnit->getWidth() * 0.5f;        
         m_Alive = true;
+        m_Selected = false;
+        m_SelectionMarker = NULL;
 
         //Register as listener to pUnit
         pUnit->registerListener(this);
@@ -74,6 +79,11 @@ public:
     };
 
     /**
+     * Activate / Deactivate markers (visual + audio) for selection
+     */
+    void setSelected(bool value);
+
+    /**
      * @return pointer to the model-size unit that this UiUnit represents
      */
     Unit* getUnit()
@@ -89,20 +99,33 @@ protected:
      */
     void updatePosition();
 
+// ===== Members
+
+    /**
+     * If set true, this unit is currently selected
+     */
+    bool            m_Selected;
+
+    /**
+     * TODO: change to regular object when implementing real marker
+     * instead of debug-one
+     */
+    C3DObjectDebug* m_SelectionMarker;
+
     /**
      * Pointer to Model-side Unit-instance this is a representation of
      */
-    Unit* m_pUnit;
+    Unit*           m_pUnit;
 
     /**
      * Half of the actual unit "grid-size", used to offset the model correctly
      */
-    float m_HalfSize;
+    float           m_HalfSize;
 
     /**
      * Set to false by handleAssetReleased
      */
-    bool m_Alive;
+    bool            m_Alive;
 
 };
 

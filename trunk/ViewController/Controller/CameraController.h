@@ -25,7 +25,7 @@ public:
     /**
      * @see IUIController
      */
-    void updateControls(float frameTime);
+    void updateControls(const float frameTime);
 
     /**
      * @see IUIController

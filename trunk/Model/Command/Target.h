@@ -84,6 +84,8 @@ public:
      */
     void setTarget(const unsigned short x, const unsigned short y, const bool contextSensitive)
     {
+        if(m_TargetAsset)
+            clearAssetTarget();
         m_TargetX = x;
         m_TargetY = y;
         m_TargetAsset = NULL;

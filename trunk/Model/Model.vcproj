@@ -424,6 +424,14 @@
 					RelativePath=".\Command\Target.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Command\UnitCommandDispatcher.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Command\UnitCommandDispatcher.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Common"
