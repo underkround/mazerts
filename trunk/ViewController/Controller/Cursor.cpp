@@ -64,7 +64,7 @@ HRESULT Cursor::update()
     pVertices[3].y = (float)MouseState::mouseY + CURSORSIZE;
     pVertices[3].z = 0.0f;
     pVertices[3].rhw = 0.999f;
-    pVertices[3].tu = 0.0f;
+    pVertices[3].tu = TEXOFFSET * m_Type;
     pVertices[3].tv = 1.0f;
     pVertices[3].dwColor = 0xFFFFFFFF;
 

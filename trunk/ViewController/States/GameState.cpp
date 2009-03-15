@@ -169,7 +169,22 @@ bool GameState::update(const float frameTime)
     //Update minimap
     m_pUITerrain->getMiniMap()->updateUnits(m_pManager->getUnitList(), frameTime);
 
-    //Update cursor position
+
+    //CURSOR-TEST, REMOVE
+    if(MouseState::mouseButton[0])
+    {
+       Cursor::getInstance()->setType(Cursor::CURS_ATTACK);
+    }
+    else if(MouseState::mouseButton[1])    
+    {
+        Cursor::getInstance()->setType(Cursor::CURS_SELECT);
+    }
+    else
+    {
+        Cursor::getInstance()->setType(Cursor::CURS_NORMAL);
+    }
+
+    //Update cursor position and texture
     Cursor::getInstance()->update();
 
     //Keep running
