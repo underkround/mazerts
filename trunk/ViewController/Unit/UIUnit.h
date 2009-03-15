@@ -81,7 +81,12 @@ public:
     /**
      * Activate / Deactivate markers (visual + audio) for selection
      */
-    void setSelected(bool value);
+    void setSelected(const bool value);
+
+    /**
+     * Return selection state of this uiunit
+     */
+    const bool isSelected() { return m_Selected; }
 
     /**
      * @return pointer to the model-size unit that this UiUnit represents

@@ -110,14 +110,15 @@ void MouseState::update()
     }
 }
 
-void MouseState::transformTo3D(D3DXMATRIX& matView, D3DXMATRIX& matProj, D3DXVECTOR3 &rayOrigin, D3DXVECTOR3 &rayDir)
+
+void MouseState::transformTo3D(D3DXMATRIX& matView, D3DXMATRIX& matProj, D3DXVECTOR3 &rayOrigin, D3DXVECTOR3 &rayDir, const int mX, const int mY)
 {
     float w = (float)Input::pApp->GetWindowRect().right;
     float h = (float)Input::pApp->GetWindowRect().bottom;
 
     D3DXVECTOR3 v;
-    v.x =  (((2.0f * mouseX) / w) - 1) / matProj._11;
-    v.y = -(((2.0f * mouseY) / h) - 1) / matProj._22;
+    v.x =  (((2.0f * mX) / w) - 1) / matProj._11;
+    v.y = -(((2.0f * mY) / h) - 1) / matProj._22;
     v.z =  1.0f;
 
     D3DXMATRIX m;

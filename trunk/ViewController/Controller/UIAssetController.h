@@ -21,6 +21,13 @@ class UIAssetController : public IUIController
 {
 public:
 
+    enum PointerState
+    {
+        IDLE = 0,
+        CLICK,
+        DRAG
+    };
+
     UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pCamera, Selector* pSelector);
     ~UIAssetController();
 
@@ -37,14 +44,42 @@ public:
     /**
      * @see IUIController
      */
-    virtual void loadConfiguration();
+    virtual void loadConfiguration(const bool confFileLoaded=false);
+
+    /**
+     * Clear all units under selection
+     */
+    void clearSelection();
 
 private:
 
+    void onPickButton(const float frameTime);
+
+    void onPickRelease(const float frameTime);
+
+    void onActionButton(const float frameTime);
+
+    void onActionRelease(const float frameTime);
+
+// ===== Members
+
     // confs
-    int m_KeyMouseDragButton;
+    int m_KeyMouseActionButton;
     int m_KeyMousePickButton;
-    int m_KeyMouseRotateButton;
+    int m_KeyAddToSelection;
+    int m_MousePickDragTreshold;
+    int m_MouseActionDragTreshold;
+    int m_KeyPickModifier;
+    int m_KeyActionModifier;
+    bool m_KeyActionWhileDragging;
+
+    // current state of the selection
+    PointerState                m_SelectionState;
+    PointerState                m_ActionState;
+
+    // temporary values for mouse coordinate
+    int m_TempMouseX;
+    int m_TempMouseY;
 
     // device used with picking ray
     LPDIRECT3DDEVICE9           m_pDevice;

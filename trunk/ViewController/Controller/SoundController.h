@@ -28,7 +28,7 @@ public:
     /**
      * @see IUIController
      */
-    virtual void loadConfiguration();
+    virtual void loadConfiguration(const bool confFileLoaded);
 
 private:
 

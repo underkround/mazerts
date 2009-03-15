@@ -22,12 +22,14 @@ CameraController::~CameraController()
 }
 
 
-void CameraController::loadConfiguration()
+void CameraController::loadConfiguration(const bool confFileLoaded)
 {
     Config & c = * Config::getInstance();
-    // Assume that the caller of this method (GameState) has loaded the file
-    //c.setFilename("controls.ini");
-    //c.readFile();
+    if(!confFileLoaded)
+    {
+        c.setFilename("controls.ini");
+        c.readFile();
+    }
     m_KeyCameraPanUp = c.getValueAsInt("camera pan up");
     m_KeyCameraPanDown = c.getValueAsInt("camera pan down");
     m_KeyCameraPanRight = c.getValueAsInt("camera pan right");

@@ -23,12 +23,14 @@ SoundController::~SoundController()
 {
 }
 
-void SoundController::loadConfiguration()
+void SoundController::loadConfiguration(const bool confFileLoaded)
 {
     Config & c = * Config::getInstance();
-    // Assume that the caller of this method (GameState) has loaded the file
-    //c.setFilename("controls.ini");
-    //c.readFile();
+    if(!confFileLoaded)
+    {
+        c.setFilename("controls.ini");
+        c.readFile();
+    }
     m_KeySoundToggle = c.getValueAsInt("toggle sound");
     m_KeyMusicToggle = c.getValueAsInt("toggle music");
     m_KeyVolumeUp = c.getValueAsInt("master volume up");

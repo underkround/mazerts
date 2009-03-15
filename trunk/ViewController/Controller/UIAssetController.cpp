@@ -13,6 +13,10 @@
 #include "../Terrain/TerrainIntersection.h"
 #include "../Unit/UI3DObjectManager.h"
 
+#ifdef DEBUG
+#include "../3DDebug/UI3DDebug.h"
+#endif
+
 
 UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pCamera, Selector* pSelector)
 {
@@ -20,6 +24,15 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pC
     m_pDevice = pDevice;
     m_pCamera = pCamera;
     m_pSelector = pSelector;
+    m_SelectionState = IDLE;
+    m_ActionState = IDLE;
+    m_TempMouseX = 0;
+    m_TempMouseY = 0;
+    m_KeyMouseActionButton = 1;
+    m_KeyMousePickButton = 0;
+    m_KeyAddToSelection = 29;
+    m_MousePickDragTreshold = 4;
+    m_MouseActionDragTreshold = 4;
 }
 
 
@@ -29,15 +42,26 @@ UIAssetController::~UIAssetController()
 }
 
 
-void UIAssetController::loadConfiguration()
+void UIAssetController::loadConfiguration(const bool confFileLoaded)
 {
     Config & c = * Config::getInstance();
-    // Assume that the caller of this method (GameState) has loaded the file
-    //c.setFilename("controls.ini");
-    //c.readFile();
-    m_KeyMouseDragButton = c.getValueAsInt("mouse drag button");
-    m_KeyMousePickButton = c.getValueAsInt("mouse pick button");
-    m_KeyMouseRotateButton = c.getValueAsInt("mouse rotate button");
+    if(!confFileLoaded)
+    {
+        c.setFilename("controls.ini");
+        c.readFile();
+    }
+    // mouse buttons
+    m_KeyMouseActionButton      = c.getValueAsInt("mouse action button");
+    m_KeyMousePickButton        = c.getValueAsInt("mouse pick button");
+    m_KeyAddToSelection         = c.getValueAsInt("add to selection modifier key");
+    // drag tresholds
+    m_MousePickDragTreshold     = c.getValueAsInt("mouse pick moving treshold");
+    m_MouseActionDragTreshold   = c.getValueAsInt("mouse action moving treshold");
+    // keyboard modifiers
+    m_KeyPickModifier           = c.getValueAsInt("mouse pick modifier key");
+    m_KeyActionModifier         = c.getValueAsInt("mouse action modifier key");
+    // weather to allow action when dragging
+    m_KeyActionWhileDragging    = c.getValueAsBool("mouse action enabled when dragging");
 }
 
 
@@ -55,142 +79,236 @@ void UIAssetController::release()
 
 void UIAssetController::updateControls(const float frameTime)
 {
-    if(MouseState::mouseButton[m_KeyMousePickButton] || MouseState::mouseButtonReleased[m_KeyMousePickButton])
+    bool pickModifier = (!m_KeyPickModifier || KeyboardState::keyDown[m_KeyPickModifier]) ? true : false;
+    bool actionModifier = (!m_KeyActionModifier || KeyboardState::keyDown[m_KeyActionModifier]) ? true : false;
+
+    if(pickModifier && MouseState::mouseButton[m_KeyMousePickButton])
+        onPickButton(frameTime);
+    else if(pickModifier && MouseState::mouseButtonReleased[m_KeyMousePickButton])
+        onPickRelease(frameTime);
+    else if(MouseState::mouseButtonReleased[m_KeyMouseActionButton])
+        onActionRelease(frameTime);
+    else if(MouseState::mouseButton[m_KeyMouseActionButton])
+        onActionButton(frameTime);
+}
+
+
+void UIAssetController::clearSelection()
+{
+    m_pUnitCommandDispatcher->clearUnits();
+    if(!m_SelectedUIUnits.empty())
     {
-        //Transform mousecoordinates from 2d-points to 3d-ray
-        D3DXMATRIX matProj;
-        m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
-
-        D3DXMATRIX matView;
-        m_pDevice->GetTransform(D3DTS_VIEW, &matView);
-
-        D3DXVECTOR3 rayOrigin, rayDir;
-
-        MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir);
-
-        //Terrain picking test
-        if(MouseState::mouseButton[m_KeyMousePickButton])
-        {
-            D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
-            if(hitSquare)
-            {
-                D3DXVECTOR2 point;
-                point.x = hitSquare->x;
-                point.y = hitSquare->y;
-                delete hitSquare;
-                m_pSelector->setPoint(point);
-            }
+        ListNode<UIUnit*>* node = m_SelectedUIUnits.headNode();
+        while(node) {
+            node->item->setSelected(false);
+            node = m_SelectedUIUnits.removeGetNext(node);
         }
-        // ===== Selecting
+    }
+}
 
-        if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
+
+void UIAssetController::onPickRelease(const float frameTime)
+{
+    // ===== Pick button released
+
+    D3DXMATRIX matProj, matView;
+    D3DXVECTOR3 rayOrigin, rayDir;
+    m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
+    m_pDevice->GetTransform(D3DTS_VIEW, &matView);
+    MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir);
+
+    switch(m_SelectionState)
+    {
+
+    default:
+    case IDLE:
+    case CLICK:
         {
+            break;
+        }
 
+    case DRAG:
+        {
             Selector::SELECTION* selection = m_pSelector->buttonUp();
-
-
-            //UIUnit* pUnit = UI3DObjectManager::pickUnit(rayOrigin, rayDir);
-
-            //if(pUnit)
-
             if(!selection->units.empty())
             {
-                if(m_pUnitCommandDispatcher->empty())
+                // add the selection to units under control
+                ListNode<UIUnit*>* pNode = selection->units.headNode();
+                while(pNode)
                 {
-                    // we don't have any units under control so use selected
-                    ListNode<UIUnit*>* pNode = selection->units.headNode();
-                    
-                    while(pNode)
+                    UIUnit* pUnit = pNode->item;
+                    if(!pUnit->isSelected())
                     {
-                        UIUnit* pUnit = pNode->item;
-
                         m_pUnitCommandDispatcher->addUnit(pUnit->getUnit());
                         pUnit->setSelected(true);
-                    
                         m_SelectedUIUnits.pushHead(pUnit);
-
-                        pNode = pNode->next;
                     }
-                    
-                    
-                }
-                else
-                {                    
-                    // we have units, dispatch target to them
-                    //m_pUnitCommandDispatcher->getTarget()->setTarget(pUnit->getUnit());
-                    //IS THE FIRST FROM SELECTION CORRECT?
-                    m_pUnitCommandDispatcher->getTarget()->setTarget(selection->units.headNode()->item->getUnit());
-                    m_pUnitCommandDispatcher->dispatch();
-                    m_pUnitCommandDispatcher->clearUnits();
-                    ListNode<UIUnit*>* node = m_SelectedUIUnits.headNode();
-                    while(node) {
-                        node->item->setSelected(false);
-                        node = m_SelectedUIUnits.removeGetNext(node);
-                    }                 
+                    pNode = pNode->next;
                 }
             }
-            else if(!m_pUnitCommandDispatcher->empty())
+            delete selection;
+            break;
+        }
+
+    } // switch
+
+    m_SelectionState = IDLE;
+    m_TempMouseX = 0;
+    m_TempMouseY = 0;
+}
+
+
+void UIAssetController::onPickButton(const float frameTime)
+{
+    // ===== Pick button being pressed
+    D3DXMATRIX matProj, matView;
+    D3DXVECTOR3 rayOrigin, rayDir;
+    m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
+    m_pDevice->GetTransform(D3DTS_VIEW, &matView);
+    MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir);
+
+    bool addMode = (m_KeyAddToSelection && KeyboardState::keyDown[m_KeyAddToSelection]) ? true : false;
+
+    switch(m_SelectionState)
+    {
+
+    default:
+    case IDLE:
+        {
+            if(!addMode)
+                clearSelection();
+            m_TempMouseX = MouseState::mouseX;
+            m_TempMouseY = MouseState::mouseY;
+            UIUnit* pUIUnit = UI3DObjectManager::pickUnit(rayOrigin, rayDir);
+            if(pUIUnit && !pUIUnit->isSelected())
             {
+                pUIUnit->setSelected(true);
+                m_pUnitCommandDispatcher->addUnit(pUIUnit->getUnit());
+                m_SelectedUIUnits.pushHead(pUIUnit);
+            }
+            m_SelectionState = CLICK;
+            break;
+        }
+
+    case CLICK:
+        {
+            if( abs(m_TempMouseX - MouseState::mouseX) > m_MousePickDragTreshold ||
+                abs(m_TempMouseY - MouseState::mouseY) > m_MousePickDragTreshold)
+            {
+                // get the first point clicked while moved from IDLE to CLICK
+                // and set it for selector as the first click-point
+                MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir, m_TempMouseX, m_TempMouseY);
                 D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
                 if(hitSquare)
                 {
-                    unsigned short targetX = (unsigned short)hitSquare->x;
-                    unsigned short targetY = (unsigned short)hitSquare->y;
-                    m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
-                    m_pUnitCommandDispatcher->dispatch();
-                    m_pUnitCommandDispatcher->clearUnits();
-                    ListNode<UIUnit*>* node = m_SelectedUIUnits.headNode();
-                    while(node) {
-                        node->item->setSelected(false);
-                        node = m_SelectedUIUnits.removeGetNext(node);
-                    }
+                    m_pSelector->setPoint(D3DXVECTOR2(hitSquare->x, hitSquare->y));
+                    delete hitSquare;
                 }
-                delete hitSquare;
+                // used to track changes for unnecessary intersection updates (slow operation)
+                m_TempMouseX = MouseState::mouseX;
+                m_TempMouseY = MouseState::mouseY;
+                // we are now dragging
+                m_SelectionState = DRAG;
+            }
+            break;
+        }
+
+    case DRAG:
+        {
+            // if mouse moved, update the intersection point (slow operation)
+            // TODO: does not take into account if the camera moves etc.
+            if(m_TempMouseX != MouseState::mouseX || m_TempMouseY != MouseState::mouseY)
+            {
+                m_TempMouseX = MouseState::mouseX;
+                m_TempMouseY = MouseState::mouseY;
+                D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
+                if(hitSquare)
+                {
+                    m_pSelector->setPoint(D3DXVECTOR2(hitSquare->x, hitSquare->y));
+                    delete hitSquare;
+                }
+            }
+        }
+
+    } // switch
+}
+
+
+void UIAssetController::onActionButton(const float frameTime)
+{
+    // ===== Action key being pressed
+    if(m_SelectionState == IDLE && !m_pUnitCommandDispatcher->empty())
+    {
+        switch(m_ActionState)
+        {
+
+        default:
+        case IDLE:
+            {
+                m_ActionState = CLICK;
+                m_TempMouseX = MouseState::mouseX;
+                m_TempMouseY = MouseState::mouseY;
+                break;
             }
 
-            delete selection;
-        }
-    }
-/*
-        // if unit selected, give target to it
-        if(m_tmpSelectedUnit)
-        {
-            // TODO: remove after testing single unit moving
-            D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
-            if(pUnit)
+        case CLICK:
             {
-                m_tmpSelectedUnit->getUnit()->getMovingLogic()->setTarget(new Target(pUnit->getUnit()));
-                m_tmpSelectedUnit = NULL;
+                // check if mouse has moved over the treshold while action key pressed
+                if( abs(m_TempMouseX - MouseState::mouseX) > m_MouseActionDragTreshold ||
+                    abs(m_TempMouseY - MouseState::mouseY) > m_MouseActionDragTreshold)
+                {
+                    m_ActionState = DRAG;
+                }
+                break;
             }
-            else if(hitSquare)
+
+        case DRAG:
+            break;
+
+        } // switch
+    }
+}
+
+
+void UIAssetController::onActionRelease(const float frameTime)
+{
+    // ===== Action key released
+    if(m_SelectionState == IDLE && !m_pUnitCommandDispatcher->empty())
+    {
+        if(!m_KeyActionWhileDragging && m_ActionState == DRAG)
+        {
+            m_ActionState = IDLE;
+            return; // action not allowed when dragging
+        }
+
+        D3DXMATRIX matProj, matView;
+        D3DXVECTOR3 rayOrigin, rayDir;
+        m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
+        m_pDevice->GetTransform(D3DTS_VIEW, &matView);
+        MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir);
+
+        // first check if the click hits to asset as target
+        UIUnit* pUIUnit = UI3DObjectManager::pickUnit(rayOrigin, rayDir);
+        if(pUIUnit)
+        {
+            // asset as target
+            m_pUnitCommandDispatcher->getTarget()->setTarget(pUIUnit->getUnit());
+            m_pUnitCommandDispatcher->dispatch();
+        }
+
+        // secondly check if the click hits to terrain as target
+        else {
+            // terrain coordinate as target
+            D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
+            if(hitSquare)
             {
                 unsigned short targetX = (unsigned short)hitSquare->x;
                 unsigned short targetY = (unsigned short)hitSquare->y;
-                m_tmpSelectedUnit->getUnit()->getMovingLogic()->setTarget(new Target(targetX, targetY, true));
-                // clear selection
-                m_tmpSelectedUnit = NULL;
-                //m_Selector.setPoint(D3DXVECTOR2(hitSquare->x, hitSquare->y));    
+                m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
+                m_pUnitCommandDispatcher->dispatch();
+                delete hitSquare;
             }
-
-            delete hitSquare;
-        }
-
-        // try to pick unit to control
-        else if(pUnit)
-        {
-            D3DXMATRIX pMat = pUnit->GetMatrix();
-            C3DObject* pObj = (C3DObject*)UI3DDebug::addSphere(0, 2.0f, 0.0f, 1.0f, 1.0f);
-            //Debug-object, added automatically to root
-            m_pManager->getRootObject()->RemoveChild(pObj);
-            pUnit->AddChild(pObj);
-            SoundManager::playSound(SoundManager::READY, 0.1f, (D3DXVECTOR3)&pUnit->GetMatrix()._41, m_pCamera);
-
-            m_tmpSelectedUnit = pUnit; // TODO: remove after testing single unit moving
         }
     }
-    else if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
-    {       
-        m_pSelector->buttonUp();
-    }
-*/
+    m_ActionState = IDLE;
 }

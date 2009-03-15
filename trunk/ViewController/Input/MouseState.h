@@ -86,7 +86,7 @@ public:
      * @param rayOrigin D3DXVECTOR3 to store the ray origin into
      * @param rayDir D3DXVECTOR3 to store the ray direction into
      */
-    static void transformTo3D(D3DXMATRIX& matView, D3DXMATRIX& matProj, D3DXVECTOR3& rayOrigin, D3DXVECTOR3& rayDir);
+    static void transformTo3D(D3DXMATRIX& matView, D3DXMATRIX& matProj, D3DXVECTOR3& rayOrigin, D3DXVECTOR3& rayDir, const int mX=mouseX, const int mY=mouseY);
 
 private:
     
