@@ -72,7 +72,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     //TEST
     for(int i = 0; i < 50; i++)
     {
-        AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, pTerrain->getSize()), m_pApp->RandInt(0, pTerrain->getSize()));
+        AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, pTerrain->getSize()-4), m_pApp->RandInt(0, pTerrain->getSize()-4));
     }
 
 
@@ -91,6 +91,13 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     {
         return hres;
     }
+
+    hres = Cursor::getInstance()->create(pDevice);
+    if(FAILED(hres))
+    {
+        return hres;
+    }
+
 
      //Get the pathfinder running
     PathFinderMaster::getInstance()->start();
@@ -162,6 +169,9 @@ bool GameState::update(const float frameTime)
     //Update minimap
     m_pUITerrain->getMiniMap()->updateUnits(m_pManager->getUnitList(), frameTime);
 
+    //Update cursor position
+    Cursor::getInstance()->update();
+
     //Keep running
     return true;
 }
@@ -193,6 +203,7 @@ void GameState::prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float fr
 
 void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 {
+
     //Terrain needs normal backface-culling
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
@@ -204,8 +215,11 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
     m_pManager->getRootObject()->Render(pDevice);
 
-    m_Selector.render(pDevice);
+    pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+    m_Selector.render(pDevice);    
 
+    //Draw cursor
+    Cursor::getInstance()->render(pDevice);
 }
 
 

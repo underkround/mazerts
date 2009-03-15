@@ -216,7 +216,6 @@ void Selector::render(LPDIRECT3DDEVICE9 pDevice)
         
         pDevice->SetStreamSource(0, m_pVB, 0, sizeof(VERTEX));
         pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-        pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
         
         //Render
         if(m_pIB)
@@ -228,9 +227,9 @@ void Selector::render(LPDIRECT3DDEVICE9 pDevice)
         if(m_pTexture)
         {
             pDevice->SetTexture(0, NULL);
+            pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
         }
 
         pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-        pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
     }
 }

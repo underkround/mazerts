@@ -874,6 +874,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Controller\Cursor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\Cursor.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Controller\IUIController.h"
 					>
 				</File>

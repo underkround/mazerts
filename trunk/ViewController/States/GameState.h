@@ -18,6 +18,8 @@
 
 #include "../Controller/IUIController.h"
 
+#include "../Controller/Cursor.h"
+
 class GameState : public IState
 {
 public:

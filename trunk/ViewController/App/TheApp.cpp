@@ -151,13 +151,7 @@ void CTheApp::OnFlip(void)
         //Text drawing
         BeginText();
 
-        //Cursor drawing, change to sprite? Probably needs its own class
-        DrawText(   MouseState::mouseX,
-                    MouseState::mouseY,
-                    _T("X"),
-                    0xFFFFFFFF);
-
-        
+       
         if(m_Help)
         {
             DrawTextRow(_T("Drag with right mouse button pressed to pan view"), 0xFFFFFFFF);
