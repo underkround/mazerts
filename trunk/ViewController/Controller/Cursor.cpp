@@ -44,7 +44,7 @@ HRESULT Cursor::update()
     pVertices[0].tv = 0.0f;
     pVertices[0].dwColor = 0xFFFFFFFF;
 
-    pVertices[1].x = (float)MouseState::mouseX + CURSORSIZE;
+    pVertices[1].x = (float)MouseState::mouseX + CURSORSIZE - 0.0001f;  //- 0.0001f to prevent texture bleeding from other cursor
     pVertices[1].y = (float)MouseState::mouseY;
     pVertices[1].z = 0.0f;
     pVertices[1].rhw = 0.999f;
@@ -52,7 +52,7 @@ HRESULT Cursor::update()
     pVertices[1].tv = 0.0f;
     pVertices[1].dwColor = 0xFFFFFFFF;
 
-    pVertices[2].x = (float)MouseState::mouseX + CURSORSIZE;
+    pVertices[2].x = (float)MouseState::mouseX + CURSORSIZE - 0.0001f;
     pVertices[2].y = (float)MouseState::mouseY + CURSORSIZE;
     pVertices[2].z = 0.0f;
     pVertices[2].rhw = 0.999f;
@@ -60,7 +60,7 @@ HRESULT Cursor::update()
     pVertices[2].tv = 1.0f;
     pVertices[2].dwColor = 0xFFFFFFFF;
 
-    pVertices[3].x = (float)MouseState::mouseX;
+    pVertices[3].x = (float)MouseState::mouseX + 0.0001f;       //Again to prevent texture bleeding
     pVertices[3].y = (float)MouseState::mouseY + CURSORSIZE;
     pVertices[3].z = 0.0f;
     pVertices[3].rhw = 0.999f;
@@ -81,6 +81,8 @@ HRESULT Cursor::update()
 void Cursor::render(LPDIRECT3DDEVICE9 pDevice)
 {
     pDevice->SetTexture(0, m_pTexture);
+    pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
+    pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);
 
     pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
@@ -91,6 +93,8 @@ void Cursor::render(LPDIRECT3DDEVICE9 pDevice)
     pDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
 
     pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);    
+    pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+    pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
     pDevice->SetTexture(0, NULL);
 }
 

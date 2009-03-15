@@ -96,14 +96,13 @@ public:
         bool updateGrid = false;
 
         //Don't update unless the point has moved
-        if(point.x != m_Point1.x || point.y != m_Point1.y ||
-           point.x != m_Point2.x || point.y != m_Point2.y)
+        if(point.x != m_Point2.x || point.y != m_Point2.y)
         {
             updateGrid = true;
         }
 
         if(m_FirstSet)
-        {
+        {            
             m_Point2 = point;
             m_Render = true;
         }

@@ -26,7 +26,7 @@ public:
       CURS_SELECT,
       CURS_ATTACK,
       CURS_INVALID,
-      CURS_AMOUNT,
+      CURS_AMOUNT,      //When adding new cursortypes, place the enumerations before CURS_AMOUNT
       CURS_END = 0xFF
     };
 
