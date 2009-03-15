@@ -9,6 +9,7 @@
 #include "../common.h" // for NULL etc
 #include "IAsset.h"
 #include "IAssetListener.h"
+#include "AssetCollection.h"
 
 int IAsset::m_InstanceCounter = 0;
 int IAsset::m_InstanceDestructionCounter = 0;
@@ -18,6 +19,7 @@ IAsset::IAsset(const Type assetType) : m_AssetType (assetType), m_IID (m_Instanc
     m_InstanceCounter++;
     // set to 0 coordinate
     m_Position.x = m_Position.y = m_Position.z = 0;
+    m_OldPosX = m_OldPosY = 0;
     // set direction to upwards
     m_Direction.x = 0;
     m_Direction.y = 1;
@@ -80,9 +82,20 @@ void IAsset::releaseRadar()
 {
     if(m_pRadar)
     {
-        if(m_pRadar->release(this))
+        if(m_pRadar->release())
             delete m_pRadar;
         m_pRadar = NULL;
+    }
+}
+
+void IAsset::updatePositionInAssetCollection()
+{
+    // check if coordinate changed
+    if (m_OldPosX != (unsigned short)getPosition()->x || m_OldPosY != (unsigned short)getPosition()->y)
+    {
+        AssetCollection::updatePosition(this, m_OldPosX, m_OldPosY);
+        m_OldPosX = (unsigned short)getPosition()->x;
+        m_OldPosY = (unsigned short)getPosition()->y;
     }
 }
 

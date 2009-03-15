@@ -135,6 +135,7 @@ public:
     {
         m_Position.x = (float)x;
         m_Position.y = (float)y;
+        updatePositionInAssetCollection();
         // @TODO: z from terrain
     }
 
@@ -218,6 +219,12 @@ protected:
      */
     void releaseRadar();
 
+    /**
+     * Checks if position has changed, and if it is, updates position in 
+     * AssetCollection accordingly.
+     */
+    void updatePositionInAssetCollection();
+
 // ===== MEMBERS
 
     const int       m_IID;          // unique instance id among all assets
@@ -238,6 +245,9 @@ protected:
 
     DoubleLinkedList<IAssetListener*>    m_pListeners; // registered listeners
 
+    // old position, used to check if coordinate has changed
+    unsigned short              m_OldPosX;
+    unsigned short              m_OldPosY;
 };
 
 #endif // __ASSET_H__

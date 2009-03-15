@@ -1,5 +1,10 @@
 /**
+ * SoundManager is a static (singleton) class used to handle all sound loading
+ * and playing. Call create before using (loads sounds etc) and release after
+ * using (releases sounds etc).
  *
+ * To play sounds use 3 provided play-methods. To change some settings, check
+ * out defines below.
  *
  * $Revision$
  * $Date$

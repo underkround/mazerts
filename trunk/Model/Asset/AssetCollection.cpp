@@ -248,6 +248,137 @@ Building* AssetCollection::getBuildingAt(const unsigned short x, const unsigned 
     */
 }
 
+const int AssetCollection::getUnitsAt(DoubleLinkedList<Unit*>* pList, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height)
+{
+    /**
+     * @TODO: figure out which way is faster
+     * Here's some room for optimizing. Way 1 lacks checking whether unit is
+     * already in the list. That could be achieved using local boolean table.
+     *
+     * One way to get things roll faster would be:
+     * int method = (IAsset::getInstanceCount() - IAsset::getInstanceDestructionCount()  >  200 && width * height < 100000) ? way1 : way2;
+     */
+
+    // way 1
+    /*
+    for (unsigned short w = 0; w < width; w++)
+        for (unsigned short h = 0; h < height; h++)
+            if (m_pppUnitArray[y + h][x + w])
+                pList->pushTail(m_pppUnitArray[y + h][x + w]);
+    */
+
+    // way 2
+    int items = 0;
+    ListNode<Unit*>* pLn = units.headNode();
+    while (pLn)
+    {
+        Vector3* pV = pLn->item->getPosition();
+        if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+            pList->pushTail(pLn->item);
+            items++;
+        }
+        pLn = pLn->next;
+    }
+    return items;
+}
+
+const int AssetCollection::getBuildingsAt(DoubleLinkedList<Building*>* pList, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height)
+{
+    int items = 0;
+    ListNode<Building*>* pLn = buildings.headNode();
+    while (pLn)
+    {
+        Vector3* pV = pLn->item->getPosition();
+        if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+            pList->pushTail(pLn->item);
+            items++;
+        }
+        pLn = pLn->next;
+    }
+    return items;
+}
+
+const int AssetCollection::getAssetsAt(DoubleLinkedList<IAsset*>* pList, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height)
+{
+    int items = 0;
+    ListNode<IAsset*>* pLn = (ListNode<IAsset*>*)units.headNode();
+    for (int i = 0; i < 2; i++)
+    {
+        if (i == 1) pLn = (ListNode<IAsset*>*)buildings.headNode();
+        while (pLn)
+        {
+            Vector3* pV = pLn->item->getPosition();
+            if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+                pList->pushTail(pLn->item);
+                items++;
+            }
+            pLn = pLn->next;
+        }
+    }
+    return items;
+}
+
+const int AssetCollection::getPlayerUnitsAt(DoubleLinkedList<Unit*>* pList, const int player, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height)
+{
+    int items = 0;
+    ListNode<Unit*>* pLn = units.headNode();
+    while (pLn)
+    {
+        if (pLn->item->getOwner()->getId() == player)
+        {
+            Vector3* pV = pLn->item->getPosition();
+            if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+                pList->pushTail(pLn->item);
+                items++;
+            }
+        }
+        pLn = pLn->next;
+    }
+    return items;
+}
+
+const int AssetCollection::getPlayerBuildingsAt(DoubleLinkedList<Building*>* pList, const int player, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height)
+{
+    int items = 0;
+    ListNode<Building*>* pLn = buildings.headNode();
+    while (pLn)
+    {
+        if (pLn->item->getOwner()->getId() == player)
+        {
+            Vector3* pV = pLn->item->getPosition();
+            if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+                pList->pushTail(pLn->item);
+                items++;
+            }
+        }
+        pLn = pLn->next;
+    }
+    return items;
+}
+
+const int AssetCollection::getPlayerAssetsAt(DoubleLinkedList<IAsset*>* pList, const int player, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height)
+{
+    int items = 0;
+    ListNode<IAsset*>* pLn = (ListNode<IAsset*>*)units.headNode();
+    for (int i = 0; i < 2; i++)
+    {
+        if (i == 1) pLn = (ListNode<IAsset*>*)buildings.headNode();
+        while (pLn)
+        {
+            if (pLn->item->getOwner()->getId() == player)
+            {
+                Vector3* pV = pLn->item->getPosition();
+                if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+                    pList->pushTail(pLn->item);
+                    items++;
+                }
+            }
+            pLn = pLn->next;
+        }
+    }
+    return items;
+}
+
 // ===== OBSERVERS
 
 void AssetCollection::registerListener(IAssetCollectionListener* listener)
@@ -282,17 +413,25 @@ void AssetCollection::notifyAssetReleased(IAsset* released)
 
 // ===== UPDATES
 
-void AssetCollection::updatePosition(Unit* u, const unsigned short oldPosX, const unsigned short oldPosY)
+void AssetCollection::updatePosition(IAsset* a, const unsigned short oldPosX, const unsigned short oldPosY)
 {
-    // remove unit from array
-    for (unsigned short x = 0; x < u->getWidth(); x++)
-        for (unsigned short y = 0; y < u->getHeight(); y++)
-            m_pppUnitArray[y + oldPosY][x + oldPosX] = NULL;
+    // select correct array
+    IAsset*** pArr;
+    if (a->getAssetType() == IAsset::UNIT)
+        pArr = (IAsset***)m_pppUnitArray;
+    else
+        pArr = (IAsset***)m_pppBuildingArray;
 
-    // add unit to array
-    for (unsigned short x = 0; x < u->getWidth(); x++)
-        for (unsigned short y = 0; y < u->getHeight(); y++)
-            m_pppUnitArray[y + (unsigned short)u->getPosition()->y][x + (unsigned short)u->getPosition()->x] = u;
+    // remove asset from array
+    for (unsigned short x = 0; x < a->getWidth(); x++)
+        for (unsigned short y = 0; y < a->getHeight(); y++)
+            if (pArr[y + oldPosY][x + oldPosX] == a) // this check is probably not needed in future
+                pArr[y + oldPosY][x + oldPosX] = NULL;
+
+    // add asset to array
+    for (unsigned short x = 0; x < a->getWidth(); x++)
+        for (unsigned short y = 0; y < a->getHeight(); y++)
+            pArr[y + (unsigned short)a->getPosition()->y][x + (unsigned short)a->getPosition()->x] = a;
 }
 
 // ===== DEBUG

@@ -65,7 +65,7 @@ char Unit::update(const float deltaT)
 {
     // update our radar
     if(m_pRadar)
-        m_pRadar->update(this, deltaT);
+        m_pRadar->update(deltaT);
 
     // update our weapon
     if(m_pWeapon)
@@ -75,13 +75,7 @@ char Unit::update(const float deltaT)
     if(m_pMovingLogic)
         m_pMovingLogic->update(this, deltaT);
 
-    // check if coordinate changed
-    if (m_OldPosX != (unsigned short)getPosition()->x || m_OldPosY != (unsigned short)getPosition()->y)
-    {
-        AssetCollection::updatePosition(this, m_OldPosX, m_OldPosY);
-        m_OldPosX = (unsigned short)getPosition()->x;
-        m_OldPosY = (unsigned short)getPosition()->y;
-    }
+    updatePositionInAssetCollection();
 
     //return RESULT_DELETEME; // unit will be deleted when returning this value
     return RESULT_OK; // normal return value

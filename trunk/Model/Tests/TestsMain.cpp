@@ -37,7 +37,7 @@ int main(int arcg, char* argv[])
 
 //    if(VERBOSE) cout << "\n *** vector & matrix ***\n";             testVectorAndMatrice ();
 
-    if(VERBOSE) cout << "\n *** config from file ***\n";            testConfig();
+//    if(VERBOSE) cout << "\n *** config from file ***\n";            testConfig();
 
 //    if(VERBOSE) cout << "\n *** Pathfinder ***\n";                  testPathFinder();
 
@@ -45,7 +45,7 @@ int main(int arcg, char* argv[])
 
 //    if(VERBOSE) cout << "\n *** Antin AI ***\n";                    testAntinAI();
 
-//    if(VERBOSE) cout << "\n *** Asset collection ***\n";            testAssetCollection();
+    if(VERBOSE) cout << "\n *** Asset collection ***\n";            testAssetCollection();
 
 //    if(VERBOSE) cout << "\n *** Asset factory ***\n";               testAssetFactory();
 

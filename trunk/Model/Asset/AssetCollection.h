@@ -83,6 +83,27 @@ public:
      */
     static Building* getBuildingAt(const unsigned short x, const unsigned short y);
 
+    /**
+     * Fills provided list with units/buildings/assets in region.
+     * @param pList the list to add units to. Doesn't clear the list
+     * @param x         rectangle x
+     * @param y         rectangle y
+     * @param width     rectangle width
+     * @param height    rectangle height
+     * @return          how many units/buildings/assets found
+     */
+    static const int getUnitsAt(DoubleLinkedList<Unit*>* pList, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height);
+    static const int getBuildingsAt(DoubleLinkedList<Building*>* pList, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height);
+    static const int getAssetsAt(DoubleLinkedList<IAsset*>* pList, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height);
+
+    /**
+     * Same as above, but gets units/buildings/assets based on player
+     * @param player    the id of the player, who owns the units
+     */
+    static const int getPlayerUnitsAt(DoubleLinkedList<Unit*>* pList, const int player, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height);
+    static const int getPlayerBuildingsAt(DoubleLinkedList<Building*>* pList, const int player, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height);
+    static const int getPlayerAssetsAt(DoubleLinkedList<IAsset*>* pList, const int player, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height);
+
 // ===== OBSERVER FUNCTIONALITY
 
     static void registerListener(IAssetCollectionListener* listener);
@@ -95,7 +116,7 @@ public:
 
 // ===== UPDATES
 
-    static void updatePosition(Unit* u, const unsigned short oldPosX, const unsigned short oldPosY);
+    static void updatePosition(IAsset* a, const unsigned short oldPosX, const unsigned short oldPosY);
 
 private:
 

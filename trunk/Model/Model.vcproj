@@ -405,6 +405,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Asset\Radar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\Radar.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Asset\Unit.cpp"
 					>
 				</File>

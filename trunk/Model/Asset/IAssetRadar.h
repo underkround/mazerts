@@ -14,6 +14,8 @@
 #ifndef __IASSETRADAR_H__
 #define __IASSETRADAR_H__
 
+#include "../Common/DoubleLinkedList.h"
+
 class IAsset;
 
 class IAssetRadar
@@ -26,14 +28,13 @@ public:
      * DO NOT call this from outside!
      * @see IAsset::setRadar(..)
      */
-    virtual void attach(IAsset* host) = 0;
+    inline virtual void attach(IAsset* host) { m_pHost = host; }
 
     /**
      * Normal per-frame update call from the hosting unit.
-     * @param host      the unit which update-call this is
      * @param deltaT    time from last update
      */
-    virtual void update(IAsset* host, const float deltaT) = 0;
+    virtual void update(const float deltaT) = 0;
 
     /**
      * Return true, if the concrete radar is spesific to hosting asset
@@ -44,8 +45,31 @@ public:
      * this should return false, and the host will not destroy this
      * radar instance.
      */
-    virtual bool release(IAsset* host) = 0;
+    virtual bool release() = 0;
 
+    /**
+     * Returns a list of all visible assets by this radar
+     */
+    virtual DoubleLinkedList<IAsset*>* getVisibleAssets() = 0;
+
+    /**
+     * Returns a list of enemy assets visible
+     */
+    virtual DoubleLinkedList<IAsset*>* getVisibleEnemyAssets() = 0;
+
+    /**
+     * Getters and setters for range
+     */
+    inline void setRange(const unsigned int range) { m_Range = range; }
+    inline const unsigned int getRange() { return m_Range; }
+
+protected:
+    IAsset*                      m_pHost; // Asset this radar is attached to
+
+    DoubleLinkedList<IAsset*>    m_VisibleAssets; // Visible assets
+    DoubleLinkedList<IAsset*>    m_VisibleEnemyAssets; // visible enemy assets
+
+    unsigned int                 m_Range; // Range of this radar
 };
 
 #endif // __IASSETRADAR_H__
