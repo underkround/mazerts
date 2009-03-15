@@ -8,6 +8,7 @@
 
 #include "d3dx9.h"
 #include "UIUnit.h"
+#include "UI3DObjectManager.h"
 
 #ifndef __SELECTOR_H__
 #define __SELECTOR_H__
@@ -27,14 +28,9 @@ public:
     struct SELECTION
     {
         /** 
-         * Array of pointers to UI-units
+         * DoubleLinkedList of selected UI-units
          */
-        UIUnit** pUnit;
-
-        /**
-         * Amount of selected units
-         */
-        int unitAmount;
+        DoubleLinkedList<UIUnit*> units;
 
         /**
          * The two selection points in 3d (terrain points)
@@ -92,26 +88,34 @@ public:
     /**
      * Set the point of the selector, first call sets the start
      * point, after that the call moves end point, until buttonUp
-     * is called (this is used for mouse dragging)
+     * is called (this is used for area selection)
      * @param point Point xy-coordinates as D3DXVECTOR2
      */
     void setPoint(D3DXVECTOR2 point)
     {
+        bool updateGrid = false;
+
         //Don't update unless the point has moved
         if(point.x != m_Point1.x && point.y != m_Point1.y &&
            point.x != m_Point2.x && point.y != m_Point2.y)
         {
-                if(m_FirstSet)
-                {
-                    m_Point2 = point;
-                    m_Render = true;
-                }
-                else
-                {
-                    m_Point1 = point;            
-                    m_FirstSet = true;
-                }
-                update();
+            updateGrid = true;
+        }
+
+        if(m_FirstSet)
+        {
+            m_Point2 = point;
+            m_Render = true;
+        }
+        else
+        {
+            m_Point1 = point;            
+            m_FirstSet = true;
+        }
+        
+        if(updateGrid)
+        {
+            update();
         }
     }
 

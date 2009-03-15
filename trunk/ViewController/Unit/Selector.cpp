@@ -7,13 +7,71 @@
 
 Selector::SELECTION* Selector::buttonUp()
 {
-    //TODO: get units from grid-array
+    SELECTION* result = new SELECTION;
+    
+    
+
+    unsigned short minX, minY;
+    unsigned short maxX, maxY;
+    
+    //Get the points
+    if(m_Point1.x > m_Point2.x)
+    {
+        maxX = (unsigned short)m_Point1.x + 1;
+        minX = (unsigned short)m_Point2.x - 1;
+    }
+    else
+    {
+        maxX = (unsigned short)m_Point2.x + 1;
+        minX = (unsigned short)m_Point1.x - 1;
+    }
+
+    if(m_Point1.y > m_Point2.y)
+    {
+        maxY = (unsigned short)m_Point1.y + 1;
+        minY = (unsigned short)m_Point2.y - 1;
+    }
+    else
+    {
+        maxY = (unsigned short)m_Point2.y + 1;
+        minY = (unsigned short)m_Point1.y - 1;
+    }    
+   
+    //UI-side units
+    DoubleLinkedList<UIUnit*>* unitList = UI3DObjectManager::getInstance()->getUnitList();
+
+    ListNode<UIUnit*>* pNode = unitList->headNode();
+
+    while(pNode)
+    {
+        D3DXVECTOR2* pPos = (D3DXVECTOR2*)pNode->item->getUnit()->getPosition();
+        
+        if(pPos->x > minX && pPos->x < maxX && pPos->y > minY && pPos->y < maxY)
+        {
+            result->units.pushTail(pNode->item);
+        }
+
+        pNode = pNode->next;
+    }
+
+    //Model-side units
+    /*for(unsigned short y = minY; y < maxY; y++)
+    {
+        for(unsigned short x = minX; x < maxX; x++)
+        {
+            Unit* pUnit = AssetCollection::getUnitAt(x, y);
+            if(pUnit)
+            {
+                result->units.pushTail(pUnit);
+            }
+        }
+    }*/
 
 
     m_Render = false;
     m_FirstSet = false;
 
-    return NULL;
+    return result;
 }
 
 HRESULT Selector::create(LPDIRECT3DDEVICE9 pDevice)

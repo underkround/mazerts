@@ -70,7 +70,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     AssetCollection::create(pTerrain->getSize());
 
     //TEST
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < 50; i++)
     {
         AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, pTerrain->getSize()), m_pApp->RandInt(0, pTerrain->getSize()));
     }
@@ -198,13 +198,14 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
     m_pUITerrain->render(pDevice);
 
-    m_Selector.render(pDevice);
-
     //Antsys models need reverse backface-culling
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
     //pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
     m_pManager->getRootObject()->Render(pDevice);
+
+    m_Selector.render(pDevice);
+
 }
 
 

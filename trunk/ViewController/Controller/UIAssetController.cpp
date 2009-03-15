@@ -55,13 +55,9 @@ void UIAssetController::release()
 
 void UIAssetController::updateControls(const float frameTime)
 {
-    //Terrain picking test
-    //if(MouseState::mouseButton[m_KeyMousePickButton])
-
-    // ===== Selecting
-
-    if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
+    if(MouseState::mouseButton[m_KeyMousePickButton] || MouseState::mouseButtonReleased[m_KeyMousePickButton])
     {
+        //Transform mousecoordinates from 2d-points to 3d-ray
         D3DXMATRIX matProj;
         m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
 
@@ -72,47 +68,87 @@ void UIAssetController::updateControls(const float frameTime)
 
         MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir);
 
-        UIUnit* pUnit = UI3DObjectManager::pickUnit(rayOrigin, rayDir);
-
-        if(pUnit)
-        {
-            if(m_pUnitCommandDispatcher->empty())
-            {
-                // we don't have any units under control so use selected
-                m_pUnitCommandDispatcher->addUnit(pUnit->getUnit());
-                pUnit->setSelected(true);
-                m_SelectedUIUnits.pushHead(pUnit);
-                // we have units, dispatch target to them
-            }
-            else
-            {
-                m_pUnitCommandDispatcher->getTarget()->setTarget(pUnit->getUnit());
-                m_pUnitCommandDispatcher->dispatch();
-                m_pUnitCommandDispatcher->clearUnits();
-                ListNode<UIUnit*>* node = m_SelectedUIUnits.headNode();
-                while(node) {
-                    node->item->setSelected(false);
-                    node = m_SelectedUIUnits.removeGetNext(node);
-                }
-            }
-        }
-        else if(!m_pUnitCommandDispatcher->empty())
+        //Terrain picking test
+        if(MouseState::mouseButton[m_KeyMousePickButton])
         {
             D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
             if(hitSquare)
             {
-                unsigned short targetX = (unsigned short)hitSquare->x;
-                unsigned short targetY = (unsigned short)hitSquare->y;
-                m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
-                m_pUnitCommandDispatcher->dispatch();
-                m_pUnitCommandDispatcher->clearUnits();
-                ListNode<UIUnit*>* node = m_SelectedUIUnits.headNode();
-                while(node) {
-                    node->item->setSelected(false);
-                    node = m_SelectedUIUnits.removeGetNext(node);
+                D3DXVECTOR2 point;
+                point.x = hitSquare->x;
+                point.y = hitSquare->y;
+                delete hitSquare;
+                m_pSelector->setPoint(point);
+            }
+        }
+        // ===== Selecting
+
+        if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
+        {
+
+            Selector::SELECTION* selection = m_pSelector->buttonUp();
+
+
+            //UIUnit* pUnit = UI3DObjectManager::pickUnit(rayOrigin, rayDir);
+
+            //if(pUnit)
+
+            if(!selection->units.empty())
+            {
+                if(m_pUnitCommandDispatcher->empty())
+                {
+                    // we don't have any units under control so use selected
+                    ListNode<UIUnit*>* pNode = selection->units.headNode();
+                    
+                    while(pNode)
+                    {
+                        UIUnit* pUnit = pNode->item;
+
+                        m_pUnitCommandDispatcher->addUnit(pUnit->getUnit());
+                        pUnit->setSelected(true);
+                    
+                        m_SelectedUIUnits.pushHead(pUnit);
+
+                        pNode = pNode->next;
+                    }
+                    
+                    
+                }
+                else
+                {                    
+                    // we have units, dispatch target to them
+                    //m_pUnitCommandDispatcher->getTarget()->setTarget(pUnit->getUnit());
+                    //IS THE FIRST FROM SELECTION CORRECT?
+                    m_pUnitCommandDispatcher->getTarget()->setTarget(selection->units.headNode()->item->getUnit());
+                    m_pUnitCommandDispatcher->dispatch();
+                    m_pUnitCommandDispatcher->clearUnits();
+                    ListNode<UIUnit*>* node = m_SelectedUIUnits.headNode();
+                    while(node) {
+                        node->item->setSelected(false);
+                        node = m_SelectedUIUnits.removeGetNext(node);
+                    }                 
                 }
             }
-            delete hitSquare;
+            else if(!m_pUnitCommandDispatcher->empty())
+            {
+                D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
+                if(hitSquare)
+                {
+                    unsigned short targetX = (unsigned short)hitSquare->x;
+                    unsigned short targetY = (unsigned short)hitSquare->y;
+                    m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
+                    m_pUnitCommandDispatcher->dispatch();
+                    m_pUnitCommandDispatcher->clearUnits();
+                    ListNode<UIUnit*>* node = m_SelectedUIUnits.headNode();
+                    while(node) {
+                        node->item->setSelected(false);
+                        node = m_SelectedUIUnits.removeGetNext(node);
+                    }
+                }
+                delete hitSquare;
+            }
+
+            delete selection;
         }
     }
 /*
