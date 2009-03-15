@@ -30,7 +30,7 @@ public:
       CURS_END = 0xFF
     };
 
-    const static int CURSORSIZE = 32;
+    const static int CURSORSIZE = 16;
     const static float TEXOFFSET;
 
     inline static Cursor* getInstance()
