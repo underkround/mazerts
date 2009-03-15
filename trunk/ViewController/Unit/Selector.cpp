@@ -45,8 +45,9 @@ Selector::SELECTION* Selector::buttonUp()
     while(pNode)
     {
         D3DXVECTOR2* pPos = (D3DXVECTOR2*)pNode->item->getUnit()->getPosition();
-        
-        if(pPos->x > minX && pPos->x < maxX && pPos->y > minY && pPos->y < maxY)
+        float x = pPos->x + pNode->item->getHalfSize();
+        float y = pPos->y + pNode->item->getHalfSize();
+        if(x > minX && x < maxX && y > minY && y < maxY)
         {
             result->units.pushTail(pNode->item);
         }
@@ -185,8 +186,8 @@ HRESULT Selector::update()
                 pVertices[loc].nz = -1.0f;
 
                 //Repeating texture
-                pVertices[loc].tu = i * height * 0.5f;
-                pVertices[loc].tv = j * width * 0.5f;
+                pVertices[loc].tu = i * height; //* 0.5f;
+                pVertices[loc].tv = j * width; //* 0.5f;
             }
         }
     }

@@ -86,7 +86,12 @@ public:
     /**
      * Return selection state of this uiunit
      */
-    const bool isSelected() { return m_Selected; }
+    inline const bool isSelected() { return m_Selected; }
+
+    /**
+     * Return "halfsize" (offset) of unit
+     */
+    inline const float getHalfSize() { return m_HalfSize; }
 
     /**
      * @return pointer to the model-size unit that this UiUnit represents
