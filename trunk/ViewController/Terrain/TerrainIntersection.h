@@ -51,8 +51,6 @@ public:
      */
     static DoubleLinkedList<INDICES*>* getSquaresBetween(int startX, int startY, int endX, int endY, int maxSize);
 
-private:
-
     /**
      * Cuts the ray between two planes and returns the plane-intersection points
      * @param rayOrigin  Origin of the ray
@@ -60,6 +58,9 @@ private:
      * @return Two points as D3DXVECTOR3s
      */
     static D3DXVECTOR3* getPointsFromPlaneClippedRay(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir);
+
+
+private:
 
     /**
      * Culls patches based on their AABBs and ray-origin and -direction

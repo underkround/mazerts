@@ -65,9 +65,9 @@ public:
 
     /**
      * Updates the camera position in minimap
-     * @param pCamera Pointer to camera to show in minimap
+     * @param pDevice Pointer to Direct3D-device     
      */
-    void updateCamera(Camera* pCamera);
+    void updateCamera(LPDIRECT3DDEVICE9 pDevice);
 
     /**
      * Render the minimap
