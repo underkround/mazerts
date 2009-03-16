@@ -44,8 +44,11 @@ public:
      */
     enum SoundTypes 
     {
-        EXPLOSION = 0,
+        DEBUG = 0,
         READY,
+        SHOOT,
+        OK,
+        NO,
         __END = 0xff
     };
     
@@ -240,7 +243,7 @@ private:
     Camera* m_DefaultCamera;
 
     // containers for sound & music
-    map<SoundTypes, CSoundWave*> m_SoundsMap;
+    map<SoundTypes, DoubleLinkedList<CSoundWave*>*> m_SoundsMap;
     map<MusicTypes, TCHAR*> m_MusicMap;
 
     // music player

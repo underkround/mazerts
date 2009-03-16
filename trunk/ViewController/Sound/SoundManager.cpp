@@ -20,8 +20,15 @@ HRESULT SoundManager::create(IApplication* pApp)
     // HERE BE ALL SOUNDS FOR NOW
     static const Sound soundsList[] = 
     {
-        {_T("explosion.wav"), EXPLOSION},
+        {_T("explosion.wav"), DEBUG},
         {_T("ready.wav"), READY},
+        {_T("shoot1.wav"), SHOOT},
+        {_T("shoot2.wav"), SHOOT},
+        {_T("shoot3.wav"), SHOOT},
+        {_T("shoot4.wav"), SHOOT},
+        {_T("ok1.wav"), OK},
+        {_T("ok2.wav"), OK},
+        {_T("no1.wav"), NO}
     };
 
     pInstance->m_MusicMap[BACKGROUND] = _T("music.mp3");
@@ -38,6 +45,14 @@ HRESULT SoundManager::create(IApplication* pApp)
     for (int i = 0; i < amount; i++)
     {
         CSoundWave* pWave = new CSoundWave;
+        DoubleLinkedList<CSoundWave*>* pDll = NULL;
+        pDll = pInstance->m_SoundsMap[soundsList[i].type];
+        if (!pDll)
+        {
+            pDll = new DoubleLinkedList<CSoundWave*>;
+            pInstance->m_SoundsMap[soundsList[i].type] = pDll;
+        }
+
         hres = pWave->Load(    pInstance->m_SoundEngine,
                             soundsList[i].text,
                             DEFAULT_DUPLICATE_AMOUNT,
@@ -45,7 +60,7 @@ HRESULT SoundManager::create(IApplication* pApp)
         if (FAILED(hres))
             return hres;
 
-        pInstance->m_SoundsMap[soundsList[i].type] = pWave;
+        pDll->pushHead(pWave);
     }
 
     return S_OK;
@@ -56,12 +71,19 @@ void SoundManager::release()
     SoundManager* pInstance = getInstance();
     
     // release sounds
-    map<SoundTypes, CSoundWave*>::iterator it;
+    map<SoundTypes, DoubleLinkedList<CSoundWave*>*>::iterator it;
     for (it = pInstance->m_SoundsMap.begin(); it != pInstance->m_SoundsMap.end(); it++)
     {
-        CSoundWave* pWave = (*it).second;
-        pWave->Release();
-        delete pWave;
+        DoubleLinkedList<CSoundWave*>* pDll = (*it).second;
+        ListNode<CSoundWave*>* pLn = pDll->headNode();
+        while (pLn)
+        {
+            CSoundWave* pWave = pLn->item;
+            pWave->Release();
+            delete pWave;
+            pLn = pDll->removeGetNext(pLn);
+        }
+        delete pDll;
     }
     pInstance->m_SoundsMap.clear();
 
@@ -167,7 +189,14 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const i
     SoundManager* pInstance = getInstance();
     if (!pInstance->m_SoundsEnabled) return;
 
-    CSoundWave* pWave = pInstance->m_SoundsMap[type];
+    // get random sound from list
+    DoubleLinkedList<CSoundWave*>* pDll = pInstance->m_SoundsMap[type];
+    ListNode<CSoundWave*>* pLn = pDll->headNode();
+    int i = IApplication::RandInt(0, pDll->count() - 1);
+    for (int j = 0; j < i; j++)
+        pLn = pLn->next;
+
+    CSoundWave* pWave = pLn->item;
     DWORD duplicate = pWave->GetNextFreeDuplicate();
     const int dist = (int)(pWave->getOriginalFrequency() * distort);
     const int minDistort = pWave->getOriginalFrequency() - dist;
@@ -199,7 +228,14 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const D
     SoundManager* pInstance = getInstance();
     if (!pInstance->m_SoundsEnabled) return;
 
-    CSoundWave* pWave = pInstance->m_SoundsMap[type];
+    // get random sound from list
+    DoubleLinkedList<CSoundWave*>* pDll = pInstance->m_SoundsMap[type];
+    ListNode<CSoundWave*>* pLn = pDll->headNode();
+    int i = IApplication::RandInt(0, pDll->count() - 1);
+    for (int j = 0; j < i; j++)
+        pLn = pLn->next;
+
+    CSoundWave* pWave = pLn->item;
 	DWORD duplicate = pWave->GetNextFreeDuplicate();
     const int dist = (int)(pWave->getOriginalFrequency() * distort);
     const int minDistort = pWave->getOriginalFrequency() - dist;
@@ -253,14 +289,20 @@ void SoundManager::stopSounds()
 {
     SoundManager* pInstance = getInstance();
     
-    map<SoundTypes, CSoundWave*>::iterator it;
+    map<SoundTypes, DoubleLinkedList<CSoundWave*>*>::iterator it;
     for (it = pInstance->m_SoundsMap.begin(); it != pInstance->m_SoundsMap.end(); it++)
     {
-        CSoundWave* pWave = (*it).second;
-        for (DWORD i = 0; i < pWave->GetBufferCount(); i++)
+        DoubleLinkedList<CSoundWave*>* pDll = (*it).second;
+        ListNode<CSoundWave*>* pLn = pDll->headNode();
+        while (pLn)
         {
-            pWave->Stop(i);
-            pWave->SetPosition(0, i);
+            CSoundWave* pWave = pLn->item;
+            for (DWORD i = 0; i < pWave->GetBufferCount(); i++)
+            {
+                pWave->Stop(i);
+                pWave->SetPosition(0, i);
+            }
+            pLn = pLn->next;
         }
     }
 }

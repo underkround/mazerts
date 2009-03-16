@@ -12,6 +12,7 @@
 #include "../Input/KeyboardState.h"
 #include "../Terrain/TerrainIntersection.h"
 #include "../Unit/UI3DObjectManager.h"
+#include "../Sound/SoundManager.h"
 
 
 UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pCamera, Selector* pSelector)
@@ -295,6 +296,7 @@ void UIAssetController::onActionRelease(const float frameTime)
             // asset as target
             m_pUnitCommandDispatcher->getTarget()->setTarget(pUIUnit->getUnit());
             m_pUnitCommandDispatcher->dispatch();
+            SoundManager::playSound(SoundManager::OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()), m_pCamera);
         }
 
         // secondly check if the click hits to terrain as target
@@ -307,6 +309,7 @@ void UIAssetController::onActionRelease(const float frameTime)
                 unsigned short targetY = (unsigned short)hitSquare->y;
                 m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
                 m_pUnitCommandDispatcher->dispatch();
+                SoundManager::playSound(SoundManager::OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()), m_pCamera);
                 delete hitSquare;
             }
         }

@@ -167,16 +167,16 @@ public:
 
     /**
      * RandInt
-     * @param iLow low value in range
-     * @param iHigh high value in range
+     * @param iLow low value in range (inclusive)
+     * @param iHigh high value in range (inclusive)
      * @return random integer in between iLow and iHigh
      */
     static int RandInt(int iLow, int iHigh);
 
     /**
      * RandFloat
-     * @param fLow low value in range
-     * @param fHigh high value in range
+     * @param fLow low value in range (inclusive)
+     * @param fHigh high value in range (inclusive)
      * @return random float value in between fLow and fHigh
      */
     static float RandFloat(float fLow, float fHigh);

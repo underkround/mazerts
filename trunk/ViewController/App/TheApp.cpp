@@ -269,7 +269,6 @@ void CTheApp::OnKeyDown(DWORD dwKey)
     if(dwKey == VK_F1)
     {
         m_Help = !m_Help;
-        SoundManager::playSound(SoundManager::EXPLOSION, 0.0f);
     }
 
     if(dwKey == VK_F2)
