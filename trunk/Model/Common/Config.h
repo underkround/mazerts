@@ -101,36 +101,81 @@ protected:
   inline void setFilename(string path, string filename) { m_strFilename = filename; m_strFilepath = path; };
   inline void setCurrentSection(string section) { m_strCurrentSection = section; };
 
+
   /**
    * getValueAsInt
    *
    * @param in_name name of setting to be queried
+   * @param defaultValue value that will be returned if setting is not found
    * @return setting as integer
    */
-  int getValueAsInt(string in_name);
-  int getValueAsInt(string in_filename, string in_name);
-  int getValueAsInt(string in_filename, string in_section, string in_name);
+  int getValueAsInt(string in_name, const int defaultValue=0);
+  int getValueAsInt(string in_filename, string in_name, const int defaultValue=0);
+  int getValueAsInt(string in_filename, string in_section, string in_name, const int defaultValue=0);
+
+  /**
+   * Alternative method, update the given value, if setting for in_name
+   * is found. Otherwise this leaves the value untouched.
+   * Intented to used to override default values if found from configs.
+   * @param value   Reference to the value that is updated, if requested setting
+   *                is found. Otherwise it's left untouched (can contain default)
+   * @return        true, if the value was altered by the config
+   */
+  bool updateInt(string in_name, int& value);
+  bool updateInt(string in_filename, string in_name, int& value);
+  bool updateInt(string in_filename, string in_section, string in_name, int& value);
+
 
   /**
    * getValueAsBool
    *
    * @param in_name name of setting to be queried
+   * @param defaultValue value that will be returned if setting is not found
    * @return setting as boolean
    */
-  bool getValueAsBool(string in_name);
-  bool getValueAsBool(string in_filename, string in_name);
-  bool getValueAsBool(string in_filename, string in_section, string in_name);
+  bool getValueAsBool(string in_name, const bool defaultValue=false);
+  bool getValueAsBool(string in_filename, string in_name, const bool defaultValue=false);
+  bool getValueAsBool(string in_filename, string in_section, string in_name, const bool defaultValue=false);
+
+  /**
+   * Alternative method, update the given value, if setting for in_name
+   * is found. Otherwise this leaves the value untouched.
+   * Intented to used to override default values if found from configs.
+   * @param value   Reference to the value that is updated, if requested setting
+   *                is found. Otherwise it's left untouched (can contain default)
+   * @return        true, if the value was altered by the config
+   */
+  bool updateBool(string in_name, bool& value);
+  bool updateBool(string in_filename, string in_name, bool& value);
+  bool updateBool(string in_filename, string in_section, string in_name, bool& value);
+
 
   /**
    * getValueAsString
    *
    * @param in_name name of setting to be queried
+   * @param defaultValue value that will be returned if setting is not found
    * @return setting as string
    */
-  string getValueAsString(string in_name);
-  string getValueAsString(string in_filename, string in_name);
-  string getValueAsString(string in_filename, string in_section, string in_name);
+  string getValueAsString(string in_name, const string defaultValue="");
+  string getValueAsString(string in_filename, string in_name, const string defaultValue="");
+  string getValueAsString(string in_filename, string in_section, string in_name, const string defaultValue="");
 
+  /**
+   * Alternative method, update the given value, if setting for in_name
+   * is found. Otherwise this leaves the value untouched.
+   * Intented to used to override default values if found from configs.
+   * @param value   Reference to the value that is updated, if requested setting
+   *                is found. Otherwise it's left untouched (can contain default)
+   * @return        true, if the value was altered by the config
+   */
+  bool updateString(string in_name, string& value);
+  bool updateString(string in_filename, string in_name, string& value);
+  bool updateString(string in_filename, string in_section, string in_name, string& value);
+
+  /**
+   * Wide string
+   */
   wstring getValueAsWString(string in_name);
   wstring getValueAsWString(string in_filename, string in_name);
   wstring getValueAsWString(string in_filename, string in_section, string in_name);
@@ -138,8 +183,12 @@ protected:
   /**
    * mazerts specific configuration default values
    * remember to add any new configuration variables here also
+   * Update:
+   *    default settings are now given as normal member values within the
+   *    subject classes, values from configs can override them, if set
+   * @deprecated
    */
-  void loadDefaults(void);
+  //void loadDefaults(void);
 
   private:
     //** variables **

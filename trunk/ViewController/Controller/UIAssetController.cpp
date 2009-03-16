@@ -13,10 +13,6 @@
 #include "../Terrain/TerrainIntersection.h"
 #include "../Unit/UI3DObjectManager.h"
 
-#ifdef DEBUG
-#include "../3DDebug/UI3DDebug.h"
-#endif
-
 
 UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pCamera, Selector* pSelector)
 {
@@ -28,11 +24,16 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pC
     m_ActionState = IDLE;
     m_TempMouseX = 0;
     m_TempMouseY = 0;
-    m_KeyMouseActionButton = 1;
-    m_KeyMousePickButton = 0;
+
+    // default setting values
+    m_KeyMouseActionButton = 3; // 1
+    m_KeyMousePickButton = 1; // 0
     m_KeyAddToSelection = 29;
     m_MousePickDragTreshold = 4;
     m_MouseActionDragTreshold = 4;
+    m_KeyPickModifier = 0;
+    m_KeyActionModifier = 0;
+    m_KeyActionWhileDragging = false;
 }
 
 
@@ -51,17 +52,17 @@ void UIAssetController::loadConfiguration(const bool confFileLoaded)
         c.readFile();
     }
     // mouse buttons
-    m_KeyMouseActionButton      = c.getValueAsInt("mouse action button");
-    m_KeyMousePickButton        = c.getValueAsInt("mouse pick button");
-    m_KeyAddToSelection         = c.getValueAsInt("add to selection modifier key");
+    c.updateInt("mouse action button",                  m_KeyMouseActionButton);
+    c.updateInt("mouse pick button",                    m_KeyMousePickButton);
+    c.updateInt("add to selection modifier key",        m_KeyAddToSelection);
     // drag tresholds
-    m_MousePickDragTreshold     = c.getValueAsInt("mouse pick moving treshold");
-    m_MouseActionDragTreshold   = c.getValueAsInt("mouse action moving treshold");
+    c.updateInt("mouse pick moving treshold",           m_MousePickDragTreshold);
+    c.updateInt("mouse action moving treshold",         m_MouseActionDragTreshold);
     // keyboard modifiers
-    m_KeyPickModifier           = c.getValueAsInt("mouse pick modifier key");
-    m_KeyActionModifier         = c.getValueAsInt("mouse action modifier key");
+    c.updateInt("mouse pick modifier key",              m_KeyPickModifier);
+    c.updateInt("mouse action modifier key",            m_KeyActionModifier);
     // weather to allow action when dragging
-    m_KeyActionWhileDragging    = c.getValueAsBool("mouse action enabled when dragging");
+    c.updateBool("mouse action enabled when dragging",  m_KeyActionWhileDragging);
 }
 
 

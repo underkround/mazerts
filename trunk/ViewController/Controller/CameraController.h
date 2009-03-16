@@ -44,9 +44,10 @@ private:
     int m_KeyCameraZoomOut;
     int m_KeyCameraReset;
 
-    int m_KeyMouseDragButton;
-    int m_KeyMousePickButton;
+    int m_KeyMousePanningButton;
+    int m_KeyPanningModifier;
     int m_KeyMouseRotateButton;
+    int m_KeyRotateModifier;
 
     float m_ModifyMouseDragX;
     float m_ModifyMouseDragY;

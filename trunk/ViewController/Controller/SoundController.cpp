@@ -17,6 +17,12 @@ SoundController::SoundController(Camera* camera)
 
     // Play music
     SoundManager::playMusic(SoundManager::BACKGROUND, true);
+
+    // Default controls
+    int m_KeySoundToggle    = 63;
+    int m_KeyMusicToggle    = 64;
+    int m_KeyVolumeUp       = 78;
+    int m_KeyVolumeDown     = 74;
 }
 
 SoundController::~SoundController()
@@ -31,10 +37,10 @@ void SoundController::loadConfiguration(const bool confFileLoaded)
         c.setFilename("controls.ini");
         c.readFile();
     }
-    m_KeySoundToggle = c.getValueAsInt("toggle sound");
-    m_KeyMusicToggle = c.getValueAsInt("toggle music");
-    m_KeyVolumeUp = c.getValueAsInt("master volume up");
-    m_KeyVolumeDown = c.getValueAsInt("master volume down");
+    c.updateInt("key toggle sound",         m_KeySoundToggle);
+    c.updateInt("key toggle music",         m_KeyMusicToggle);
+    c.updateInt("key master volume up",     m_KeyVolumeUp);
+    c.updateInt("key master volume down",   m_KeyVolumeDown);
 }
 
 void SoundController::updateControls(const float frameTime)

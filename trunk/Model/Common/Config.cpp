@@ -48,92 +48,200 @@ void Config::readFile(void) {
   m_strCurrentSection = "";
 }
 
-int Config::getValueAsInt(string in_name) {
+
+// Int - method #1
+
+int Config::getValueAsInt(string in_name, const int defaultValue) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name) {
       return static_cast<SettingInt*>(*iter)->value;
     }
   }
-  return 0;
+  return defaultValue;
 }
 
-int Config::getValueAsInt(string in_filename, string in_name) {
+int Config::getValueAsInt(string in_filename, string in_name, const int defaultValue) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name && (*iter)->file == in_filename) {
       return static_cast<SettingInt*>(*iter)->value;
     }
   }
-  return 0;
+  return defaultValue;
 }
 
-int Config::getValueAsInt(string in_filename, string in_section, string in_name){
+int Config::getValueAsInt(string in_filename, string in_section, string in_name, const int defaultValue){
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
       return static_cast<SettingInt*>(*iter)->value;
     }
   }
-  return 0;
+  return defaultValue;
+}
+
+// Int - method #2
+
+bool Config::updateInt(string in_name, int& value)
+{
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name) {
+      value = static_cast<SettingInt*>(*iter)->value;
+      return true; // setting was found and value updated
+    }
+  }
+  return false; // setting not found
+}
+
+bool Config::updateInt(string in_filename, string in_name, int& value)
+{
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename) {
+      value = static_cast<SettingInt*>(*iter)->value;
+      return true; // setting was found and value updated
+    }
+  }
+  return false; // setting not found
+}
+
+bool Config::updateInt(string in_filename, string in_section, string in_name, int& value)
+{
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
+      value = static_cast<SettingInt*>(*iter)->value;
+      return true; // setting was found and value updated
+    }
+  }
+  return false; // setting not found
 }
 
 
-bool Config::getValueAsBool(string in_name) {
+// Bool - method #1
+
+bool Config::getValueAsBool(string in_name, const bool defaultValue) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name) {
       //return (bool)static_cast<SettingInt*>(*iter)->value;
       return (((SettingInt*)(*iter))->value) ? true : false;
     }
   }
-  return false;
+  return defaultValue;
 }
 
-bool Config::getValueAsBool(string in_filename, string in_name) {
+bool Config::getValueAsBool(string in_filename, string in_name, const bool defaultValue) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name && (*iter)->file == in_filename) {
       //return (bool)static_cast<SettingInt*>(*iter)->value;
       return (((SettingInt*)(*iter))->value) ? true : false;
     }
   }
-  return false;
+  return defaultValue;
 }
 
-bool Config::getValueAsBool(string in_filename, string in_section, string in_name) {
+bool Config::getValueAsBool(string in_filename, string in_section, string in_name, const bool defaultValue) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
       //return (bool)static_cast<SettingInt*>(*iter)->value;
       return (((SettingInt*)(*iter))->value) ? true : false;
     }
   }
-  return false;
+  return defaultValue;
+}
+
+// Bool - method #2
+
+bool Config::updateBool(string in_name, bool& value) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name) {
+      value = (((SettingInt*)(*iter))->value) ? true : false;
+      return true; // setting was found and value updated
+    }
+  }
+  return false; // setting not found
+}
+
+bool Config::updateBool(string in_filename, string in_name, bool& value) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename) {
+      value = (((SettingInt*)(*iter))->value) ? true : false;
+      return true; // setting was found and value updated
+    }
+  }
+  return false; // setting not found
+}
+
+bool Config::updateBool(string in_filename, string in_section, string in_name, bool& value) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
+      value = (((SettingInt*)(*iter))->value) ? true : false;
+      return true; // setting was found and value updated
+    }
+  }
+  return false; // setting not found
 }
 
 
-string Config::getValueAsString(string in_name) {
+// String - method #1
+
+string Config::getValueAsString(string in_name, const string defaultValue) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name) {
       return static_cast<SettingString*>(*iter)->value;
     }
   }
-  return "";
+  return defaultValue;
 }
 
-string Config::getValueAsString(string in_filename, string in_name) {
+string Config::getValueAsString(string in_filename, string in_name, const string defaultValue) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name && (*iter)->file == in_filename) {
       return static_cast<SettingString*>(*iter)->value;
     }
   }
-  return "";
+  return defaultValue;
 }
 
-string Config::getValueAsString(string in_filename, string in_section, string in_name) {
+string Config::getValueAsString(string in_filename, string in_section, string in_name, const string defaultValue) {
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
       return static_cast<SettingString*>(*iter)->value;
     }
   }
-  return "";
+  return defaultValue;
 }
 
+// String - method #2
+
+bool Config::updateString(string in_name, string& value) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name) {
+      value = static_cast<SettingString*>(*iter)->value;
+      return true; // setting was found and value updated
+    }
+  }
+  return false; // setting was not found
+}
+
+bool Config::updateString(string in_filename, string in_name, string& value) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename) {
+      value = static_cast<SettingString*>(*iter)->value;
+      return true; // setting was found and value updated
+    }
+  }
+  return false; // setting was not found
+}
+
+bool Config::updateString(string in_filename, string in_section, string in_name, string& value) {
+  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
+      value = static_cast<SettingString*>(*iter)->value;
+      return true; // setting was found and value updated
+    }
+  }
+  return false; // setting was not found
+}
+
+
+// Wide String
 
 wstring Config::getValueAsWString(string in_name)
 {
@@ -386,36 +494,6 @@ bool Config::parseRow(string row) {
   return true;
 }
 
-void Config::loadDefaults(void)
-{
-#pragma region defaultsettings
-    addSetting("camera pan up", 200);
-    addSetting("camera pan down", 208);
-    addSetting("camera pan right", 205);
-    addSetting("camera pan left", 203);
-    addSetting("camera zoom in", 30);
-    addSetting("camera zoom out", 44);
-    addSetting("camera reset", 14);
-    addSetting("generate new terrain", 57);
-    addSetting("generate passability terrain", 2);
-    addSetting("toggle wireframe", 15);
-    addSetting("terrain detail up", 49);
-    addSetting("terrain detail down", 50);
-    addSetting("mouse drag button", 1);
-    addSetting("mouse pick button", 0);
-    addSetting("mouse rotate button", 2);
-    addSetting("modify mouse panning horizontal", 10);
-    addSetting("modify mouse panning vertical", 10);
-    addSetting("modify mouse rotation horizontal", -10);
-    addSetting("modify mouse rotation vertical", 10);
-    addSetting("modify mouse zoom", 10);
-    addSetting("toggle sound", 63);
-    addSetting("toggle music", 64);
-    addSetting("master volume up", 78);
-    addSetting("master volume down", 74);
-    addSetting("sound enabled", 1);
-    addSetting("music enabled", 1);
-    addSetting("master volume", 0);
-    addSetting("music volume", 0);
-#pragma endregion
-}
+// LoadDefaults removed
+// default settings are now given as normal member values within the
+// subject classes, values from configs can override them, if set

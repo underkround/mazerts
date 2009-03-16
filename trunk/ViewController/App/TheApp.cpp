@@ -21,7 +21,6 @@ CTheApp::CTheApp(void)
     m_TextRow = 0;
     m_pCurrentState = NULL;
     m_pStates = NULL;
-    Config::getInstance()->loadDefaults();
     handleConfig();
     m_CatchInput = false;
     ::CoInitialize(NULL);
@@ -330,10 +329,10 @@ void CTheApp::handleConfig()
     c.setFilename("config.ini");
     c.readFile();
 
-    bool sounds = c.getValueAsBool("sound enabled");
-    bool music = c.getValueAsBool("music enabled");
-    int svol = c.getValueAsInt("master volume");
-    int mvol = c.getValueAsInt("music volume");
+    bool sounds = c.getValueAsBool("sound enabled", true);
+    bool music  = c.getValueAsBool("music enabled", true);
+    int svol    = c.getValueAsInt("master volume",  0);
+    int mvol    = c.getValueAsInt("music volume",   0);
     SoundManager::setSoundsEnabled(sounds);
     SoundManager::setMusicEnabled(music);
     SoundManager::setMasterVolume(svol);

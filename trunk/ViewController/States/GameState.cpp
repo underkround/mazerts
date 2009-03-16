@@ -34,6 +34,13 @@ GameState::GameState()
     m_pUITerrain = NULL;
     m_pApp = NULL;
     m_Created = false;
+
+    // default settings
+    m_KeyGenerateNewTerrain     = 57;
+    m_KeyGeneratePassability    = 2;
+    m_KeyToggleWireframe        = 15;
+    m_KeyTerrainDetailUp        = 49;
+    m_KeyTerrainDetailDown      = 50;
 }
 
 GameState::~GameState()
@@ -370,14 +377,11 @@ void GameState::loadConfiguration()
     c.setFilename("controls.ini");
     c.readFile();
 
-    m_KeyGenerateNewTerrain = c.getValueAsInt("generate new terrain");
-    m_KeyGeneratePassability = c.getValueAsInt("generate passability terrain");
-    m_KeyToggleWireframe = c.getValueAsInt("toggle wireframe");
-    m_KeyTerrainDetailUp = c.getValueAsInt("terrain detail up");
-    m_KeyTerrainDetailDown = c.getValueAsInt("terrain detail down");
-    m_KeyMouseDragButton = c.getValueAsInt("mouse drag button");
-    m_KeyMousePickButton = c.getValueAsInt("mouse pick button");
-    m_KeyMouseRotateButton = c.getValueAsInt("mouse rotate button");
+    c.updateInt("key generate new terrain",         m_KeyGenerateNewTerrain);
+    c.updateInt("key generate passability terrain", m_KeyGeneratePassability);
+    c.updateInt("key toggle wireframe",             m_KeyToggleWireframe);
+    c.updateInt("key terrain detail up",            m_KeyTerrainDetailUp);
+    c.updateInt("key terrain detail down",          m_KeyTerrainDetailDown);
 
     // update configurations of the controllers
     ListNode<IUIController*>* node = m_UIControllers.headNode();

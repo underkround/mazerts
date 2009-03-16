@@ -132,9 +132,6 @@ private:
     int m_KeyToggleWireframe;
     int m_KeyTerrainDetailUp;
     int m_KeyTerrainDetailDown;
-    int m_KeyMouseDragButton;
-    int m_KeyMousePickButton;
-    int m_KeyMouseRotateButton;
 
 };
 
