@@ -178,7 +178,7 @@ bool GameState::update(const float frameTime)
 
     //Update minimap
     m_pUITerrain->getMiniMap()->updateUnits(m_pManager->getUnitList(), frameTime);
-
+    m_pUITerrain->getMiniMap()->updateCamera(m_pCamera);
 
     //CURSOR-TEST, REMOVE
     if(MouseState::mouseButton[0])

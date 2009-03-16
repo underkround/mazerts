@@ -78,7 +78,10 @@ private:
         m_Type = CURS_NORMAL;
     }
 
-    virtual ~Cursor() {}
+    virtual ~Cursor() 
+    {
+        release();
+    }
 
 
     /**

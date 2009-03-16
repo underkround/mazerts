@@ -15,6 +15,7 @@ MiniMap::MiniMap()
 {
     m_pUnitVB = NULL;
     m_pBackVB = NULL;
+    m_pCameraVB = NULL;
 
     m_UpdateCounter = 100.0f;
 
@@ -47,6 +48,7 @@ void MiniMap::setSize(const int size)
 
 HRESULT MiniMap::create(LPDIRECT3DDEVICE9 pDevice)
 {
+    //Background vertexbuffer
     HRESULT hres = pDevice->CreateVertexBuffer(4 * sizeof(TRANSLITVERTEX), NULL, TRANSLITVERTEX::GetFVF(), D3DPOOL_MANAGED, &m_pBackVB, NULL);
 
     if(FAILED(hres))
@@ -54,6 +56,7 @@ HRESULT MiniMap::create(LPDIRECT3DDEVICE9 pDevice)
         return hres;
     }
 
+    //Background vertices
     TRANSLITVERTEX* pBackVertices = NULL;
 
     m_pBackVB->Lock(0, 0, (void**)&pBackVertices, D3DLOCK_DISCARD);
@@ -92,8 +95,16 @@ HRESULT MiniMap::create(LPDIRECT3DDEVICE9 pDevice)
     }
     m_pBackVB->Unlock();
 
-    
+    //Unit-marker vertexbuffer
     hres = pDevice->CreateVertexBuffer(MINIMAP_MAX_UNITS * 3 * sizeof(TRANSLITVERTEX), NULL, TRANSLITVERTEX::GetFVF(), D3DPOOL_MANAGED, &m_pUnitVB, NULL);
+
+    if(FAILED(hres))
+    {
+        return hres;
+    }
+
+    //Camera vertexbuffer
+    hres = pDevice->CreateVertexBuffer(3 * sizeof(TRANSLITVERTEX), NULL, TRANSLITVERTEX::GetFVF(), D3DPOOL_MANAGED, &m_pCameraVB, NULL);
 
     if(FAILED(hres))
     {
@@ -116,7 +127,55 @@ void MiniMap::release()
         m_pUnitVB->Release();        
         m_pUnitVB = NULL;
     }
+
+    if(m_pCameraVB)
+    {
+        m_pCameraVB->Release();
+        m_pCameraVB = NULL;
+    }
 }
+
+
+void MiniMap::updateCamera(Camera* pCamera)
+{
+    D3DXVECTOR3& pos = pCamera->getPosition();
+    float pitch = 60.0f / pCamera->getPitch();
+    float yaw = -pCamera->getYaw() - 0.25f * D3DX_PI;
+
+    TRANSLITVERTEX* pVertices = NULL;
+
+    m_pCameraVB->Lock(0, 3 * sizeof(TRANSLITVERTEX), (void**)&pVertices, D3DLOCK_DISCARD);
+    {
+        float posX = m_Position.x + (pos.x * m_SizeFactor);
+        float posY = m_Position.y + m_Size - (pos.y * m_SizeFactor);
+
+        pVertices[0].x = posX;
+        pVertices[0].y = posY;
+        pVertices[0].z = 0.0f;
+        pVertices[0].tu = 0.0f;
+        pVertices[0].tv = 1.0f;
+        pVertices[0].dwColor = 0xFFFFFFFF;
+        pVertices[0].rhw = 0.99f;
+
+        pVertices[1].x = posX + cos(yaw - 0.25f * D3DX_PI) * pitch - sin(yaw - 0.25f * D3DX_PI) * pitch;
+        pVertices[1].y = posY + cos(yaw - 0.25f * D3DX_PI) * pitch + sin(yaw - 0.25f * D3DX_PI) * pitch;
+        pVertices[1].z = 0.000001f;
+        pVertices[1].tu = 1.0f;
+        pVertices[1].tv = 1.0f;
+        pVertices[1].dwColor = 0xFFFFFFFF;
+        pVertices[1].rhw = 0.99f;
+
+        pVertices[2].x = posX + cos(yaw + 0.25f * D3DX_PI) * pitch - sin(yaw + 0.25f * D3DX_PI) * pitch;
+        pVertices[2].y = posY + cos(yaw + 0.25f * D3DX_PI) * pitch + sin(yaw + 0.25f * D3DX_PI) * pitch;
+        pVertices[2].z = 0.000001f;
+        pVertices[2].tu = 1.0f;
+        pVertices[2].tv = 0.0f;
+        pVertices[2].dwColor = 0xFFFFFFFF;
+        pVertices[2].rhw = 0.99f;
+    }
+    m_pCameraVB->Unlock();
+}
+
 
 void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
 {
@@ -176,12 +235,9 @@ void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
 
             }
             pNode = pNode->next;
-            //++count;
         }
 
         m_pUnitVB->Unlock();
-
-        //m_UnitPrimitiveCount = count;
     }
 }
 
@@ -200,7 +256,9 @@ void MiniMap::render(LPDIRECT3DDEVICE9 pDevice, LPDIRECT3DTEXTURE9 pTexture)
 
     pDevice->SetTexture(0, NULL);
 
-
     pDevice->SetStreamSource(0, m_pUnitVB, 0, sizeof(TRANSLITVERTEX));
     pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, m_UnitPrimitiveCount);
+
+    pDevice->SetStreamSource(0, m_pCameraVB, 0, sizeof(TRANSLITVERTEX));
+    pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
 }

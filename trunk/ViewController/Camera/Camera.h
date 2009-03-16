@@ -65,6 +65,16 @@ public:
     virtual void setRotation(const float yaw, const float pitch);
 
     /** 
+     * Get the pitch-value (up/down-rotation)
+     */
+    inline float getPitch() { return m_Pitch; }
+    
+    /** 
+     * Get the yaw-value (sideways rotation)
+     */
+    inline float getYaw() { return m_Yaw; }
+
+    /** 
      * Changes camera zoom
      * @param change Change in zoom-value
      */

@@ -13,7 +13,7 @@
 #include "../App/Vertices.h"
 #include "../../Model/Common/DoubleLinkedList.h"
 #include "../Unit/UiUnit.h"
-
+#include "../Camera/Camera.h"
 
 //Maximum amount of unit-markers the minimap allocates vertexbuffer for
 #define MINIMAP_MAX_UNITS 2000
@@ -64,6 +64,12 @@ public:
     void updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime);
 
     /**
+     * Updates the camera position in minimap
+     * @param pCamera Pointer to camera to show in minimap
+     */
+    void updateCamera(Camera* pCamera);
+
+    /**
      * Render the minimap
      * @param pDevice Device to render with
      * @param pTexture Texture to use as background
@@ -96,6 +102,11 @@ private:
      * Unit-marker vertexbuffer
      */
     LPDIRECT3DVERTEXBUFFER9 m_pUnitVB;
+
+    /**
+     * Camera-marker vertexbuffer
+     */
+    LPDIRECT3DVERTEXBUFFER9 m_pCameraVB;
 
     /**
      * Number of unit primitives
