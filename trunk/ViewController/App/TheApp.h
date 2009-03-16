@@ -78,15 +78,17 @@ public:
 
     /**
      * Destroys current state and switches to next state in the states-list
+     * @return S_OK or error code
      */
-    virtual void nextState();
+    virtual HRESULT nextState();
 
     /**
      * Puts given state to execution and pushes current
      * to list as next one (used for entering menu while in-game, as
      * the menu terminates, game is returned from states-list)
+     * @return S_OK or error code
      */
-    virtual void pushState(IState* pState);
+    virtual HRESULT pushState(IState* pState);
 
 
 private:

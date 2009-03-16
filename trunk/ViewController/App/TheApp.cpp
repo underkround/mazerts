@@ -59,7 +59,12 @@ HRESULT CTheApp::OnCreate(void)
     m_pStates->pushTail(new GameState());
 
     //Get first state
-    nextState();
+    hres = nextState();
+
+    if(FAILED(hres))
+    {
+        return hres;
+    }
 
     return S_OK;
 }
@@ -133,7 +138,14 @@ void CTheApp::OnFlip(void)
     //State update
     if(m_pCurrentState->update(frameTime) == false)
     {
-        nextState();
+        HRESULT hres = nextState();
+
+        if(FAILED(hres))
+        {
+            ::MessageBox(GetWindow(), _T("nextState returned error code on TheApp.cpp OnFlip"), _T("FATAL ERROR"), MB_OK);
+            Close();
+        }
+
         return;
     }
     
@@ -195,7 +207,7 @@ void CTheApp::OnFlip(void)
     time = timer2->GetElapsedSeconds();
 }
 
-void CTheApp::nextState()
+HRESULT CTheApp::nextState()
 {
     if(m_pCurrentState)
     {
@@ -209,13 +221,18 @@ void CTheApp::nextState()
 
     if(!m_pCurrentState->isCreated())
     {
-        m_pCurrentState->create(this);
+        HRESULT hres = m_pCurrentState->create(this);
+        if(FAILED(hres))
+        {
+            return hres;
+        }
     }
 
+    return S_OK;
 }
 
 
-void CTheApp::pushState(IState* pState)
+HRESULT CTheApp::pushState(IState* pState)
 {
     m_pStates->pushHead(m_pCurrentState);
 
@@ -223,8 +240,15 @@ void CTheApp::pushState(IState* pState)
 
     if(!m_pCurrentState->isCreated())
     {
-        m_pCurrentState->create(this);
+        HRESULT hres = m_pCurrentState->create(this);
+        
+        if(FAILED(hres))
+        {
+            return hres;
+        }
     }
+    
+    return S_OK;
 }
 
 

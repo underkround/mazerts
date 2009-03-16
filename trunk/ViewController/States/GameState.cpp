@@ -138,8 +138,11 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 void GameState::release()
 {
     //Tell the PathFinder-thread to stop and wait for it to finish
-    PathFinderMaster::getInstance()->stop();
-    PathFinderMaster::getInstance()->wait();
+    if(PathFinderMaster::getInstance()->isRunning())
+    {
+        PathFinderMaster::getInstance()->stop();
+        PathFinderMaster::getInstance()->wait();
+    }
 
     //Release controllers
     ListNode<IUIController*>* node = m_UIControllers.headNode();
