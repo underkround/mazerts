@@ -11,30 +11,30 @@ Selector::SELECTION* Selector::buttonUp()
     
     
 
-    unsigned short minX, minY;
-    unsigned short maxX, maxY;
+    int minX, minY;
+    int maxX, maxY;
     
     //Get the points
     if(m_Point1.x > m_Point2.x)
     {
-        maxX = (unsigned short)m_Point1.x + 1;
-        minX = (unsigned short)m_Point2.x - 1;
+        maxX = (int)(m_Point1.x + 2.5f);  //Magic constansts
+        minX = (int)(m_Point2.x - 1.5f);
     }
     else
     {
-        maxX = (unsigned short)m_Point2.x + 1;
-        minX = (unsigned short)m_Point1.x - 1;
+        maxX = (int)(m_Point2.x + 2.5f);
+        minX = (int)(m_Point1.x - 1.5f);
     }
 
     if(m_Point1.y > m_Point2.y)
     {
-        maxY = (unsigned short)m_Point1.y + 1;
-        minY = (unsigned short)m_Point2.y - 1;
+        maxY = (int)(m_Point1.y + 2.5f);
+        minY = (int)(m_Point2.y - 1.5f);
     }
     else
     {
-        maxY = (unsigned short)m_Point2.y + 1;
-        minY = (unsigned short)m_Point1.y - 1;
+        maxY = (int)(m_Point2.y + 2.5f);
+        minY = (int)(m_Point1.y - 1.5f);
     }    
    
     //UI-side units
@@ -45,8 +45,8 @@ Selector::SELECTION* Selector::buttonUp()
     while(pNode)
     {
         D3DXVECTOR2* pPos = (D3DXVECTOR2*)pNode->item->getUnit()->getPosition();
-        float x = pPos->x + pNode->item->getHalfSize();
-        float y = pPos->y + pNode->item->getHalfSize();
+        int x = (int)(pPos->x + pNode->item->getHalfSize());
+        int y = (int)(pPos->y + pNode->item->getHalfSize());
         if(x > minX && x < maxX && y > minY && y < maxY)
         {
             result->units.pushTail(pNode->item);
