@@ -16,8 +16,13 @@ bool* MouseState::mouseButton = NULL;
 bool* MouseState::mouseButtonOld = NULL;
 bool* MouseState::mouseButtonReleased = NULL;
 
+IApplication* MouseState::pApp = NULL;
+
 void MouseState::create(IApplication* pApplication)
 {
+
+    pApp = pApplication;
+
      //init mouse coordinates
     if(pApplication->IsWindowed())
     {
@@ -58,6 +63,17 @@ void MouseState::update()
         mouseX += mouseXSpeed;
         mouseY += mouseYSpeed;
         mouseZ += mouseZSpeed;
+
+        //For windowed application, ask cursor position
+        if(pApp->IsWindowed())
+        {
+            //Get cursor position
+            POINT mousepos;
+            ::GetCursorPos(&mousepos);
+            ::ScreenToClient(pApp->GetWindow(), &mousepos);
+            mouseX = mousepos.x;
+            mouseY = mousepos.y;
+        }
 
         // keep mouse positions inside our window
         if(mouseX <0) 

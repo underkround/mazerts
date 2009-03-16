@@ -101,6 +101,11 @@ private:
      * Old states of mouse buttons, used to recognize mouse button up/down-events
      */
     static bool* mouseButtonOld;
+
+    /** 
+     * IApplication-pointer, used to get correct mouse position in windowed mode
+     */
+    static IApplication* pApp;
 };
 
 
