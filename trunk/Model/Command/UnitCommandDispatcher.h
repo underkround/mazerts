@@ -109,8 +109,10 @@ public:
 
     /**
      * Dispatch current target
+     * @param addToQueue If true, the command is added to the units' queue, otherwise the commandqueue
+     *                   is cleared before adding
      */
-    bool dispatch();
+    bool dispatch(bool addToQueue);
 
 private:
 

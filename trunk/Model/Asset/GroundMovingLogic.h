@@ -95,15 +95,22 @@ public:
     virtual Target* getTarget();
 
     /**
-     * Set new target towards which to move to, clear old.
+     * Overrides the current target with given, pushing current as first of queue
      * The ownership of the target object will transfer to this class
      */
-    virtual void setTarget(Target* target);
+    virtual void priorityTarget(Target* target);
 
     /**
-     * Clear current target
+     * Pushes a new target to command queue
+     * Note: The ownership of the target object will be transferred to this class
+     * @param target Target-pointer to push into queue
      */
-    virtual void clearTarget();
+    virtual void addTarget(Target* target);
+
+    /**
+     * Clear command queue and current target
+     */
+    virtual void clearTargets();
 
 private:
 
@@ -111,6 +118,11 @@ private:
      * Current target to move to
      */
     Target* m_pTarget;
+
+    /**
+     * List of targets in queue
+     */
+    DoubleLinkedList<Target*> m_TargetList;
 
     /**
      * Idling when the unit has no orders
@@ -139,6 +151,11 @@ private:
      * @param deltaTime Frametime in seconds
      */
     void move(const float deltaTime);
+
+    /** 
+     * Destroys current target
+     */
+    void clearCurrentTarget();
 
     /**
      * Unit this MovingLogic is owned by

@@ -55,7 +55,7 @@ int UnitCommandDispatcher::getCommandFlagsForTarget()
     return 0;
 }
 
-bool UnitCommandDispatcher::dispatch()
+bool UnitCommandDispatcher::dispatch(bool addToQueue)
 {
     if(m_Units.empty())
         return false;
@@ -64,7 +64,11 @@ bool UnitCommandDispatcher::dispatch()
     ListNode<Unit*>* node = m_Units.headNode();
     while(node)
     {
-        node->item->getMovingLogic()->setTarget(new Target(m_Target));
+        if(!addToQueue)
+        {
+            node->item->getMovingLogic()->clearTargets();
+        }
+        node->item->getMovingLogic()->addTarget(new Target(m_Target));
         node = node->next;
     }
     return true;

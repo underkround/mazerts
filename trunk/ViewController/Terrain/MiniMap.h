@@ -78,6 +78,15 @@ public:
 
 private:
 
+    /** 
+     * Intersect the given ray at the given z-height of xy-plane
+     * @param rayOrigin Ray starting point
+     * @param rayDir Ray direction
+     * @param clipZ XY-plane "height" (z-value) to intersect with
+     * @return D3DXVECTOR3 with intersection coordinates
+     */
+    D3DXVECTOR3 intersectRay(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir, float clipZ);
+
     /**
      * Minimap left upper corner position (from upper left corner of screen, in pixels)
      */

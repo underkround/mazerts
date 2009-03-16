@@ -101,15 +101,22 @@ public:
     virtual Target* getTarget() = 0;
 
     /**
-     * Set new target towards which to move to, clear old.
-     * The ownership of the target object will transfer to this class
+     * Pushes a new target to command queue
+     * Note: The ownership of the target object will be transferred to this class
+     * @param target Target-pointer to push into queue
      */
-    virtual void setTarget(Target* target) = 0;
+    virtual void addTarget(Target* target) = 0;
 
     /**
-     * Clear current target
+     * Overrides the current target with given, pushing current as first of queue
+     * The ownership of the target object will transfer to this class     
      */
-    virtual void clearTarget() = 0;
+    virtual void priorityTarget(Target* target) = 0;
+
+    /**
+     * Clear command queue and current target
+     */
+    virtual void clearTargets() = 0;
 
 };
 

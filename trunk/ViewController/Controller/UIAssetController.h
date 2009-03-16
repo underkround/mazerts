@@ -67,10 +67,11 @@ private:
     int m_KeyMouseActionButton;
     int m_KeyMousePickButton;
     int m_KeyAddToSelection;
-    int m_MousePickDragTreshold;
-    int m_MouseActionDragTreshold;
+    int m_MousePickDragThreshold;
+    int m_MouseActionDragThreshold;
     int m_KeyPickModifier;
     int m_KeyActionModifier;
+    int m_KeyQueueCommands;
     bool m_KeyActionWhileDragging;
 
     // current state of the selection

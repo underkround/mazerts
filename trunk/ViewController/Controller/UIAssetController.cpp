@@ -30,12 +30,14 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pC
     m_KeyMouseActionButton = 3; // 1
     m_KeyMousePickButton = 1; // 0
     m_KeyAddToSelection = 29;
-    m_MousePickDragTreshold = 4;
-    m_MouseActionDragTreshold = 4;
+    m_KeyQueueCommands = 42;
+    m_MousePickDragThreshold = 4;
+    m_MouseActionDragThreshold = 4;
     m_KeyPickModifier = 0;
     m_KeyActionModifier = 0;
     m_KeyActionWhileDragging = false;
 }
+
 
 
 UIAssetController::~UIAssetController()
@@ -56,9 +58,10 @@ void UIAssetController::loadConfiguration(const bool confFileLoaded)
     c.updateInt("mouse action button",                  m_KeyMouseActionButton);
     c.updateInt("mouse pick button",                    m_KeyMousePickButton);
     c.updateInt("add to selection modifier key",        m_KeyAddToSelection);
+    c.updateInt("queue command modifier key",           m_KeyQueueCommands);
     // drag tresholds
-    c.updateInt("mouse pick moving treshold",           m_MousePickDragTreshold);
-    c.updateInt("mouse action moving treshold",         m_MouseActionDragTreshold);
+    c.updateInt("mouse pick moving threshold",          m_MousePickDragThreshold);
+    c.updateInt("mouse action moving threshold",        m_MouseActionDragThreshold);
     // keyboard modifiers
     c.updateInt("mouse pick modifier key",              m_KeyPickModifier);
     c.updateInt("mouse action modifier key",            m_KeyActionModifier);
@@ -83,7 +86,7 @@ void UIAssetController::updateControls(const float frameTime)
 {
     bool pickModifier = (!m_KeyPickModifier || KeyboardState::keyDown[m_KeyPickModifier]) ? true : false;
     bool actionModifier = (!m_KeyActionModifier || KeyboardState::keyDown[m_KeyActionModifier]) ? true : false;
-
+    
     if(pickModifier && MouseState::mouseButton[m_KeyMousePickButton])
         onPickButton(frameTime);
     else if(pickModifier && MouseState::mouseButtonReleased[m_KeyMousePickButton])
@@ -194,8 +197,8 @@ void UIAssetController::onPickButton(const float frameTime)
 
     case CLICK:
         {
-            if( abs(m_TempMouseX - MouseState::mouseX) > m_MousePickDragTreshold ||
-                abs(m_TempMouseY - MouseState::mouseY) > m_MousePickDragTreshold)
+            if( abs(m_TempMouseX - MouseState::mouseX) > m_MousePickDragThreshold ||
+                abs(m_TempMouseY - MouseState::mouseY) > m_MousePickDragThreshold)
             {
                 // get the first point clicked while moved from IDLE to CLICK
                 // and set it for selector as the first click-point
@@ -256,8 +259,8 @@ void UIAssetController::onActionButton(const float frameTime)
         case CLICK:
             {
                 // check if mouse has moved over the treshold while action key pressed
-                if( abs(m_TempMouseX - MouseState::mouseX) > m_MouseActionDragTreshold ||
-                    abs(m_TempMouseY - MouseState::mouseY) > m_MouseActionDragTreshold)
+                if( abs(m_TempMouseX - MouseState::mouseX) > m_MouseActionDragThreshold ||
+                    abs(m_TempMouseY - MouseState::mouseY) > m_MouseActionDragThreshold)
                 {
                     m_ActionState = DRAG;
                 }
@@ -295,7 +298,7 @@ void UIAssetController::onActionRelease(const float frameTime)
         {
             // asset as target
             m_pUnitCommandDispatcher->getTarget()->setTarget(pUIUnit->getUnit());
-            m_pUnitCommandDispatcher->dispatch();
+            m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
             SoundManager::playSound(SoundManager::OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()), m_pCamera);
         }
 
@@ -308,7 +311,7 @@ void UIAssetController::onActionRelease(const float frameTime)
                 unsigned short targetX = (unsigned short)hitSquare->x;
                 unsigned short targetY = (unsigned short)hitSquare->y;
                 m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
-                m_pUnitCommandDispatcher->dispatch();
+                m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
                 SoundManager::playSound(SoundManager::OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()), m_pCamera);
                 delete hitSquare;
             }

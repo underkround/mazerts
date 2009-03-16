@@ -10,7 +10,7 @@
 
 #include "MiniMap.h"
 #include "../../Model/Terrain/Terrain.h"
-#include "../Terrain/TerrainIntersection.h"
+#include "../Terrain/UITerrain.h"
 #include "../Input/MouseState.h"
 
 MiniMap::MiniMap()
@@ -140,6 +140,8 @@ void MiniMap::release()
 
 void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
 {
+    const static float CLIPZ = -0.0f * UITerrain::HEIGHTFACTOR;
+
     D3DXMATRIX matProj;
     pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
 
@@ -153,36 +155,54 @@ void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
     pDevice->GetViewport(&viewPort);
 
     MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir, 0, 0);    
-    D3DXVECTOR3* upperLeft = TerrainIntersection::getPointsFromPlaneClippedRay(rayOrigin, rayDir);
+    D3DXVECTOR3 upperLeft = intersectRay(rayOrigin, rayDir, CLIPZ);
 
     MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir, viewPort.Width, 0);
-    D3DXVECTOR3* upperRight = TerrainIntersection::getPointsFromPlaneClippedRay(rayOrigin, rayDir);
+    D3DXVECTOR3 upperRight = intersectRay(rayOrigin, rayDir, CLIPZ);
 
     MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir,0, viewPort.Height);
-    D3DXVECTOR3* lowerLeft = TerrainIntersection::getPointsFromPlaneClippedRay(rayOrigin, rayDir);
+    D3DXVECTOR3 lowerLeft = intersectRay(rayOrigin, rayDir, CLIPZ);
 
     MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir,viewPort.Width, viewPort.Height);
-    D3DXVECTOR3* lowerRight = TerrainIntersection::getPointsFromPlaneClippedRay(rayOrigin, rayDir);
+    D3DXVECTOR3 lowerRight = intersectRay(rayOrigin, rayDir, CLIPZ);
 
     TRANSLITVERTEX* pVertices = NULL;
 
     m_pCameraVB->Lock(0, 4 * sizeof(TRANSLITVERTEX), (void**)&pVertices, D3DLOCK_DISCARD);
     {
-        float posX = m_Position.x + (lowerLeft[1].x * m_SizeFactor);
-        float posY = m_Position.y + m_Size - (lowerLeft[1].y * m_SizeFactor);
+        float posX = m_Position.x + (lowerLeft.x * m_SizeFactor);
+        float posY = m_Position.y + m_Size - (lowerLeft.y * m_SizeFactor);
 
         pVertices[0].x = posX;
         pVertices[0].y = posY;
         pVertices[0].z = 0.0f;
         pVertices[0].tu = 0.0f;
         pVertices[0].tv = 1.0f;
-        pVertices[0].dwColor = 0xFFFFFFFF;
+        pVertices[0].dwColor = 0xAAFFFFFF;
         pVertices[0].rhw = 0.99f;
 
         if(upperLeft)
         {
-            posX = m_Position.x + (upperLeft[1].x * m_SizeFactor);
-            posY = m_Position.y + m_Size - (upperLeft[1].y * m_SizeFactor);
+            posX = m_Position.x + (upperLeft.x * m_SizeFactor);
+            posY = m_Position.y + m_Size - (upperLeft.y * m_SizeFactor);
+
+            /*if(posX < m_Position.x)
+            {
+                posX = m_Position.x;
+            }
+            else if(posX > m_Position.x + m_Size)
+            {
+                posX = m_Position.x + m_Size;
+            }
+
+            if(posY < m_Position.y)
+            {
+                posY = m_Position.y;
+            }
+            else if(posY > m_Position.y + m_Size)
+            {
+                posY = m_Position.y + m_Size;
+            }*/
         }
 
         pVertices[1].x = posX;
@@ -190,13 +210,31 @@ void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
         pVertices[1].z = 0.0f;
         pVertices[1].tu = 0.0f;
         pVertices[1].tv = 1.0f;
-        pVertices[1].dwColor = 0xFFFFFFFF;
+        pVertices[1].dwColor = 0xAAFFFFFF;
         pVertices[1].rhw = 0.99f;
 
         if(upperRight)
         {
-            posX = m_Position.x + (upperRight[1].x * m_SizeFactor);
-            posY = m_Position.y + m_Size - (upperRight[1].y * m_SizeFactor);
+            posX = m_Position.x + (upperRight.x * m_SizeFactor);
+            posY = m_Position.y + m_Size - (upperRight.y * m_SizeFactor);
+
+            /*if(posX < m_Position.x)
+            {
+                posX = m_Position.x;
+            }
+            else if(posX > m_Position.x + m_Size)
+            {
+                posX = m_Position.x + m_Size;
+            }
+
+            if(posY < m_Position.y)
+            {
+                posY = m_Position.y;
+            }
+            else if(posY > m_Position.y + m_Size)
+            {
+                posY = m_Position.y + m_Size;
+            }*/
         }
 
         pVertices[2].x = posX;
@@ -204,63 +242,22 @@ void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
         pVertices[2].z = 0.0f;
         pVertices[2].tu = 0.0f;
         pVertices[2].tv = 1.0f;
-        pVertices[2].dwColor = 0xFFFFFFFF;
+        pVertices[2].dwColor = 0xAAFFFFFF;
         pVertices[2].rhw = 0.99f;
 
-        posX = m_Position.x + (lowerRight[1].x * m_SizeFactor);
-        posY = m_Position.y + m_Size - (lowerRight[1].y * m_SizeFactor);
+        posX = m_Position.x + (lowerRight.x * m_SizeFactor);
+        posY = m_Position.y + m_Size - (lowerRight.y * m_SizeFactor);
 
         pVertices[3].x = posX;
         pVertices[3].y = posY;
         pVertices[3].z = 0.0f;
         pVertices[3].tu = 0.0f;
         pVertices[3].tv = 1.0f;
-        pVertices[3].dwColor = 0xFFFFFFFF;
+        pVertices[3].dwColor = 0xAAFFFFFF;
         pVertices[3].rhw = 0.99f;
     }
     m_pCameraVB->Unlock();
 
-    delete [] lowerLeft;
-    delete [] lowerRight;
-    delete [] upperLeft;
-    delete [] upperRight;
-
-    /*D3DXVECTOR3& pos = pCamera->getPosition();
-    float pitch = 60.0f / pCamera->getPitch();
-    float yaw = -pCamera->getYaw() - 0.25f * D3DX_PI;
-
-    TRANSLITVERTEX* pVertices = NULL;
-
-    m_pCameraVB->Lock(0, 3 * sizeof(TRANSLITVERTEX), (void**)&pVertices, D3DLOCK_DISCARD);
-    {
-        float posX = m_Position.x + (pos.x * m_SizeFactor);
-        float posY = m_Position.y + m_Size - (pos.y * m_SizeFactor);
-
-        pVertices[0].x = posX;
-        pVertices[0].y = posY;
-        pVertices[0].z = 0.0f;
-        pVertices[0].tu = 0.0f;
-        pVertices[0].tv = 1.0f;
-        pVertices[0].dwColor = 0xFFFFFFFF;
-        pVertices[0].rhw = 0.99f;
-
-        pVertices[1].x = posX + cos(yaw - 0.25f * D3DX_PI) * pitch - sin(yaw - 0.25f * D3DX_PI) * pitch;
-        pVertices[1].y = posY + cos(yaw - 0.25f * D3DX_PI) * pitch + sin(yaw - 0.25f * D3DX_PI) * pitch;
-        pVertices[1].z = 0.000001f;
-        pVertices[1].tu = 1.0f;
-        pVertices[1].tv = 1.0f;
-        pVertices[1].dwColor = 0xFFFFFFFF;
-        pVertices[1].rhw = 0.99f;
-
-        pVertices[2].x = posX + cos(yaw + 0.25f * D3DX_PI) * pitch - sin(yaw + 0.25f * D3DX_PI) * pitch;
-        pVertices[2].y = posY + cos(yaw + 0.25f * D3DX_PI) * pitch + sin(yaw + 0.25f * D3DX_PI) * pitch;
-        pVertices[2].z = 0.000001f;
-        pVertices[2].tu = 1.0f;
-        pVertices[2].tv = 0.0f;
-        pVertices[2].dwColor = 0xFFFFFFFF;
-        pVertices[2].rhw = 0.99f;
-    }
-    m_pCameraVB->Unlock();*/
 }
 
 
@@ -346,6 +343,24 @@ void MiniMap::render(LPDIRECT3DDEVICE9 pDevice, LPDIRECT3DTEXTURE9 pTexture)
     pDevice->SetStreamSource(0, m_pUnitVB, 0, sizeof(TRANSLITVERTEX));
     pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, m_UnitPrimitiveCount);
 
+    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+    pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
     pDevice->SetStreamSource(0, m_pCameraVB, 0, sizeof(TRANSLITVERTEX));
     pDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
+
+    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+}
+
+D3DXVECTOR3 MiniMap::intersectRay(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir, float clipZ)
+{    
+    D3DXVECTOR3 result;
+
+    float t = (rayOrigin.z - clipZ) / -rayDir.z;
+    result.z = clipZ;
+    result.x = rayOrigin.x + rayDir.x * t;
+    result.y = rayOrigin.y + rayDir.y * t;
+
+    return result;
 }

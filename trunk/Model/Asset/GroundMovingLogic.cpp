@@ -37,7 +37,7 @@ GroundMovingLogic::~GroundMovingLogic()
         delete m_pAgent;
         m_pAgent = NULL;
     }
-    clearTarget();
+    clearTargets();
 }
 
 void GroundMovingLogic::attach(Unit* pUnit)
@@ -80,8 +80,6 @@ void GroundMovingLogic::update(Unit* pUnit, const float deltaT)
 
 void GroundMovingLogic::idle(const float deltaT)
 {
-    //TODO: Replace with reading targets from commands, after they are implemented
-    // ... or, commands in unit, unit dispatching target from current command to this
 
     // do we have a target?
     if(m_pTarget) 
@@ -89,7 +87,7 @@ void GroundMovingLogic::idle(const float deltaT)
         // if the target is unit itself, remove the target
         if(m_pTarget->getTargetType() == Target::ASSET && m_pTarget->getTargetAsset() == m_pUnit)
         {
-            clearTarget();
+            clearCurrentTarget();
         }
         // is the target reached?
         else if( m_CachedReachedTargetX != m_pTarget->getTargetX() ||
@@ -99,6 +97,14 @@ void GroundMovingLogic::idle(const float deltaT)
             m_CachedReachedTargetX = -1;
             m_CachedReachedTargetY = -1;
             m_State = ASKPATH;
+        }
+    }
+    else
+    {
+        //No target, try to pull new one from queue
+        if(!m_TargetList.empty())
+        {
+            m_pTarget = m_TargetList.popHead();
         }
     }
 }
@@ -130,7 +136,7 @@ void GroundMovingLogic::askPath()
         {
             m_CachedReachedTargetX = -1;
             m_CachedReachedTargetY = -1;
-            clearTarget();
+            clearCurrentTarget();
         }
         // if the target is locked to asset, do not delete it
         else
@@ -357,7 +363,7 @@ void GroundMovingLogic::move(float deltaTime)
 
 bool GroundMovingLogic::release(Unit* pUnit)
 {
-    clearTarget();
+    clearTargets();
     return true;
 }
 
@@ -371,18 +377,17 @@ Target* GroundMovingLogic::getTarget()
 }
 
 
-void GroundMovingLogic::setTarget(Target* target)
+void GroundMovingLogic::addTarget(Target* target)
 {
-    if(m_pTarget)
-        clearTarget();
-    m_pTarget = target;
-//    m_State = ASKPATH;
+    m_TargetList.pushTail(target);
 }
 
 
-void GroundMovingLogic::clearTarget()
+void GroundMovingLogic::clearTargets()
 {
-    if(m_pTarget) {
+    //Release current
+    if(m_pTarget) 
+    {
         m_pTarget->release();
         delete m_pTarget;
         m_pTarget = NULL;
@@ -397,4 +402,35 @@ void GroundMovingLogic::clearTarget()
         m_CachedReachedTargetY = -1;
         m_State = IDLE;
     }
+
+    //Release queued
+    if(!m_TargetList.empty())
+    {
+        ListNode<Target*>* pNode = m_TargetList.headNode();
+
+        while(pNode)
+        {
+            pNode->item->release();
+            delete pNode->item;
+            pNode = m_TargetList.removeGetNext(pNode);
+        }
+    }
+}
+
+void GroundMovingLogic::clearCurrentTarget()
+{
+    if(m_pTarget)
+    {
+        delete m_pTarget;
+        m_pTarget = NULL;
+    }
+}
+
+void GroundMovingLogic::priorityTarget(Target* target)
+{
+    if(m_pTarget)
+    {
+        m_TargetList.pushHead(m_pTarget);
+    }
+    m_pTarget = target;
 }
