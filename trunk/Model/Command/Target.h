@@ -29,6 +29,11 @@ public:
         //BUILDING
     };
 
+    enum TargetFlags
+    {
+        TGTFLAG_MAKEWAY = 1     //When forcing units to move out of the way
+    };
+
     /**
      * Create target as coordinate target. If contextSensitive flag is set
      * to true, search for asset in the grid and lock to it if found.
@@ -37,6 +42,7 @@ public:
     {
         m_TargetAsset = NULL;
         setTarget(x, y, contextSensitive);
+        m_Flags = 0;
     }
 
     /**
@@ -113,7 +119,8 @@ public:
     /**
      * Return the range associated with the target
      */
-    const float getRange() {
+    const float getRange()
+    {
         return m_Range;
     }
 
@@ -121,7 +128,8 @@ public:
      * Return the type of target we are currently locked to.
      * @return  indication of what this target is tracking
      */
-    const TargetType getTargetType() const {
+    const TargetType getTargetType() const 
+    {
         return m_TargetType;
     }
 
@@ -129,7 +137,8 @@ public:
      * Return the asset that this target is locked to, if any.
      * If the target is static coordinates, this returns NULL.
      */
-    IAsset* getTargetAsset() {
+    IAsset* getTargetAsset() 
+    {
         return m_TargetAsset;
     }
 
@@ -140,7 +149,8 @@ public:
      * @return  true, if this target is static, and coordinates are not
      *          subject to change
      */
-    const bool isStatic() const {
+    const bool isStatic() const 
+    {
         return (m_TargetAsset) ? false : true;
     }
 
@@ -148,7 +158,8 @@ public:
      * Return target's y-coordinate, which is either static with
      * target, or from the target's asset
      */
-    const unsigned short getTargetX() const {
+    const unsigned short getTargetX() const 
+    {
         if(m_TargetAsset)
             if(m_TargetType == ASSET)
                 return m_TargetAsset->getGridX();
@@ -159,7 +170,8 @@ public:
      * Return target's y-coordinate, which is either static with
      * target, or from the target's asset
      */
-    const unsigned short getTargetY() const {
+    const unsigned short getTargetY() const 
+    {
         if(m_TargetAsset)
             if(m_TargetType == ASSET)
                 return m_TargetAsset->getGridY();
@@ -202,6 +214,39 @@ public:
         m_TargetType = COORDINATE;
     }
 
+    /** 
+     * Returns the flags-variable
+     */
+    inline unsigned int getFlags() { return m_Flags; }
+
+    /**
+     * Check if a flag is set
+     */ 
+    inline bool isFlag(unsigned int flag) 
+    { 
+        if(m_Flags & flag)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Set a flag
+     */
+    inline void setFlag(unsigned int flag)
+    {
+        m_Flags |= flag;
+    }
+
+    /**
+     * Unset a flag
+     */
+    inline void unsetFlag(unsigned int flag)
+    {
+        m_Flags &= ~flag;
+    }
+
 private:
 
     // range to maintain to the target
@@ -215,6 +260,11 @@ private:
     unsigned short  m_TargetY;
     // ...or from this target, depending from the target's type
     IAsset*         m_TargetAsset;
+
+    /** 
+     * Special purpose-flags
+     */
+    unsigned int m_Flags;
 
 };
 

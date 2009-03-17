@@ -353,7 +353,6 @@ void GroundMovingLogic::move(float deltaTime)
                         //Only own units can be told to move
                         if(pNode->item->getOwner() == m_pUnit->getOwner())
                         {
-
                             float half = pNode->item->getWidth() * 0.5f;
                             Vector3 posDiff = *pNode->item->getPosition() - *pos;
                             //float dxsq = posDiff.x * posDiff.x;                        
@@ -366,10 +365,19 @@ void GroundMovingLogic::move(float deltaTime)
                                 //Don't mind me, I'll just push you away a bit (testing)
                                 pNode->item->getPosition()->x += posDiff.x * deltaTime;
                                 pNode->item->getPosition()->y += posDiff.y * deltaTime;
-                                pNode->item->getMovingLogic()->priorityTarget(new Target((unsigned short)(pNode->item->getPosition()->x + posDiff.x * minDist), 
+
+                                //Check if the target already has a MAKEWAY-priority flag
+                                Target* unitTarget = pNode->item->getMovingLogic()->getTarget();
+                                if(unitTarget == NULL || !unitTarget->isFlag(Target::TGTFLAG_MAKEWAY))
+                                {
+                                    Target* makeWayTarget = new Target((unsigned short)(pNode->item->getPosition()->x + posDiff.x * minDist), 
                                                                                          (unsigned short)(pNode->item->getPosition()->y + posDiff.y * minDist),
-                                                                                         false));
-                            }                            
+                                                                                         false);
+                                    makeWayTarget->setFlag(Target::TGTFLAG_MAKEWAY);
+
+                                    pNode->item->getMovingLogic()->priorityTarget(makeWayTarget);
+                                }
+                            }
                         }                        
 
                         squaresAvailable = false;
@@ -396,7 +404,7 @@ void GroundMovingLogic::move(float deltaTime)
             else
             {
                 //Slow down to halt
-               // m_CurrentSpeed *= (0.80f - (0.80f * deltaTime));
+                m_CurrentSpeed *= (0.90f - (0.90f * deltaTime));
             }
         }
     }
