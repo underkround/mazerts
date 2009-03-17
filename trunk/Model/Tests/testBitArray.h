@@ -67,6 +67,7 @@ void testBitArray() {
     // on
     b->setBit(0,1);
     b->setBit(1,1);
+    b->setBit(2,1);
     b->setBit(3,1);
     b->setBit(5,1);
     b->setBit(8,1);

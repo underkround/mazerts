@@ -131,7 +131,8 @@ public:
         if(value) // set to 1
             m_Blocks[block] |= 1 << shift;
         else // set to 0
-            m_Blocks[block] = m_Blocks[block] ^ (m_Blocks[block] & (1 << shift));
+            m_Blocks[block] &= ~(1 << shift);
+            //m_Blocks[block] = m_Blocks[block] ^ (m_Blocks[block] & (1 << shift));
     }
 
     /**
@@ -147,7 +148,8 @@ public:
         if(value) // set to 1
             m_Blocks[block] |= 1 << shift;
         else // set to 0
-            m_Blocks[block] = m_Blocks[block] ^ (m_Blocks[block] & (1 << shift));
+            m_Blocks[block] &= ~(1 << shift);
+            //m_Blocks[block] = m_Blocks[block] ^ (m_Blocks[block] & (1 << shift));
     }
 
     /**

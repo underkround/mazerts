@@ -5,8 +5,9 @@
  * 
  */
 
-#include "App/TheApp.h"
+#define MAZERTS_DX 1
 
+#include "App/TheApp.h"
 
 int APIENTRY WinMain(   HINSTANCE hInstance,
                         HINSTANCE hPreviousInstance,

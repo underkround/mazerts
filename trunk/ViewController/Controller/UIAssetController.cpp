@@ -27,8 +27,8 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pC
     m_TempMouseY = 0;
 
     // default setting values
-    m_KeyMouseActionButton = 3; // 1
-    m_KeyMousePickButton = 1; // 0
+    m_KeyMouseActionButton = 1;
+    m_KeyMousePickButton = 0;
     m_KeyAddToSelection = 29;
     m_KeyQueueCommands = 42;
     m_MousePickDragThreshold = 4;

@@ -71,7 +71,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);    
     pTerrain->initialize(pGenerator);
 
-    pTerrain->setWaterLevel(50);
+    pTerrain->setWaterLevel(50); // TODO: imho this is for the terrain generator to decide! move it there?
 
     // initialize asset collection
     AssetCollection::create(pTerrain->getSize());

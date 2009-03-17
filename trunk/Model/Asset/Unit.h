@@ -62,15 +62,19 @@ public:
 
 // ===== Targets
 
-/*
     bool hasTarget();
+
     void addTarget(Target* target);
+
     void setTarget(Target* target);
+
     Target* getCurrentTarget();
+
     void clearCurrentTarget();
+
     void clearAllTargets();
+
     DoubleLinkedList<Target*> getTargetQueue();
-*/
 
 private:
 

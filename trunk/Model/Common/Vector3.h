@@ -154,6 +154,11 @@ public:
     float operator *(const Vector3 &a) const {
         return x*a.x + y*a.y + z*a.z;
     }
+    float dotProduct(const Vector3 &a) const {
+        return x*a.x + y*a.y + z*a.z;
+    }
+
+
 };
 
 /////////////////////////////////////////////////////////////////////////////

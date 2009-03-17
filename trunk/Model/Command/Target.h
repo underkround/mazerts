@@ -41,6 +41,8 @@ public:
     Target(const unsigned short x, const unsigned short y, const bool contextSensitive)
     {
         m_TargetAsset = NULL;
+        m_TargetX = m_TargetY = 0;
+        m_Range = 0.0f;
         setTarget(x, y, contextSensitive);
         m_Flags = 0;
     }

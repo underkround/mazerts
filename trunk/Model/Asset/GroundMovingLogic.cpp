@@ -7,11 +7,12 @@
 #define PI 3.141592653589793238462f
 #endif
 
-//THE MODEL WON'T COMPILE WITH THIS, COMMENT OUT WHEN NOT TESTING!
-//#define PATH_UI_DEBUG
+#ifdef DIRECT3D_VERSION // 3d debug is possible only on dx side
+#define PATH_UI_DEBUG   // comment this out when done testing
 #ifdef PATH_UI_DEBUG
 #include "../../ViewController/3DDebug/UI3DDebug.h"
 #include "../../ViewController/Terrain/UITerrain.h"
+#endif
 #endif
 
 //After how many frames a stuck unit cancels its MAKEWAY-target
@@ -190,7 +191,7 @@ void GroundMovingLogic::waitPath()
 
 #ifdef PATH_UI_DEBUG
 
-        /*IPathFinder::PathNode* pNode = m_pAgent->getPathData();        
+        IPathFinder::PathNode* pNode = m_pAgent->getPathData();        
         float halfX = m_pUnit->getWidth() * 0.5f;
         float halfY = m_pUnit->getHeight() * 0.5f;
         float aliveTime = 5.0f;
@@ -209,11 +210,10 @@ void GroundMovingLogic::waitPath()
             }
             aliveTime += 0.1f;
             pNode = pNode->pChild;
-        }*/
+        }
 
-
-        float halfX = m_pUnit->getWidth() * 0.5f;
-        float halfY = m_pUnit->getHeight() * 0.5f;
+        //float halfX = m_pUnit->getWidth() * 0.5f;
+        //float halfY = m_pUnit->getHeight() * 0.5f;
         float x = m_pPathNode->x + halfX;
         float y = m_pPathNode->y + halfY;        
         if(m_pPathNode->pChild != NULL)
@@ -319,7 +319,8 @@ void GroundMovingLogic::move(float deltaTime)
         turnSpeed = -turn;
     }*/
 
-    float turnThreshold = 0.03f; // below this, the dirs are set straight from target
+    float turnThreshold = 0.05f;    // below this, the dirs are set straight from target
+                                    // UPDATE: previous 0.03f was too small for slower computers and resulted in shaking
     if( (turn <= turnThreshold && turn > 0.000001f) || (turn >= -turnThreshold && turn < -0.000001f) )
     {
         dir->x = m_TargetDir.x;
@@ -383,6 +384,21 @@ void GroundMovingLogic::move(float deltaTime)
                                     makeWayTarget->setFlag(Target::TGTFLAG_MAKEWAY);
 
                                     pNode->item->getMovingLogic()->priorityTarget(makeWayTarget);
+
+//show line for where the unit is told to move
+#ifdef PATH_UI_DEBUG
+        float halfX = m_pUnit->getWidth() * 0.5f;
+        float halfY = m_pUnit->getHeight() * 0.5f;
+        float x1 = pNode->item->getPosition()->x;
+        float y1 = pNode->item->getPosition()->y;
+        //float x2 = pNode->item->getPosition()->x + posDiff.x * minDist;
+        //float y2 = pNode->item->getPosition()->y + posDiff.y * minDist;
+        float x2 = (float)makeWayTarget->getTargetX();
+        float y2 = (float)makeWayTarget->getTargetY();
+        UI3DDebug::addLine( x1, y1, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x1, y1) - 0.5f,
+                            x2, y2, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x2, y2) - 0.5f, 0.5f, 5.0f);
+#endif
+
                                 }
                             }
                         }                        

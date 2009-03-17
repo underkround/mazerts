@@ -538,6 +538,10 @@
 		<Filter
 			Name="UI"
 			>
+			<File
+				RelativePath=".\main.cpp"
+				>
+			</File>
 			<Filter
 				Name="App"
 				>
@@ -665,10 +669,6 @@
 			<Filter
 				Name="Unit"
 				>
-				<File
-					RelativePath=".\main.cpp"
-					>
-				</File>
 				<File
 					RelativePath=".\Unit\Selector.cpp"
 					>
