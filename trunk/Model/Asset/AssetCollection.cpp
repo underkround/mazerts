@@ -273,7 +273,10 @@ const int AssetCollection::getUnitsAt(DoubleLinkedList<Unit*>* pList, const unsi
     while (pLn)
     {
         Vector3* pV = pLn->item->getPosition();
-        if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+        unsigned short uwidth = pLn->item->getWidth();
+        unsigned short uheight = pLn->item->getHeight();
+        if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y) 
+        {
             pList->pushTail(pLn->item);
             items++;
         }
@@ -289,7 +292,10 @@ const int AssetCollection::getBuildingsAt(DoubleLinkedList<Building*>* pList, co
     while (pLn)
     {
         Vector3* pV = pLn->item->getPosition();
-        if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+        unsigned short uwidth = pLn->item->getWidth();
+        unsigned short uheight = pLn->item->getHeight();
+        if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y)         
+        {
             pList->pushTail(pLn->item);
             items++;
         }
@@ -308,7 +314,10 @@ const int AssetCollection::getAssetsAt(DoubleLinkedList<IAsset*>* pList, const u
         while (pLn)
         {
             Vector3* pV = pLn->item->getPosition();
-            if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+            unsigned short uwidth = pLn->item->getWidth();
+            unsigned short uheight = pLn->item->getHeight();
+            if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y) 
+            {
                 pList->pushTail(pLn->item);
                 items++;
             }
@@ -327,7 +336,10 @@ const int AssetCollection::getPlayerUnitsAt(DoubleLinkedList<Unit*>* pList, cons
         if (pLn->item->getOwner()->getId() == player)
         {
             Vector3* pV = pLn->item->getPosition();
-            if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+            unsigned short uwidth = pLn->item->getWidth();
+            unsigned short uheight = pLn->item->getHeight();
+            if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y) 
+            {
                 pList->pushTail(pLn->item);
                 items++;
             }
@@ -346,7 +358,10 @@ const int AssetCollection::getPlayerBuildingsAt(DoubleLinkedList<Building*>* pLi
         if (pLn->item->getOwner()->getId() == player)
         {
             Vector3* pV = pLn->item->getPosition();
-            if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+            unsigned short uwidth = pLn->item->getWidth();
+            unsigned short uheight = pLn->item->getHeight();
+            if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y) 
+            {
                 pList->pushTail(pLn->item);
                 items++;
             }
@@ -368,7 +383,10 @@ const int AssetCollection::getPlayerAssetsAt(DoubleLinkedList<IAsset*>* pList, c
             if (pLn->item->getOwner()->getId() == player)
             {
                 Vector3* pV = pLn->item->getPosition();
-                if (pV->x >= x && pV->x < x + width && pV->y >= y && pV->y < y + height) {
+                unsigned short uwidth = pLn->item->getWidth();
+                unsigned short uheight = pLn->item->getHeight();
+                if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y) 
+                {
                     pList->pushTail(pLn->item);
                     items++;
                 }

@@ -1,6 +1,7 @@
 #include "GroundMovingLogic.h"
 #include "../Terrain/Terrain.h"
 #include "../Common/Vector3.h"
+#include <math.h>
 
 #ifndef PI
 #define PI 3.141592653589793238462f
@@ -174,7 +175,7 @@ void GroundMovingLogic::waitPath()
 
         if(m_pPathNode == NULL)
         {
-            m_State = IDLE;
+            clearCurrentTarget();
             return;
         }
 
@@ -222,10 +223,8 @@ void GroundMovingLogic::waitPath()
     }
     else if(m_pAgent->getState() != IPathFinder::NOT_FINISHED)
     {
-        //Cancelled or no path, destroy agent and idle
-        delete m_pAgent;
-        m_pAgent = NULL;
-        m_State = IDLE;
+        //Cancelled or no path, destroy target and idle
+        clearCurrentTarget();
     }
 }
 
@@ -282,7 +281,7 @@ void GroundMovingLogic::move(float deltaTime)
     static const float maxMoveSpeed = 10.0f;
 
     //Static deceleration, due to friction etc.
-    m_CurrentSpeed *= (0.99f - (0.99f * deltaTime));
+    m_CurrentSpeed *= (0.95f - (0.95f * deltaTime));
 
     //Target direction
     float targetAngle = atan2(m_TargetDir.y, m_TargetDir.x);
@@ -304,7 +303,7 @@ void GroundMovingLogic::move(float deltaTime)
     if(fabs(turn) > PI * 0.25f || m_State == IDLE)
     {
         //Braking factor to data?
-        m_CurrentSpeed *= (0.97f - (0.97f * deltaTime));
+        m_CurrentSpeed *= (0.90f - (0.90f * deltaTime));
     }
 
 
@@ -313,18 +312,18 @@ void GroundMovingLogic::move(float deltaTime)
         turnSpeed = -turn;
     }*/
 
-    float turnTreshold = 0.03f; // below this, the dirs are set straight from target
-    if( (turn <= turnTreshold && turn > 0.000001f) || (turn >= -turnTreshold && turn < -0.000001f) )
+    float turnThreshold = 0.03f; // below this, the dirs are set straight from target
+    if( (turn <= turnThreshold && turn > 0.000001f) || (turn >= -turnThreshold && turn < -0.000001f) )
     {
         dir->x = m_TargetDir.x;
         dir->y = m_TargetDir.y;
     }
-    else if(turn < -turnTreshold)
+    else if(turn < -turnThreshold)
     {
         dir->x = cos(turnSpeed) * dir->x - sin(turnSpeed) * dir->y;
         dir->y = cos(turnSpeed) * dir->y + sin(turnSpeed) * dir->x;
     }
-    else if(turn > turnTreshold)
+    else if(turn > turnThreshold)
     {
         dir->x = cos(-turnSpeed) * dir->x - sin(-turnSpeed) * dir->y;
         dir->y = cos(-turnSpeed) * dir->y + sin(-turnSpeed) * dir->x;
@@ -333,13 +332,72 @@ void GroundMovingLogic::move(float deltaTime)
     {
         if(m_State == FOLLOWPATH)
         {
-            //Heading (pretty much) toward correct direction, hit the pedal to the metal            
-            //Offsets (m_HalfSize) are needed because the speed is calculated from "center" of unit
-            float factor = Terrain::getInstance()->getUnitMoveSpeed( (short)(pos->x + m_HalfSize), (short)(pos->y + m_HalfSize), (char)floor(dir->x + 0.5f), (char)floor(dir->y + 0.5f));            
-            m_CurrentSpeed = factor * maxMoveSpeed;
-            /*TCHAR msg[256];            
-            _stprintf_s(msg, _T("FACTOR: %.3f   SPEED: %.3f\n"), factor, m_CurrentSpeed);
-            ::OutputDebugStr(msg);*/
+             //Current moving directions
+            signed char dirX = (char)floor(dir->x + 0.5f);
+            signed char dirY = (char)floor(dir->y + 0.5f);            
+
+            //Check the squares for availability
+            bool squaresAvailable = true;
+            static DoubleLinkedList<Unit*> unitsAtSquares;  //Reusing same list all the time
+    
+            //Ask for units in the way
+            if(AssetCollection::getUnitsAt(&unitsAtSquares, (unsigned short)(floor(pos->x + 0.5f) + dirX), (unsigned short)(floor(pos->y  + 0.5f) + dirY), m_pUnit->getWidth(), m_pUnit->getHeight()) != 0)
+            {
+                //Check found units
+                ListNode<Unit*>* pNode = unitsAtSquares.headNode();
+                while(pNode)
+                {
+                    //Check that the unit isn't this one
+                    if(pNode->item != m_pUnit)
+                    {
+                        //Only own units can be told to move
+                        if(pNode->item->getOwner() == m_pUnit->getOwner())
+                        {
+
+                            float half = pNode->item->getWidth() * 0.5f;
+                            Vector3 posDiff = *pNode->item->getPosition() - *pos;
+                            //float dxsq = posDiff.x * posDiff.x;                        
+                            //float dysq = posDiff.y * posDiff.y;
+                            float minDist = half + m_HalfSize;
+                            //minDist *= minDist;
+                            //if(sqrt(dxsq + dysq) < minDist)                           
+                            {
+                                posDiff.normalize();
+                                //Don't mind me, I'll just push you away a bit (testing)
+                                pNode->item->getPosition()->x += posDiff.x * deltaTime;
+                                pNode->item->getPosition()->y += posDiff.y * deltaTime;
+                                pNode->item->getMovingLogic()->priorityTarget(new Target((unsigned short)(pNode->item->getPosition()->x + posDiff.x * minDist), 
+                                                                                         (unsigned short)(pNode->item->getPosition()->y + posDiff.y * minDist),
+                                                                                         false));
+                            }                            
+                        }                        
+
+                        squaresAvailable = false;
+                    }
+                    
+                    pNode = pNode->next;
+                }
+            }
+
+            //Clear the list
+            unitsAtSquares.release();
+
+            if(squaresAvailable)
+            {
+
+                //Heading (pretty much) toward correct direction and the road is clear, hit the pedal to the metal    
+                //Offsets (m_HalfSize) are needed because the speed is calculated from "center" of unit
+                float factor = Terrain::getInstance()->getUnitMoveSpeed( (short)(pos->x + m_HalfSize), (short)(pos->y + m_HalfSize), dirX, dirY);            
+                m_CurrentSpeed = factor * maxMoveSpeed;
+                /*TCHAR msg[256];            
+                _stprintf_s(msg, _T("FACTOR: %.3f   SPEED: %.3f\n"), factor, m_CurrentSpeed);
+                ::OutputDebugStr(msg);*/
+            }
+            else
+            {
+                //Slow down to halt
+               // m_CurrentSpeed *= (0.80f - (0.80f * deltaTime));
+            }
         }
     }
 
@@ -424,6 +482,7 @@ void GroundMovingLogic::clearCurrentTarget()
         delete m_pTarget;
         m_pTarget = NULL;
     }
+    m_State = IDLE;
 }
 
 void GroundMovingLogic::priorityTarget(Target* target)
@@ -433,4 +492,5 @@ void GroundMovingLogic::priorityTarget(Target* target)
         m_TargetList.pushHead(m_pTarget);
     }
     m_pTarget = target;
+    m_State = IDLE;
 }

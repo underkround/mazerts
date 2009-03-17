@@ -68,7 +68,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     //Model-terrain
     Terrain* pTerrain = Terrain::getInstance();
-    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
+    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);    
     pTerrain->initialize(pGenerator);
 
     pTerrain->setWaterLevel(50);
@@ -79,7 +79,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     //TEST
     for(int i = 0; i < 50; i++)
     {
-        AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, pTerrain->getSize()-5), m_pApp->RandInt(0, pTerrain->getSize()-5));        AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, pTerrain->getSize()-4), m_pApp->RandInt(0, pTerrain->getSize()-4));
+        AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, 100), m_pApp->RandInt(0, 100));
     }
 
 

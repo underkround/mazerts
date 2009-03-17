@@ -47,7 +47,7 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
 
     static int counter = 0;
     counter++;
-    if(counter < 10)
+    if(counter < 40)
     {
         CXFileLoader::Load(_T("superTank.x"), m_ResourceContainer, pUIUnit);
     }

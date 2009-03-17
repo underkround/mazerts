@@ -198,7 +198,6 @@ private:
      * Half of unit width, used for offsets (unit "center")
      */
     float m_HalfSize;
-
 };
 
 #endif // __GROUNDMOVINGLOGIC_H__

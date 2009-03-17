@@ -28,6 +28,8 @@ void UIUnit::updatePosition()
         pos.y = unitPos->y + m_HalfSize;
 
         D3DXVECTOR3* dir = (D3DXVECTOR3*)m_pUnit->getDirection();
+        D3DXVec3Normalize(dir, dir);
+
         UITerrain* pTerrain = UITerrain::getInstance();
         
         D3DXVECTOR3 normal(0, 0, 0);
