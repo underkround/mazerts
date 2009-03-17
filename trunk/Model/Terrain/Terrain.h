@@ -56,8 +56,14 @@ public:
     static const short MOVECOST_MAX = MOVECOST_OFFSET + MOVECOST_THRESHOLD;
     static const short MOVECOST_MIN = MOVECOST_OFFSET - MOVECOST_THRESHOLD;
 
+    /** 
+     * Movecost-factor, the offsetted height-difference (threshold) is 
+     * moved this many bits (before adjusting for diagonal costs)
+     */
+    static const char MOVECOST_FACTOR = 2;
+
     /**
-     * Value returned by getMoveCost, if the move is illegal 
+     * Value returned by getMoveCost, if the move is illegal
      * (non-passable)
      */
     static const short MOVE_ILLEGAL = 10000;

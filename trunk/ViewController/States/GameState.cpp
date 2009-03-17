@@ -79,7 +79,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     //TEST
     for(int i = 0; i < 50; i++)
     {
-        AssetFactory::createUnit(NULL, 0, m_pApp->RandInt(0, 100), m_pApp->RandInt(0, 100));
+        AssetFactory::createUnit(NULL, 0, (i * 4), ((i % 5) * 4));
     }
 
 

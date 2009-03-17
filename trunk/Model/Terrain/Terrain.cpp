@@ -1,5 +1,6 @@
 #include "Terrain.h"
 //#include "DefaultTerrainGenerator.h"
+#include "../Asset/AssetCollection.h"
 
 const float Terrain::DIAGONAL_MOVECOST_FACTOR = 1.4142f;
 
@@ -201,6 +202,14 @@ short Terrain::getMoveCost(const short x, const short y, const signed char dirX,
             {
                 return MOVE_ILLEGAL;
             }
+
+            //If there's a unit in the square, penalize movecost
+            if(AssetCollection::getUnitsAt(NULL, targetX-1, targetY-1, 3, 3) != 0)
+            {
+                moveCost += 1000;
+            }
+
+            moveCost <<= MOVECOST_FACTOR;
 
             if(dirX != 0 && dirY != 0)
             {

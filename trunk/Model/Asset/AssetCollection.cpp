@@ -277,7 +277,10 @@ const int AssetCollection::getUnitsAt(DoubleLinkedList<Unit*>* pList, const unsi
         unsigned short uheight = pLn->item->getHeight();
         if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y) 
         {
-            pList->pushTail(pLn->item);
+            if(pList)
+            {
+                pList->pushTail(pLn->item);
+            }
             items++;
         }
         pLn = pLn->next;
@@ -296,7 +299,10 @@ const int AssetCollection::getBuildingsAt(DoubleLinkedList<Building*>* pList, co
         unsigned short uheight = pLn->item->getHeight();
         if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y)         
         {
-            pList->pushTail(pLn->item);
+            if(pList)
+            {
+                pList->pushTail(pLn->item);
+            }
             items++;
         }
         pLn = pLn->next;
@@ -318,7 +324,10 @@ const int AssetCollection::getAssetsAt(DoubleLinkedList<IAsset*>* pList, const u
             unsigned short uheight = pLn->item->getHeight();
             if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y) 
             {
-                pList->pushTail(pLn->item);
+                if(pList)
+                {
+                    pList->pushTail(pLn->item);
+                }
                 items++;
             }
             pLn = pLn->next;
@@ -340,7 +349,10 @@ const int AssetCollection::getPlayerUnitsAt(DoubleLinkedList<Unit*>* pList, cons
             unsigned short uheight = pLn->item->getHeight();
             if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y) 
             {
-                pList->pushTail(pLn->item);
+                if(pList)
+                {
+                    pList->pushTail(pLn->item);
+                }
                 items++;
             }
         }
@@ -362,7 +374,10 @@ const int AssetCollection::getPlayerBuildingsAt(DoubleLinkedList<Building*>* pLi
             unsigned short uheight = pLn->item->getHeight();
             if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y) 
             {
-                pList->pushTail(pLn->item);
+                if(pList)
+                {
+                    pList->pushTail(pLn->item);
+                }
                 items++;
             }
         }
@@ -387,7 +402,10 @@ const int AssetCollection::getPlayerAssetsAt(DoubleLinkedList<IAsset*>* pList, c
                 unsigned short uheight = pLn->item->getHeight();
                 if (pV->x <= (x + width) && (pV->x + uwidth) >= x && pV->y <= (y + height) && (pV->y + uheight) >= y) 
                 {
-                    pList->pushTail(pLn->item);
+                    if(pList)
+                    {
+                        pList->pushTail(pLn->item);
+                    }
                     items++;
                 }
             }

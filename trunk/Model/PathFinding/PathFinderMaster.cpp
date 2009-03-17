@@ -175,7 +175,7 @@ void PathFinderMaster::cancelAll()
 
 void PathFinderMaster::pushWaitingFinderNode(PathFinder* pFinder)
 {
-    //pthread_mutex_lock(m_pWaitListMutex);
+    pthread_mutex_lock(m_pWaitListMutex);
     //The block is here just to show that this part is inside mutex
     {
         if(m_pWaitingNodeStart && m_pWaitingNodeEnd)
@@ -198,7 +198,7 @@ void PathFinderMaster::pushWaitingFinderNode(PathFinder* pFinder)
 
         m_WaitingNodes++;
     }
-    //pthread_mutex_unlock(m_pWaitListMutex);
+    pthread_mutex_unlock(m_pWaitListMutex);
 }
 
 PathFinderMaster::PathFinderNode* PathFinderMaster::popWaitingFinderNode()
