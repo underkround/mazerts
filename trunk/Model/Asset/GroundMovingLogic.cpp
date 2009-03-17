@@ -14,6 +14,9 @@
 #include "../../ViewController/Terrain/UITerrain.h"
 #endif
 
+//After how many frames a stuck unit cancels its MAKEWAY-target
+#define STUCKCOUNTER_CANCEL 300
+
 GroundMovingLogic::GroundMovingLogic()
 {
     m_pUnit = NULL;
@@ -29,6 +32,8 @@ GroundMovingLogic::GroundMovingLogic()
 
     m_CachedReachedTargetX = -1;
     m_CachedReachedTargetY = -1;
+
+    m_StuckCounter = 0;
 }
 
 GroundMovingLogic::~GroundMovingLogic()
@@ -162,6 +167,7 @@ void GroundMovingLogic::askPath()
     }
     else
     {
+        clearCurrentTarget();
         m_State = IDLE;
     }
 }
@@ -242,6 +248,7 @@ void GroundMovingLogic::followPath()
     //Did we finish the path?
     if(m_pPathNode == NULL)
     {
+        clearCurrentTarget();
         m_State = IDLE;
     }
     else
@@ -405,6 +412,18 @@ void GroundMovingLogic::move(float deltaTime)
             {
                 //Slow down to halt
                 m_CurrentSpeed *= (0.90f - (0.90f * deltaTime));
+
+                //Used to clear "stuck" MAKEWAY-flags (häröpallo)
+                if(m_pTarget && m_pTarget->isFlag(Target::TGTFLAG_MAKEWAY))
+                {
+                    m_StuckCounter++;
+                    if(m_StuckCounter > STUCKCOUNTER_CANCEL)
+                    {
+                        clearCurrentTarget();
+                        m_StuckCounter = 0;
+                        return;
+                    }
+                }
             }
         }
     }
@@ -501,4 +520,5 @@ void GroundMovingLogic::priorityTarget(Target* target)
     }
     m_pTarget = target;
     m_State = IDLE;
+    m_StuckCounter = 0; //For MAKEWAY-targets
 }

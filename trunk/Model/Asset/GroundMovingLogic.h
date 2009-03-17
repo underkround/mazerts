@@ -198,6 +198,11 @@ private:
      * Half of unit width, used for offsets (unit "center")
      */
     float m_HalfSize;
+
+    /** 
+     * Counter used to cancel MAKEWAY-targets if the unit cannot get out of the way
+     */
+    unsigned int m_StuckCounter;
 };
 
 #endif // __GROUNDMOVINGLOGIC_H__
