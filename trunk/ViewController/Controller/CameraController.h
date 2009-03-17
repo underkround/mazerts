@@ -1,5 +1,5 @@
 /**
- *
+ * Controls the current camera
  *
  * $Revision$
  * $Date$
@@ -18,7 +18,7 @@ class CameraController : public IUIController
 {
 public:
 
-    CameraController(Camera* camera);
+    CameraController();
 
     ~CameraController();
 
@@ -33,8 +33,6 @@ public:
     virtual void loadConfiguration(const bool confFileLoaded=false);
 
 private:
-
-    Camera*       m_pCamera;
 
     int m_KeyCameraPanUp;
     int m_KeyCameraPanDown;

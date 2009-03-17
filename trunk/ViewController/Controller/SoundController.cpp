@@ -11,10 +11,8 @@
 #include "../Sound/SoundManager.h"
 #include "../Input/KeyboardState.h"
 
-SoundController::SoundController(Camera* camera)
+SoundController::SoundController()
 {
-    m_pCamera = camera;
-
     // Play music
     SoundManager::playMusic(SoundManager::BACKGROUND, true);
 
@@ -47,7 +45,7 @@ void SoundController::updateControls(const float frameTime)
 {
     // sound things
     if (KeyboardState::keyReleased[m_KeySoundToggle])
-        SoundManager::playSound(SoundManager::DEBUG, 0.1f, D3DXVECTOR3(50, 100, 0), m_pCamera);
+        SoundManager::playSound(SoundManager::DEBUG, 0.1f, D3DXVECTOR3(50, 100, 0));
 //        SoundManager::setSoundsEnabled(!SoundManager::getSoundsEnabled());
     if (KeyboardState::keyReleased[m_KeyMusicToggle])
         SoundManager::setMusicEnabled(!SoundManager::getMusicEnabled());

@@ -6,7 +6,6 @@ SoundManager::SoundManager(void)
     m_SoundsEnabled = true;
     m_MusicEnabled = true;
     m_LoopMusic = true;
-    m_DefaultCamera = NULL;
 }
 
 SoundManager::~SoundManager(void)
@@ -209,16 +208,11 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const i
     pWave->Play(false, duplicate);
 }
 
-void SoundManager::setDefaultCamera(Camera *pCamera)
-{
-    getInstance()->m_DefaultCamera = pCamera;
-}
-
 void SoundManager::playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos)
 {
-    // use default camera, or no camera at all if it's not set
-    if(getInstance()->m_DefaultCamera)
-        playSound(type, distort, soundPos, getInstance()->m_DefaultCamera);
+    // use current camera, or no camera at all if it's not set
+    if(Camera::getCurrent())
+        playSound(type, distort, soundPos, Camera::getCurrent());
     else
         playSound(type, distort);
 }

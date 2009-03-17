@@ -1,8 +1,12 @@
 #include "Camera.h"
 #include "FrustumCull.h"
 
-LPDIRECT3DDEVICE9 Camera::pDevice = NULL;
+#include "SphereCamera.h"
 
+LPDIRECT3DDEVICE9 Camera::pDevice = NULL;
+Camera* Camera::current = NULL;
+SphereCamera Camera::m_DefaultCamera;
+DoubleLinkedList<Camera*> Camera::m_Cameras;
 
 Camera::Camera()
 {
@@ -19,6 +23,8 @@ Camera::Camera()
 void Camera::create(LPDIRECT3DDEVICE9 pDevice)
 {
     Camera::pDevice = pDevice;
+    if(!current)
+        current = &m_DefaultCamera;
 }
 
 void Camera::move(const float depth, const float sideways, const float vertical)
@@ -59,4 +65,78 @@ void Camera::update()
 
         m_NeedsUpdate = false;
     }
+}
+
+// ===== Static camera -stuff
+
+/*
+ * Disabled, since it's crusial to have working default camera, so now
+ * there is SphereCamera as automatic default camera
+void Camera::setDefault(Camera* camera)
+{
+    if(m_DefaultCamera)
+        delete m_DefaultCamera;
+    m_DefaultCamera = camera;
+    if(m_Cameras.empty())
+        current = camera;
+    current->forceUpdate();
+}
+*/
+
+void Camera::pushTop(Camera* camera)
+{
+    if(!camera)
+        return;
+    current = camera;
+    m_Cameras.pushHead(camera);
+    current->forceUpdate();
+}
+
+void Camera::pushBack(Camera* camera)
+{
+    if(!camera)
+        return;
+    if(m_Cameras.empty())
+        current = camera;
+    m_Cameras.pushTail(camera);
+    current->forceUpdate();
+}
+
+Camera* Camera::popTop()
+{
+    if(m_Cameras.empty())
+        return NULL;
+    Camera* cam = m_Cameras.popHead();
+    current = (m_Cameras.empty()) ? &m_DefaultCamera : m_Cameras.peekHead();
+    current->forceUpdate();
+    return cam;
+}
+
+Camera* Camera::popBack()
+{
+    if(m_Cameras.empty())
+        return NULL;
+    Camera* cam = m_Cameras.popTail();
+    if(m_Cameras.empty())
+        current = &m_DefaultCamera;
+    current->forceUpdate();
+    return cam;
+}
+
+bool Camera::releaseTop()
+{
+    if(m_Cameras.empty()) return false;
+    delete m_Cameras.popHead();
+    current = (m_Cameras.empty()) ? &m_DefaultCamera : m_Cameras.peekHead();
+    current->forceUpdate();
+    return true;
+}
+
+bool Camera::releaseBack()
+{
+    if(m_Cameras.empty()) return false;
+    delete m_Cameras.popTail();
+    current = (m_Cameras.empty()) ? &m_DefaultCamera : m_Cameras.peekHead();
+    current->forceUpdate();
+    return true;
 }

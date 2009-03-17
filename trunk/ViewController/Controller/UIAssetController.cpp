@@ -14,17 +14,19 @@
 #include "../Unit/UI3DObjectManager.h"
 #include "../Sound/SoundManager.h"
 
+#include "../Camera/UnitCamera.h"
 
-UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pCamera, Selector* pSelector)
+UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* pSelector)
 {
     m_pUnitCommandDispatcher = new UnitCommandDispatcher(NULL); // TODO: use actual player-object
     m_pDevice = pDevice;
-    m_pCamera = pCamera;
     m_pSelector = pSelector;
     m_SelectionState = IDLE;
     m_ActionState = IDLE;
     m_TempMouseX = 0;
     m_TempMouseY = 0;
+
+    m_pUnitCarryingCamera = NULL;
 
     // default setting values
     m_KeyMouseActionButton = 1;
@@ -36,6 +38,8 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pC
     m_KeyPickModifier = 0;
     m_KeyActionModifier = 0;
     m_KeyActionWhileDragging = false;
+
+    m_KeyFirstPersonCamera = 46;
 }
 
 
@@ -67,11 +71,16 @@ void UIAssetController::loadConfiguration(const bool confFileLoaded)
     c.updateInt("mouse action modifier key",            m_KeyActionModifier);
     // weather to allow action when dragging
     c.updateBool("mouse action enabled when dragging",  m_KeyActionWhileDragging);
+    // key for first person camera
+    c.updateInt("key first person camera",              m_KeyFirstPersonCamera);
 }
 
 
 void UIAssetController::release()
 {
+    if(m_pUnitCarryingCamera)
+        Camera::popTop();
+    m_UnitCamera.detach();
     if(m_pUnitCommandDispatcher)
     {
         m_pUnitCommandDispatcher->release();
@@ -80,7 +89,6 @@ void UIAssetController::release()
     }
     m_pSelector = NULL;
 }
-
 
 void UIAssetController::updateControls(const float frameTime)
 {
@@ -95,6 +103,26 @@ void UIAssetController::updateControls(const float frameTime)
         onActionRelease(frameTime);
     else if(MouseState::mouseButton[m_KeyMouseActionButton])
         onActionButton(frameTime);
+
+    if(KeyboardState::keyReleased[m_KeyFirstPersonCamera])
+    {
+        if(m_pUnitCarryingCamera)
+        {
+            if(Camera::countStack())
+            {
+                Camera::popTop();
+            }
+            m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
+            m_UnitCamera.detach();
+            m_pUnitCarryingCamera = NULL;
+        }
+        else if(!m_SelectedUIUnits.empty())
+        {
+            m_pUnitCarryingCamera = m_SelectedUIUnits.peekHead();
+            m_UnitCamera.attach(m_pUnitCarryingCamera);
+            Camera::pushTop(&m_UnitCamera);
+        }
+    }
 }
 
 
@@ -299,7 +327,7 @@ void UIAssetController::onActionRelease(const float frameTime)
             // asset as target
             m_pUnitCommandDispatcher->getTarget()->setTarget(pUIUnit->getUnit());
             m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
-            SoundManager::playSound(SoundManager::OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()), m_pCamera);
+            SoundManager::playSound(SoundManager::OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
         }
 
         // secondly check if the click hits to terrain as target
@@ -312,7 +340,7 @@ void UIAssetController::onActionRelease(const float frameTime)
                 unsigned short targetY = (unsigned short)hitSquare->y;
                 m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
                 m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
-                SoundManager::playSound(SoundManager::OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()), m_pCamera);
+                SoundManager::playSound(SoundManager::OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
                 delete hitSquare;
             }
         }

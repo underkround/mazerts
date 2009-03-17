@@ -8,7 +8,7 @@
 #endif
 
 #ifdef DIRECT3D_VERSION // 3d debug is possible only on dx side
-#define PATH_UI_DEBUG   // comment this out when done testing
+//#define PATH_UI_DEBUG   // comment this out when done testing
 #ifdef PATH_UI_DEBUG
 #include "../../ViewController/3DDebug/UI3DDebug.h"
 #include "../../ViewController/Terrain/UITerrain.h"

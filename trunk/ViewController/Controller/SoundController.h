@@ -16,7 +16,7 @@ class SoundController : public IUIController
 {
 public:
 
-    SoundController(Camera* camera);
+    SoundController();
 
     ~SoundController();
 
@@ -31,8 +31,6 @@ public:
     virtual void loadConfiguration(const bool confFileLoaded);
 
 private:
-
-    Camera*     m_pCamera;
 
     int m_KeySoundToggle;
     int m_KeyMusicToggle;

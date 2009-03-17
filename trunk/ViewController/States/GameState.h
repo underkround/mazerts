@@ -71,7 +71,7 @@ public:
      */
     virtual HRESULT onRestore()
     {
-        m_pCamera->forceUpdate();
+        Camera::current->forceUpdate();
         return m_pUITerrain->onRestore(m_pDevice);
     }
 
@@ -113,11 +113,6 @@ private:
      * Selector mesh
      */
     Selector m_Selector;
-
-    /**
-     * Camera-pointer
-     */
-    Camera* m_pCamera;
 
     /**
      * Controllers that receive updateControls -calls

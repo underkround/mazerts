@@ -239,9 +239,6 @@ private:
 
     CSoundEngine m_SoundEngine;
 
-    // Default camera to use with panning, if no overriding camera given
-    Camera* m_DefaultCamera;
-
     // containers for sound & music
     map<SoundTypes, DoubleLinkedList<CSoundWave*>*> m_SoundsMap;
     map<MusicTypes, TCHAR*> m_MusicMap;

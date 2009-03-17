@@ -126,7 +126,7 @@ public:
     /**
      * Self explanary
      */
-    bool empty() const { return (!head || !tail); }
+    bool empty() const { return (!head && !tail); }
 
     /**
      * Usage:

@@ -1,6 +1,10 @@
 /**
  * Basic Camera-object
  *
+ * NOTE after static-camera stuff:
+ *  it's assumed that the m_DefaultCamera is always set!
+ *
+ *
  * $Revision$
  * $Date$
  * $Id$
@@ -11,7 +15,10 @@
 
 //TODO: Camera rotation, zoom...
 
+#include "../../Model/Common/DoubleLinkedList.h"
 #include "d3dx9.h"
+
+class SphereCamera; // as default camera
 
 class Camera
 {
@@ -26,6 +33,8 @@ public:
      * @param pDevice Direct3D-Device to use
      */
     static void create(LPDIRECT3DDEVICE9 pDevice);
+
+// =====
 
     virtual inline void setPosition(const float x, const float y, const float z)
     {
@@ -127,8 +136,99 @@ public:
     {
         return m_View;
     }
+
     bool m_Test;
+
+// ===== Static camera -stuff
+
+    /**
+     * Set default fallback camera that is used if there is no overriding
+     * cameras in the pile. The push/pop -functionality does not apply to this
+     * camera. If there is already a default camera, it will be released and
+     * deleted.
+     * UPDATE:  disabled since it's crusial to have working default camera
+     *          (that is not null)
+     */
+    //static void setDefault(Camera* camera);
+
+    /**
+     * Return the default camera, which may or may not be the current
+     */
+    static inline Camera* getDefault()
+    {
+        return (Camera*)&m_DefaultCamera;
+    }
+
+    /**
+     * Get pointer to currently active camera, or NULL if none set (stack is
+     * empty and no default camera is set).
+     */
+    static inline Camera* getCurrent()
+    {
+        return current;
+    }
+
+    /**
+     * Push new camera to the top of the camera-stack and set it as current.
+     */
+    static void pushTop(Camera* camera);
+
+    /**
+     * Push new camera to the bottom of the camera-stack. The current camera
+     * is the top of the stack, or default if the stack is empty.
+     */
+    static void pushBack(Camera* camera);
+
+    /**
+     * Remove and delete camera on top of the stack, if any. Updates the
+     * current camera.
+     * @return  true, if there was camera in the stack and it was deleted,
+     *          false if the stack was already empty
+     */
+    static bool releaseTop();
+    static bool releaseBack();
+
+    /**
+     * Pop top (current) camera out of the stack and set previous (if any)
+     * or the default camera as current
+     * The popped camera-object will not be deleted.
+     * @return  pointer to removed camera
+     */
+    static Camera* popTop();
+
+    /**
+     * Pop the last camera out of the stack.
+     * The popped camera-object will be deleted, do it with returned
+     * pointer.
+     */
+    static Camera* popBack();
+
+    /**
+     * @return  number of cameras in the stack, including the default camera not
+     *          in the stack
+     */
+    static inline int countStack()
+    {
+        return m_Cameras.count();
+    }
+
+    // Pointer to current camera, which is either the default or top
+    // from the stack. Keeping this just to reduce overhead for checking
+    // which is the default ;)
+    //
+    // NOTE: this is set to public only to reduce overhead. DO NOT modify
+    // this, use as read-only ;P
+    static Camera*                     current;
+
 protected:
+
+    // Default camera that is used if there is no overriding cameras
+    // Set separately from other cameras to use as default fallback
+//    static Camera*                     m_DefaultCamera;
+    static SphereCamera                 m_DefaultCamera;
+
+    // Overriding cameras
+    static DoubleLinkedList<Camera*>    m_Cameras;
 
     /**
      * View-matrix built by camera settings

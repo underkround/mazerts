@@ -801,6 +801,14 @@
 					RelativePath=".\Camera\SphereCamera.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Camera\UnitCamera.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Camera\UnitCamera.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="States"

@@ -78,10 +78,10 @@ void CTheApp::OnRelease(void)
         m_pCurrentState->release();
         delete m_pCurrentState;
     }
-    
+
     //Clear states list
     ListNode<IState*>* node = m_pStates->headNode();    
-    
+
     while(node)
     {
         IState* pChild = node->item;
@@ -90,7 +90,7 @@ void CTheApp::OnRelease(void)
 
         node = node->next;
     }
-    
+
     m_pStates->release();
 
     Input::release();

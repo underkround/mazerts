@@ -13,9 +13,11 @@
 #include "../Unit/Selector.h"
 #include "../../Model/Command/UnitCommandDispatcher.h"
 #include "../Camera/Camera.h"
+#include "../Camera/UnitCamera.h"
 #include "../../Model/Common/Config.h"
 
 #include "d3d9.h"
+
 
 class UIAssetController : public IUIController
 {
@@ -28,7 +30,7 @@ public:
         DRAG
     };
 
-    UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Camera* pCamera, Selector* pSelector);
+    UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* pSelector);
     ~UIAssetController();
 
     /**
@@ -73,6 +75,7 @@ private:
     int m_KeyActionModifier;
     int m_KeyQueueCommands;
     bool m_KeyActionWhileDragging;
+    int m_KeyFirstPersonCamera;
 
     // current state of the selection
     PointerState                m_SelectionState;
@@ -88,8 +91,6 @@ private:
     // selector object that is used in the picking of the assets
     Selector*                   m_pSelector;
 
-    Camera*                     m_pCamera;
-
     // the unit command dispatcher in the model side that is used to do the
     // command dispatching to the actual model-units
     UnitCommandDispatcher*      m_pUnitCommandDispatcher;
@@ -98,6 +99,10 @@ private:
     // dispatcher for all assets
 
     DoubleLinkedList<UIUnit*>   m_SelectedUIUnits;
+
+//    UnitCamera*                 m_pUnitCamera;
+    UnitCamera                  m_UnitCamera;
+    UIUnit*                     m_pUnitCarryingCamera;
 
 };
 

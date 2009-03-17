@@ -105,22 +105,19 @@ HRESULT GameState::create(ID3DApplication* pApplication)
         return hres;
     }
 
-
-     //Get the pathfinder running
+    //Get the pathfinder running
     PathFinderMaster::getInstance()->start();
 
-    //Camera
+    // Camera
     Camera::create(pDevice);
-    m_pCamera = new SphereCamera();
-    m_pCamera->setPosition(127.0f, 127.0f, -200.0f);
-
-    // Set default camera to the soundmanager
-    SoundManager::setDefaultCamera(m_pCamera);
+    // configure the default (SphereCamera) camera
+    Camera::getCurrent()->setPosition(127.0f, 127.0f, -200.0f);
 
     // Controllers
-    m_UIControllers.pushHead(new UIAssetController(pDevice, m_pCamera, &m_Selector));
-    m_UIControllers.pushHead(new SoundController(m_pCamera));
-    m_UIControllers.pushHead(new CameraController(m_pCamera));
+    m_UIControllers.pushHead(new UIAssetController(pDevice, &m_Selector));
+    m_UIControllers.pushHead(new SoundController());
+    m_UIControllers.pushHead(new CameraController());
+
     // Load configurations for the controllers
     ListNode<IUIController*>* node = m_UIControllers.headNode();
     while(node)
@@ -153,8 +150,8 @@ void GameState::release()
         node = m_UIControllers.removeGetNext(node);
     }
 
-    // Remove our camera from sound manager
-    SoundManager::setDefaultCamera(NULL);
+    // Clear the camera-stack
+    while(Camera::releaseBack()) { }
 
     //The children of the Object Manager root object are listeners to model-side
     //AssetCollection, and will be released via listener-interface, but they have
@@ -205,7 +202,8 @@ bool GameState::update(const float frameTime)
 void GameState::prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float frameTime)
 {
     //Updates view-matrix and frustum, if necessary
-    m_pCamera->update();
+//    m_pCamera->update();
+    Camera::getCurrent()->update();
 
     //Light is here for testing (and doesn't need to be set every frame, as it doesn't move anyway)
     D3DLIGHT9 light;

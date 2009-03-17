@@ -11,10 +11,8 @@
 
 #include "../../Model/Common/Config.h"
 
-CameraController::CameraController(Camera* camera)
+CameraController::CameraController()
 {
-    m_pCamera = camera;
-
     // Default settings
     m_KeyCameraPanUp    = 200;
     m_KeyCameraPanDown  = 208;
@@ -75,41 +73,43 @@ void CameraController::loadConfiguration(const bool confFileLoaded)
 
 void CameraController::updateControls(const float frameTime)
 {
+    // TODO: Move camera-handling from Camera::current to Camera::getCurrent()
+    // if there is no real overhead from the getter..
 
     // ===== Keyboard
 
     if (KeyboardState::keyDown[m_KeyCameraPanUp])
     {
-        m_pCamera->move(KEYBOARD_CAMSPEED * frameTime, 0, 0);
+        Camera::current->move(KEYBOARD_CAMSPEED * frameTime, 0, 0);
     }
     else if (KeyboardState::keyDown[m_KeyCameraPanDown])
     {
-        m_pCamera->move(-KEYBOARD_CAMSPEED * frameTime, 0, 0);
+        Camera::current->move(-KEYBOARD_CAMSPEED * frameTime, 0, 0);
     }
     
     if (KeyboardState::keyDown[m_KeyCameraPanRight])
     {
-        m_pCamera->move(0, KEYBOARD_CAMSPEED * frameTime, 0);
+        Camera::current->move(0, KEYBOARD_CAMSPEED * frameTime, 0);
     }
     else if (KeyboardState::keyDown[m_KeyCameraPanLeft])
     {
-        m_pCamera->move(0, -KEYBOARD_CAMSPEED * frameTime, 0);
+        Camera::current->move(0, -KEYBOARD_CAMSPEED * frameTime, 0);
     }
     
     if (KeyboardState::keyDown[m_KeyCameraZoomIn])
     {
-        m_pCamera->move(0, 0, KEYBOARD_CAMSPEED * frameTime);
+        Camera::current->move(0, 0, KEYBOARD_CAMSPEED * frameTime);
     }
     else if (KeyboardState::keyDown[m_KeyCameraZoomOut])
     {
-        m_pCamera->move(0, 0, -KEYBOARD_CAMSPEED * frameTime);
+        Camera::current->move(0, 0, -KEYBOARD_CAMSPEED * frameTime);
     }
 
     //Reset camera
     if(KeyboardState::keyDown[m_KeyCameraReset])
     {
-        m_pCamera->setZoom(100.0f);
-        m_pCamera->setRotation(0.5f * D3DX_PI, 0.9f);
+        Camera::current->setZoom(100.0f);
+        Camera::current->setRotation(0.5f * D3DX_PI, 0.9f);
     }
 
     // ===== Mouse
@@ -117,24 +117,24 @@ void CameraController::updateControls(const float frameTime)
     //mouse zoom
     if(MouseState::mouseZSpeed)
     {
-        m_pCamera->zoom(-MouseState::mouseZSpeed * m_ModifyMouseZoom);
+        Camera::current->zoom(-MouseState::mouseZSpeed * m_ModifyMouseZoom);
     }
 
     //camera mouse panning
     if(MouseState::mouseButton[m_KeyMousePanningButton] && (!m_KeyPanningModifier || KeyboardState::keyDown[m_KeyPanningModifier]))
     {
-        m_pCamera->move(MouseState::mouseYSpeed * m_ModifyMouseDragY, -MouseState::mouseXSpeed * m_ModifyMouseDragX, 0);
+        Camera::current->move(MouseState::mouseYSpeed * m_ModifyMouseDragY, -MouseState::mouseXSpeed * m_ModifyMouseDragX, 0);
     }
 
     //Camera pitching
     if(MouseState::mouseButton[m_KeyMouseRotateButton] && (!m_KeyRotateModifier || KeyboardState::keyDown[m_KeyRotateModifier]))
     {
-        m_pCamera->rotate(MouseState::mouseXSpeed * 0.05f * m_ModifyMouseRotationX, MouseState::mouseYSpeed * 0.01f * m_ModifyMouseRotationY);
+        Camera::current->rotate(MouseState::mouseXSpeed * 0.05f * m_ModifyMouseRotationX, MouseState::mouseYSpeed * 0.01f * m_ModifyMouseRotationY);
     }
 
     if(KeyboardState::keyReleased[28])
     {
-        m_pCamera->m_Test = !m_pCamera->m_Test;
+        Camera::current->m_Test = !Camera::current->m_Test;
     }
 
 }
