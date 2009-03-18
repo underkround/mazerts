@@ -22,6 +22,7 @@
 class UIUnit : public C3DObject, IAssetListener
 {
 public:
+
     /**
      * Constructor
      * @param pUnit Pointer to Model-side unit this UIUnit represents
@@ -36,6 +37,7 @@ public:
 
         //Register as listener to pUnit
         pUnit->registerListener(this);
+
     }
 
     /**
@@ -102,7 +104,7 @@ public:
     }
 
 protected:
-    
+
     /**
      * Handles updating the unit-matrix and (if ground unit)
      * aligns the model to the terrain below it

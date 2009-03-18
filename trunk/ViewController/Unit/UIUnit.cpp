@@ -22,7 +22,7 @@ void UIUnit::updatePosition()
     //TODO: Unit-flags:  ground / air (/ water?)
     //if(m_pUnit->getMoveType() == UNIT_GROUND)
     {
-        //Get heights at four points around the unit        
+        //Get heights at four points around the unit
         D3DXVECTOR3 pos;
         pos.x = unitPos->x + m_HalfSize;
         pos.y = unitPos->y + m_HalfSize;
@@ -31,7 +31,7 @@ void UIUnit::updatePosition()
         D3DXVec3Normalize(dir, dir);
 
         UITerrain* pTerrain = UITerrain::getInstance();
-        
+
         D3DXVECTOR3 normal(0, 0, 0);
         D3DXVECTOR3 p1;
         D3DXVECTOR3 p2;
@@ -45,13 +45,13 @@ void UIUnit::updatePosition()
 
         p2.x = -dir->y + dir->x;
         p2.y = dir->y + dir->x;
-                
+
         p3.x = p1.y;
         p3.y = -p1.x;
 
         p4.x = p2.y;
         p4.y = -p2.x;
-        
+
         //Forward right
         p1.z = pTerrain->calculateTriangleHeightAt(pos.x + p1.x, pos.y + p1.y);
         //Forward left
@@ -77,18 +77,18 @@ void UIUnit::updatePosition()
         D3DXVec3Subtract(&result1, &p2, &p4);
         D3DXVec3Subtract(&result2, &p3, &p4);
         D3DXVec3Cross(&result1, &result2, &result1);
-        
+
         normal += result1;
-        
+
         D3DXVec3Normalize(&normal, &normal);
 
         //Update unit matrix
         //Get "right"-vector from crossproduct of direction (around z-axis) and normal, reuse p1 as result
         D3DXVec3Cross(&p1, &normal, dir);
 
-        //Find new "forward"-vector based on normal and right vector (fixes the z-value), reuse p2 as result        
+        //Find new "forward"-vector based on normal and right vector (fixes the z-value), reuse p2 as result
         D3DXVec3Cross(&p2, &normal, &p1);
-        
+
         D3DXMatrixIdentity(&m_mLocal);
 
         m_mLocal._11 = p1.x;
@@ -130,7 +130,7 @@ void UIUnit::Render(LPDIRECT3DDEVICE9 pDevice)
         D3DXVECTOR3 AABBMax(m_AABBMax.x + m_mWorld._41,
                             m_AABBMax.y + m_mWorld._42,
                             m_AABBMax.z + m_mWorld._43);
-        
+
         if(FrustumCull::cullAABB(AABBMin, AABBMax))
         {
             updatePosition();
@@ -171,8 +171,8 @@ void UIUnit::Render(LPDIRECT3DDEVICE9 pDevice)
     }
 
     // render the children
-    ListNode<I3DObject*>* node = m_arrChildren.headNode();    
-    
+    ListNode<I3DObject*>* node = m_arrChildren.headNode();
+
     while(node)
     {
         node->item->Render(pDevice);

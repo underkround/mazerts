@@ -59,6 +59,7 @@ protected:
     // unit we are following
     UIUnit*     m_pUIUnit;
 
+    float m_HeightMod;
     float m_ModX;
     float m_ModY;
     float m_ModZ;
