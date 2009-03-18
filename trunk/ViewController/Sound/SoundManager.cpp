@@ -20,13 +20,14 @@ HRESULT SoundManager::create(IApplication* pApp)
     static const Sound soundsList[] = 
     {
         {_T("explosion.wav"), DEBUG},
-        {_T("ready.wav"), READY},
+        {_T("../../audio/ready.wav"), READY},
         {_T("shoot1.wav"), SHOOT},
         {_T("shoot2.wav"), SHOOT},
         {_T("shoot3.wav"), SHOOT},
         {_T("shoot4.wav"), SHOOT},
-        {_T("ok1.wav"), OK},
-        {_T("ok2.wav"), OK},
+        {_T("../../audio/komennot.wav"), OK},
+        {_T("../../audio/nytmenoksi.wav"), OK},
+        {_T("../../audio/voetokkiisa.wav"), OK},
         {_T("no1.wav"), NO}
     };
 

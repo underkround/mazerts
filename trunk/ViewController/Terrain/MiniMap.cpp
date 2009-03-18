@@ -347,8 +347,17 @@ void MiniMap::render(LPDIRECT3DDEVICE9 pDevice, LPDIRECT3DTEXTURE9 pTexture)
     pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
     pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
+    //RAJATAAN VIEWPORT
+    D3DVIEWPORT9 viewData = { 15, 15, 290, 290, 0.0f, 1.0f };
+    pDevice->SetViewport(&viewData);
+
+    //laatikon piirto
     pDevice->SetStreamSource(0, m_pCameraVB, 0, sizeof(TRANSLITVERTEX));
     pDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
+
+    //TÄHÄN PALAUTUS, ikkunan koko pitäis kaivaa jostain lolapua en muista mistä
+    D3DVIEWPORT9 viewData2 = { 0, 0, 640, 400, 0.0f, 1.0f };
+    pDevice->SetViewport(&viewData2);
 
     pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 }
