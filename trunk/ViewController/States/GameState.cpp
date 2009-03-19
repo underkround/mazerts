@@ -84,13 +84,12 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
 
     //UI-Terrain
-    hres = UITerrain::create(pDevice);
+    m_pUITerrain = UITerrain::getInstance();
+    hres = m_pUITerrain->create(pDevice);
     if(FAILED(hres))
     {
         return hres;
-    }
-
-    m_pUITerrain = UITerrain::getInstance();                       
+    }    
 
     //Selector
     hres = m_Selector.create(pDevice);
@@ -287,7 +286,7 @@ void GameState::updateControls(const float frameTime)
         pMaster->wait();
 
         Terrain::getInstance()->initialize();
-        UITerrain::create(m_pDevice);
+        UITerrain::getInstance()->create(m_pDevice);
         m_pUITerrain = UITerrain::getInstance();
 
         pMaster->start();
