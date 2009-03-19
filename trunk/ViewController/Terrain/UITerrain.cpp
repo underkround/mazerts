@@ -22,7 +22,7 @@ UITerrain::UITerrain()
     m_Patches = 0;
     m_NumPrimitives = 0;
     m_NumVertices = 0;
-    m_DetailLevel = 0;      //Must be set to the HIGHEST detail (LOWEST value) to be used, before calling create
+    m_DetailLevel = 0;
 
     D3DXMatrixIdentity(&m_World);
 
@@ -150,13 +150,6 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
                     pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_NumVertices, 0, m_NumPrimitives );
                 }
             }
-            else
-            {
-                //DEBUG:
-                /*TCHAR msg[256];
-                ::_stprintf_s(msg, _T("Culled terrain patch: %d : %d\n"), i, j);
-                ::OutputDebugString(msg);*/
-            }
         }
     }
 
@@ -254,6 +247,65 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
                 return hres;
             }
 
+            //Min and max height within patch, used to set the AABB-size
+            //Initialize to maximum and minimum that the heights can be
+            float minHeight = (-255.0f * HEIGHTFACTOR);
+            float maxHeight = 0.0f;
+
+            VERTEX2UV* pVertices = NULL;
+
+            //Fill vertex-data
+            m_pppVB[y][x]->Lock(0, 0, (void**)&pVertices, D3DLOCK_DISCARD);
+            {
+                for(int i = 0; i < vertexSize; i++)
+                {
+                    for(int j = 0; j < vertexSize; j++)
+                    {   
+                        //Location in 1D-buffer from 2D-values
+                        int loc = i * vertexSize + j;
+                        
+                        //Offsets in x- and y-axis for vertex location
+                        int offsetX = j + (x * PATCHSIZE);
+                        int offsetY = i + (y * PATCHSIZE);
+
+                        pVertices[loc].x = (float)offsetX;
+                        pVertices[loc].y = (float)offsetY;
+                        pVertices[loc].z = -calculateAverageHeightForVertex(offsetX, offsetY);
+                        
+                        //Check for AABBs
+                        if(pVertices[loc].z < minHeight)
+                        {
+                            minHeight = pVertices[loc].z;
+                        }
+                        if(pVertices[loc].z > maxHeight)
+                        {
+                            maxHeight = pVertices[loc].z;
+                        }
+
+                        //Calculate normals
+                        D3DXVECTOR3 normal = getNormalAt((float)offsetX, (float)offsetY, 1, 1); //calculateNormalForVertex(offsetX, offsetY);
+
+                        pVertices[loc].nx = normal.x;
+                        pVertices[loc].ny = normal.y;
+                        pVertices[loc].nz = normal.z;
+
+                        //Repeating texture
+                        pVertices[loc].tu = (m_TextureRepeat / m_Size) * j;
+                        pVertices[loc].tv = (m_TextureRepeat / m_Size) * i;
+
+                        //Colormap-texture
+                        pVertices[loc].tu2 = (1.0f / m_Size) * offsetX;
+                        pVertices[loc].tv2 = (1.0f / m_Size) * offsetY;
+                    }
+                }
+            }
+            m_pppVB[y][x]->Unlock();
+        
+            //Set AABBs z-values
+            m_pppPatchAABBs[y][x][0].z = minHeight;
+            m_pppPatchAABBs[y][x][1].z = maxHeight;
+
+
             //Total amount of indices, 6 per tile
             int indAmount = PATCHSIZE * PATCHSIZE * 6;
             
@@ -267,8 +319,13 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
         }
     }
 
-    //Setting detail level creates the contents of the index- and vertexbuffers
-    setDetailLevel(m_DetailLevel);
+
+
+    //Setting detail level creates the contents of the indexbuffers and adjusts the normals for vertexbuffers
+    char value = m_DetailLevel;
+    m_DetailLevel = 255;    //Set m_DetailLevel to other value, so the data is really created
+    //setDetailLevel won't do anything if parameter == m_DetailLevel
+    setDetailLevel(value);
 
     //TODO: Multiple different "ground" textures?
     hres = D3DXCreateTextureFromFile(pDevice, _T("grass01.png"), &m_pTexture);
@@ -594,7 +651,7 @@ float UITerrain::calculateTriangleHeightAt(float x, float y)
     float inverseFactor = 1.0f / detail;
     
     //Casting will drop the fractional part off, which acts like rounding down
-    //The result will be the coordinate of the detail level-quad (0, 1, 2, 3
+    //The result will be the coordinate of the detail level-quad (0, 1, 2, 3...)
     int iX = (int)(x * inverseFactor);
     int iY = (int)(y * inverseFactor);
     float fractX = x - (iX * detail); //0...detail, coordinate within detail level-quad
@@ -602,8 +659,8 @@ float UITerrain::calculateTriangleHeightAt(float x, float y)
 
     //Vertex heights are got from nearest vertex that is used on this detail-level
     //Coordinate of the "real" quad (0, detail, detail * 2, detail * 3...) in model-side
-    int verX = iX * detail;//(int)(x - fractX);
-    int verY = iY * detail;//(int)(y - fractY);
+    int verX = (int)(x - fractX);
+    int verY = (int)(y - fractY);
 
     float result = 0.0f;
     bool upperRight = false;
@@ -626,23 +683,16 @@ float UITerrain::calculateTriangleHeightAt(float x, float y)
         normal = m_pppTriangleNormals[iY][iX][1];
     }
     
-    //Somethings need to be done on larger than 1x1 quads...
-    //if(detail > 1)
+    //Upper right triangles' height point is chosen from
+    //upper left:
+    //this one --> +--+
+    //             |\ |
+    //             | \|
+    //             +--+
+    //So the y-fraction needs to be adjusted to negative for upper right triangles
+    if(upperRight)
     {
-        //Upper right triangles' height point is chosen from
-        //upper left:
-        //this one --> +--+
-        //             |\ |
-        //             | \|
-        //             +--+
-        //So the y-fraction needs to be adjusted to negative for upper right triangles
-        if(upperRight)
-        {
-            fractY -= detail;
-        }
-        //fractX *= inverseFactor;
-        //fractY *= inverseFactor;
-        //normal *= inverseFactor;
+        fractY -= detail;
     }
 
     //P.z = (N.x(P.x-V0.x) + N.y(P.y-V0.y))/-N.z + V0.z 
@@ -655,6 +705,11 @@ float UITerrain::calculateTriangleHeightAt(float x, float y)
 
 void UITerrain::setDetailLevel(unsigned char detailLevel)
 {
+    if(m_DetailLevel == detailLevel)
+    {
+        return;
+    }
+
     m_DetailLevel = detailLevel;
 
     //Detail-factor, 2^m_DetailLevel (=1,2,4,8...)
@@ -663,9 +718,10 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
     //Recalculate triangle normals for new detail-level
     calculateTriangleNormals();
 
+    //Single patch is PATCHSIZE * PATCHSIZE, 2 triangles per square, detail^2 squares per quad)
     m_NumPrimitives = (PATCHSIZE * PATCHSIZE * 2) / (detail * detail);
-    unsigned short vertexSize = ((PATCHSIZE) / detail) + 1;
-    VERTEX2UV* pVertices = NULL;
+    unsigned short vertexSize = ((PATCHSIZE) / detail) + 1;    
+
 
     unsigned const char* const * ppTerrainVertexData = Terrain::getInstance()->getTerrainVertexHeightData();    
 
@@ -674,59 +730,8 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
         for(int x = 0; x < m_Patches; x++)
         {
 
-            //Min and max height within patch, used to set the AABB-size
-            //Initialize to maximum and minimum that the heights can be
-            float minHeight = (-255.0f * HEIGHTFACTOR);
-            float maxHeight = 0.0f;
 
-            //Fill vertex-data
-            m_pppVB[y][x]->Lock(0, 0, (void**)&pVertices, D3DLOCK_DISCARD);
-            {
-                for(int i = 0; i < vertexSize; i++)
-                {
-                    for(int j = 0; j < vertexSize; j++)
-                    {   
-                        //Location in 1D-buffer from 2D-values
-                        int loc = i * vertexSize + j;
-                        
-                        int offsetX = (j * detail) + (x * PATCHSIZE);
-                        int offsetY = (i * detail) + (y * PATCHSIZE);
 
-                        pVertices[loc].x = (float)offsetX;
-                        pVertices[loc].y = (float)offsetY;
-                        pVertices[loc].z = -calculateAverageHeightForVertex(offsetX, offsetY);
-                        
-                        //Check for AABBs
-                        if(pVertices[loc].z < minHeight)
-                        {
-                            minHeight = pVertices[loc].z;
-                        }
-                        if(pVertices[loc].z > maxHeight)
-                        {
-                            maxHeight = pVertices[loc].z;
-                        }
-
-                        //Calculate normals
-                        D3DXVECTOR3 normal = getNormalAt((float)offsetX, (float)offsetY, detail, detail); //calculateNormalForVertex(offsetX, offsetY);
-
-                        pVertices[loc].nx = normal.x;
-                        pVertices[loc].ny = normal.y;
-                        pVertices[loc].nz = normal.z;
-
-                        //Repeating texture
-                        pVertices[loc].tu = ((m_TextureRepeat * detail) / m_Size) * j;
-                        pVertices[loc].tv = ((m_TextureRepeat * detail) / m_Size) * i;
-                        pVertices[loc].tu2 = (1.0f / m_Size) * offsetX;
-                        pVertices[loc].tv2 = (1.0f / m_Size) * offsetY;
-                    }
-                }
-            }
-            m_pppVB[y][x]->Unlock();
-            
-            //Set AABBs z-values
-            m_pppPatchAABBs[y][x][0].z = minHeight;
-            m_pppPatchAABBs[y][x][1].z = maxHeight;
-           
             USHORT* pIndices = NULL;
             
             //Index-array index
@@ -741,18 +746,18 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
             {
                 for(int i = 0; i < loops; i++)
                 {
-                    vIndex = i * vertexSize;
+                    vIndex = i * ((PATCHSIZE + 1) * detail);//vertexSize;
 
                     for(int j = 0; j < loops; j++)
                     {
                         pIndices[ind++] = vIndex;
-                        pIndices[ind++] = vIndex + vertexSize;
-                        pIndices[ind++] = vIndex + 1;
+                        pIndices[ind++] = vIndex + (PATCHSIZE + 1) * detail;//vertexSize;
+                        pIndices[ind++] = vIndex + detail;//1;
                         
-                        pIndices[ind++] = vIndex + 1;  //Second triangle
-                        pIndices[ind++] = vIndex + vertexSize;
-                        pIndices[ind++] = vIndex + vertexSize + 1;
-                        vIndex++;
+                        pIndices[ind++] = vIndex + detail;//1;  //Second triangle
+                        pIndices[ind++] = vIndex + (PATCHSIZE + 1) * detail;//vertexSize;
+                        pIndices[ind++] = vIndex + (PATCHSIZE + 1) * detail + detail;//vertexSize + 1;
+                        vIndex += detail;
                     }                    
                 }
             }
