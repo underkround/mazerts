@@ -110,7 +110,8 @@ void UIAssetController::updateControls(const float frameTime)
         {
             if(Camera::countStack())
             {
-                Camera::popTop();
+                //Camera::popTop();
+                Camera::pop(&m_UnitCamera);
             }
             m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
             m_UnitCamera.detach();

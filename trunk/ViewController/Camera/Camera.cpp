@@ -102,6 +102,23 @@ void Camera::pushBack(Camera* camera)
     current->forceUpdate();
 }
 
+bool Camera::pop(Camera* camera)
+{
+    if(m_Cameras.remove(camera))
+    {
+        if(camera == current)
+        {
+            if(m_Cameras.empty())
+                current = &m_DefaultCamera;
+            else
+                current = m_Cameras.peekHead();
+            current->forceUpdate();
+        }
+        return true;
+    }
+    return false; // TODO
+}
+
 Camera* Camera::popTop()
 {
     if(m_Cameras.empty())
@@ -123,6 +140,10 @@ Camera* Camera::popBack()
     return cam;
 }
 
+/*
+ * Removed as unsave, not all cameras can safely be
+ * deleted - make sure to remove cameras that you set
+ *
 bool Camera::releaseTop()
 {
     if(m_Cameras.empty()) return false;
@@ -140,3 +161,4 @@ bool Camera::releaseBack()
     current->forceUpdate();
     return true;
 }
+*/

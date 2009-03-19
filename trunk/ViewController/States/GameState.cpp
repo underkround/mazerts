@@ -151,7 +151,7 @@ void GameState::release()
     }
 
     // Clear the camera-stack
-    while(Camera::releaseBack()) { }
+    //while(Camera::releaseBack()) { }
 
     //The children of the Object Manager root object are listeners to model-side
     //AssetCollection, and will be released via listener-interface, but they have

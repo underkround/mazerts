@@ -184,9 +184,17 @@ public:
      * current camera.
      * @return  true, if there was camera in the stack and it was deleted,
      *          false if the stack was already empty
+     * @deprecated - removed as dangerous (cameras could be automatic
+     *               and deletion will fail)
      */
-    static bool releaseTop();
-    static bool releaseBack();
+//    static bool releaseTop();
+//    static bool releaseBack();
+
+    /**
+     * Pop given camera from the stack, if it's found from there
+     * @return true, if camera was in the stack and was popped out
+     */
+    static bool pop(Camera* camera);
 
     /**
      * Pop top (current) camera out of the stack and set previous (if any)
