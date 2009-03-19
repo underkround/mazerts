@@ -44,7 +44,7 @@ public:
     /**
      * Size of the side of a single terrain patch, actual size is PATCHSIZE * PATCHSIZE tiles
      */
-    static const int PATCHSIZE = 32;
+    static const int PATCHSIZE = 64;
 
     /**
      * Creates a new terrain mesh from Model Terrain-data, MUST BE CALLED BEFORE getInstance IS USED
@@ -134,16 +134,25 @@ public:
      */
     inline HRESULT onLostDevice()
     {
+        HRESULT hres = S_OK;
+
         if(m_pPixelTexture)
         {            
-            HRESULT hres = m_pPixelTexture->Release();
+            hres = m_pPixelTexture->Release();
             if(FAILED(hres))
             {
                 return hres;
             }
             m_pPixelTexture = NULL;
         }
-        return S_OK;
+
+        hres = m_MiniMap.onDeviceLost();
+        if(FAILED(hres))
+        {
+            return hres;
+        }
+
+        return hres;
     }
 
     /**
@@ -163,8 +172,18 @@ public:
             m_pPixelTexture = NULL;
         }
         
-        HRESULT hres = createColorMapTexture(pDevice);
-        
+        HRESULT hres = createColorMapTexture(pDevice);        
+        if(FAILED(hres))
+        {
+            return hres;
+        }
+
+        hres = m_MiniMap.onRestore(pDevice);
+        if(FAILED(hres))
+        {
+            return hres;
+        }
+
         return hres; 
     }
 

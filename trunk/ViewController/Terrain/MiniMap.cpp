@@ -51,7 +51,7 @@ void MiniMap::setSize(const int size)
 HRESULT MiniMap::create(LPDIRECT3DDEVICE9 pDevice)
 {
     //Background vertexbuffer
-    HRESULT hres = pDevice->CreateVertexBuffer(4 * sizeof(TRANSLITVERTEX), NULL, TRANSLITVERTEX::GetFVF(), D3DPOOL_MANAGED, &m_pBackVB, NULL);
+    HRESULT hres = pDevice->CreateVertexBuffer(4 * sizeof(TRANSLITVERTEX), D3DUSAGE_WRITEONLY, TRANSLITVERTEX::GetFVF(), D3DPOOL_MANAGED, &m_pBackVB, NULL);
 
     if(FAILED(hres))
     {
@@ -97,17 +97,8 @@ HRESULT MiniMap::create(LPDIRECT3DDEVICE9 pDevice)
     }
     m_pBackVB->Unlock();
 
-    //Unit-marker vertexbuffer
-    hres = pDevice->CreateVertexBuffer(MINIMAP_MAX_UNITS * 3 * sizeof(TRANSLITVERTEX), NULL, TRANSLITVERTEX::GetFVF(), D3DPOOL_MANAGED, &m_pUnitVB, NULL);
-
-    if(FAILED(hres))
-    {
-        return hres;
-    }
-
-    //Camera vertexbuffer
-    hres = pDevice->CreateVertexBuffer(4 * sizeof(TRANSLITVERTEX), NULL, TRANSLITVERTEX::GetFVF(), D3DPOOL_MANAGED, &m_pCameraVB, NULL);
-
+    //Re-use onRestore for creating D3DPOOL_DEFAULT-resources
+    hres = onRestore(pDevice);
     if(FAILED(hres))
     {
         return hres;
@@ -138,8 +129,66 @@ void MiniMap::release()
 }
 
 
+HRESULT MiniMap::onDeviceLost()
+{
+    HRESULT hres = S_OK;
+    if(m_pUnitVB)
+    {
+        hres = m_pUnitVB->Release();        
+
+        if(FAILED(hres))
+        {
+            return hres;
+        }
+
+        m_pUnitVB = NULL;
+    }
+
+    if(m_pCameraVB)
+    {
+        hres = m_pCameraVB->Release();
+
+        if(FAILED(hres))
+        {
+            return hres;
+        }
+
+        m_pCameraVB = NULL;
+    }
+
+    return hres;
+}
+
+HRESULT MiniMap::onRestore(LPDIRECT3DDEVICE9 pDevice)
+{
+    HRESULT hres;
+
+    //Unit-marker vertexbuffer
+    hres = pDevice->CreateVertexBuffer(MINIMAP_MAX_UNITS * 3 * sizeof(TRANSLITVERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 
+                                        TRANSLITVERTEX::GetFVF(), D3DPOOL_DEFAULT, &m_pUnitVB, NULL);
+
+    if(FAILED(hres))
+    {
+        return hres;
+    }
+
+    //Camera vertexbuffer
+    hres = pDevice->CreateVertexBuffer(4 * sizeof(TRANSLITVERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 
+                                        TRANSLITVERTEX::GetFVF(), D3DPOOL_DEFAULT, &m_pCameraVB, NULL);
+
+    if(FAILED(hres))
+    {
+        return hres;
+    }
+
+    return S_OK;
+}
+
+
 void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
 {
+    //TODO: "ChangeCounter"-poll for camera!
+
     const static float CLIPZ = -0.0f * UITerrain::HEIGHTFACTOR;
 
     D3DXMATRIX matProj;
@@ -332,7 +381,7 @@ void MiniMap::render(LPDIRECT3DDEVICE9 pDevice, LPDIRECT3DTEXTURE9 pTexture)
     D3DVIEWPORT9 original;
     pDevice->GetViewport(&original);
 
-    D3DVIEWPORT9 viewData = { m_Position.x, m_Position.y, m_Size, m_Size, 0.0f, 1.0f };
+    D3DVIEWPORT9 viewData = { (DWORD)m_Position.x, (DWORD)m_Position.y, (DWORD)m_Size, (DWORD)m_Size, 0.0f, 1.0f };
     pDevice->SetViewport(&viewData);
 
     pDevice->SetTexture(0, pTexture);

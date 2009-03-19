@@ -76,6 +76,17 @@ public:
      */
     void render(LPDIRECT3DDEVICE9 pDevice, LPDIRECT3DTEXTURE9 pTexture);
 
+    /**
+     * Called on device lost, releases D3DPOOL_DEFAULT -resources
+     */
+    HRESULT onDeviceLost();
+
+    /**
+     * Called after restoring from device lost, recreates D3DPOOL_DEFAULT-resources
+     * @param pDevice Direct3D-device to recreate the resources with
+     */
+    HRESULT onRestore(LPDIRECT3DDEVICE9 pDevice);
+
 private:
 
     /** 

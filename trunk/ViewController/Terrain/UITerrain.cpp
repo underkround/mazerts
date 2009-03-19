@@ -22,7 +22,7 @@ UITerrain::UITerrain()
     m_Patches = 0;
     m_NumPrimitives = 0;
     m_NumVertices = 0;
-    m_DetailLevel = 0;
+    m_DetailLevel = 0;      //Must be set to the HIGHEST detail (LOWEST value) to be used, before calling create
 
     D3DXMatrixIdentity(&m_World);
 
@@ -243,10 +243,10 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
             m_pppPatchAABBs[y][x][1].y = (float)((y + 1) * PATCHSIZE);
 
 
-            hres = pDevice->CreateVertexBuffer(    m_NumVertices * sizeof(VERTEX2UV),
-                                        0,
+            hres = pDevice->CreateVertexBuffer(m_NumVertices * sizeof(VERTEX2UV),
+                                        D3DUSAGE_WRITEONLY,
                                         VERTEX2UV::GetFVF(),
-                                        D3DPOOL_MANAGED,    //Needs to be something else for dynamic buffer?
+                                        D3DPOOL_MANAGED,
                                         &m_pppVB[y][x],
                                         NULL);
             if (FAILED(hres))
@@ -257,7 +257,7 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
             //Total amount of indices, 6 per tile
             int indAmount = PATCHSIZE * PATCHSIZE * 6;
             
-            //Create buffer (this needs to be dynamic too? Or is it already?)
+            //Create buffer
             pDevice->CreateIndexBuffer(indAmount * sizeof(USHORT),
                 D3DUSAGE_WRITEONLY,
                 D3DFMT_INDEX16,
