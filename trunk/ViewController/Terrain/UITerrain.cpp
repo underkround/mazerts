@@ -730,7 +730,32 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
         for(int x = 0; x < m_Patches; x++)
         {
 
+            VERTEX2UV* pVertices = NULL;
 
+            //Fill vertex-data
+            m_pppVB[y][x]->Lock(0, 0, (void**)&pVertices, D3DLOCK_DISCARD);
+            {
+                for(int i = 0; i < vertexSize; i += detail)
+                {
+                    for(int j = 0; j < vertexSize; j += detail)
+                    {   
+                        //Location in 1D-buffer from 2D-values
+                        int loc = i * vertexSize + j;
+                        
+                        //Offsets in x- and y-axis for vertex location
+                        int offsetX = j + (x * PATCHSIZE);
+                        int offsetY = i + (y * PATCHSIZE);
+                        //Calculate normals
+                        D3DXVECTOR3 normal = getNormalAt((float)offsetX, (float)offsetY, detail, detail); //calculateNormalForVertex(offsetX, offsetY);
+
+                        pVertices[loc].nx = normal.x;
+                        pVertices[loc].ny = normal.y;
+                        pVertices[loc].nz = normal.z;
+                    }
+                }
+            }
+            m_pppVB[y][x]->Unlock();
+        
 
             USHORT* pIndices = NULL;
             
