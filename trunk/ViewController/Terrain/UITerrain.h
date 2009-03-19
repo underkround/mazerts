@@ -111,7 +111,7 @@ public:
     inline D3DFILLMODE getFillMode() { return m_FillMode; }
         
     /**
-     * Sets the detail level for terrain and recalculates vertex- and indexbuffers
+     * Sets the detail level for terrain and recalculates vertex- and indexbuffer
      * @param detailLevel Value from 0 upwards, 0 is the most detailed (2 triangles per 
      * grid square), on higher levels, 2^detailLevel squares per axis are combined to one
      */
@@ -202,6 +202,19 @@ private:
     HRESULT initialize(LPDIRECT3DDEVICE9 pDevice);
 
     /**
+     * Internal initialization for multiple index/vertex buffers
+     * @param pDevice Pointer to D3D9 -device
+     * @return S_OK, if everything went ok, otherwise error code
+     */
+    HRESULT initializeMulti(LPDIRECT3DDEVICE9 pDevice);
+
+    /**
+     * Sets the detail level for terrain and recalculates vertex- and indexbuffers for multi-
+     * buffer rendering, called internally from setDetailLevel
+     */
+    void setDetailLevelMultiBuffer();
+
+    /**
      * Calculates the normal for vertex in location x, y
      * @param x X-location of the vertex
      * @param y Y-location of the vertex
@@ -241,6 +254,17 @@ private:
      * Indexbuffer for terrain mesh patches
      */ 
     LPDIRECT3DINDEXBUFFER9 m_pIB;
+
+    /**
+     * Vertexbuffers for multibuffer-rendering
+     */
+    LPDIRECT3DVERTEXBUFFER9** m_pppVB;
+
+    /**
+     * Indexbuffers for multibuffer-rendering
+     */ 
+    LPDIRECT3DINDEXBUFFER9** m_pppIB;
+
 
     /**
      * Texture for terrain
@@ -305,6 +329,11 @@ private:
      * Global detail-level of terrain patches, how many tiles are represented by a quad
      */
     unsigned char m_DetailLevel;
+
+    /**
+     * For old videocards and laptops
+     */
+    bool m_MultiBufferRender;
 
     /**
      * MiniMap
