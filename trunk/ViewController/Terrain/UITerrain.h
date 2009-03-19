@@ -26,10 +26,15 @@ public:
     friend class TerrainIntersection;
 
     /**
-     * Returns the instance of terrain, note that create needs to be called first
+     * Returns the instance of terrain, note that create needs to be called first before
+     * trying to do anything with it
      * @return UITerrain-pointer or NULL, if create() hasn't been called
      */
-    static UITerrain* getInstance();
+    static UITerrain* getInstance()
+    {
+        static UITerrain instance;
+        return &instance;
+    }
 
     /**
      * Destructor
@@ -43,15 +48,17 @@ public:
 
     /**
      * Size of the side of a single terrain patch, actual size is PATCHSIZE * PATCHSIZE tiles
+     * NOTE! Value should be 2^n and terrain size (in model-side) must be divisable by this! 
+     * Do not use value over 128 (indexbuffer is limited to 16 bits, and needed vertice amount has some overhead)!
      */
     static const int PATCHSIZE = 64;
 
     /**
-     * Creates a new terrain mesh from Model Terrain-data, MUST BE CALLED BEFORE getInstance IS USED
+     * Creates a new terrain mesh from Model Terrain-data
      * @param pDevice LPDIRECT3DDEVICE9 to use for creation
      * @return HRESULT, S_OK if successfull, otherwise error code
      */
-    static HRESULT create(LPDIRECT3DDEVICE9 pDevice);
+    HRESULT create(LPDIRECT3DDEVICE9 pDevice);
 
     /**
      * Releases resources held by this instance
@@ -234,11 +241,6 @@ private:
      * @param y Y-location of the vertex
      */
     float calculateAverageHeightForVertex(unsigned short x, unsigned short y);
-
-    /**
-     * UITerrain singleton instance
-     */
-    static UITerrain* pInstance;
 
     /**
      * World matrix for positioning
