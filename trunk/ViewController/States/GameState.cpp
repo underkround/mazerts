@@ -77,9 +77,9 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     AssetCollection::create(pTerrain->getSize());
 
     //TEST
-    for(int i = 0; i < 50; i++)
+    for(int i = 0; i < 0; i++)
     {
-        AssetFactory::createUnit(NULL, 0, (i * 4), ((i % 5) * 4));
+        AssetFactory::createUnit(NULL, 0, (i * 4), (i % 5) * 4);
     }
 
 
@@ -205,6 +205,27 @@ void GameState::prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float fr
 //    m_pCamera->update();
     Camera::getCurrent()->update();
 
+    //Update terrain detail level, if necessary
+    float height = Camera::getCurrent()->getPosition().z;
+    int detailLevel = m_pUITerrain->getDetailLevel();
+    
+    /*if(height > -200.0f)
+    {        
+        m_pUITerrain->setDetailLevel(0);
+    }
+    else if(height > -350.0f)
+    {
+        m_pUITerrain->setDetailLevel(1);
+    }
+    else if(height > -500.0f)
+    {
+        m_pUITerrain->setDetailLevel(2);
+    }
+    else if(detailLevel != 3)    
+    {
+        m_pUITerrain->setDetailLevel(3);
+    }*/
+
     //Light is here for testing (and doesn't need to be set every frame, as it doesn't move anyway)
     D3DLIGHT9 light;
     //light.Type = D3DLIGHT_POINT;
@@ -228,7 +249,7 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 {
 
     //Terrain needs normal backface-culling
-    pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+    pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
     m_pUITerrain->render(pDevice);
 

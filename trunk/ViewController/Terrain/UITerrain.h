@@ -233,14 +233,14 @@ private:
     D3DXMATRIX m_World;
 
     /**
-     * Vertexbuffers for terrain mesh patches
+     * Vertexbuffer for terrain mesh
      */
-    LPDIRECT3DVERTEXBUFFER9** m_pppVB;
+    LPDIRECT3DVERTEXBUFFER9 m_pVB;
 
     /**
-     * Indexbuffers for terrain mesh patches
+     * Indexbuffer for terrain mesh patches
      */ 
-    LPDIRECT3DINDEXBUFFER9** m_pppIB;
+    LPDIRECT3DINDEXBUFFER9 m_pIB;
 
     /**
      * Texture for terrain
