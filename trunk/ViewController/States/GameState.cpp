@@ -77,7 +77,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     AssetCollection::create(pTerrain->getSize());
 
     //TEST
-    for(int i = 0; i < 0; i++)
+    for(int i = 0; i < 40; i++)
     {
         AssetFactory::createUnit(NULL, 0, (i * 4), (i % 5) * 4);
     }
