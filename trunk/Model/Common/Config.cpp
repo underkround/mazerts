@@ -547,10 +547,13 @@ void Config::addSetting(string in_file, string in_section, string in_name, strin
     for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
       if((*iter)->name == in_name && (*iter)->file == in_file && (*iter)->section == in_section) {
         // add new value node to existing setting
-        SettingString* item = static_cast<SettingString*>(*iter);
-        StringNode* node = new StringNode(in_value, item->valueNode);
-        item->valueNode = node;
-        item->count++;
+        // check that we add only same type
+        if((*iter)->type == VARIABLE_STRING) {
+          SettingString* item = static_cast<SettingString*>(*iter);
+          StringNode* node = new StringNode(in_value, item->valueNode);
+          item->valueNode = node;
+          item->count++;
+        }
         return;
       }
     }
@@ -575,10 +578,13 @@ void Config::addSetting(string in_file, string in_section, string in_name, float
     for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
       if((*iter)->name == in_name && (*iter)->file == in_file && (*iter)->section == in_section) {
         // add new value node to existing setting
-        SettingFloat* item = static_cast<SettingFloat*>(*iter);
-        FloatNode* node = new FloatNode(in_value, item->valueNode);
-        item->valueNode = node;
-        item->count++;
+        // check that we add only same type
+        if((*iter)->type == VARIABLE_FLOAT) {
+          SettingFloat* item = static_cast<SettingFloat*>(*iter);
+          FloatNode* node = new FloatNode(in_value, item->valueNode);
+          item->valueNode = node;
+          item->count++;
+        }
         return;
       }
     }
@@ -603,10 +609,13 @@ void Config::addSetting(string in_file, string in_section, string in_name, int i
     for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
       if((*iter)->name == in_name && (*iter)->file == in_file && (*iter)->section == in_section) {
         // add new value node to existing setting
-        SettingInt* item = static_cast<SettingInt*>(*iter);
-        IntNode* node = new IntNode(in_value, item->valueNode);
-        item->valueNode = node;
-        item->count++;
+        // check that we add only same type
+        if((*iter)->type == VARIABLE_INTEGER) {
+          SettingInt* item = static_cast<SettingInt*>(*iter);
+          IntNode* node = new IntNode(in_value, item->valueNode);
+          item->valueNode = node;
+          item->count++;
+        }
         return;
       }
     }
