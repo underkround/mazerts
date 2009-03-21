@@ -1,7 +1,7 @@
 #ifndef __IMAGETERRAINGENERATOR_H__
 #define __IMAGETERRAINGENERATOR_H__
 
-#define DEFAULT_FILENAME "map.bmp"
+#define DEFAULT_FILENAME "../data/terrains/map.bmp"
 #define DEFAULT_SIZE 512
 
 #include "ITerrainGenerator.h"
