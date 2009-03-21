@@ -72,12 +72,13 @@ public:
     void render(LPDIRECT3DDEVICE9 pDevice);
 
     /**
-     * Returns the normal at given position
+     * Returns the normal at given position, or if multiple tiles, the average of normals within area
      * @param x X-position to get the normal from
      * @param y Y-position to get the normal from
+     * @param tiles From how big area (tiles * tiles) around the position should normals be averaged
      * @return D3DXVECTOR3 representing the normal, or NULL if out of map
      */
-    D3DXVECTOR3 getNormalAt(float x, float y, int j, int k);
+    D3DXVECTOR3 getNormalAt(float x, float y, int tiles);
 
     /**
      * Calculates height of the map at given position in current detail level

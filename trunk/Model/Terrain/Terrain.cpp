@@ -204,10 +204,10 @@ short Terrain::getMoveCost(const short x, const short y, const signed char dirX,
             }
 
             //If there's a unit in the square, penalize movecost
-            if(AssetCollection::getUnitsAt(NULL, targetX-2, targetY-2, 5, 5) != 0)
+            /*if(AssetCollection::getUnitsAt(NULL, targetX-2, targetY-2, 5, 5) != 0)
             {
                 moveCost += 1000;
-            }
+            }*/
 
             moveCost <<= MOVECOST_FACTOR;
 

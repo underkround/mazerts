@@ -87,6 +87,13 @@ void GroundMovingLogic::update(Unit* pUnit, const float deltaT)
 
 void GroundMovingLogic::idle(const float deltaT)
 {
+    //Destroy possible old agent (the path data will be discarded along with it)
+    if(m_pAgent)
+    {
+        m_pAgent->cancel();
+        delete m_pAgent;
+        m_pAgent = NULL;                
+    }
 
     // do we have a target?
     if(m_pTarget) 
@@ -118,14 +125,6 @@ void GroundMovingLogic::idle(const float deltaT)
 
 void GroundMovingLogic::askPath()
 {
-    //Destroy possible old agent (the path data will be discarded along with it)
-    if(m_pAgent)
-    {
-        m_pAgent->cancel();
-        delete m_pAgent;
-        m_pAgent = NULL;                
-    }
-
     if(!m_pTarget)
     {
         m_State = IDLE;
@@ -239,7 +238,7 @@ void GroundMovingLogic::followPath()
     Vector3* dir = m_pUnit->getDirection();
     Vector3* pos = m_pUnit->getPosition();
 
-    //If close enough to current, get next target square
+    //If close enough to current, get next target square (Is this correct? should the distance be based on unit size?)
     if( fabs(m_pPathNode->x - pos->x) < 1.0f && fabs(m_pPathNode->y - pos->y) < 1.0f)
     {
         m_pPathNode = m_pAgent->getNextPathNode();        
