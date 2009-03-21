@@ -2,6 +2,7 @@
 
 #include "../../Model/Terrain/Terrain.h"
 #include "../../Model/Terrain/AntinTerrainGenerator.h"
+#include "../../Model/Terrain/ImageTerrainGenerator.h"
 #include "../../Model/PathFinding/PathFinderMaster.h"
 #include "../../Model/Asset/AssetFactory.h"
 
@@ -68,7 +69,8 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     //Model-terrain
     Terrain* pTerrain = Terrain::getInstance();
-    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);    
+    //AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);    
+    ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("map.bmp");
     pTerrain->initialize(pGenerator);
 
     pTerrain->setWaterLevel(50); // TODO: imho this is for the terrain generator to decide! move it there?

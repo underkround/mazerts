@@ -309,6 +309,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Terrain\ImageTerrainGenerator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Terrain\ImageTerrainGenerator.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Terrain\ITerrain.h"
 					>
 				</File>
@@ -554,34 +562,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="PathFinding"
-				>
-				<File
-					RelativePath=".\PathFinding\IPathFinder.h"
-					>
-				</File>
-				<File
-					RelativePath=".\PathFinding\PathAgent.h"
-					>
-				</File>
-				<File
-					RelativePath=".\PathFinding\PathFinder.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\PathFinding\PathFinder.h"
-					>
-				</File>
-				<File
-					RelativePath=".\PathFinding\PathFinderMaster.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\PathFinding\PathFinderMaster.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Player"
 				>
 				<File
@@ -592,6 +572,34 @@
 					RelativePath=".\Player\Player.h"
 					>
 				</File>
+				<Filter
+					Name="PathFinding"
+					>
+					<File
+						RelativePath=".\PathFinding\IPathFinder.h"
+						>
+					</File>
+					<File
+						RelativePath=".\PathFinding\PathAgent.h"
+						>
+					</File>
+					<File
+						RelativePath=".\PathFinding\PathFinder.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\PathFinding\PathFinder.h"
+						>
+					</File>
+					<File
+						RelativePath=".\PathFinding\PathFinderMaster.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\PathFinding\PathFinderMaster.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 	</Files>

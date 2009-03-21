@@ -246,6 +246,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Model\Terrain\ImageTerrainGenerator.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Terrain\ImageTerrainGenerator.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Model\Terrain\ITerrain.h"
 					>
 				</File>
