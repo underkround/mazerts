@@ -24,18 +24,21 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
 {
     //PERUNAPELTOGENERAATTORI aka. just testing algorithms - NOT an actual way to make good terrain!
     makeFlat(ppVertexHeightData, terrainSize, Terrain::DEFAULT_FLATHEIGHT);
-    for(int i=0;i<80;i+=8)
+
+    //some bigger gaps
+    faultLines(ppVertexHeightData, terrainSize, 4, 15);
+
+    /*for(int i=8;i<120;i+=8)
     {
-        makeHills(ppVertexHeightData, terrainSize, 2, i, i*2);
-    }
+        makeHills(ppVertexHeightData, terrainSize, 2, i, i/2);
+    }*/
     //invertTerrain(ppVertexHeightData, terrainSize);
-    faultLines(ppVertexHeightData, terrainSize, 4, 50);
 
-    //Terrain::getInstance()->smoothMap(1);
+    //some nice random terrain
+    faultLines(ppVertexHeightData, terrainSize, 1000, 2);
 
-    faultLines(ppVertexHeightData, terrainSize, 400, 1);
-
-    /*for(int i=0;i<10;++i)
+    //"sweet spots"
+    for(int i=0;i<10;++i)
     {
         flattenArea(    ppVertexHeightData,
                         terrainSize,
@@ -44,8 +47,12 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
                         -1,
                         10,
                         40);
-    }*/
+    }
 
+    //"starting area"
+    flattenArea(ppVertexHeightData, terrainSize, 80, 100, 0, 50, 100);
+
+    //"minmax volcano"
     flattenArea(ppVertexHeightData, terrainSize, 255, 50, 100, 15, 20);
     flattenArea(ppVertexHeightData, terrainSize, 0, 50, 100, 10, 0);
 
