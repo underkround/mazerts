@@ -919,12 +919,6 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
     }
 
 
-    //Single patch is PATCHSIZE * PATCHSIZE, 2 triangles per square, detail^2 squares per quad
-    m_NumPrimitives = (PATCHSIZE * PATCHSIZE * 2) / (detail * detail);
-    unsigned short vertexSize = ((PATCHSIZE) / detail) + 1;    
-    m_NumVertices = (vertexSize-1) * (vertexSize-1);
-
-
     USHORT* pIndices = NULL;
     
     //Index-array index
@@ -957,10 +951,17 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
     m_pIB->Unlock();
 
 
-    //TODO: single buffer vertex-corrections for detail level
-    /*unsigned const char* const * ppTerrainVertexData = Terrain::getInstance()->getTerrainVertexHeightData();    
+
+    //Single patch is PATCHSIZE * PATCHSIZE squares, 2 triangles per square, detail^2 squares averaged to single quad
+    m_NumPrimitives = (PATCHSIZE * PATCHSIZE * 2) / (detail * detail);
+    unsigned short vertexSize = ((PATCHSIZE) / detail) + 1;    
+
+    unsigned const char* const * ppTerrainVertexData = Terrain::getInstance()->getTerrainVertexHeightData();    
 
     VERTEX2UV* pVertices = NULL;
+
+    //Location within vertexbuffer
+    int loc = 0;
 
     //Fill vertex-data
     m_pVB->Lock(0, 0, (void**)&pVertices, NULL);
@@ -969,32 +970,36 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
         {
             for(int x = 0; x < m_Patches; x++)
             {
-
-                for(int i = 0; i < vertexSize; i += detail)
+                loc = (y * (((PATCHSIZE+1) * (PATCHSIZE+1)) * m_Patches)) + (x * ((PATCHSIZE+1) * (PATCHSIZE+1)));
+                for(int i = 0; i < PATCHSIZE+1; i += detail)
                 {
-                    for(int j = 0; j < vertexSize; j += detail)
-                    {   
-                        //Location in 1D-buffer from 2D-values  //THIS IS WRONG!
-                        int loc = i * (PATCHSIZE + 1) + j;
-                                                
-                        //Offsets in x- and y-axis for vertex location
-                        int offsetX = (j * detail) + (x * PATCHSIZE);
-                        int offsetY = (i * detail) + (y * PATCHSIZE);
+                    int offsetY = i + (y * PATCHSIZE);
 
-                        pVertices[loc].z = -100.0f;// -calculateAverageHeightForVertex(offsetX, offsetY);
+                    for(int j = 0; j < PATCHSIZE+1; j += detail)
+                    {
+                        //Offsets in x- and y-axis for model square location
+                        int offsetX = j + (x * PATCHSIZE);
 
+                        if(loc == 64)
+                        {
+                            int k = 1;
+                        }
+
+                        pVertices[loc].z = -calculateAverageHeightForVertex(offsetX, offsetY);
+                        
                         //Calculate normals
                         D3DXVECTOR3 normal = getNormalAt((float)offsetX, (float)offsetY, detail, detail);
 
                         pVertices[loc].nx = normal.x;
                         pVertices[loc].ny = normal.y;
                         pVertices[loc].nz = normal.z;
-                    }
+                        loc += detail;
+                    }                    
                 }
             }
         }        
     }
-    m_pVB->Unlock();*/
+    m_pVB->Unlock();
 }
 
 void UITerrain::setDetailLevelMultiBuffer()
@@ -1024,14 +1029,16 @@ void UITerrain::setDetailLevelMultiBuffer()
             {
                 for(int i = 0; i < vertexSize; i++)
                 {
+                    //Y-offset to vertices based on detail level
+                    int offsetY = (i * detail) + (y * PATCHSIZE);
+
                     for(int j = 0; j < vertexSize; j++)
                     {   
                         //Location in 1D-buffer from 2D-values
                         int loc = i * vertexSize + j;
                         
-                        //Offsets to vertices based on detail-level
-                        int offsetX = (j * detail) + (x * PATCHSIZE);
-                        int offsetY = (i * detail) + (y * PATCHSIZE);
+                        //X-offset to vertices based on detail-level
+                        int offsetX = (j * detail) + (x * PATCHSIZE);                        
 
                         pVertices[loc].x = (float)offsetX;
                         pVertices[loc].y = (float)offsetY;
@@ -1109,7 +1116,7 @@ float UITerrain::calculateAverageHeightForVertex(unsigned short x, unsigned shor
 
     unsigned char const * const * ppTerrainVertexData = Terrain::getInstance()->getTerrainVertexHeightData();    
 
-    //For highest detail level
+    //Highest detail level uses model-data directly
     if(m_DetailLevel == 0)
     {
         return ppTerrainVertexData[y][x] * HEIGHTFACTOR;
