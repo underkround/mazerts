@@ -349,7 +349,11 @@ void CTheApp::CheckTexturingCaps(void)
 void CTheApp::handleConfig()
 {
     Config& c = *Config::getInstance();
-    c.setFilename("config.ini");
+    c.setFilename("../data/config.ini");
+    c.readFile();
+    c.setFilename("../data/meshes.ini");
+    c.readFile();
+    c.setFilename("../data/controls.ini");
     c.readFile();
 
     bool sounds = c.getValueAsBool("sound enabled", true);

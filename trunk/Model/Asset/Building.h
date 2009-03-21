@@ -16,7 +16,7 @@ class Building : public IAsset
 {
 public:
 
-    Building(int buildingType = 0);
+    Building(AssetDef def);
     virtual ~Building();
 
 // =====
@@ -29,7 +29,7 @@ public:
 
 private:
 
-    int         m_BuildingType;
+//    int         m_BuildingType;
 
 };
 

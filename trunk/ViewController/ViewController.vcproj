@@ -346,15 +346,19 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Model\Asset\IAssetRadar.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\Model\Asset\IAssetRadar.h"
 					>
 				</File>
 				<File
 					RelativePath="..\Model\Asset\IMovingLogic.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Asset\Radar.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Asset\Radar.h"
 					>
 				</File>
 				<File
@@ -539,6 +543,22 @@
 				</File>
 				<File
 					RelativePath="..\Model\Player\Player.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Defs"
+				>
+				<File
+					RelativePath="..\Model\Defs\DefManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Defs\DefManager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Defs\Defs.h"
 					>
 				</File>
 			</Filter>
@@ -859,6 +879,10 @@
 				</File>
 				<File
 					RelativePath=".\Sound\SoundMP3Player.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Sound\sounds.h"
 					>
 				</File>
 				<File

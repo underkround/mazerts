@@ -18,7 +18,7 @@
 //After how many frames a stuck unit cancels its MAKEWAY-target
 #define STUCKCOUNTER_CANCEL 300
 
-GroundMovingLogic::GroundMovingLogic()
+GroundMovingLogic::GroundMovingLogic(MovingDef def) : IMovingLogic(def)
 {
     m_pUnit = NULL;
     m_pAgent = NULL;

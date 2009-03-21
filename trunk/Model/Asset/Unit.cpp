@@ -9,9 +9,9 @@
 #include "Unit.h"
 #include "AssetCollection.h"
 
-Unit::Unit(int unitType) : IAsset(UNIT)
+Unit::Unit(AssetDef def) : IAsset(UNIT, def)
 {
-    m_UnitType = unitType;
+    //m_UnitType = unitType;
     // set defaults
     m_pMovingLogic = NULL;
     m_pWeapon = NULL;

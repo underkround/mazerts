@@ -20,11 +20,10 @@
  *
  * ===== Known bugs & issues
  *
- * - TODO: arrays do not have type-checking, if you define array values
- *   for same key with different types, i really don't know what can happen!
- *
  * - not optimized in any way :D
- *
+ * - bool and wstring do not support array-functionality.. but since bool is
+ *   essentially only integer and wstring is string, both with casting, there
+ *   is no need atm.
  *
  * ===== Supported .ini format
  *
@@ -117,7 +116,7 @@ public:
         StringNode* next;
     };
 
-    // settiing types
+    // setting types
 
     struct SettingInt : Setting {
         //int value;
@@ -409,9 +408,12 @@ public:
      * deleteSetting
      *
      * removes setting
+     *
+     * @param in_name       key for setting
+     * @param in_filename   optional filter for filename (give "" to ignore)
+     * @param in_section    optional filter for section (give "" to ignore)
      */
     void deleteSetting(string in_name);
-    void deleteSetting(string in_filename, string in_name);
     void deleteSetting(string in_filename, string in_section, string in_name);
 
     /**
@@ -419,10 +421,11 @@ public:
      *
      * checks if setting exists
      *
-     * @param name setting to be checked
+     * @param in_name       key for setting to be checked
+     * @param in_filename   optional filter for filename (give "" to ignore)
+     * @param in_section    optional filter for section (give "" to ignore)
      */
     bool settingExists(string in_name);
-    bool settingExists(string in_filename, string in_name);
     bool settingExists(string in_filename, string in_section, string in_name);
 
     /**

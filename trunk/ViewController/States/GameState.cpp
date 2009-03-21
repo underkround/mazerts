@@ -20,6 +20,9 @@
 #include "../Controller/CameraController.h"
 #include "../Controller/SoundController.h"
 
+// Definition things
+#include "../../Model/Defs/DefManager.h"
+
 //DEBUG
 #include "../3DDebug/UI3DDebug.h"
 
@@ -63,6 +66,9 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     m_pDevice = pDevice;
 
+    // Load definition files
+    DefManager::getInstance()->loadConfigurations();
+
     //Prepare manager
     UI3DObjectManager::create(pDevice);
     m_pManager = UI3DObjectManager::getInstance();
@@ -81,7 +87,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     //TEST
     for(int i = 0; i < 40; i++)
     {
-        AssetFactory::createUnit(NULL, 0, (i * 4), (i % 5) * 4);
+        AssetFactory::createUnit(NULL, 1, (i * 4), (i % 5) * 4);
     }
 
 

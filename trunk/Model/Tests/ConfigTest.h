@@ -60,4 +60,5 @@ void testConfig() {
     assert(c.getValueAsInt("", "bar", "integeri muut-sektionissa") != 5); // wrong section
     assert(c.getValueAsInt("foo", "bar", "integeri muut-sektionissa") != 5); // wrong file & section
 
+//    cout << c.getValueAsInt("", "sekt1", "olen monessa sectionissa") << endl;
 }

@@ -49,11 +49,11 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
     counter++;
     if(counter < 40)
     {
-        CXFileLoader::Load(_T("superTank.x"), m_ResourceContainer, pUIUnit);
+        CXFileLoader::Load(_T("../data/x-meshes/superTank.x"), m_ResourceContainer, pUIUnit);
     }
     else
     {
-        CXFileLoader::Load(_T("car_example.x"), m_ResourceContainer, pUIUnit);
+        CXFileLoader::Load(_T("../data/x-meshes/car_example.x"), m_ResourceContainer, pUIUnit);
     }
 
     m_RootObject.AddChild(pUIUnit);

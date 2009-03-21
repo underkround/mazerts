@@ -17,21 +17,21 @@ HRESULT SoundManager::create(IApplication* pApp)
     SoundManager* pInstance = getInstance();
 
     // HERE BE ALL SOUNDS FOR NOW
+    // MOVE ELSEWHERE PLZ
     static const Sound soundsList[] = 
     {
-        {_T("explosion.wav"), DEBUG},
-        {_T("../../audio/ready.wav"), READY},
-        {_T("shoot1.wav"), SHOOT},
-        {_T("shoot2.wav"), SHOOT},
-        {_T("shoot3.wav"), SHOOT},
-        {_T("shoot4.wav"), SHOOT},
-        {_T("../../audio/komennot.wav"), OK},
-        {_T("../../audio/nytmenoksi.wav"), OK},
-        {_T("../../audio/voetokkiisa.wav"), OK},
-        {_T("no1.wav"), NO}
+        {_T("..//data//sounds//explosion.wav"), SOUND_DEBUG},
+        {_T("..//data//sounds//ready.wav"), SOUND_READY},
+        {_T("..//data//sounds//shoot1.wav"), SOUND_SHOOT},
+        {_T("..//data//sounds//shoot2.wav"), SOUND_SHOOT},
+        {_T("..//data//sounds//shoot3.wav"), SOUND_SHOOT},
+        {_T("..//data//sounds//shoot4.wav"), SOUND_SHOOT},
+        {_T("..//data//sounds//ok1.wav"), SOUND_OK},
+        {_T("..//data//sounds//ok2.wav"), SOUND_OK},
+        {_T("..//data//sounds//no1.wav"), SOUND_NO}
     };
 
-    pInstance->m_MusicMap[BACKGROUND] = _T("music.mp3");
+    pInstance->m_MusicMap[MUSIC_BACKGROUND] = _T("..//data//music//music.mp3");
 
     HRESULT hres;
 

@@ -8,30 +8,31 @@
 
 #include "AssetFactory.h"
 #include "GroundMovingLogic.h"
+#include "Radar.h"
+
+#include "../Defs/DefManager.h"
+#include "../Defs/Defs.h"
 
 Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, short positionY)
 {
-    // create unit
-    Unit* u = new Unit(unitType);
+    DefManager* dm = DefManager::getInstance();
+    AssetDef* def = dm->getAssetDef(unitType);
+    if(!def)
+        return NULL; // invalid asset type
+    if(def->concreteType != 1)
+        return NULL; // asset is not unit
+
+    Unit* u = new Unit(*def);
     u->setOwner(owner);
-
-    /**
-     * Setup unit's type-specifig properties
-     */
-    switch(unitType)
-    {
-    default:
-    case AssetFactory::UNIT_TYPE_DEBUG:
-        // create unit & set it's properties
-        u->setWidth(4);
-        u->setHeight(4);
-        //u->setWeapon(NULL); // TODO
-        u->setMovingLogic(new GroundMovingLogic()); // TODO
-        break;
-    }
-
     u->forcePosition(positionX, positionY);
-    // register unit to collection & return it
+
+    // add components
+    setRadar(u);
+    setBuilder(u);
+    setResourcer(u);
+    setWeapon(u);
+    setMoving(u);
+
     u->create();
     return u;
 }
@@ -39,22 +40,119 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, sho
 
 Building* AssetFactory::createBuilding(Player* owner, int buildingType, short positionX, short positionY)
 {
-    Building* b = new Building(buildingType);
+    DefManager* dm = DefManager::getInstance();
+    AssetDef* def = dm->getAssetDef(buildingType);
+    if(!def)
+        return NULL; // invalid asset type
+    if(def->concreteType != 2)
+        return NULL; // type is not building
+
+    Building* b = new Building(*def);
     b->setOwner(owner);
-
-    /**
-     * Setup building's type-specifig properties
-     */
-    switch(buildingType)
-    {
-    default:
-    case AssetFactory::BUILDING_TYPE_DEBUG:
-        b->setWidth(4);
-        b->setHeight(3);
-        //b->setWeapon(NULL); // only on cannon towers etc
-    }
-
     b->forcePosition(positionX, positionY);
+
+    // add components
+    setRadar(b);
+    setBuilder(b);
+    setResourcer(b);
+    setWeapon(b);
+
     b->create();
     return b;
+}
+
+
+IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX, short positionY)
+{
+    AssetDef* def = DefManager::getInstance()->getAssetDef(assetType);
+    if(!def)
+        return NULL; // invalid assetType
+    switch(def->concreteType)
+    {
+    case 1:
+        return createUnit(owner, assetType, positionX, positionY);
+    case 2:
+        return createBuilding(owner, assetType, positionX, positionY);
+    default:
+        return NULL;
+    }
+}
+
+// ===== Set components based on asset's definition
+
+bool AssetFactory::setRadar(IAsset* a)
+{
+    RadarDef* def = a->getDef()->pDefRadar;
+    if(!def)
+        return false; // no radar associated
+    switch(def->concreteType)
+    {
+    case 1:
+        a->setRadar(new Radar(*def));
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+bool AssetFactory::setBuilder(IAsset* a)
+{
+    BuilderDef* def = a->getDef()->pDefBuilder;
+    if(!def)
+        return false; // no builder associated
+    // Waiting for concrete classes
+    /*
+    BuilderDef* def = a->getDef()->pDefBuilder;
+    */
+    return false;
+}
+
+bool AssetFactory::setResourcer(IAsset* a)
+{
+    ResourcerDef* def = a->getDef()->pDefResourcer;
+    if(!def)
+        return false; // no resourcer associated
+    // Waiting for concrete classes
+    /*
+    ResourcerDef* def = a->getDef()->pDefResourcer;
+    */
+    return false;
+}
+
+bool AssetFactory::setWeapon(IAsset* a)
+{
+    ProjectileDef* def = a->getDef()->pDefProjectile;
+    if(!def)
+        return false; // no projectile associated
+    // Waiting for concrete classes
+    /*
+    ProjectileDef* def = a->getDef()->pDefWeapon;
+    switch(def->concreteType)
+    {
+    case 1:
+        a->setWeapon(new DefaultWeapon(def));
+        break;
+    default:
+        return false;
+    }
+    return true;
+    */
+    return false;
+}
+
+bool AssetFactory::setMoving(Unit* u)
+{
+    MovingDef* def = u->getDef()->pDefMoving;
+    if(!def)
+        return false;
+    switch(def->concreteType)
+    {
+    case 1:
+        u->setMovingLogic(new GroundMovingLogic(*def));
+        break;
+    default:
+        return false;
+    }
+    return true;
 }

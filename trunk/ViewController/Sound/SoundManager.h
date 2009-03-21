@@ -19,6 +19,7 @@
 #include "SoundMP3Player.h"
 #include "../Camera/Camera.h"
 #include "../../Model/Common/DoubleLinkedList.h"
+#include "sounds.h"
 
 #include <tchar.h>
 #include <map>
@@ -39,27 +40,6 @@ using namespace std;
 class SoundManager
 {
 public:
-    /**
-     * Different kinds of sounds
-     */
-    enum SoundTypes 
-    {
-        DEBUG = 0,
-        READY,
-        SHOOT,
-        OK,
-        NO,
-        __END = 0xff
-    };
-    
-    /**
-     * Different kinds of music
-     */
-    enum MusicTypes
-    {
-        BACKGROUND = 0,
-        _END = 0xff
-    };
 
     /**
      * Struct for storing sound

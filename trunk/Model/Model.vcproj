@@ -212,6 +212,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Tests\testDefLoading.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Tests\testDoubleLinkedList.h"
 				>
 			</File>
@@ -398,10 +402,6 @@
 				</File>
 				<File
 					RelativePath=".\Asset\IAssetListener.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Asset\IAssetRadar.cpp"
 					>
 				</File>
 				<File
@@ -600,6 +600,22 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="Defs"
+				>
+				<File
+					RelativePath=".\Defs\DefManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Defs\DefManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Defs\Defs.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>

@@ -11,10 +11,12 @@
 #include "IAssetListener.h"
 #include "AssetCollection.h"
 
+#include "../Defs/Defs.h"
+
 int IAsset::m_InstanceCounter = 0;
 int IAsset::m_InstanceDestructionCounter = 0;
 
-IAsset::IAsset(const Type assetType) : m_AssetType (assetType), m_IID (m_InstanceCounter)
+IAsset::IAsset(const Type assetType, AssetDef def) : m_AssetType (assetType), m_Def (def), m_IID (m_InstanceCounter)
 {
     m_InstanceCounter++;
     // set to 0 coordinate

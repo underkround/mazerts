@@ -33,12 +33,17 @@
 #ifndef __IMOVINGLOGIC_H__
 #define __IMOVINGLOGIC_H__
 
+#include "../Defs/Defs.h"
+
 class Unit;
 class Target;
 
 class IMovingLogic
 {
 public:
+
+    IMovingLogic(MovingDef def) : m_Def(def) { };
+    virtual ~IMovingLogic() { }
 
     /**
      * NOTE: this is intented to be called only by unit, so do not
@@ -117,6 +122,11 @@ public:
      * Clear command queue and current target
      */
     virtual void clearTargets() = 0;
+
+protected:
+
+    // definition containing the parameters for moving
+    MovingDef       m_Def;
 
 };
 

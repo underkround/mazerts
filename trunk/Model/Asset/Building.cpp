@@ -10,15 +10,15 @@
 
 #include <iostream>
 
-Building::Building(int buildingType) : IAsset(BUILDING)
+Building::Building(AssetDef def) : IAsset(BUILDING, def)
 {
-    m_BuildingType = buildingType;
-    std::cout << "building (iid " << m_IID << ", type " << m_BuildingType << ") constructor called\n";
+//    m_BuildingType = buildingType;
+//    std::cout << "building (iid " << m_IID << ", type " << m_BuildingType << ") constructor called\n";
 }
 
 Building::~Building()
 {
-    std::cout << "building (iid " << m_IID << ", type " << m_BuildingType << ") destructor called\n";
+//    std::cout << "building (iid " << m_IID << ", type " << m_BuildingType << ") destructor called\n";
     release();
 }
 

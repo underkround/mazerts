@@ -14,7 +14,7 @@
 SoundController::SoundController()
 {
     // Play music
-    SoundManager::playMusic(SoundManager::BACKGROUND, true);
+    SoundManager::playMusic(MUSIC_BACKGROUND, true);
 
     // Default controls
     int m_KeySoundToggle    = 63;
@@ -32,7 +32,7 @@ void SoundController::loadConfiguration(const bool confFileLoaded)
     Config & c = * Config::getInstance();
     if(!confFileLoaded)
     {
-        c.setFilename("controls.ini");
+        c.setFilename("../data/controls.ini");
         c.readFile();
     }
     c.updateInt("key toggle sound",         m_KeySoundToggle);
@@ -45,7 +45,7 @@ void SoundController::updateControls(const float frameTime)
 {
     // sound things
     if (KeyboardState::keyReleased[m_KeySoundToggle])
-        SoundManager::playSound(SoundManager::DEBUG, 0.1f, D3DXVECTOR3(50, 100, 0));
+        SoundManager::playSound(SOUND_DEBUG, 0.1f, D3DXVECTOR3(50, 100, 0));
 //        SoundManager::setSoundsEnabled(!SoundManager::getSoundsEnabled());
     if (KeyboardState::keyReleased[m_KeyMusicToggle])
         SoundManager::setMusicEnabled(!SoundManager::getMusicEnabled());

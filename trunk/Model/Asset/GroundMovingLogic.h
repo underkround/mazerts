@@ -34,7 +34,7 @@ public:
     /**
      * Constructor
      */
-    GroundMovingLogic();
+    GroundMovingLogic(MovingDef def);
 
     /**
      * Destructor

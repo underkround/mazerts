@@ -12,9 +12,20 @@
 
 #include "IAssetRadar.h"
 #include "IAsset.h"
+#include "../Defs/Defs.h"
 
-class Radar : IAssetRadar
+class Radar : public IAssetRadar
 {
+public:
+
+    Radar(RadarDef def) : IAssetRadar(def)
+    {
+    }
+
+    virtual ~Radar()
+    {
+    }
+
     /**
      * Normal per-frame update call from the hosting unit.
      * @param deltaT    time from last update

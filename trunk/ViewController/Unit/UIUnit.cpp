@@ -205,6 +205,6 @@ void UIUnit::setSelected(bool value)
         this->AddChild((C3DObject*)m_SelectionMarker);
 
         // play sound for selection
-        SoundManager::playSound(SoundManager::READY, 0.1f, (D3DXVECTOR3)&GetMatrix()._41);
+        SoundManager::playSound(SOUND_READY, 0.1f, (D3DXVECTOR3)&GetMatrix()._41);
     }
 }

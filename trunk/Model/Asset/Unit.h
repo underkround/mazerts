@@ -13,12 +13,13 @@
 #include "IAsset.h"
 #include "IMovingLogic.h"
 #include "../Command/Target.h"
+#include "../Defs/Defs.h"
 
 class Unit : public IAsset
 {
 public:
 
-    Unit(int unitType = 0);
+    Unit(AssetDef def);
     virtual ~Unit();
 
 // ===== Initialization

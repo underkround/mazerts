@@ -328,7 +328,7 @@ void UIAssetController::onActionRelease(const float frameTime)
             // asset as target
             m_pUnitCommandDispatcher->getTarget()->setTarget(pUIUnit->getUnit());
             m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
-            SoundManager::playSound(SoundManager::OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
+            SoundManager::playSound(SOUND_OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
         }
 
         // secondly check if the click hits to terrain as target
@@ -341,7 +341,7 @@ void UIAssetController::onActionRelease(const float frameTime)
                 unsigned short targetY = (unsigned short)hitSquare->y;
                 m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
                 m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
-                SoundManager::playSound(SoundManager::OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
+                SoundManager::playSound(SOUND_OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
                 delete hitSquare;
             }
         }

@@ -16,11 +16,21 @@
 
 #include "../Common/DoubleLinkedList.h"
 
+#include "../Defs/Defs.h"
+
 class IAsset;
 
 class IAssetRadar
 {
 public:
+
+    IAssetRadar(RadarDef def) : m_Def(def)
+    {
+    }
+
+    virtual ~IAssetRadar()
+    {
+    }
 
     /**
      * This gets called by the asset when the radar is attached to
@@ -64,12 +74,15 @@ public:
     inline const unsigned int getRange() { return m_Range; }
 
 protected:
-    IAsset*                      m_pHost; // Asset this radar is attached to
 
-    DoubleLinkedList<IAsset*>    m_VisibleAssets; // Visible assets
-    DoubleLinkedList<IAsset*>    m_VisibleEnemyAssets; // visible enemy assets
+    IAsset*                     m_pHost; // Asset this radar is attached to
 
-    unsigned int                 m_Range; // Range of this radar
+    RadarDef                    m_Def; // definition struct for radar parameters
+
+    DoubleLinkedList<IAsset*>   m_VisibleAssets; // Visible assets
+    DoubleLinkedList<IAsset*>   m_VisibleEnemyAssets; // visible enemy assets
+
+    unsigned int                m_Range; // Range of this radar
 };
 
 #endif // __IASSETRADAR_H__

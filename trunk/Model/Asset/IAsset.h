@@ -26,6 +26,9 @@
 #include "../Weapon/IWeapon.h"
 #include "../Player/Player.h"
 
+//struct AssetDef;
+#include "../Defs/Defs.h"
+
 class IAssetListener;
 
 class IAsset
@@ -51,7 +54,7 @@ public:
     static const char RESULT_OK        = 0;
     static const char RESULT_DELETEME  = 1;
 
-    IAsset(Type assetType);
+    IAsset(Type assetType, AssetDef def);
     virtual ~IAsset();
 
 // ==== update
@@ -108,12 +111,26 @@ public:
      */
     inline Type getAssetType()      { return m_AssetType; }
 
+    /**
+     * @return  The def struct that defines this asset
+     */
+    inline AssetDef* getDef()       { return &m_Def; }
+
 // ===== Size
 
-    inline void setWidth(const unsigned char width)     { m_Width = width; }
-    inline void setHeight(const unsigned char height)   { m_Height = height; }
-    inline const unsigned char getWidth()   { return m_Width; }
-    inline const unsigned char getHeight()  { return m_Height; }
+    /**
+     * These setters are not meant to be used in real game situation..
+     * they are mainly left here for debugging & backwards compability
+     * with old test-code etc.
+     */
+    inline void setWidth(const unsigned char width)     { m_Def.width = width; }
+    inline void setHeight(const unsigned char height)   { m_Def.height = height; }
+
+    /**
+     * Getters for unit's size properties
+     */
+    inline const unsigned char getWidth()   { return m_Def.width; }
+    inline const unsigned char getHeight()  { return m_Def.height; }
 
 // ===== Weapon
 
@@ -229,13 +246,16 @@ protected:
 
     const int       m_IID;          // unique instance id among all assets
     const Type      m_AssetType;    // the concrete class of this asset
+    AssetDef        m_Def;          // definition struct for this asset
 
     State           m_State;        // the current state of the asset
 
     Player*         m_pOwner;       // the owner of this unit
 
-    unsigned char   m_Width;        // sizes
-    unsigned char   m_Height;
+    // moved to def
+//    unsigned char   m_Width;        // sizes
+//    unsigned char   m_Height;
+
     Vector3         m_Position;     // vector defining the absolute position
     Vector3         m_Direction;    // facing of the unit
 

@@ -20,6 +20,16 @@ public:
     static const int BUILDING_TYPE_DEBUG = 0;
 
     /**
+     * Creates new asset based on given type and sets the parameters based
+     * on it
+     * @return pointer to new Asset instance
+     */
+    static IAsset* createAsset( Player* owner,
+                                int assetType,
+                                short positionX,
+                                short positionY);
+
+    /**
      * Creates new unit, sets the parameters against unitType
      * @return pointer to new Unit instance
      */
@@ -44,6 +54,15 @@ private:
      */
     AssetFactory();
     ~AssetFactory();
+
+    /**
+     * Set components based on asset's definition
+     */
+    static bool setRadar(IAsset* a);
+    static bool setBuilder(IAsset* a);
+    static bool setResourcer(IAsset* a);
+    static bool setWeapon(IAsset* a);
+    static bool setMoving(Unit* u);
 
 };
 

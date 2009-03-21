@@ -493,7 +493,7 @@ bool Config::declaredAsArray(string trimmedStr) {
 string Config::cleanArrayKeyname(string trimmedStr) {
   string::size_type position = trimmedStr.find_first_of('[');
   if(position != string::npos) {
-    trimmedStr.erase(position + 1);
+    trimmedStr.erase(position);
   }
   return trimmedStr;
 }
@@ -541,7 +541,7 @@ void Config::addSetting(string in_name, int in_value, bool asArray) {
 
 void Config::addSetting(string in_file, string in_section, string in_name, string in_value, bool asArray) {
   if(!asArray) {
-    deleteSetting(in_name);
+    deleteSetting(in_file, in_section, in_name);
   } else {
     // search for pre-existing value and add to it
     for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
@@ -572,7 +572,7 @@ void Config::addSetting(string in_file, string in_section, string in_name, strin
 
 void Config::addSetting(string in_file, string in_section, string in_name, float in_value, bool asArray) {
   if(!asArray) {
-    deleteSetting(in_name);
+    deleteSetting(in_file, in_section, in_name);
   } else {
     // search for pre-existing value and add to it
     for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
@@ -603,7 +603,7 @@ void Config::addSetting(string in_file, string in_section, string in_name, float
 
 void Config::addSetting(string in_file, string in_section, string in_name, int in_value, bool asArray) {
   if(!asArray) {
-    deleteSetting(in_name);
+    deleteSetting(in_file, in_section, in_name);
   } else {
     // search for pre-existing value and add to it
     for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
@@ -680,59 +680,40 @@ void Config::deleteValueNodes(Setting* setting) {
 }
 
 void Config::deleteSetting(string in_name) {
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name) {
-      //cout << "poistetaan : " << (*iter)->name << endl;
-      deleteValueNodes((*iter));
-      settingData.erase(iter);
-      break; //ei voida enää iteroida koska iteraattori tuhottiin samalla kuin vektorialkio johon se viittasi :D
-    }
-  }
-}
-
-void Config::deleteSetting(string in_filename, string in_name) {
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name && (*iter)->file == in_filename) {
-      deleteValueNodes((*iter));
-      settingData.erase(iter);
-      break;
-    }
-  }
+    deleteSetting("", "", in_name);
 }
 
 void Config::deleteSetting(string in_filename, string in_section, string in_name) {
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
-      deleteValueNodes((*iter));
-      settingData.erase(iter);
-      break;
+    Setting* s;
+    for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+        s = (*iter);
+        if(s->name != in_name)
+            continue;
+        if(in_section != "" && s->section != in_section)
+            continue;
+        if(in_filename != "" && s->file != in_filename)
+            continue;
+        deleteValueNodes((*iter));
+        settingData.erase(iter);
+        return;
     }
-  }
 }
 
 bool Config::settingExists(string in_name) {
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool Config::settingExists(string in_filename, string in_name) {
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name && (*iter)->file == in_filename) {
-      return true;
-    }
-  }
-  return false;
+  return settingExists("", "", in_name);
 }
 
 bool Config::settingExists(string in_filename, string in_section, string in_name) {
+  Setting* s;
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name && (*iter)->file == in_filename && (*iter)->section == in_section) {
-      return true;
-    }
+    s = (*iter);
+    if(s->name != in_name)
+      continue;
+    if(in_section != "" && s->section != in_section)
+      continue;
+    if(in_filename != "" && s->file != in_filename)
+      continue;
+    return true;
   }
   return false;
 }
