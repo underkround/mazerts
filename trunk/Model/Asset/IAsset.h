@@ -116,6 +116,11 @@ public:
      */
     inline AssetDef* getDef()       { return &m_Def; }
 
+	/**
+	 * @return	Type id of this asset from defines
+	 */
+	inline int getTypeTag()			{ return m_Def.tag; }
+
 // ===== Size
 
     /**
