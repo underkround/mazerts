@@ -15,6 +15,7 @@
 #include "../App/C3DObject.h"
 #include "../../Model/Asset/Unit.h"
 #include "../../Model/Asset/IAssetListener.h"
+#include "UIWeapon.h"
 
 // TODO: remove when implementing real marker object
 #include "../3DDebug/C3DObjectDebug.h"
@@ -34,10 +35,9 @@ public:
         m_Alive = true;
         m_Selected = false;
         m_SelectionMarker = NULL;
-
+		m_pWeapon = NULL;
         //Register as listener to pUnit
-        pUnit->registerListener(this);
-
+        pUnit->registerListener(this);		
     }
 
     /**
@@ -98,10 +98,31 @@ public:
     /**
      * @return pointer to the model-size unit that this UiUnit represents
      */
-    Unit* getUnit()
+    inline Unit* getUnit()
     {
         return m_pUnit;
     }
+
+	/**
+	 * Gets the weapon of the UIUnit
+	 * @return Pointer to UIWeapon
+	 */
+	inline UIWeapon* getWeapon() { return m_pWeapon; }
+
+	/**
+	 * Sets the weapon of the UIUnit and connects the parent-child -relationship
+	 * @param pWeapon Pointer to UIWeapon to set for this unit
+	 */
+	inline void setWeapon(UIWeapon* pWeapon) 
+	{ 
+		if(m_pWeapon)
+		{			
+			//If current weapon exists, it will be destroyed on next update
+			m_pWeapon->setAlive(false);
+		}
+		m_pWeapon = pWeapon; 
+		AddChild(m_pWeapon);
+	}
 
 protected:
 
@@ -139,6 +160,10 @@ protected:
      */
     bool            m_Alive;
 
+	/**
+	 * Weapon of the unit
+	 */
+	UIWeapon* m_pWeapon;
 };
 
 #endif //__UIUNIT_H__

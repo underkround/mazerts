@@ -75,8 +75,8 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     //Model-terrain
     Terrain* pTerrain = Terrain::getInstance();
-    //AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
-    ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/map.bmp"); // try "../data/terrains/murgo.bmp" :P
+    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
+    //ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/murgo.bmp");// :P
     pTerrain->initialize(pGenerator);
 
     pTerrain->setWaterLevel(50); // TODO: imho this is for the terrain generator to decide! move it there?
@@ -87,7 +87,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     //TEST
     for(int i = 0; i < 40; i++)
     {
-        AssetFactory::createUnit(NULL, 1, (i * 4), (i % 5) * 4);
+        AssetFactory::createUnit(NULL, 2, (i * 4), (i % 5) * 4);
     }
 
 

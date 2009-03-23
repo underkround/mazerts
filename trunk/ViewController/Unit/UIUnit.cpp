@@ -102,7 +102,31 @@ void UIUnit::updatePosition()
         m_mLocal._13 = p1.z;
         m_mLocal._23 = normal.z;
         m_mLocal._33 = p2.z;
-    }
+    
+		if(m_pWeapon)
+		{
+			//TODO: fix x-y-z -location
+			D3DXMatrixRotationY(&m_pWeapon->GetMatrix(), 0);
+
+			/*dir = (D3DXVECTOR3*)m_pUnit->getWeapon()->getDirection();
+			D3DXVec3Cross(&p1, &normal, dir);
+			D3DXVec3Cross(&p2, &p1, dir);
+			D3DXMATRIX& m = m_pWeapon->GetMatrix();
+
+			m._11 = p1.x;
+			m._12 = p1.y;
+			m._13 = p1.z;
+
+			m._21 = normal.x;
+			m._22 = normal.z;
+			m._23 = normal.y;
+
+			m._31 = p2.x;
+			m._32 = p2.y;
+			m._33 = p2.z;*/
+		}
+
+	}
 
     m_mLocal._41 = m_pUnit->getPosition()->x + m_HalfSize;
     m_mLocal._42 = m_pUnit->getPosition()->y + m_HalfSize;

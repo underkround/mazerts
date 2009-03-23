@@ -171,7 +171,6 @@
 	<References>
 		<ProjectReference
 			ReferencedProjectIdentifier="{D275215C-CCC0-4CD5-83C3-C8969393B953}"
-			RelativePathToProject=".\Model\Model2005.vcproj"
 		/>
 	</References>
 	<Files>
@@ -191,7 +190,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\model\weapon\ProjectileDefinition.h"
+				RelativePath="..\Model\Weapon\Weapon.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Weapon\Weapon.h"
 				>
 			</File>
 		</Filter>
@@ -211,79 +214,87 @@
 			Name="Asset"
 			>
 			<File
-				RelativePath="..\model\asset\Armor.cpp"
+				RelativePath="..\Model\Asset\Armor.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\Armor.h"
+				RelativePath="..\Model\Asset\Armor.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\AssetCollection.cpp"
+				RelativePath="..\Model\Asset\AssetCollection.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\AssetCollection.h"
+				RelativePath="..\Model\Asset\AssetCollection.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\AssetFactory.cpp"
+				RelativePath="..\Model\Asset\AssetFactory.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\AssetFactory.h"
+				RelativePath="..\Model\Asset\AssetFactory.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\Building.cpp"
+				RelativePath="..\Model\Asset\Building.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\Building.h"
+				RelativePath="..\Model\Asset\Building.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\GroundMovingLogic.cpp"
+				RelativePath="..\Model\Asset\GroundMovingLogic.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\GroundMovingLogic.h"
+				RelativePath="..\Model\Asset\GroundMovingLogic.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\IAsset.cpp"
+				RelativePath="..\Model\Asset\IAsset.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\IAsset.h"
+				RelativePath="..\Model\Asset\IAsset.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\IAssetCollectionListener.h"
+				RelativePath="..\Model\Asset\IAssetCollectionListener.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\IAssetListener.h"
+				RelativePath="..\Model\Asset\IAssetListener.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\IAssetRadar.cpp"
+				RelativePath="..\Model\Asset\IAssetRadar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\IAssetRadar.h"
+				RelativePath="..\Model\Asset\IAssetRadar.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\IMovingLogic.h"
+				RelativePath="..\Model\Asset\IMovingLogic.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\Unit.cpp"
+				RelativePath="..\Model\Asset\Radar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\model\asset\Unit.h"
+				RelativePath="..\Model\Asset\Radar.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Asset\Unit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Asset\Unit.h"
 				>
 			</File>
 		</Filter>
@@ -296,6 +307,14 @@
 			</File>
 			<File
 				RelativePath="..\model\command\Target.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Command\UnitCommandDispatcher.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Command\UnitCommandDispatcher.h"
 				>
 			</File>
 		</Filter>
@@ -404,30 +423,42 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="GameConsole"
+			Name="Controller"
 			>
 			<File
-				RelativePath="..\model\gameconsole\ConsoleBuffer.h"
+				RelativePath=".\Controller\CameraController.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\model\gameconsole\ConsoleBufferIterator.h"
+				RelativePath=".\Controller\CameraController.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\gameconsole\DefaultConsoleParser.h"
+				RelativePath=".\Controller\Cursor.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\model\gameconsole\GameConsole.cpp"
+				RelativePath=".\Controller\Cursor.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\gameconsole\GameConsole.h"
+				RelativePath=".\Controller\IUIController.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\gameconsole\IGameConsoleParser.h"
+				RelativePath=".\Controller\SoundController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\SoundController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\UIAssetController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Controller\UIAssetController.h"
 				>
 			</File>
 		</Filter>
@@ -482,6 +513,10 @@
 				Name="Unit"
 				>
 				<File
+					RelativePath=".\Unit\MeshFileNames.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Unit\Selector.cpp"
 					>
 				</File>
@@ -503,6 +538,14 @@
 				</File>
 				<File
 					RelativePath=".\Unit\UIUnit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\UIWeapon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\UIWeapon.h"
 					>
 				</File>
 			</Filter>
@@ -789,6 +832,18 @@
 					RelativePath=".\Camera\SphereCamera.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Camera\UnitCamera.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Camera\UnitCamera.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Controller"
+				>
 			</Filter>
 		</Filter>
 		<Filter
@@ -800,6 +855,14 @@
 			</File>
 			<File
 				RelativePath="..\model\terrain\AntinTerrainGenerator.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Terrain\ImageTerrainGenerator.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Terrain\ImageTerrainGenerator.h"
 				>
 			</File>
 			<File
@@ -827,6 +890,30 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Def"
+			>
+			<File
+				RelativePath="..\Model\Defs\DefManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Defs\DefManager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Defs\Defs.h"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\App\GameConsole.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\App\GameConsole.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

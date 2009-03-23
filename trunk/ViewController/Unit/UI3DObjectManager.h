@@ -97,8 +97,6 @@ public:
      */
     virtual void handleReleasedAsset(IAsset* pAsset);
 
-    void loadMeshes(void);
-
 private:
 
     /**
@@ -124,6 +122,11 @@ private:
      * @param pUnit Pointer to Unit-instance used in creation
      */
     void createUnit(Unit* pUnit);
+
+	/**
+	 * Load meshes defined in configs into container
+	 */
+    void loadMeshes(void);
 
     /**
      * Root of the C3DObject-hierarchy

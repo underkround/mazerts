@@ -137,7 +137,7 @@ public:
     /**
      * Convert integer to string
      */
-    string intToString(int in)
+    static string intToString(int in)
     {
         string s;
         stringstream out;
