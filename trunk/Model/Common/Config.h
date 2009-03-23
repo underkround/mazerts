@@ -64,6 +64,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -132,6 +133,18 @@ public:
         //float value;
         FloatNode* valueNode;
     };
+
+    /**
+     * Convert integer to string
+     */
+    string intToString(int in)
+    {
+        string s;
+        stringstream out;
+        out << in;
+        s = out.str();
+        return s;
+    }
 
     /**
      * isNumeric
