@@ -63,21 +63,48 @@ void Unit::releaseMovingLogic()
 
 char Unit::update(const float deltaT)
 {
-    // update our radar
-    if(m_pRadar)
-        m_pRadar->update(deltaT);
+    switch(m_State)
+    {
 
-    // update our weapon
-    if(m_pWeapon)
-        m_pWeapon->update(deltaT);
+    /*
+     * State while being build
+     */
+    case STATE_BEING_BUILT:
+        // TODO: for now since there is no builder-stuff implemented,
+        // we just enter to the active-state. Later it will happen
+        // by growing the hitpoints until they reach max
+        changeState(STATE_ACTIVE);
+        break;
 
-    // update our moving
-    if(m_pMovingLogic)
-        m_pMovingLogic->update(this, deltaT);
+    /*
+     * Active -state, normal state
+     */
+    default:
+    case STATE_ACTIVE:
+        // update our radar
+        if(m_pRadar)
+            m_pRadar->update(deltaT);
 
-    updatePositionInAssetCollection();
+        // update our weapon
+        if(m_pWeapon)
+            m_pWeapon->update(deltaT);
 
-    //return RESULT_DELETEME; // unit will be deleted when returning this value
+        // update our moving
+        if(m_pMovingLogic)
+            m_pMovingLogic->update(this, deltaT);
+
+        updatePositionInAssetCollection();
+        break;
+
+    /*
+     * Destroyed -state
+     */
+    case STATE_DESTROYED:
+        return RESULT_DELETEME; // unit will be deleted when returning this value
+        break;
+
+    } // switch
+
     return RESULT_OK; // normal return value
 }
 

@@ -43,11 +43,11 @@ public:
 
     enum State
     {
-        BEING_BUILT = 0,    // set when created, until hitpoints reach max,
-                            // cannot operate until active
-        ACTIVE,         // normal state
-        PARALYZED,      // cannot do anything
-        DESTROYED       // downcounter running for object destruction
+        STATE_BEING_BUILT = 0,  // set when created, until hitpoints reach max,
+                                // cannot operate until active
+        STATE_ACTIVE,           // normal state
+        STATE_PARALYZED,        // cannot do anything
+        STATE_DESTROYED         // downcounter running for object destruction
     };
 
     // result codes for update method
@@ -149,7 +149,28 @@ public:
      * @return  Asset's weapon. Returns NULL if asset has no weapon
      *          (hasWeapon() returns false)
      */
-    inline const IWeapon* getWeapon() { return m_pWeapon; }
+    inline IWeapon* getWeapon() { return m_pWeapon; }
+
+// ===== Damage and hitpoints
+
+    inline const int getHitpoints() { return m_Hitpoints; }
+
+    /**
+     * Return the maximum hitpoints for this asset
+     */
+    inline const int getHitpointsMax() { return m_Def.maxHitpoints; }
+
+    /**
+     * Straight modification of asset's hitpoints (not to use with
+     * weapon damage).
+     * Resulting hitpoints cannot top max hitpoints.
+     * If the resulting hitpoints go to or below zero, the asset enters
+     * destroyed state.
+     * @param amount    value which to add to hitpoins, use negative
+     *                  value to reduce
+     * @return          hitpoins after modification
+     */
+    inline const int addModifyHitpoints(const int amount);
 
 // ===== Position & direction
 
@@ -256,6 +277,8 @@ protected:
     State           m_State;        // the current state of the asset
 
     Player*         m_pOwner;       // the owner of this unit
+
+    int             m_Hitpoints;    // current hitpoints of the asset
 
     // moved to def
 //    unsigned char   m_Width;        // sizes

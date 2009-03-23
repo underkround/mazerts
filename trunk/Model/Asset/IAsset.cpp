@@ -27,7 +27,7 @@ IAsset::IAsset(const Type assetType, AssetDef def) : m_AssetType (assetType), m_
     m_Direction.y = 1;
     m_Direction.z = 0;
     //
-    m_State = BEING_BUILT;
+    m_State = STATE_BEING_BUILT;
     // components
     m_pOwner = NULL;
     m_pWeapon = NULL;
@@ -146,4 +146,24 @@ void IAsset::notifyDestroyed()
         }
         m_pListeners.release();
     }
+}
+
+
+// ===== Damage and hitpoints
+
+
+const int IAsset::addModifyHitpoints(const int amount)
+{
+    if(amount > 0  &&  (m_Hitpoints + amount) > m_Def.maxHitpoints)
+        m_Hitpoints = m_Def.maxHitpoints;
+    else
+        m_Hitpoints += amount;
+    // if our hitpoints reached zero, we are dead and enter destroyed state
+    if(m_Hitpoints <= 0)
+        changeState(STATE_DESTROYED);
+    // if we are in the state of being build and our hitpoints reach max,
+    // we are ready and enter to active state
+    else if(m_State == STATE_BEING_BUILT && m_Hitpoints == m_Def.maxHitpoints)
+        changeState(STATE_ACTIVE);
+    return m_Hitpoints;
 }

@@ -71,7 +71,7 @@ public:
      * Get the direction in which the weapon is facing, relative to the
      * hosting asset (used by ui to render the weapon in right direction)
      */
-    inline const Vector3* const getDirection() { return &m_Direction; }
+    inline Vector3* getDirection() { return &m_Direction; }
 
     /**
      * Get the killcount of this weapon
