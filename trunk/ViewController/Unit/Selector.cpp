@@ -84,9 +84,9 @@ HRESULT Selector::create(LPDIRECT3DDEVICE9 pDevice)
     //Vertex buffer
     m_NumVertices = (SELECTOR_SIZE + 1) * (SELECTOR_SIZE + 1);
     hres = pDevice->CreateVertexBuffer(m_NumVertices * sizeof(VERTEX),
-                                        0,
+                                        D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
                                         VERTEX::GetFVF(),
-                                        D3DPOOL_MANAGED,
+                                        D3DPOOL_DEFAULT,
                                         &m_pVB,
                                         NULL);
 
@@ -233,4 +233,39 @@ void Selector::render(LPDIRECT3DDEVICE9 pDevice)
 
         pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     }
+}
+
+HRESULT Selector::onDeviceLost()
+{
+	if(m_pVB)
+	{
+		HRESULT hres = m_pVB->Release();
+		if(FAILED(hres))
+		{
+			return hres;
+		}
+
+		m_pVB = NULL;
+	}
+
+	return S_OK;
+}
+
+HRESULT Selector::onRestore(LPDIRECT3DDEVICE9 pDevice)
+{
+	HRESULT hres;
+
+    //Vertex buffer
+    hres = pDevice->CreateVertexBuffer(m_NumVertices * sizeof(VERTEX),
+                                        D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
+                                        VERTEX::GetFVF(),
+                                        D3DPOOL_DEFAULT,
+                                        &m_pVB,
+                                        NULL);
+	if(FAILED(hres))
+	{
+		return hres;
+	}
+
+	return S_OK;
 }
