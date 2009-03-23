@@ -297,7 +297,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Weapon\ProjectileDefinition.h"
+					RelativePath=".\Weapon\Weapon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\Weapon.h"
 					>
 				</File>
 			</Filter>

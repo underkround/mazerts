@@ -82,7 +82,9 @@ protected:
     DoubleLinkedList<IAsset*>   m_VisibleAssets; // Visible assets
     DoubleLinkedList<IAsset*>   m_VisibleEnemyAssets; // visible enemy assets
 
+    // TODO: move to RadarDef
     unsigned int                m_Range; // Range of this radar
+
 };
 
 #endif // __IASSETRADAR_H__

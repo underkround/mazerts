@@ -74,7 +74,7 @@ void IAsset::releaseWeapon()
 {
     if(m_pWeapon)
     {
-        if(m_pWeapon->release(this))
+        if(m_pWeapon->release())
             delete m_pWeapon;
         m_pWeapon = NULL;
     }

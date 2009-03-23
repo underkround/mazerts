@@ -107,7 +107,7 @@ public:
     inline State getState()         { return m_State; }
 
     /**
-     * @return  The concrete type of this asset
+     * @return  The concrete class type of this asset
      */
     inline Type getAssetType()      { return m_AssetType; }
 

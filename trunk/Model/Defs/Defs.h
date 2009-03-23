@@ -16,22 +16,23 @@
 #include <string>
 using namespace std;
 
+/*
 struct BaseDef
 {
     int tag; // id for definition
     int concreteType; // concrete type for the class to implement this
 };
+*/
+
 
 /**
  * PorjectileDef goes inside the IWeapon, the weapon then uses
  * the definition to launch projectiles.
  */
-struct ProjectileDef : public BaseDef
+struct ProjectileDef //: public BaseDef
 {
-    // unique id for this set of values
-    //int tag;
-    // concrete type of the projectile (bullet, shell?)
-    int concreteType;
+    int tag; // id for definition
+    int concreteType; // concrete type for the class to implement this
 
     // how many rounds it can fire before reloading (0 for constant fire)
     int clipSize;
@@ -49,12 +50,10 @@ struct ProjectileDef : public BaseDef
 /**
  * RadarDef goes inside every IAssetRadar -class
  */
-struct RadarDef : public BaseDef
+struct RadarDef //: public BaseDef
 {
-    // unique id for this set of values
-    //int tag;
-    // 
-    //int concreteType;
+    int tag; // id for definition
+    int concreteType; // concrete type for the class to implement this
 
     float losRange;
 };
@@ -63,12 +62,10 @@ struct RadarDef : public BaseDef
 /**
  * MovingDef goes inside every IMovingLogic -class
  */
-struct MovingDef : public BaseDef
+struct MovingDef
 {
-    // unique id for this set of values
-    //int tag;
-    // concrete implementation of the moving
-    //int concreteType;
+    int tag; // id for definition
+    int concreteType; // concrete type for the class to implement this
 
     float turningSpeed;
     float maxSpeed;
@@ -80,12 +77,10 @@ struct MovingDef : public BaseDef
  * BuilderDef goes inside builder-component that enables the ability to
  * build and/or fix stuff (grow hitpoints)
  */
-struct BuilderDef : public BaseDef
+struct BuilderDef //: public BaseDef
 {
-    // unique id for this set of values
-    //int tag;
-    // concrete implementation of the builder
-    //int concreteType;
+    int tag; // id for definition
+    int concreteType; // concrete type for the class to implement this
 
 };
 
@@ -96,12 +91,10 @@ struct BuilderDef : public BaseDef
  * for example: mine that stores resource, vehicles that can gather and store
  * resource while transporting it, windtrap or plant to generate energy..
  */
-struct ResourcerDef : public BaseDef
+struct ResourcerDef //: public BaseDef
 {
-    // unique id for this set of values
-    //int tag;
-    // concrete implementation of the resourcer
-    //int concreteType;
+    int tag; // id for definition
+    int concreteType; // concrete type for the class to implement this
 
     // self-production
     int energStaticGain;
@@ -116,12 +109,10 @@ struct ResourcerDef : public BaseDef
 /**
  * AssetDef goes inside every IAsset-class.
  */
-struct AssetDef : public BaseDef
+struct AssetDef //: public BaseDef
 {
-    // unique id for this set of values
-    //int tag;
-    // type of the concrete asset class
-    //int concreteType;
+    int tag; // id for definition
+    int concreteType; // concrete type for the class to implement this
 
     // name of the asset, used only in ui, not with logics
     string name;

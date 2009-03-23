@@ -69,7 +69,7 @@ char Unit::update(const float deltaT)
 
     // update our weapon
     if(m_pWeapon)
-        m_pWeapon->update(this, deltaT);
+        m_pWeapon->update(deltaT);
 
     // update our moving
     if(m_pMovingLogic)

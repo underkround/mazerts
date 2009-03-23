@@ -75,7 +75,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     //Model-terrain
     Terrain* pTerrain = Terrain::getInstance();
-    //AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);    
+    //AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
     ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/map.bmp"); // try "../data/terrains/murgo.bmp" :P
     pTerrain->initialize(pGenerator);
 

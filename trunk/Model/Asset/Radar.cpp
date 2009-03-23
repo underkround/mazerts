@@ -1,6 +1,6 @@
-#include "radar.h"
-#include "../Terrain/terrain.h"
-#include "assetcollection.h"
+#include "Radar.h"
+#include "../Terrain/Terrain.h"
+#include "AssetCollection.h"
 
 void Radar::update(const float deltaT)
 {

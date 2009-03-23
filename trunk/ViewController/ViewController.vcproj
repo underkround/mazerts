@@ -230,7 +230,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Model\Weapon\ProjectileDefinition.h"
+					RelativePath="..\Model\Weapon\Weapon.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Weapon\Weapon.h"
 					>
 				</File>
 			</Filter>

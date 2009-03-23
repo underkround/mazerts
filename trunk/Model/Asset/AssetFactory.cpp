@@ -9,6 +9,7 @@
 #include "AssetFactory.h"
 #include "GroundMovingLogic.h"
 #include "Radar.h"
+#include "../Weapon/Weapon.h"
 
 #include "../Defs/DefManager.h"
 #include "../Defs/Defs.h"
@@ -126,19 +127,15 @@ bool AssetFactory::setWeapon(IAsset* a)
     if(!def)
         return false; // no projectile associated
     // Waiting for concrete classes
-    /*
-    ProjectileDef* def = a->getDef()->pDefWeapon;
     switch(def->concreteType)
     {
     case 1:
-        a->setWeapon(new DefaultWeapon(def));
+        a->setWeapon(new Weapon(*def));
         break;
     default:
         return false;
     }
     return true;
-    */
-    return false;
 }
 
 bool AssetFactory::setMoving(Unit* u)

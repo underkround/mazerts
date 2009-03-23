@@ -17,26 +17,27 @@
 #define __IWEAPON_H__
 
 #include "../Common/Vector3.h"
-#include "ProjectileDefinition.h"
 //#include "../Asset/IAsset.h"
+#include "../Defs/Defs.h"
+
 class IAsset;
 
 class IWeapon
 {
 public:
 
-    IWeapon();
-    virtual ~IWeapon();
+    IWeapon(ProjectileDef def) : m_Def(def)
+    {
+        m_Direction.x = 0;
+        m_Direction.y = 1;
+        m_Direction.z = 0;
+        m_KillCount = 0;
+        m_pHost = 0;
+    }
 
-    /**
-     * Add capability to shoot projectiles of given type definition.
-     */
-    virtual void load(ProjectileDefinition def) = 0;
-
-    /**
-     * Remove the capability to shoot projectiles of given type
-     */
-    virtual void unload(ProjectileDefinition def) = 0;
+    virtual ~IWeapon()
+    {
+    }
 
     /**
      * This gets called by the asset when the weapon is attached to
@@ -44,14 +45,16 @@ public:
      * DO NOT call this from outside!
      * @see IAsset::setWeapon(..)
      */
-    virtual void attach(IAsset* host) = 0;
+    inline virtual void attach(IAsset* host)
+    {
+        m_pHost = host;
+    }
 
     /**
      * Normal per-frame update call from the hosting unit.
-     * @param host      the unit which update-call this is
      * @param deltaT    time from last update
      */
-    virtual void update(IAsset* host, const float deltaT) = 0;
+    virtual void update(const float deltaT) = 0;
 
     /**
      * Return true, if the concrete weapon is spesific to hosting asset
@@ -62,7 +65,7 @@ public:
      * this should return false, and the host will not destroy this
      * weapon instance.
      */
-    virtual bool release(IAsset* host) = 0;
+    virtual bool release() = 0;
 
     /**
      * Get the direction in which the weapon is facing, relative to the
@@ -83,11 +86,18 @@ public:
      */
     virtual inline const void addKill() { m_KillCount++; }
 
+    /**
+     * @return  The def struct that defines what this weapon shoots
+     */
+    virtual inline ProjectileDef* getDef() { return &m_Def; }
+
 private:
 
-//    IAsset*     m_Host; // removed: store in the concrete if needed
-    Vector3     m_Direction;
-    int         m_KillCount;
+    IAsset*         m_pHost;
+    Vector3         m_Direction;
+    int             m_KillCount;
+
+    ProjectileDef   m_Def;
 
 };
 

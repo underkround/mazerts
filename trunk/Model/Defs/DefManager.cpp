@@ -210,8 +210,8 @@ bool DefManager::loadProjectileDef(int tag)
     switch(type)
     {
     case 1: // bullet
-    case 2: // beam
-    case 3: // shell
+    case 2: // shell
+    case 3: // beam
         break;
     default:
         if(isNew)
