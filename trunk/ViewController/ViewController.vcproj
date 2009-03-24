@@ -702,6 +702,10 @@
 				Name="Unit"
 				>
 				<File
+					RelativePath=".\Unit\MeshFileNames.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Unit\Selector.cpp"
 					>
 				</File>
@@ -723,6 +727,14 @@
 				</File>
 				<File
 					RelativePath=".\Unit\UIUnit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\UIWeapon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\UIWeapon.h"
 					>
 				</File>
 			</Filter>

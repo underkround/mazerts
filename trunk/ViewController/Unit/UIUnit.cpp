@@ -104,26 +104,20 @@ void UIUnit::updatePosition()
         m_mLocal._33 = p2.z;
     
 		if(m_pWeapon)
-		{
-			//TODO: fix x-y-z -location
-			D3DXMatrixRotationY(&m_pWeapon->GetMatrix(), 0);
-
-			/*dir = (D3DXVECTOR3*)m_pUnit->getWeapon()->getDirection();
-			D3DXVec3Cross(&p1, &normal, dir);
-			D3DXVec3Cross(&p2, &p1, dir);
-			D3DXMATRIX& m = m_pWeapon->GetMatrix();
-
-			m._11 = p1.x;
-			m._12 = p1.y;
-			m._13 = p1.z;
-
-			m._21 = normal.x;
-			m._22 = normal.z;
-			m._23 = normal.y;
-
-			m._31 = p2.x;
-			m._32 = p2.y;
-			m._33 = p2.z;*/
+		{            			
+            D3DXMATRIX& m = m_pWeapon->GetMatrix();
+            
+            float x = m._41;
+            float y = m._42;
+            float z = m._43;
+            
+            //TODO: Testing, remove
+            static float dir = 0;
+            dir += 0.01f;
+			D3DXMatrixRotationY(&m, sin(dir));
+            m._41 = x;
+            m._42 = y;
+            m._43 = z;
 		}
 
 	}
