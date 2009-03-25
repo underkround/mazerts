@@ -137,6 +137,14 @@ public:
     inline MiniMap* getMiniMap() { return &m_MiniMap; }
 
     /**
+     * Returns the value of the changecounter, used by outside objects to
+     * check if the countervalue has changed from what they have stored, so
+     * they know to update themselves (on things related to uiterrain)
+     * @return Countervalue, wraps from 65535 to 0
+     */
+    inline const unsigned short getChangeCounter() const { return m_ChangeCounter; }
+
+    /**
      * Releases D3DPOOL_DEFAULT -resources
      * @return S_OK if releasing went fine, otherwise error code
      */
@@ -342,6 +350,12 @@ private:
      * MiniMap
      */
     MiniMap m_MiniMap;
+
+    /**
+     * Changecounter, used by outside classes to check if the UITerrain has been changed and
+     * to react on said changes
+     */
+    unsigned short m_ChangeCounter;
 };
 
 #endif // __UITERRAIN_H__

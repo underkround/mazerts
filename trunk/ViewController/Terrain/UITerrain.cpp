@@ -24,6 +24,7 @@ UITerrain::UITerrain()
     m_NumPrimitives = 0;
     m_NumVertices = 0;
     m_DetailLevel = 0;
+    m_ChangeCounter = 0;
 
     //Place at 0, 0, 0
     D3DXMatrixIdentity(&m_World);
@@ -145,6 +146,8 @@ void UITerrain::release()
         delete [] m_pppIB;
         m_pppIB = NULL;
     }
+
+    m_ChangeCounter++;
 }
 
 void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
@@ -236,6 +239,8 @@ HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice)
     {
         pInstance->release();
     }    
+
+    m_ChangeCounter++;
 
     //Caps-check for old/cheapo/laptop videocards (16-bit vertex-buffer indices), needs lots of buffers
     D3DCAPS9 caps;
@@ -930,7 +935,9 @@ void UITerrain::setDetailLevel(unsigned char detailLevel)
     {
         return;
     }
-
+        
+    m_ChangeCounter++;
+    
     m_DetailLevel = detailLevel;
 
     //Detail-factor, 2^m_DetailLevel (=1,2,4,8...)

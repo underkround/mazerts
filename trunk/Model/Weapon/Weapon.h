@@ -40,6 +40,13 @@ public:
      */
     virtual bool release();
 
+private:
+
+    /**
+     * Target direction to turn into
+     */
+    Vector3 m_TargetDirection;
+
 };
 
 #endif // __WEAPON_H__

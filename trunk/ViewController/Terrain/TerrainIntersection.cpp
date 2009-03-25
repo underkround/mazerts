@@ -137,7 +137,7 @@ Based on http://www.cs.yorku.ca/~amana/research/grid.pdf
 */
 
 //Sign-macro
-#define sgn(a) (a > 0) ? 1 : (a < 0) ? -1 : 0
+#define sgn(a) ((a > 0) ? 1 : (a < 0) ? -1 : 0)
 
     DoubleLinkedList<INDICES*>* result = new DoubleLinkedList<INDICES*>();
     

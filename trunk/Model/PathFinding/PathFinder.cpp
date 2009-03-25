@@ -259,7 +259,7 @@ IPathFinder::PathingState PathFinder::advance(short steps)
 void PathFinder::buildPath(PathNode* pCurrent)
 {    
 
-#define sgn(a) (a > 0) ? 1 : (a < 0) ? -1 : 0
+#define sgn(a) ((a > 0) ? 1 : (a < 0) ? -1 : 0)
 
     
     PathNode* pRealPath = new PathNode(pCurrent->x, pCurrent->y, pCurrent->G, NODE_CLOSED, NULL);    

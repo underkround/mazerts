@@ -43,6 +43,9 @@ struct ProjectileDef //: public BaseDef
     // range of this projectile
     float range;
 
+    //Turning speed
+    float turnSpeed;
+
     // TODO: damage values, damage range..
 };
 

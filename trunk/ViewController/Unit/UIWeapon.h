@@ -13,7 +13,7 @@
 
 #include <d3dx9.h>
 #include "../App/C3DObject.h"
-//#include "../../Model/Weapon/IWeapon.h"
+#include "../../Model/Weapon/IWeapon.h"
 
 class UIWeapon : public C3DObject
 {
@@ -21,10 +21,11 @@ public:
 
     /**
      * Constructor
-	 * @param pUIUnit Pointer to UIUnit whose weapon this is
+	 * @param pWeapon Pointer to IWeapon this object represents
      */
-    UIWeapon()
+    UIWeapon(IWeapon* pWeapon)
     {
+        m_pWeapon = pWeapon;
         m_Alive = true;
     }
 
@@ -58,6 +59,15 @@ protected:
      */
     bool            m_Alive;
 
+    /**
+     * Pointer to model-side weapon this object represents
+     */
+    IWeapon*        m_pWeapon;
+
+    /**
+     * Old weapon heading, used to check if updating matrix is necessary
+     */
+    D3DXVECTOR3 m_OldHeading;
 };
 
 #endif //__UIWEAPON_H__

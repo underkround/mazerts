@@ -62,13 +62,13 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
 	if(pUnit->hasWeapon())
 	{
 		//TODO: move loading & offsetting to method
-		UIWeapon* pUIWeapon = new UIWeapon();
+        UIWeapon* pUIWeapon = new UIWeapon(pUnit->getWeapon());
 		CXFileLoader::Load(g_ppUnitMeshNames[tag][1], m_ResourceContainer, pUIWeapon);
 		D3DXMATRIX& m = pUIWeapon->GetMatrix();
 		m._41 = g_ppUnitMeshOffsets[tag][1][0];
 		m._42 = g_ppUnitMeshOffsets[tag][1][1];
 		m._43 = g_ppUnitMeshOffsets[tag][1][2];
-		pUIUnit->setWeapon(pUIWeapon);
+		pUIUnit->setUIWeapon(pUIWeapon);
 
 		if(g_ppUnitMeshNames[tag][2] != _T(""))
 		{

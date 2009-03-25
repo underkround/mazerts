@@ -91,7 +91,7 @@ public:
      */
     virtual inline ProjectileDef* getDef() { return &m_Def; }
 
-private:
+protected:
 
     IAsset*         m_pHost;
     Vector3         m_Direction;

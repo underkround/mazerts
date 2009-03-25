@@ -17,115 +17,107 @@ bool UIUnit::Update(float fFrameTime)
 
 void UIUnit::updatePosition()
 {
+    UITerrain* pTerrain = UITerrain::getInstance();
+    
     D3DXVECTOR3* unitPos = (D3DXVECTOR3*)m_pUnit->getPosition();
-
+    
     //TODO: Unit-flags:  ground / air (/ water?)
     //if(m_pUnit->getMoveType() == UNIT_GROUND)
     {
-        //Get heights at four points around the unit
-        D3DXVECTOR3 pos;
-        pos.x = unitPos->x + m_HalfSize;
-        pos.y = unitPos->y + m_HalfSize;
+        //Check if unit has moved or terrain has changed
+        if(m_UITerrain_ChangeCounter != pTerrain->getChangeCounter() || unitPos->x != m_OldPosition.x || 
+            unitPos->y != m_OldPosition.y || unitPos->z != m_OldPosition.z)
+        {
+            //Store old position and terrain change counter
+            m_UITerrain_ChangeCounter = pTerrain->getChangeCounter();
+            m_OldPosition.x = unitPos->x;
+            m_OldPosition.y = unitPos->y;
+            m_OldPosition.z = unitPos->z;
 
-        D3DXVECTOR3* dir = (D3DXVECTOR3*)m_pUnit->getDirection();
-        D3DXVec3Normalize(dir, dir);
+            //Get heights at four points around the unit
+            D3DXVECTOR3 pos;
+            pos.x = unitPos->x + m_HalfSize;
+            pos.y = unitPos->y + m_HalfSize;
 
-        UITerrain* pTerrain = UITerrain::getInstance();
+            D3DXVECTOR3* dir = (D3DXVECTOR3*)m_pUnit->getDirection();
+            D3DXVec3Normalize(dir, dir);
 
-        D3DXVECTOR3 normal(0, 0, 0);
-        D3DXVECTOR3 p1;
-        D3DXVECTOR3 p2;
-        D3DXVECTOR3 p3;
-        D3DXVECTOR3 p4;
-        D3DXVECTOR3 result1;
-        D3DXVECTOR3 result2;
+            D3DXVECTOR3 normal(0, 0, 0);
+            D3DXVECTOR3 p1;
+            D3DXVECTOR3 p2;
+            D3DXVECTOR3 p3;
+            D3DXVECTOR3 p4;
+            D3DXVECTOR3 result1;
+            D3DXVECTOR3 result2;
 
-        p1.x = dir->y - dir->x;
-        p1.y = -dir->y - dir->x;
+            p1.x = dir->y - dir->x;
+            p1.y = -dir->y - dir->x;
 
-        p2.x = -dir->y + dir->x;
-        p2.y = dir->y + dir->x;
+            p2.x = -dir->y + dir->x;
+            p2.y = dir->y + dir->x;
 
-        p3.x = p1.y;
-        p3.y = -p1.x;
+            p3.x = p1.y;
+            p3.y = -p1.x;
 
-        p4.x = p2.y;
-        p4.y = -p2.x;
+            p4.x = p2.y;
+            p4.y = -p2.x;
 
-        //Forward right
-        p1.z = pTerrain->calculateTriangleHeightAt(pos.x + p1.x, pos.y + p1.y);
-        //Forward left
-        p2.z = pTerrain->calculateTriangleHeightAt(pos.x + p2.x, pos.y + p2.y);
-        //backward right
-        p3.z = pTerrain->calculateTriangleHeightAt(pos.x + p1.y, pos.y - p1.x);
-        //backward left
-        p4.z = pTerrain->calculateTriangleHeightAt(pos.x + p2.y, pos.y - p2.x);
+            //Forward right
+            p1.z = pTerrain->calculateTriangleHeightAt(pos.x + p1.x, pos.y + p1.y);
+            //Forward left
+            p2.z = pTerrain->calculateTriangleHeightAt(pos.x + p2.x, pos.y + p2.y);
+            //backward right
+            p3.z = pTerrain->calculateTriangleHeightAt(pos.x + p1.y, pos.y - p1.x);
+            //backward left
+            p4.z = pTerrain->calculateTriangleHeightAt(pos.x + p2.y, pos.y - p2.x);
 
-        //Debug-spheres to show where the height values are taken
-        //UI3DDebug::addSphere(pos.x + p1.x, pos.y + p1.y, p1.z, 0.1f, 0.4f);
-        //UI3DDebug::addSphere(pos.x + p2.x, pos.y + p2.y, p2.z, 0.1f, 0.4f);
-        //UI3DDebug::addSphere(pos.x + p1.y, pos.y - p1.x, p1.z, 0.1f, 0.4f);
-        //UI3DDebug::addSphere(pos.x + p2.y, pos.y - p2.x, p2.z, 0.1f, 0.4f);
+            //Debug-spheres to show where the height values are taken
+            //UI3DDebug::addSphere(pos.x + p1.x, pos.y + p1.y, p1.z, 0.1f, 0.4f);
+            //UI3DDebug::addSphere(pos.x + p2.x, pos.y + p2.y, p2.z, 0.1f, 0.4f);
+            //UI3DDebug::addSphere(pos.x + p1.y, pos.y - p1.x, p1.z, 0.1f, 0.4f);
+            //UI3DDebug::addSphere(pos.x + p2.y, pos.y - p2.x, p2.z, 0.1f, 0.4f);
 
-        //Find two normals of points
-        D3DXVec3Subtract(&result1, &p1, &p3);
-        D3DXVec3Subtract(&result2, &p4, &p3);
-        D3DXVec3Cross(&result1, &result2, &result1);
+            //Find two normals of points
+            D3DXVec3Subtract(&result1, &p1, &p3);
+            D3DXVec3Subtract(&result2, &p4, &p3);
+            D3DXVec3Cross(&result1, &result2, &result1);
 
-        normal += result1;
+            normal += result1;
 
-        D3DXVec3Subtract(&result1, &p2, &p4);
-        D3DXVec3Subtract(&result2, &p3, &p4);
-        D3DXVec3Cross(&result1, &result2, &result1);
+            D3DXVec3Subtract(&result1, &p2, &p4);
+            D3DXVec3Subtract(&result2, &p3, &p4);
+            D3DXVec3Cross(&result1, &result2, &result1);
 
-        normal += result1;
+            normal += result1;
 
-        D3DXVec3Normalize(&normal, &normal);
+            D3DXVec3Normalize(&normal, &normal);
 
-        //Update unit matrix
-        //Get "right"-vector from crossproduct of direction (around z-axis) and normal, reuse p1 as result
-        D3DXVec3Cross(&p1, &normal, dir);
+            //Update unit matrix
+            //Get "right"-vector from crossproduct of direction (around z-axis) and normal, reuse p1 as result
+            D3DXVec3Cross(&p1, &normal, dir);
 
-        //Find new "forward"-vector based on normal and right vector (fixes the z-value), reuse p2 as result
-        D3DXVec3Cross(&p2, &normal, &p1);
+            //Find new "forward"-vector based on normal and right vector (fixes the z-value), reuse p2 as result
+            D3DXVec3Cross(&p2, &normal, &p1);
 
-        D3DXMatrixIdentity(&m_mLocal);
+            D3DXMatrixIdentity(&m_mLocal);
 
-        m_mLocal._11 = p1.x;
-        m_mLocal._21 = normal.x;
-        m_mLocal._31 = p2.x;
+            m_mLocal._11 = p1.x;
+            m_mLocal._21 = normal.x;
+            m_mLocal._31 = p2.x;
 
-        m_mLocal._12 = p1.y;
-        m_mLocal._22 = normal.y;
-        m_mLocal._32 = p2.y;
+            m_mLocal._12 = p1.y;
+            m_mLocal._22 = normal.y;
+            m_mLocal._32 = p2.y;
 
-        m_mLocal._13 = p1.z;
-        m_mLocal._23 = normal.z;
-        m_mLocal._33 = p2.z;
-    
-		if(m_pWeapon)
-		{            			
-            D3DXMATRIX& m = m_pWeapon->GetMatrix();
-            
-            float x = m._41;
-            float y = m._42;
-            float z = m._43;
-            
-            //TODO: Testing, remove
-            static float dir = 0;
-            dir += 0.01f;
-			D3DXMatrixRotationY(&m, sin(dir));
-            m._41 = x;
-            m._42 = y;
-            m._43 = z;
-		}
-
-	}
-
-    m_mLocal._41 = m_pUnit->getPosition()->x + m_HalfSize;
-    m_mLocal._42 = m_pUnit->getPosition()->y + m_HalfSize;
-    m_mLocal._43 = UITerrain::getInstance()->calculateTriangleHeightAt(m_mLocal._41, m_mLocal._42);
-
+            m_mLocal._13 = p1.z;
+            m_mLocal._23 = normal.z;
+            m_mLocal._33 = p2.z;
+        
+            m_mLocal._41 = m_pUnit->getPosition()->x + m_HalfSize;
+            m_mLocal._42 = m_pUnit->getPosition()->y + m_HalfSize;
+            m_mLocal._43 = UITerrain::getInstance()->calculateTriangleHeightAt(m_mLocal._41, m_mLocal._42);
+        }
+    }
 }
 
 

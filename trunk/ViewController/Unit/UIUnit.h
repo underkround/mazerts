@@ -35,7 +35,7 @@ public:
         m_Alive = true;
         m_Selected = false;
         m_SelectionMarker = NULL;
-		m_pWeapon = NULL;
+		m_pUIWeapon = NULL;
         //Register as listener to pUnit
         pUnit->registerListener(this);		
     }
@@ -77,6 +77,10 @@ public:
      */
     virtual void handleAssetReleased(IAsset* pAsset)
     {
+        if(m_pUIWeapon)
+        {
+            m_pUIWeapon->setAlive(false);
+        }
         m_Alive = false;
     };
 
@@ -107,21 +111,21 @@ public:
 	 * Gets the weapon of the UIUnit
 	 * @return Pointer to UIWeapon
 	 */
-	inline UIWeapon* getWeapon() { return m_pWeapon; }
+	inline UIWeapon* getUIWeapon() { return m_pUIWeapon; }
 
 	/**
 	 * Sets the weapon of the UIUnit and connects the parent-child -relationship
 	 * @param pWeapon Pointer to UIWeapon to set for this unit
 	 */
-	inline void setWeapon(UIWeapon* pWeapon) 
+	inline void setUIWeapon(UIWeapon* pUIWeapon) 
 	{ 
-		if(m_pWeapon)
+		if(m_pUIWeapon)
 		{			
 			//If current weapon exists, it will be destroyed on next update
-			m_pWeapon->setAlive(false);
+			m_pUIWeapon->setAlive(false);
 		}
-		m_pWeapon = pWeapon; 
-		AddChild(m_pWeapon);
+		m_pUIWeapon = pUIWeapon; 
+		AddChild(m_pUIWeapon);
 	}
 
 protected:
@@ -161,9 +165,19 @@ protected:
     bool            m_Alive;
 
 	/**
-	 * Weapon of the unit
+	 * Pointer to UIWeapon of this unit
 	 */
-	UIWeapon* m_pWeapon;
+	UIWeapon* m_pUIWeapon;
+
+    /**
+     * Used to keep track of terrain changes
+     */
+    unsigned short m_UITerrain_ChangeCounter;
+
+    /**
+     * Used to keep track if unit has moved
+     */
+    D3DXVECTOR3 m_OldPosition;
 };
 
 #endif //__UIUNIT_H__
