@@ -7,8 +7,8 @@
 
 void Weapon::update(const float deltaT)
 {
-    //NOTE: Target direction is in relation to the UNIT, not world, and 0 radians = straight left (not forwards)
-    //      increases clockwise, value is between -PI...PI
+    //NOTE: Target direction is in relation to the UNIT, not world, and 0 radians = straight forwards
+    //      increases counterclockwise, value is between -PI...PI
 
     //TODO: Testing, randomly selects new target direction, remove when not needed
     static float counter = 0;

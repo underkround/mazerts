@@ -17,10 +17,8 @@ bool UIWeapon::Update(float fFrameTime)
         m_OldHeading.x = pDir->x;
         m_OldHeading.y = pDir->y;
 
-        //Get direction as radians (notice that the x and y-components are other way around
-        //than atan2-definition says... however, the heading only points in correct direction
-        //this way)
-        float dir = atan2(pDir->x, pDir->y);
+        //Get direction as radians
+        float dir = atan2(pDir->y, pDir->x);
 
         //Rotation zeroes location
         float x = m_mLocal._41;
