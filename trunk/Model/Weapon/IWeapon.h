@@ -39,7 +39,7 @@ public:
         TYPE_END    = 1 << 2    // remember to advance the shift when adding new concrete type
     };
 
-    IWeapon(Type concreteType, WeaponDef def) : m_ConcreteType(concreteType), m_Def(def)
+    IWeapon(Type concreteType, WeaponDef& def) : m_ConcreteType(concreteType), m_Def(def)
     {
         m_Direction.x = 0;
         m_Direction.y = 1;
@@ -110,7 +110,7 @@ protected:
     Vector3         m_Direction;
     int             m_KillCount;
 
-    WeaponDef       m_Def;
+    WeaponDef&      m_Def;
 
     const Type      m_ConcreteType; // the type of the concrete class
 

@@ -23,7 +23,7 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, sho
     if(def->concreteType != 1)
         return NULL; // asset is not unit
 
-    Unit* u = new Unit(*def);
+    Unit* u = new Unit( (AssetDef&)(*def) );
     u->setOwner(owner);
     u->forcePosition(positionX, positionY);
 
@@ -48,7 +48,7 @@ Building* AssetFactory::createBuilding(Player* owner, int buildingType, short po
     if(def->concreteType != 2)
         return NULL; // type is not building
 
-    Building* b = new Building(*def);
+    Building* b = new Building((AssetDef&)(*def));
     b->setOwner(owner);
     b->forcePosition(positionX, positionY);
 
@@ -89,7 +89,7 @@ bool AssetFactory::setRadar(IAsset* a)
     switch(def->concreteType)
     {
     case 1:
-        a->setRadar(new Radar(*def));
+        a->setRadar(new Radar((RadarDef&)(*def)));
         break;
     default:
         return false;
@@ -130,7 +130,7 @@ bool AssetFactory::setWeapon(IAsset* a)
     switch(def->concreteType)
     {
     case 1:
-        a->setWeapon(new Weapon(*def));
+        a->setWeapon(new Weapon((WeaponDef&)(*def)));
         break;
     default:
         return false;
@@ -146,7 +146,7 @@ bool AssetFactory::setMoving(Unit* u)
     switch(def->concreteType)
     {
     case 1:
-        u->setMovingLogic(new GroundMovingLogic(*def));
+        u->setMovingLogic(new GroundMovingLogic((MovingDef&)(*def)));
         break;
     default:
         return false;

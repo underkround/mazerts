@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-Building::Building(AssetDef def) : IAsset(BUILDING, def)
+Building::Building(AssetDef& def) : IAsset(BUILDING, def)
 {
 //    m_BuildingType = buildingType;
 //    std::cout << "building (iid " << m_IID << ", type " << m_BuildingType << ") constructor called\n";

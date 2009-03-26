@@ -36,7 +36,7 @@ public:
         TYPE_END    = 1 << 2    // remember to advance the shift when adding new concrete type
     };
 
-    IAssetRadar(Type concreteType, RadarDef def) : m_ConcreteType(concreteType), m_Def(def)
+    IAssetRadar(Type concreteType, RadarDef& def) : m_ConcreteType(concreteType), m_Def(def)
     {
     }
 
@@ -91,7 +91,7 @@ protected:
 
     const Type                  m_ConcreteType; // the type of the concrete class
 
-    RadarDef                    m_Def; // definition struct for radar parameters
+    RadarDef&                   m_Def; // definition struct for radar parameters
 
     DoubleLinkedList<IAsset*>   m_VisibleAssets; // Visible assets
     DoubleLinkedList<IAsset*>   m_VisibleEnemyAssets; // visible enemy assets

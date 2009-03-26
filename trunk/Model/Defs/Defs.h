@@ -24,7 +24,6 @@ struct BaseDef
 };
 */
 
-
 /**
  * WeaponDef goes inside the IWeapon, the weapon then uses
  * the definition to init and launch projectiles.
@@ -35,6 +34,7 @@ struct WeaponDef //: public BaseDef
     int concreteType; // the weapon concrete class type
     int projectileConcreteType; // the projectile concrete class type
 
+    string name;
     // how many rounds it can fire before reloading (0 for constant fire)
     int clipSize;
     // how long it takes (seconds) to reload
@@ -43,8 +43,7 @@ struct WeaponDef //: public BaseDef
     float rof;
     // range of this projectile
     float range;
-
-    //Turning speed
+    // turning speed
     float turnSpeed;
 
     // TODO: damage values, damage range..
@@ -66,7 +65,7 @@ struct RadarDef //: public BaseDef
 /**
  * MovingDef goes inside every IMovingLogic -class
  */
-struct MovingDef
+struct MovingDef //: public BaseDef
 {
     int tag; // id for definition
     int concreteType; // concrete type for the class to implement this

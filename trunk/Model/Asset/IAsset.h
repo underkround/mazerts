@@ -62,7 +62,7 @@ public:
     static const char RESULT_OK        = 0;
     static const char RESULT_DELETEME  = 1;
 
-    IAsset(Type assetType, AssetDef def);
+    IAsset(Type assetType, AssetDef& def);
     virtual ~IAsset();
 
 // ==== update
@@ -280,7 +280,7 @@ protected:
 
     const int       m_IID;          // unique instance id among all assets
     const Type      m_ConcreteType; // the concrete class of this asset
-    AssetDef        m_Def;          // definition struct for this asset
+    AssetDef&       m_Def;          // definition struct for this asset
 
     State           m_State;        // the current state of the asset
 

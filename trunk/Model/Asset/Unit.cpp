@@ -9,7 +9,7 @@
 #include "Unit.h"
 #include "AssetCollection.h"
 
-Unit::Unit(AssetDef def) : IAsset(UNIT, def)
+Unit::Unit(AssetDef& def) : IAsset(UNIT, def)
 {
     //m_UnitType = unitType;
     // set defaults

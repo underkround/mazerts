@@ -15,7 +15,7 @@ class Weapon : public IWeapon
 {
 public:
 
-    Weapon(WeaponDef def) : IWeapon(DEFAULT, def)
+    Weapon(WeaponDef& def) : IWeapon(DEFAULT, def)
     {
     }
 

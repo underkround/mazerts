@@ -20,6 +20,7 @@ DefManager::DefManager()
 
 DefManager::~DefManager()
 {
+    // delete loaded defs
     {
         ListNode<AssetDef*>* node = m_AssetDefs.headNode();
         while(node) {
@@ -91,6 +92,9 @@ void DefManager::loadConfigurations()
     }
 }
 
+/**
+ * Load asset definitions
+ */
 bool DefManager::loadAssetDef(int tag)
 {
     Config* c = Config::getInstance();
@@ -105,8 +109,7 @@ bool DefManager::loadAssetDef(int tag)
     // asset concrete type
     int type = c->getValueAsInt("", tags, "asset concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
-    if( ((type & (type - 1)) != 0)  ||  !(type & (IAsset::TYPE_END - 1)) )
-    {
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IAsset::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
         if(isNew)
             delete d;
@@ -115,9 +118,9 @@ bool DefManager::loadAssetDef(int tag)
 
     // type ok, continue
     d->concreteType = type;
-
     d->tag = tag;
 
+    // load values
     d->constructionCostEnergy = c->getValueAsInt(   "", tags, "asset constrcution cost energy", 0);
     d->constructionCostOre  = c->getValueAsInt(     "", tags, "asset constrcution cost ore", 10);
 
@@ -130,6 +133,7 @@ bool DefManager::loadAssetDef(int tag)
     d->width                = c->getValueAsInt(     "", tags, "asset width", 2);
     d->height               = c->getValueAsInt(     "", tags, "asset height", 2);
 
+    // load component definitions for asset
     int t;
 
     t = c->getValueAsInt("", tags, "asset radar tag");
@@ -162,13 +166,16 @@ bool DefManager::loadAssetDef(int tag)
     else
         d->pDefResourcer = NULL;
 
-    // add definition to collection
+    // store if new
     if(isNew)
         m_AssetDefs.pushHead(d);
     return true;
 }
 
 
+/**
+ * Load moving definitions
+ */
 bool DefManager::loadMovingDef(int tag)
 {
     Config* c = Config::getInstance();
@@ -183,26 +190,29 @@ bool DefManager::loadMovingDef(int tag)
     int type = c->getValueAsInt("", tags, "moving concrete type");
 
     // validate the concrete type - it needs to be n^2 value and declared concrete type
-    if( ((type & (type - 1)) != 0)  ||  !(type & (IMovingLogic::TYPE_END - 1)) )
-    {
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IMovingLogic::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
-        if(isNew)
-            delete d;
+        if(isNew) delete d;
         return false;
     }
-
-    d->tag = tag;
     d->concreteType = type;
+    d->tag = tag;
+
+    // load values
     d->acceleration = c->getValueAsFloat("", tags, "moving acceleration", 0.9f);
     d->maxSpeed     = c->getValueAsFloat("", tags, "moving maximum speed", 1.0f);
     d->turningSpeed = c->getValueAsFloat("", tags, "moving turning speed", 1.0f);
-    // TODO: add to collection
+
+    // store if new
     if(isNew)
         m_MovingDefs.pushHead(d);
     return true;
 }
 
 
+/**
+ * Load weapon definitions
+ */
 bool DefManager::loadWeaponDef(int tag)
 {
     Config* c = Config::getInstance();
@@ -218,27 +228,31 @@ bool DefManager::loadWeaponDef(int tag)
     // weapon concrete type
     int type = c->getValueAsInt("", tags, "weapon concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
-    if( ((type & (type - 1)) != 0)  ||  !(type & (IWeapon::TYPE_END - 1)) )
-    {
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IWeapon::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
-        if(isNew)
-            delete d;
+        if(isNew) delete d;
         return false;
     }
-    d->tag = tag;
     d->concreteType = type;
 
     // projectile concrete type
     type = c->getValueAsInt("", tags, "weapon projectile concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
-    if( ((type & (type - 1)) != 0)  ||  !(type & (IProjectile::TYPE_END - 1)) )
-    {
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IProjectile::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
-        if(isNew)
-            delete d;
+        if(isNew) delete d;
         return false;
     }
     d->projectileConcreteType = type;
+    d->tag = tag;
+
+    // load values
+    d->name         = c->getValueAsString("", tags, "weapon name");
+    d->clipSize     = c->getValueAsInt("", tags, "weapon clip size");
+    d->reloadTime   = c->getValueAsFloat("", tags, "weapon reload time");
+    d->rof          = c->getValueAsFloat("", tags, "weapon rof");
+    d->range        = c->getValueAsFloat("", tags, "weapon range");
+    d->turnSpeed    = c->getValueAsFloat("", tags, "weapon turning speed");
 
     // store if new
     if(isNew)
@@ -247,6 +261,9 @@ bool DefManager::loadWeaponDef(int tag)
 }
 
 
+/**
+ * Load builder definitions
+ */
 bool DefManager::loadBuilderDef(int tag)
 {
     return false; // TODO: IMPLEMENT BUILDER COMPONENT!
@@ -264,15 +281,17 @@ bool DefManager::loadBuilderDef(int tag)
     int type = c->getValueAsInt("", tags, "builder concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
 /*
-    if( ((type & (type - 1)) != 0)  ||  !(type & (IBuilder::TYPE_END - 1)) )
-    {
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IBuilder::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
-        if(isNew)
-            delete d;
+        if(isNew) delete d;
         return false;
     }
 */
     d->tag = tag;
+
+    // load values
+    // TODO
+
     // store if new
     if(isNew)
         m_BuilderDefs.pushHead(d);
@@ -280,6 +299,9 @@ bool DefManager::loadBuilderDef(int tag)
 }
 
 
+/**
+ * Load resourcer definitions
+ */
 bool DefManager::loadResourcerDef(int tag)
 {
     return false; // TODO: IMPLEMENT RESOURCER COMPONENT!
@@ -298,15 +320,16 @@ bool DefManager::loadResourcerDef(int tag)
     int type = c->getValueAsInt("", tags, "resourcer concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
     /*
-    if( ((type & (type - 1)) != 0)  ||  !(type & (IResourcer::TYPE_END - 1)) )
-    {
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IResourcer::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
-        if(isNew)
-            delete d;
+        if(isNew) delete d;
         return false;
     }*/
-
     d->tag = tag;
+
+    // load values
+    // TODO
+
     // store if new
     if(isNew)
         m_ResourcerDefs.pushHead(d);
@@ -314,6 +337,9 @@ bool DefManager::loadResourcerDef(int tag)
 }
 
 
+/**
+ * Load radar definitions
+ */
 bool DefManager::loadRadarDef(int tag)
 {
     Config* c = Config::getInstance();
@@ -328,21 +354,26 @@ bool DefManager::loadRadarDef(int tag)
     // values
     int type = c->getValueAsInt("", tags, "radar concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
-    if( ((type & (type - 1)) != 0)  ||  !(type & (IAssetRadar::TYPE_END - 1)) )
-    {
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IAssetRadar::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
-        if(isNew)
-            delete d;
+        if(isNew) delete d;
         return false;
     }
     d->tag = tag;
     d->concreteType = type;
+
+    // load values
+    // TODO
+
+    // store if new
     if(isNew)
         m_RadarDefs.pushHead(d);
     return true;
 }
 
-// ===== Has
+
+// ===== Has - methods
+
 
 bool DefManager::hasAssetDef(int tag) {
     ListNode<AssetDef*>* node = m_AssetDefs.headNode();
@@ -392,7 +423,9 @@ bool DefManager::hasRadarDef(int tag) {
     } return false;
 }
 
-// ===== GET
+
+// ===== Get - methods
+
 
 AssetDef* DefManager::getAssetDef(int tag) {
     ListNode<AssetDef*>* node = m_AssetDefs.headNode();

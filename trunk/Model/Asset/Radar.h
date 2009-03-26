@@ -18,7 +18,7 @@ class Radar : public IAssetRadar
 {
 public:
 
-    Radar(RadarDef def) : IAssetRadar(DEFAULT, def)
+    Radar(RadarDef& def) : IAssetRadar(DEFAULT, def)
     {
     }
 

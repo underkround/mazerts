@@ -16,7 +16,7 @@ class Building : public IAsset
 {
 public:
 
-    Building(AssetDef def);
+    Building(AssetDef& def);
     virtual ~Building();
 
 // =====

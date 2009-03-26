@@ -19,7 +19,7 @@ class Unit : public IAsset
 {
 public:
 
-    Unit(AssetDef def);
+    Unit(AssetDef& def);
     virtual ~Unit();
 
 // ===== Initialization

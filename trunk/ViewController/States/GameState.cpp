@@ -284,6 +284,12 @@ void GameState::updateControls(const float frameTime)
         node = node->next;
     }
 
+    // reload def-files on fly
+    if(KeyboardState::keyReleased[32]) // key: D
+    {
+        DefManager::getInstance()->loadConfigurations();
+    }
+
     // Terrain
 
     if(KeyboardState::keyReleased[m_KeyGenerateNewTerrain])

@@ -55,7 +55,7 @@ public:
         TYPE_END        = 1 << 2    // remember to advance the shift when adding new concrete type
     };
 
-    IMovingLogic(Type concreteType, MovingDef def) : m_ConcreteType(concreteType), m_Def(def) { };
+    IMovingLogic(Type concreteType, MovingDef& def) : m_ConcreteType(concreteType), m_Def(def) { };
     virtual ~IMovingLogic() { }
 
     /**
@@ -139,7 +139,7 @@ public:
 protected:
 
     // definition containing the parameters for moving
-    MovingDef       m_Def;
+    MovingDef&      m_Def;
 
     const Type      m_ConcreteType; // the type of the concrete class
 
