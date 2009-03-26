@@ -12,7 +12,7 @@ void Weapon::update(const float deltaT)
     //NOTE: Target direction is in relation to the UNIT, not world, and 0 radians = straight forwards
     //      increases counterclockwise, value is between -PI...PI
     Vector3* dir = m_pHost->getDirection();
-    dir->normalize();
+
     if(m_pTarget)
     {
         Vector3* pos = m_pHost->getPosition();

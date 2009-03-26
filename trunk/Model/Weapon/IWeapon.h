@@ -111,6 +111,13 @@ public:
      */
     inline Target* getTarget() { return m_pTarget; }
 
+    /**
+     * Set the target to weapon
+     * WARNING! Due to circular dependency-issues, old object pointed by the
+     * member Target-pointer is not deleted! User should take care of deleting
+     * the old target (if any) before setting new
+     * @param pTarget Pointer to Target
+     */
     inline void setTarget(Target* pTarget) { m_pTarget = pTarget; }
 
 protected:

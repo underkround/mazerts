@@ -87,7 +87,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     //TEST
     for(int i = 0; i < 2; i++)
     {
-        AssetFactory::createUnit(NULL, 2, (i * 4), (i % 5) * 4);
+        AssetFactory::createUnit(NULL, 2, 40+(i * 4), 20+(i % 5) * 4);
     }
 
 

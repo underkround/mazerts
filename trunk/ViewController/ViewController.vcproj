@@ -172,22 +172,6 @@
 	</References>
 	<Files>
 		<Filter
-			Name="AI"
-			>
-			<Filter
-				Name="Antin"
-				>
-				<File
-					RelativePath="..\Model\AI\Antin\AntinAI.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Model\AI\Antin\AntinAI.h"
-					>
-				</File>
-			</Filter>
-		</Filter>
-		<Filter
 			Name="Model"
 			>
 			<File
@@ -565,6 +549,22 @@
 					RelativePath="..\Model\Defs\Defs.h"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="AI"
+				>
+				<Filter
+					Name="Antin"
+					>
+					<File
+						RelativePath="..\Model\AI\Antin\AntinAI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Model\AI\Antin\AntinAI.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
