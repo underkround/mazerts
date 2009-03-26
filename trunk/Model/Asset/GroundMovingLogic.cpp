@@ -15,8 +15,8 @@
 #endif
 #endif
 
-//After how many frames a stuck unit cancels its MAKEWAY-target
-#define STUCKCOUNTER_CANCEL 50
+//After how many seconds a stuck unit cancels its MAKEWAY-target
+#define STUCKCOUNTER_CANCEL 1.0f
 
 GroundMovingLogic::GroundMovingLogic(MovingDef def) : IMovingLogic(def)
 {
@@ -374,7 +374,7 @@ void GroundMovingLogic::move(float deltaTime)
 
                             float minDist = (float)(pNode->item->getWidth() + m_pUnit->getWidth());
 
-                            //Check if the target already has a MAKEWAY-priority flag
+                            //Check if the target already has a MAKEWAY-priority target
                             Target* unitTarget = pNode->item->getMovingLogic()->getTarget();
                             if(unitTarget == NULL || !unitTarget->isFlag(Target::TGTFLAG_MAKEWAY))
                             {
@@ -464,7 +464,7 @@ void GroundMovingLogic::move(float deltaTime)
                 //Used to clear "stuck" MAKEWAY-flags (häröpallo)
                 if(m_pTarget && m_pTarget->isFlag(Target::TGTFLAG_MAKEWAY))
                 {
-                    m_StuckCounter++;
+                    m_StuckCounter += deltaTime;
                     if(m_StuckCounter > STUCKCOUNTER_CANCEL)
                     {
                         clearCurrentTarget();

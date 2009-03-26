@@ -184,7 +184,7 @@ void CTheApp::OnFlip(void)
         }
 
         TCHAR text[100];
-        _stprintf_s(text, _T("FPS: %.2f"), (1.0f / GetFrameTime()));
+        _stprintf_s(text, _T("FPS: %.2f  Frametime: %.2fms"), (1.0f / GetFrameTime()), GetFrameTime() * 1000.0f);
         DrawText(500, 0, text, 0xFFFFFFFF);
 
         _stprintf_s(text, _T("Update: %.2fms  Render: %.2fms"), timer1->GetElapsedSeconds() * 1000.0f, time * 1000.0f);
@@ -197,7 +197,7 @@ void CTheApp::OnFlip(void)
         EndText();
 
         
-        //Render state        
+        //Render state
         m_pCurrentState->render(pDevice);
 
 

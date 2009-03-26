@@ -201,9 +201,9 @@ private:
     float m_HalfSize;
 
     /** 
-     * Counter used to cancel MAKEWAY-targets if the unit cannot get out of the way
+     * Counter used to cancel MAKEWAY-targets if the unit cannot move in certain number of seconds
      */
-    unsigned int m_StuckCounter;
+    float m_StuckCounter;
 };
 
 #endif // __GROUNDMOVINGLOGIC_H__
