@@ -46,41 +46,41 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
 {    
     //Create UIUnit
     UIUnit* pUIUnit = new UIUnit(pUnit);
-	
+    
 
     //Set bounding box-size, z-value defaults to 4 (unless someone makes units to provide their depth)
     pUIUnit->setAABBSize(D3DXVECTOR3(pUnit->getWidth(), pUnit->getHeight(), 4.0f));
 
-	//Get tag and find mesh-file from container
-	int tag = pUnit->getTypeTag()-1;
+    //Get tag and find mesh-file from container
+    int tag = pUnit->getTypeTag()-1;
 
-	CXFileLoader::Load(g_ppUnitMeshNames[tag][0], m_ResourceContainer, pUIUnit);
+    CXFileLoader::Load(g_ppUnitMeshNames[tag][0], m_ResourceContainer, pUIUnit);
 
     m_RootObject.AddChild(pUIUnit);
     m_UnitList.pushTail(pUIUnit);
 
-	if(pUnit->hasWeapon())
-	{
-		//TODO: move loading & offsetting to method
+    if(pUnit->hasWeapon())
+    {
+        //TODO: move loading & offsetting to method
         UIWeapon* pUIWeapon = new UIWeapon(pUnit->getWeapon());
-		CXFileLoader::Load(g_ppUnitMeshNames[tag][1], m_ResourceContainer, pUIWeapon);
-		D3DXMATRIX& m = pUIWeapon->GetMatrix();
-		m._41 = g_ppUnitMeshOffsets[tag][1][0];
-		m._42 = g_ppUnitMeshOffsets[tag][1][1];
-		m._43 = g_ppUnitMeshOffsets[tag][1][2];
-		pUIUnit->setUIWeapon(pUIWeapon);
+        CXFileLoader::Load(g_ppUnitMeshNames[tag][1], m_ResourceContainer, pUIWeapon);
+        D3DXMATRIX& m = pUIWeapon->GetMatrix();
+        m._41 = g_ppUnitMeshOffsets[tag][1][0];
+        m._42 = g_ppUnitMeshOffsets[tag][1][1];
+        m._43 = g_ppUnitMeshOffsets[tag][1][2];
+        pUIUnit->setUIWeapon(pUIWeapon);
 
-		if(g_ppUnitMeshNames[tag][2] != _T(""))
-		{
-			C3DObject* pObject = new C3DObject();
-			CXFileLoader::Load(g_ppUnitMeshNames[tag][2], m_ResourceContainer, pObject);
-			D3DXMATRIX& m = pObject->GetMatrix();
-			m._41 = g_ppUnitMeshOffsets[tag][2][0];
-			m._42 = g_ppUnitMeshOffsets[tag][2][1];
-			m._43 = g_ppUnitMeshOffsets[tag][2][2];
-			pUIWeapon->AddChild(pObject);
-		}
-	}
+        if(g_ppUnitMeshNames[tag][2] != _T(""))
+        {
+            C3DObject* pObject = new C3DObject();
+            CXFileLoader::Load(g_ppUnitMeshNames[tag][2], m_ResourceContainer, pObject);
+            D3DXMATRIX& m = pObject->GetMatrix();
+            m._41 = g_ppUnitMeshOffsets[tag][2][0];
+            m._42 = g_ppUnitMeshOffsets[tag][2][1];
+            m._43 = g_ppUnitMeshOffsets[tag][2][2];
+            pUIWeapon->AddChild(pObject);
+        }
+    }
 }
 
 
@@ -139,11 +139,11 @@ UIUnit* UI3DObjectManager::pickUnit(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
 void UI3DObjectManager::loadMeshes(void)
 {
 
-	//Hardcoded filenames
-	for(int i = 0; i < NUMBER_OF_UNITS_WITH_MESHES; i++)
-	{
-		CXFileLoader::Load(g_ppUnitMeshNames[i][0], m_ResourceContainer, NULL);
-		CXFileLoader::Load(g_ppUnitMeshNames[i][1], m_ResourceContainer, NULL);
-		CXFileLoader::Load(g_ppUnitMeshNames[i][2], m_ResourceContainer, NULL);
-	}	
+    //Hardcoded filenames
+    for(int i = 0; i < NUMBER_OF_UNITS_WITH_MESHES; i++)
+    {
+        CXFileLoader::Load(g_ppUnitMeshNames[i][0], m_ResourceContainer, NULL);
+        CXFileLoader::Load(g_ppUnitMeshNames[i][1], m_ResourceContainer, NULL);
+        CXFileLoader::Load(g_ppUnitMeshNames[i][2], m_ResourceContainer, NULL);
+    }    
 }

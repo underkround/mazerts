@@ -44,7 +44,7 @@ public:
 
 // ===== I3DObject
 
-	virtual bool Update(float fFrametime);
+    virtual bool Update(float fFrametime);
 
     virtual void Render(LPDIRECT3DDEVICE9 pDevice);
 

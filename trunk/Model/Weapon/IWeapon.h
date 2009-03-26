@@ -20,6 +20,7 @@
 //#include "../Asset/IAsset.h"
 #include "../Defs/Defs.h"
 
+class Target;
 class IAsset;
 
 class IWeapon
@@ -45,7 +46,8 @@ public:
         m_Direction.y = 1;
         m_Direction.z = 0;
         m_KillCount = 0;
-        m_pHost = 0;
+        m_pHost = NULL;
+        m_pTarget = NULL;
     }
 
     virtual ~IWeapon()
@@ -104,15 +106,24 @@ public:
      */
     virtual inline WeaponDef* getDef() { return &m_Def; }
 
+    /**
+     * @return Current target of weapon
+     */
+    inline Target* getTarget() { return m_pTarget; }
+
+    inline void setTarget(Target* pTarget) { m_pTarget = pTarget; }
+
 protected:
 
-    IAsset*         m_pHost;
-    Vector3         m_Direction;
-    int             m_KillCount;
+    IAsset*         m_pHost;            //Weapon owner
+    Vector3         m_Direction;        //Current direction of the weapon
+    Vector3         m_TargetDirection;  //Target direction to turn into
+    int             m_KillCount;        //Killcount of the weapon
+    Target*         m_pTarget;          //Weapon target
 
     WeaponDef&      m_Def;
 
-    const Type      m_ConcreteType; // the type of the concrete class
+    const Type      m_ConcreteType;     // the type of the concrete class
 
 };
 

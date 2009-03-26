@@ -231,7 +231,7 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const D
         pLn = pLn->next;
 
     CSoundWave* pWave = pLn->item;
-	DWORD duplicate = pWave->GetNextFreeDuplicate();
+    DWORD duplicate = pWave->GetNextFreeDuplicate();
     const int dist = (int)(pWave->getOriginalFrequency() * distort);
     const int minDistort = pWave->getOriginalFrequency() - dist;
     const int maxDistort = pWave->getOriginalFrequency() + dist;

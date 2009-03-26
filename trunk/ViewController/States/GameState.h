@@ -63,7 +63,7 @@ public:
     virtual void onDeviceLost()
     {
         m_pUITerrain->onLostDevice();
-		m_Selector.onDeviceLost();
+        m_Selector.onDeviceLost();
     }
 
     /**
@@ -74,18 +74,18 @@ public:
     {
         Camera::current->forceUpdate();
         HRESULT hres = m_pUITerrain->onRestore(m_pDevice);
-		if(FAILED(hres))
-		{
-			return hres;
-		}
-		
-		hres = m_Selector.onRestore(m_pDevice);
-		if(FAILED(hres))
-		{
-			return hres;
-		}
-		
-		return S_OK;
+        if(FAILED(hres))
+        {
+            return hres;
+        }
+        
+        hres = m_Selector.onRestore(m_pDevice);
+        if(FAILED(hres))
+        {
+            return hres;
+        }
+        
+        return S_OK;
     }
 
 

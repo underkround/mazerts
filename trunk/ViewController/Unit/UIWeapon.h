@@ -21,7 +21,7 @@ public:
 
     /**
      * Constructor
-	 * @param pWeapon Pointer to IWeapon this object represents
+     * @param pWeapon Pointer to IWeapon this object represents
      */
     UIWeapon(IWeapon* pWeapon)
     {
@@ -43,12 +43,12 @@ public:
      *         if the child should be removed by parent
      */
     virtual bool Update(float fFrametime);
-	
-	/**
-	 * Sets the alive-state of the weapon
-	 * @param alive Set to false to get the weapon destroyed on next update
-	 */
-	inline void setAlive(bool alive) { m_Alive = alive; }
+    
+    /**
+     * Sets the alive-state of the weapon
+     * @param alive Set to false to get the weapon destroyed on next update
+     */
+    inline void setAlive(bool alive) { m_Alive = alive; }
 
 protected:
 

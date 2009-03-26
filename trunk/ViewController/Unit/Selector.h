@@ -155,19 +155,19 @@ public:
      * @return Pointer to SELECTION
      */
     SELECTION* buttonUp();
-	
-	/**
-	 * Called when device is lost, releases D3DPOOL_DEFAULT-resources
-	 * @return S_OK or errorcode
-	 */
-	HRESULT onDeviceLost();
+    
+    /**
+     * Called when device is lost, releases D3DPOOL_DEFAULT-resources
+     * @return S_OK or errorcode
+     */
+    HRESULT onDeviceLost();
 
-	/**
-	 * Called when device is restored, recreates D3DPOOL_DEFAULT-resources
-	 * @param pDevice Pointer to Direct3D-device
-	 * @return S_OK or errorcode
-	 */
-	HRESULT onRestore(LPDIRECT3DDEVICE9 pDevice);
+    /**
+     * Called when device is restored, recreates D3DPOOL_DEFAULT-resources
+     * @param pDevice Pointer to Direct3D-device
+     * @return S_OK or errorcode
+     */
+    HRESULT onRestore(LPDIRECT3DDEVICE9 pDevice);
 
 private:
 

@@ -35,9 +35,9 @@ public:
         m_Alive = true;
         m_Selected = false;
         m_SelectionMarker = NULL;
-		m_pUIWeapon = NULL;
+        m_pUIWeapon = NULL;
         //Register as listener to pUnit
-        pUnit->registerListener(this);		
+        pUnit->registerListener(this);        
     }
 
     /**
@@ -107,26 +107,26 @@ public:
         return m_pUnit;
     }
 
-	/**
-	 * Gets the weapon of the UIUnit
-	 * @return Pointer to UIWeapon
-	 */
-	inline UIWeapon* getUIWeapon() { return m_pUIWeapon; }
+    /**
+     * Gets the weapon of the UIUnit
+     * @return Pointer to UIWeapon
+     */
+    inline UIWeapon* getUIWeapon() { return m_pUIWeapon; }
 
-	/**
-	 * Sets the weapon of the UIUnit and connects the parent-child -relationship
-	 * @param pWeapon Pointer to UIWeapon to set for this unit
-	 */
-	inline void setUIWeapon(UIWeapon* pUIWeapon) 
-	{ 
-		if(m_pUIWeapon)
-		{			
-			//If current weapon exists, it will be destroyed on next update
-			m_pUIWeapon->setAlive(false);
-		}
-		m_pUIWeapon = pUIWeapon; 
-		AddChild(m_pUIWeapon);
-	}
+    /**
+     * Sets the weapon of the UIUnit and connects the parent-child -relationship
+     * @param pWeapon Pointer to UIWeapon to set for this unit
+     */
+    inline void setUIWeapon(UIWeapon* pUIWeapon) 
+    { 
+        if(m_pUIWeapon)
+        {            
+            //If current weapon exists, it will be destroyed on next update
+            m_pUIWeapon->setAlive(false);
+        }
+        m_pUIWeapon = pUIWeapon; 
+        AddChild(m_pUIWeapon);
+    }
 
 protected:
 
@@ -164,10 +164,10 @@ protected:
      */
     bool            m_Alive;
 
-	/**
-	 * Pointer to UIWeapon of this unit
-	 */
-	UIWeapon* m_pUIWeapon;
+    /**
+     * Pointer to UIWeapon of this unit
+     */
+    UIWeapon* m_pUIWeapon;
 
     /**
      * Used to keep track of terrain changes
