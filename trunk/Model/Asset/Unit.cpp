@@ -17,6 +17,7 @@ Unit::Unit(AssetDef def) : IAsset(UNIT, def)
     m_pWeapon = NULL;
     m_pRadar = NULL;
     m_Created = false;
+    m_ParalyzeTimer = 0;
 }
 
 Unit::~Unit()
@@ -74,6 +75,13 @@ char Unit::update(const float deltaT)
         // we just enter to the active-state. Later it will happen
         // by growing the hitpoints until they reach max
         changeState(STATE_ACTIVE);
+        break;
+
+    case STATE_PARALYZED:
+        // if we are paralyzed, we reduce the counter
+        m_ParalyzeTimer -= deltaT;
+        if(m_ParalyzeTimer <= 0)
+            changeState(STATE_ACTIVE);
         break;
 
     /*

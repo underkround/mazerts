@@ -18,7 +18,7 @@
 //After how many seconds a stuck unit cancels its MAKEWAY-target
 #define STUCKCOUNTER_CANCEL 1.0f
 
-GroundMovingLogic::GroundMovingLogic(MovingDef def) : IMovingLogic(def)
+GroundMovingLogic::GroundMovingLogic(MovingDef def) : IMovingLogic(GROUNDMOVING, def)
 {
     m_pUnit = NULL;
     m_pAgent = NULL;

@@ -90,6 +90,11 @@ private:
     // position and direction -vectors of this unit
     IMovingLogic*               m_pMovingLogic;
 
+    // paralyze timer is downcounter which is set to some value when the
+    // unit is paralyzed, the time is in seconds and means the time to be
+    // int the paralyzed state
+    float                       m_ParalyzeTimer;
+
     // the weapon & radar are in the IAsset
 
     // flag for weather this unit is created to prevent registration

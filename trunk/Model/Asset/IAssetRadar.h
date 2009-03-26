@@ -23,8 +23,20 @@ class IAsset;
 class IAssetRadar
 {
 public:
+    /**
+     * Concrete class types are declared here.
+     * When adding new concrete implementing class, define enum for it here.
+     * These need to be bit-values, so increase the shift value with 1
+     * when adding.
+     * Remember to keep the END -type last.
+     */
+    enum Type
+    {
+        DEFAULT     = 1 << 1,   // the default radar (Radar.h)
+        TYPE_END    = 1 << 2    // remember to advance the shift when adding new concrete type
+    };
 
-    IAssetRadar(RadarDef def) : m_Def(def)
+    IAssetRadar(Type concreteType, RadarDef def) : m_ConcreteType(concreteType), m_Def(def)
     {
     }
 
@@ -76,6 +88,8 @@ public:
 protected:
 
     IAsset*                     m_pHost; // Asset this radar is attached to
+
+    const Type                  m_ConcreteType; // the type of the concrete class
 
     RadarDef                    m_Def; // definition struct for radar parameters
 

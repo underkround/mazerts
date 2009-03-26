@@ -37,7 +37,7 @@ public:
      *
      */
     AssetDef* getAssetDef(int tag);
-    ProjectileDef* getProjectileDef(int tag);
+    WeaponDef* getWeaponDef(int tag);
     RadarDef* getRadarDef(int tag);
     MovingDef* getMovingDef(int tag);
     BuilderDef* getBuilderDef(int tag);
@@ -66,7 +66,7 @@ public:
 
     bool hasAssetDef(int tag);
     bool hasMovingDef(int tag);
-    bool hasProjectileDef(int tag);
+    bool hasWeaponDef(int tag);
     bool hasBuilderDef(int tag);
     bool hasResourcerDef(int tag);
     bool hasRadarDef(int tag);
@@ -84,7 +84,7 @@ private:
      */
     bool loadAssetDef(int tag);
     bool loadMovingDef(int tag);
-    bool loadProjectileDef(int tag);
+    bool loadWeaponDef(int tag);
     bool loadBuilderDef(int tag);
     bool loadResourcerDef(int tag);
     bool loadRadarDef(int tag);
@@ -93,7 +93,7 @@ private:
     // not that important for now since there are too many of these anyway
     DoubleLinkedList<AssetDef*>         m_AssetDefs;
     DoubleLinkedList<MovingDef*>        m_MovingDefs;
-    DoubleLinkedList<ProjectileDef*>    m_ProjectileDefs;
+    DoubleLinkedList<WeaponDef*>        m_WeaponDefs;
     DoubleLinkedList<BuilderDef*>       m_BuilderDefs;
     DoubleLinkedList<ResourcerDef*>     m_ResourcerDefs;
     DoubleLinkedList<RadarDef*>         m_RadarDefs;

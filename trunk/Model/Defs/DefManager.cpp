@@ -7,6 +7,12 @@
 #include "DefManager.h"
 
 #include "../Common/Config.h"
+#include "../Asset/IAsset.h"        // for Type-enum validation
+#include "../Asset/IAssetRadar.h"   // for Type-enum validation
+#include "../Asset/IMovingLogic.h"  // for Type-enum validation
+#include "../Weapon/IWeapon.h"      // for Type-enum validation
+#include "../Weapon/IProjectile.h"  // for Type-enum validation
+
 
 DefManager::DefManager()
 {
@@ -29,10 +35,10 @@ DefManager::~DefManager()
         }
     }
     {
-        ListNode<ProjectileDef*>* node = m_ProjectileDefs.headNode();
+        ListNode<WeaponDef*>* node = m_WeaponDefs.headNode();
         while(node) {
             delete node->item;
-            node = m_ProjectileDefs.removeGetNext(node);
+            node = m_WeaponDefs.removeGetNext(node);
         }
     }
     {
@@ -67,7 +73,7 @@ void DefManager::loadConfigurations()
     c->readFile();
     c->setFilename("../data/defs/movings.ini");
     c->readFile();
-    c->setFilename("../data/defs/projectiles.ini");
+    c->setFilename("../data/defs/weapons.ini");
     c->readFile();
     c->setFilename("../data/defs/builders.ini");
     c->readFile();
@@ -98,18 +104,19 @@ bool DefManager::loadAssetDef(int tag)
     }
     // asset concrete type
     int type = c->getValueAsInt("", tags, "asset concrete type");
-    switch(type)
+    // validate the concrete type - it needs to be n^2 value and declared concrete type
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IAsset::TYPE_END - 1)) )
     {
-    case 1: // unit
-    case 2: // building
-        break;
-    default:
+        // discard this def for invalid concrete type
         if(isNew)
             delete d;
-        return false; // invalid type
+        return false;
     }
-    d->tag = tag;
+
+    // type ok, continue
     d->concreteType = type;
+
+    d->tag = tag;
 
     d->constructionCostEnergy = c->getValueAsInt(   "", tags, "asset constrcution cost energy", 0);
     d->constructionCostOre  = c->getValueAsInt(     "", tags, "asset constrcution cost ore", 10);
@@ -137,11 +144,11 @@ bool DefManager::loadAssetDef(int tag)
     else
         d->pDefMoving = NULL;
 
-    t = c->getValueAsInt("", tags, "asset projectile tag");
-    if(t && loadProjectileDef(t))
-        d->pDefProjectile = getProjectileDef(t);
+    t = c->getValueAsInt("", tags, "asset weapon tag");
+    if(t && loadWeaponDef(t))
+        d->pDefWeapon = getWeaponDef(t);
     else
-        d->pDefProjectile = NULL;
+        d->pDefWeapon = NULL;
 
     t = c->getValueAsInt("", tags, "asset builder tag");
     if(t && loadBuilderDef(t))
@@ -174,15 +181,16 @@ bool DefManager::loadMovingDef(int tag)
         isNew = true;
     }
     int type = c->getValueAsInt("", tags, "moving concrete type");
-    switch(type)
+
+    // validate the concrete type - it needs to be n^2 value and declared concrete type
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IMovingLogic::TYPE_END - 1)) )
     {
-    case 1: // ground moving logic
-        break;
-    default:
+        // discard this def for invalid concrete type
         if(isNew)
             delete d;
         return false;
     }
+
     d->tag = tag;
     d->concreteType = type;
     d->acceleration = c->getValueAsFloat("", tags, "moving acceleration", 0.9f);
@@ -195,40 +203,54 @@ bool DefManager::loadMovingDef(int tag)
 }
 
 
-bool DefManager::loadProjectileDef(int tag)
+bool DefManager::loadWeaponDef(int tag)
 {
     Config* c = Config::getInstance();
     string tags = intToString(tag);
-    ProjectileDef* d = getProjectileDef(tag);
+    WeaponDef* d = getWeaponDef(tag);
     bool isNew = false;
     if(!d) {
-        d = new ProjectileDef();
-        ::memset(d, 0, sizeof(ProjectileDef));
+        d = new WeaponDef();
+        ::memset(d, 0, sizeof(WeaponDef));
         isNew = true;
     }
-    int type = c->getValueAsInt("", tags, "projectile concrete type");
-    switch(type)
+
+    // weapon concrete type
+    int type = c->getValueAsInt("", tags, "weapon concrete type");
+    // validate the concrete type - it needs to be n^2 value and declared concrete type
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IWeapon::TYPE_END - 1)) )
     {
-    case 1: // bullet
-    case 2: // shell
-    case 3: // beam
-        break;
-    default:
+        // discard this def for invalid concrete type
         if(isNew)
             delete d;
         return false;
     }
     d->tag = tag;
     d->concreteType = type;
+
+    // projectile concrete type
+    type = c->getValueAsInt("", tags, "weapon projectile concrete type");
+    // validate the concrete type - it needs to be n^2 value and declared concrete type
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IProjectile::TYPE_END - 1)) )
+    {
+        // discard this def for invalid concrete type
+        if(isNew)
+            delete d;
+        return false;
+    }
+    d->projectileConcreteType = type;
+
     // store if new
     if(isNew)
-        m_ProjectileDefs.pushHead(d);
+        m_WeaponDefs.pushHead(d);
     return true;
 }
 
 
 bool DefManager::loadBuilderDef(int tag)
 {
+    return false; // TODO: IMPLEMENT BUILDER COMPONENT!
+
     Config* c = Config::getInstance();
     string tags = intToString(tag);
     BuilderDef* d = getBuilderDef(tag);
@@ -240,14 +262,16 @@ bool DefManager::loadBuilderDef(int tag)
     }
     // values
     int type = c->getValueAsInt("", tags, "builder concrete type");
-    switch(type) {
-        case 1:
-        // TODO: add accepted types
-        default:
-            if(isNew)
-                delete d;
-            return false;
+    // validate the concrete type - it needs to be n^2 value and declared concrete type
+/*
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IBuilder::TYPE_END - 1)) )
+    {
+        // discard this def for invalid concrete type
+        if(isNew)
+            delete d;
+        return false;
     }
+*/
     d->tag = tag;
     // store if new
     if(isNew)
@@ -258,6 +282,8 @@ bool DefManager::loadBuilderDef(int tag)
 
 bool DefManager::loadResourcerDef(int tag)
 {
+    return false; // TODO: IMPLEMENT RESOURCER COMPONENT!
+
     Config* c = Config::getInstance();
     string tags = intToString(tag);
     // use old or create new
@@ -270,14 +296,16 @@ bool DefManager::loadResourcerDef(int tag)
     }
     // values
     int type = c->getValueAsInt("", tags, "resourcer concrete type");
-    switch(type) {
-        case 1:
-        // TODO: add accepted types
-        default:
-            if(isNew)
-                delete d;
-            return false;
-    }
+    // validate the concrete type - it needs to be n^2 value and declared concrete type
+    /*
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IResourcer::TYPE_END - 1)) )
+    {
+        // discard this def for invalid concrete type
+        if(isNew)
+            delete d;
+        return false;
+    }*/
+
     d->tag = tag;
     // store if new
     if(isNew)
@@ -299,13 +327,13 @@ bool DefManager::loadRadarDef(int tag)
     }
     // values
     int type = c->getValueAsInt("", tags, "radar concrete type");
-    switch(type) {
-        case 1:
-        // TODO: add accepted types
-        default:
-            if(isNew)
-                delete d;
-            return false;
+    // validate the concrete type - it needs to be n^2 value and declared concrete type
+    if( ((type & (type - 1)) != 0)  ||  !(type & (IAssetRadar::TYPE_END - 1)) )
+    {
+        // discard this def for invalid concrete type
+        if(isNew)
+            delete d;
+        return false;
     }
     d->tag = tag;
     d->concreteType = type;
@@ -332,8 +360,8 @@ bool DefManager::hasMovingDef(int tag) {
     } return false;
 }
 
-bool DefManager::hasProjectileDef(int tag) {
-    ListNode<ProjectileDef*>* node = m_ProjectileDefs.headNode();
+bool DefManager::hasWeaponDef(int tag) {
+    ListNode<WeaponDef*>* node = m_WeaponDefs.headNode();
     while(node)  {
         if(node->item->tag == tag) return true;
         node = node->next;
@@ -374,8 +402,8 @@ AssetDef* DefManager::getAssetDef(int tag) {
     } return NULL;
 }
 
-ProjectileDef* DefManager::getProjectileDef(int tag) {
-    ListNode<ProjectileDef*>* node = m_ProjectileDefs.headNode();
+WeaponDef* DefManager::getWeaponDef(int tag) {
+    ListNode<WeaponDef*>* node = m_WeaponDefs.headNode();
     while(node)  {
         if(node->item->tag == tag) return node->item;
         node = node->next;

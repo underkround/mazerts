@@ -26,13 +26,14 @@ struct BaseDef
 
 
 /**
- * PorjectileDef goes inside the IWeapon, the weapon then uses
- * the definition to launch projectiles.
+ * WeaponDef goes inside the IWeapon, the weapon then uses
+ * the definition to init and launch projectiles.
  */
-struct ProjectileDef //: public BaseDef
+struct WeaponDef //: public BaseDef
 {
     int tag; // id for definition
-    int concreteType; // concrete type for the class to implement this
+    int concreteType; // the weapon concrete class type
+    int projectileConcreteType; // the projectile concrete class type
 
     // how many rounds it can fire before reloading (0 for constant fire)
     int clipSize;
@@ -147,14 +148,14 @@ struct AssetDef //: public BaseDef
     // TODO: these could also be pointers..
 /*
     int radarTag;       // radar-component
-    int projectileTag;  // projectile/weapon-component
+    int weaponTag;      // projectile/weapon-component
     int movingTag;      // moving-component
     int builderTag;     // builder-component
     int resourcerTag;   // resourcer-component
 */
     RadarDef*       pDefRadar;
     MovingDef*      pDefMoving;
-    ProjectileDef*  pDefProjectile;
+    WeaponDef*      pDefWeapon;
     BuilderDef*     pDefBuilder;
     ResourcerDef*   pDefResourcer;
 };

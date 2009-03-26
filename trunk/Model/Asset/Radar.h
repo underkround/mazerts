@@ -18,7 +18,7 @@ class Radar : public IAssetRadar
 {
 public:
 
-    Radar(RadarDef def) : IAssetRadar(def)
+    Radar(RadarDef def) : IAssetRadar(DEFAULT, def)
     {
     }
 
@@ -48,9 +48,11 @@ public:
     virtual DoubleLinkedList<IAsset*>* getVisibleEnemyAssets();
 
 private:
+
     bool    m_VisibleListNeedRefreshing;            // guess
     bool    m_VisibleEnemyListNeedRefreshing;       // guess
     float   m_ListsLastUpdated;                     // when lists were last updated
+
 };
 
 #endif // __RADAR_H__

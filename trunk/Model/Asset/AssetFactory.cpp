@@ -123,7 +123,7 @@ bool AssetFactory::setResourcer(IAsset* a)
 
 bool AssetFactory::setWeapon(IAsset* a)
 {
-    ProjectileDef* def = a->getDef()->pDefProjectile;
+    WeaponDef* def = a->getDef()->pDefWeapon;
     if(!def)
         return false; // no projectile associated
     // Waiting for concrete classes

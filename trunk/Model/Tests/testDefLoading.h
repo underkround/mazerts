@@ -48,8 +48,8 @@ void testDefLoading()
         if(a->pDefMoving) {
             cout << " moving: " << endl;
         }
-        if(a->pDefProjectile) {
-            cout << " projectile: " << endl;
+        if(a->pDefWeapon) {
+            cout << " weapon: " << endl;
         }
         if(a->pDefRadar) {
             cout << " radar: " << endl;

@@ -35,10 +35,18 @@ class IAsset
 {
 public:
 
+    /**
+     * Concrete types of IAsset classes. When adding new concrete class
+     * to implement asset, add value here.
+     * These need to be bit-values, so increase the shift value with 1
+     * when adding.
+     * Remember to keep the END -type last
+     */
     enum Type
     {
-        UNIT = 1,
-        BUILDING
+        UNIT            = 1 << 1,
+        BUILDING        = 1 << 2,
+        TYPE_END        = 1 << 3    // remember to advance the shift when adding new concrete type
     };
 
     enum State
@@ -109,7 +117,7 @@ public:
     /**
      * @return  The concrete class type of this asset
      */
-    inline Type getAssetType()      { return m_AssetType; }
+    inline Type getAssetType()      { return m_ConcreteType; }
 
     /**
      * @return  The def struct that defines this asset
@@ -271,7 +279,7 @@ protected:
 // ===== MEMBERS
 
     const int       m_IID;          // unique instance id among all assets
-    const Type      m_AssetType;    // the concrete class of this asset
+    const Type      m_ConcreteType; // the concrete class of this asset
     AssetDef        m_Def;          // definition struct for this asset
 
     State           m_State;        // the current state of the asset
