@@ -46,6 +46,7 @@ private:
     int m_KeyPanningModifier;
     int m_KeyMouseRotateButton;
     int m_KeyRotateModifier;
+    int m_KeyMouseMinimapButton;
 
     float m_ModifyMouseDragX;
     float m_ModifyMouseDragY;

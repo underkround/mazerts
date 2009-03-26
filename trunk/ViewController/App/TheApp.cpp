@@ -171,10 +171,10 @@ void CTheApp::OnFlip(void)
             DrawTextRow(_T("Use LEFT, RIGHT, UP, DOWN, A and Z to move camera"), 0xFFFFFFFF);
             DrawTextRow(_T("Use space to generate new terrain"), 0xFFFFFFFF);
             DrawTextRow(_T("1 adds the texture with passability data"), 0xFFFFFFFF);
-            DrawTextRow(_T("TAB switches fillmode (solid/wireframe)"), 0xFFFFFFFF);            
+            DrawTextRow(_T("TAB switches fillmode (solid/wireframe)"), 0xFFFFFFFF);
             DrawTextRow(_T("M & N change terrain detail level"), 0xFFFFFFFF);
-            DrawTextRow(_T("F5 toggles sound, f6 toggles music, numpad +/- changes master volume"), 0xFFFFFFFF);                        
-            DrawTextRow(_T("F1 hides/shows this help message"), 0xFFFFFFFF);                        
+            DrawTextRow(_T("F5 toggles sound, f6 toggles music, numpad +/- changes master volume"), 0xFFFFFFFF);
+            DrawTextRow(_T("F1 hides/shows this help message"), 0xFFFFFFFF);
         }
         if(m_CatchInput)
         {

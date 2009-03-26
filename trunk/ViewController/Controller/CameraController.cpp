@@ -11,6 +11,9 @@
 
 #include "../../Model/Common/Config.h"
 
+//for minimap clicks
+#include "../Terrain/UITerrain.h"
+
 CameraController::CameraController()
 {
     // Default settings
@@ -32,6 +35,7 @@ CameraController::CameraController()
     m_KeyPanningModifier    = 0;
     m_KeyMouseRotateButton  = 2;
     m_KeyRotateModifier     = 0;
+    m_KeyMouseMinimapButton = 0;
 }
 
 
@@ -68,6 +72,7 @@ void CameraController::loadConfiguration(const bool confFileLoaded)
     c.updateInt("mouse panning modifier key",   m_KeyPanningModifier);
     c.updateInt("mouse rotate button",          m_KeyMouseRotateButton);
     c.updateInt("mouse rotate modifier key",    m_KeyRotateModifier);
+    c.updateInt("mouse pick button",            m_KeyMouseMinimapButton);
 }
 
 
@@ -113,6 +118,24 @@ void CameraController::updateControls(const float frameTime)
     }
 
     // ===== Mouse
+
+    //move camera by minimap clicks
+    RECT screenSize = UITerrain::getInstance()->getMiniMap()->getScreenSize();
+    if(MouseState::mouseButtonReleased[m_KeyMouseMinimapButton]
+       && MouseState::mouseX > screenSize.left
+       && MouseState::mouseX < screenSize.right
+       && MouseState::mouseY > screenSize.top
+       && MouseState::mouseY < screenSize.bottom)
+    {
+        //Camera::current->setZoom(100.0f);
+        Camera::current->setRotation(0.5f * D3DX_PI, 0.9f);
+//TODO: laske sijainnit
+        float moveViewToX = MouseState::mouseX;
+        float moveViewToY = MouseState::mouseY;
+        float moveViewToZ = Camera::current->getPosition().z;
+//TODO: selvitä miksi tämä ei tee mitään?
+        Camera::current->setPosition(moveViewToX, moveViewToY, moveViewToZ);
+    }
 
     //mouse zoom
     if(MouseState::mouseZSpeed)

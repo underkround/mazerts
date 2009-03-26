@@ -87,6 +87,12 @@ public:
      */
     HRESULT onRestore(LPDIRECT3DDEVICE9 pDevice);
 
+    /**
+     * @note RECT structure is { left, top, right, bottom }
+     * @return actual pixel coordinates of minimap in screen
+     */
+    RECT getScreenSize();
+
 private:
 
     /** 
