@@ -178,6 +178,11 @@ protected:
      * Used to keep track if unit has moved
      */
     D3DXVECTOR3 m_OldPosition;
+
+    /**
+     * Used to keep track if unit has turned
+     */
+    D3DXVECTOR3 m_OldDirection;
 };
 
 #endif //__UIUNIT_H__

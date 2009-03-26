@@ -25,10 +25,11 @@ public:
      */
     enum GroundMovingState
     {
-        IDLE,
-        ASKPATH,
-        WAITPATH,
-        FOLLOWPATH
+        IDLE,           //Just sit around
+        ASKPATH,        //Ask a new path from pathfinder-master
+        WAITPATH,       //Wait for pathfinder to finish
+        FOLLOWPATH,     //Follow current pathdata        
+        JUSTMOVE        //Just move to target x,y
     };
 
     /**

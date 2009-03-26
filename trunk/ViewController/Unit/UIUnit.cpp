@@ -20,26 +20,29 @@ void UIUnit::updatePosition()
     UITerrain* pTerrain = UITerrain::getInstance();
     
     D3DXVECTOR3* unitPos = (D3DXVECTOR3*)m_pUnit->getPosition();
-    
+    D3DXVECTOR3* dir = (D3DXVECTOR3*)m_pUnit->getDirection();
+
     //TODO: Unit-flags:  ground / air (/ water?)
     //if(m_pUnit->getMoveType() == UNIT_GROUND)
     {
-        //Check if unit has moved or terrain has changed
+        //Check if unit has moved/turned or terrain has changed
         if(m_UITerrain_ChangeCounter != pTerrain->getChangeCounter() || unitPos->x != m_OldPosition.x || 
-            unitPos->y != m_OldPosition.y || unitPos->z != m_OldPosition.z)
+            unitPos->y != m_OldPosition.y || unitPos->z != m_OldPosition.z ||
+            dir->x != m_OldDirection.x || dir->y != m_OldDirection.y)
         {
-            //Store old position and terrain change counter
+            //Store old position/direction and terrain change counter
             m_UITerrain_ChangeCounter = pTerrain->getChangeCounter();
             m_OldPosition.x = unitPos->x;
             m_OldPosition.y = unitPos->y;
             m_OldPosition.z = unitPos->z;
+            m_OldDirection.x = dir->x;
+            m_OldDirection.y = dir->y;
 
             //Get heights at four points around the unit
             D3DXVECTOR3 pos;
             pos.x = unitPos->x + m_HalfSize;
             pos.y = unitPos->y + m_HalfSize;
 
-            D3DXVECTOR3* dir = (D3DXVECTOR3*)m_pUnit->getDirection();
             D3DXVec3Normalize(dir, dir);
 
             D3DXVECTOR3 normal(0, 0, 0);

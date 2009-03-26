@@ -212,7 +212,7 @@ public:
      * @param size Size of the unit, size*size tiles
      * @return True if the tile is passable, otherwise false
      */
-    inline bool isPassable(short x, short y, unsigned char size)
+    inline bool isPassable(const unsigned short x, const unsigned short y, const unsigned char size) const
     {
         if(size == 1)
         {

@@ -16,7 +16,7 @@
 #endif
 
 //After how many frames a stuck unit cancels its MAKEWAY-target
-#define STUCKCOUNTER_CANCEL 300
+#define STUCKCOUNTER_CANCEL 50
 
 GroundMovingLogic::GroundMovingLogic(MovingDef def) : IMovingLogic(def)
 {
@@ -80,6 +80,16 @@ void GroundMovingLogic::update(Unit* pUnit, const float deltaT)
             followPath();
             break;
         }
+    case JUSTMOVE:
+        {            
+            Vector3* pos = m_pUnit->getPosition();
+
+            //If close enough to target, return to idle
+            if( fabs(m_pTarget->getTargetX() - pos->x) < 1.0f && fabs(m_pTarget->getTargetY() - pos->y) < 1.0f)
+            {
+                clearCurrentTarget();
+            }
+        }
     }
 
     move(deltaT);
@@ -102,6 +112,13 @@ void GroundMovingLogic::idle(const float deltaT)
         if(m_pTarget->getTargetType() == Target::ASSET && m_pTarget->getTargetAsset() == m_pUnit)
         {
             clearCurrentTarget();
+        }
+        else if(m_pTarget->isFlag(Target::TGTFLAG_MAKEWAY))
+        {
+            m_TargetDir.x = m_pTarget->getTargetX() - m_pUnit->getPosition()->x;
+            m_TargetDir.y = m_pTarget->getTargetY() - m_pUnit->getPosition()->y;
+            m_TargetDir.normalize();
+            m_State = JUSTMOVE;
         }
         // is the target reached?
         else if( m_CachedReachedTargetX != m_pTarget->getTargetX() ||
@@ -292,9 +309,6 @@ void GroundMovingLogic::move(float deltaTime)
     //Target direction
     float targetAngle = atan2(m_TargetDir.y, m_TargetDir.x);
 
-    //Turning speed        
-    float turnSpeed = maxTurnSpeed * deltaTime;
-
     //Difference between target and current angle
     float currentAngle = atan2(dir->y, dir->x);
     float turn = currentAngle - targetAngle;
@@ -302,9 +316,12 @@ void GroundMovingLogic::move(float deltaTime)
     //Pick shorter turn route if necessary
     if(fabs(turn) > PI)
     {
-        turn = targetAngle - currentAngle;    
+        turn = -turn;
     }
     
+    //Turning speed        
+    float turnSpeed = maxTurnSpeed * deltaTime;
+
     //If current direction differs more than 45 degrees, slow down
     if(fabs(turn) > PI * 0.25f || m_State == IDLE)
     {
@@ -312,32 +329,24 @@ void GroundMovingLogic::move(float deltaTime)
         m_CurrentSpeed *= (0.90f - (0.90f * deltaTime));
     }
 
+#define sgn(a) ((a > 0) ? 1 : (a < 0) ? -1 : 0)
 
-    /*if(turnSpeed > fabs(turn))
+    //0.01 radians = 0.57 degrees
+    if(fabs(turn) > 0.01f)
     {
-        turnSpeed = -turn;
-    }*/
-
-    float turnThreshold = 0.05f;    // below this, the dirs are set straight from target
-                                    // UPDATE: previous 0.03f was too small for slower computers and resulted in shaking
-    if( (turn <= turnThreshold && turn > 0.000001f) || (turn >= -turnThreshold && turn < -0.000001f) )
-    {
-        dir->x = m_TargetDir.x;
-        dir->y = m_TargetDir.y;
-    }
-    else if(turn < -turnThreshold)
-    {
-        dir->x = cos(turnSpeed) * dir->x - sin(turnSpeed) * dir->y;
-        dir->y = cos(turnSpeed) * dir->y + sin(turnSpeed) * dir->x;
-    }
-    else if(turn > turnThreshold)
-    {
-        dir->x = cos(-turnSpeed) * dir->x - sin(-turnSpeed) * dir->y;
-        dir->y = cos(-turnSpeed) * dir->y + sin(-turnSpeed) * dir->x;
+        if(fabs(turn) > turnSpeed)
+        {
+            turn = sgn(turn) * turnSpeed;
+        }
+        dir->x = cos(currentAngle - turn);
+        dir->y = sin(currentAngle - turn);
     }
     else
     {
-        if(m_State == FOLLOWPATH)
+        dir->x = m_TargetDir.x;
+        dir->y = m_TargetDir.y;
+
+        if(m_State == FOLLOWPATH || m_State == JUSTMOVE)
         {
              //Current moving directions
             signed char dirX = (char)floor(dir->x + 0.5f);
@@ -360,29 +369,57 @@ void GroundMovingLogic::move(float deltaTime)
                         //Only own units can be told to move
                         if(pNode->item->getOwner() == m_pUnit->getOwner())
                         {
-                            float half = pNode->item->getWidth() * 0.5f;
                             Vector3 posDiff = *pNode->item->getPosition() - *pos;
-                            //float dxsq = posDiff.x * posDiff.x;                        
-                            //float dysq = posDiff.y * posDiff.y;
-                            float minDist = half + m_HalfSize;
-                            //minDist *= minDist;
-                            //if(sqrt(dxsq + dysq) < minDist)                           
+                            posDiff.normalize();
+
+                            float minDist = (float)(pNode->item->getWidth() + m_pUnit->getWidth());
+
+                            //Check if the target already has a MAKEWAY-priority flag
+                            Target* unitTarget = pNode->item->getMovingLogic()->getTarget();
+                            if(unitTarget == NULL || !unitTarget->isFlag(Target::TGTFLAG_MAKEWAY))
                             {
-                                posDiff.normalize();
-                                //Don't mind me, I'll just push you away a bit (testing)
-                                pNode->item->getPosition()->x += posDiff.x * deltaTime;
-                                pNode->item->getPosition()->y += posDiff.y * deltaTime;
+                                Target* makeWayTarget = NULL;
+                                
+                                int targetX = 0;
+                                int targetY = 0;
 
-                                //Check if the target already has a MAKEWAY-priority flag
-                                Target* unitTarget = pNode->item->getMovingLogic()->getTarget();
-                                if(unitTarget == NULL || !unitTarget->isFlag(Target::TGTFLAG_MAKEWAY))
+                                //Take vector from unit position towards target moving out of way, select normal from either side randomly
+                                if(rand() > (RAND_MAX / 2))
                                 {
-                                    Target* makeWayTarget = new Target((unsigned short)(pNode->item->getPosition()->x + posDiff.x * minDist), 
-                                                                                         (unsigned short)(pNode->item->getPosition()->y + posDiff.y * minDist),
-                                                                                         false);
-                                    makeWayTarget->setFlag(Target::TGTFLAG_MAKEWAY);
+                                    targetX = (int)(pNode->item->getPosition()->x - posDiff.y * minDist);
+                                    targetY = (int)(pNode->item->getPosition()->y + posDiff.x * minDist);                                    
+                                }
+                                else
+                                {
+                                    targetX = (int)(pNode->item->getPosition()->x + posDiff.y * minDist);
+                                    targetY = (int)(pNode->item->getPosition()->y - posDiff.x * minDist);
+                                }
 
-                                    pNode->item->getMovingLogic()->priorityTarget(makeWayTarget);
+                                //Bounds checks
+                                unsigned short mapSize = Terrain::getInstance()->getSize();
+                                if(targetX < 0)
+                                {
+                                    targetX = 0;
+                                }
+                                else if(targetX > mapSize)
+                                {
+                                    targetX = mapSize;
+                                }
+                                
+                                if(targetY < 0)
+                                {
+                                    targetY = 0;
+                                }
+                                else if(targetY > mapSize)
+                                {
+                                    targetY = mapSize;
+                                }
+
+                                makeWayTarget = new Target((unsigned short)targetX, (unsigned short)targetY, false);
+
+                                makeWayTarget->setFlag(Target::TGTFLAG_MAKEWAY);
+
+                                pNode->item->getMovingLogic()->priorityTarget(makeWayTarget);
 
 //show line for where the unit is told to move
 #ifdef PATH_UI_DEBUG
@@ -397,8 +434,7 @@ void GroundMovingLogic::move(float deltaTime)
         UI3DDebug::addLine( x1, y1, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x1, y1) - 0.5f,
                             x2, y2, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x2, y2) - 0.5f, 0.5f, 5.0f);
 #endif
-
-                                }
+                                
                             }
                         }                        
 
@@ -419,9 +455,6 @@ void GroundMovingLogic::move(float deltaTime)
                 //Offsets (m_HalfSize) are needed because the speed is calculated from "center" of unit
                 float factor = Terrain::getInstance()->getUnitMoveSpeed( (short)(pos->x + m_HalfSize), (short)(pos->y + m_HalfSize), dirX, dirY);            
                 m_CurrentSpeed = factor * maxMoveSpeed;
-                /*TCHAR msg[256];            
-                _stprintf_s(msg, _T("FACTOR: %.3f   SPEED: %.3f\n"), factor, m_CurrentSpeed);
-                ::OutputDebugStr(msg);*/
             }
             else
             {

@@ -55,6 +55,11 @@ void Weapon::update(const float deltaT)
             m_Direction.x = cos(currentAngle + turn);
             m_Direction.y = sin(currentAngle + turn);
         }
+        else
+        {
+            m_Direction.x = m_TargetDirection.x;
+            m_Direction.y = m_TargetDirection.y;
+        }
                 
     }
 }
