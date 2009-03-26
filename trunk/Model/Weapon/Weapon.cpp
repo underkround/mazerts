@@ -21,25 +21,11 @@ void Weapon::update(const float deltaT)
         m_TargetDirection.normalize();
     }
 
-    //TODO: Testing, randomly selects new target direction, remove when not needed
-/*    static float counter = 0;
-    counter += deltaT;
-    if(counter > 4.0f)
-    {
-        counter = 0;
-        float x = ((rand() % 100) - 50)/50.0f;
-        float y = ((rand() % 100) - 50)/50.0f;
-        m_TargetDirection.x = x;
-        m_TargetDirection.y = y;
-        m_TargetDirection.normalize();
-    }*/
-    //End of testing
-
     //Threshold-value, below this no turning takes place
     static const float THRESHOLD = 0.001f;
     
     //Turn towards target direction
-    //if(fabs(m_TargetDirection.x - m_Direction.x) > THRESHOLD || fabs(m_TargetDirection.y - m_Direction.y) > THRESHOLD)
+    if(fabs(m_TargetDirection.x - m_Direction.x) > THRESHOLD || fabs(m_TargetDirection.y - m_Direction.y) > THRESHOLD)
     {
         float unitAngle = atan2(dir->y, dir->x);
         float targetAngle = atan2(m_TargetDirection.y, m_TargetDirection.x);
@@ -56,9 +42,8 @@ void Weapon::update(const float deltaT)
         float turnSpeed = 1.0f * deltaT;
         
 #define sgn(a) ((a > 0) ? 1 : (a < 0) ? -1 : 0)
-
-        //0.01 radians = 0.57 degrees
-        //if(fabs(turn) > 0.01f)
+        
+        if(fabs(turn) > 0.0001f)
         {
             if(fabs(turn) > turnSpeed)
             {
@@ -66,13 +51,7 @@ void Weapon::update(const float deltaT)
             }
             m_Direction.x = cos(currentAngle + turn);
             m_Direction.y = sin(currentAngle + turn);
-        }
-        /*else
-        {
-            m_Direction.x = m_TargetDirection.x;
-            m_Direction.y = m_TargetDirection.y;
-        }*/
-        
+        }        
     }
 }
 
