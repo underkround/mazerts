@@ -41,72 +41,35 @@ Config::~Config(void) {
 
 //#ifdef DEBUG
 void Config::printSettings() {
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    printSetting(*iter);
-  }
+    for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+        printSetting(*iter);
+    }
 }
 //#endif
 
 //#ifdef DEBUG
 void Config::printSetting(Setting * set) {
-    cout << "[" << set->section << "] Nimi: " << set->name << "\tTiedostosta: " << set->file << endl;
-    switch(set->type) {
 
-        case VARIABLE_INTEGER: {
-            SettingInt* temp = static_cast<SettingInt*>(set);
-            if(set->count == 1) {
-                cout << "Tyyppi:\t" << "kokonaisluku" << endl;
-                cout << "Arvo:\t" << temp->valueNode->value << endl << endl;
-            } else {
-                cout << "Tyyppi:\t" << "kokonaislukutaulukko" << endl;
-                cout << "Arvot:" << endl;
-                IntNode* node = temp->valueNode;
-                while(node) {
-                    cout << "\t" << node->value << endl;
-                    node = node->next;
-                }
-                cout << endl;
-            }
-            break;
+    cout << " <" << set->file << ">\t[" << set->section << "]\t\"" << set->name << "\"" << endl;
+
+    // values
+    ValueNode* node = set->node;
+    while(node) {
+        switch(node->type) {
+            case VARIABLE_INTEGER:
+                cout << "\t(int)\t" << node->getInt() << endl;
+                break;
+            case VARIABLE_FLOAT:
+                cout << "\t(float)\t" << node->getFloat() << endl;
+                break;
+            case VARIABLE_STRING:
+                cout << "\t(str)\t" << node->getString() << endl;
+                break;
         }
+        node = node->next;
+    }
 
-        case VARIABLE_STRING: {
-            SettingString* temp = static_cast<SettingString*>(set);
-            if(set->count == 1) {
-                cout << "Tyyppi:\t" << "merkkijono" << endl;
-                cout << "Arvo:\t" << temp->valueNode->value << endl << endl;
-            } else {
-                cout << "Tyyppi:\t" << "merkkijonotaulukko" << endl;
-                cout << "Arvot:" << endl;
-                StringNode* node = temp->valueNode;
-                while(node) {
-                    cout << "\t" << node->value << endl;
-                    node = node->next;
-                }
-                cout << endl;
-            }
-            break;
-        }
-
-        case VARIABLE_FLOAT: {
-            SettingFloat* temp = static_cast<SettingFloat*>(set);
-            if(set->count == 1) {
-                cout << "Tyyppi:\t" << "liukuluku" << endl;
-                cout << "Arvo:\t" << temp->valueNode->value << endl << endl;
-            } else {
-                cout << "Tyyppi:\t" << "liukulukutaulukko" << endl;
-                cout << "Arvot:" << endl;
-                FloatNode* node = temp->valueNode;
-                while(node) {
-                    cout << "\t" << node->value << endl;
-                    node = node->next;
-                }
-                cout << endl;
-            }
-            break;
-        }
-
-    } // switch
+    cout << endl;
 }
 //#endif // DEBUG
 
@@ -133,46 +96,18 @@ void Config::readFile(void) {
     m_strCurrentSection = "";
 }
 
+
 //////////////////////////////////////////////////////////////////////////////
-// Int - method #1
+// Value nodes to iterate through array-settings
 
-int Config::getValueAsInt(const string in_name, const int defaultValue) {
-    IntNode* node = getIntNode("", "", in_name);
-    return (node) ? node->value : defaultValue;
+
+Config::ValueNode* Config::getNode(const string in_name) {
+    return getNode("", in_name);
 }
 
-int Config::getValueAsInt(const string in_filename, const string in_section, string in_name, const int defaultValue){
-    IntNode* node = getIntNode(in_filename, in_section, in_name);
-    return (node) ? node->value : defaultValue;
-}
 
-// Int - method #2
-
-bool Config::updateInt(const string in_name, int& value) {
-    IntNode* node = getIntNode("", "", in_name);
-    if (node) {
-        value = node->value;
-        return true;
-    }
-    return false;
-}
-
-bool Config::updateInt(const string in_filename, const string in_section, const string in_name, int& value) {
-    IntNode* node = getIntNode(in_filename, in_section, in_name);
-    if (node) {
-        value = node->value;
-        return true;
-    }
-    return false;
-}
-
-// Int - node methods
-
-Config::IntNode* Config::getIntNode(const string in_name) {
-    return getIntNode("", "", in_name);
-}
-
-Config::IntNode* Config::getIntNode(const string in_filename, const string in_section, const string in_name) {
+Config::ValueNode* Config::getNode(const string in_section, const string in_name)
+{
     Setting* s;
     for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
         s = (*iter);
@@ -180,11 +115,43 @@ Config::IntNode* Config::getIntNode(const string in_filename, const string in_se
             continue;
         if(in_section != "" && s->section != in_section)
             continue;
-        if(in_filename != "" && s->file != in_filename)
-            continue;
-        return static_cast<SettingInt*>(s)->valueNode;
+        return s->node;
     }
     return NULL;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Int - method #1
+
+int Config::getValueAsInt(const string in_name, const int defaultValue) {
+    ValueNode* node = getNode("", in_name);
+    return (node) ? node->getInt() : defaultValue;
+}
+
+int Config::getValueAsInt(const string in_section, string in_name, const int defaultValue){
+    ValueNode* node = getNode(in_section, in_name);
+    return (node) ? node->getInt() : defaultValue;
+}
+
+// Int - method #2
+
+bool Config::updateInt(const string in_name, int& value) {
+    ValueNode* node = getNode("", in_name);
+    if (node) {
+        value = node->getInt();
+        return true;
+    }
+    return false;
+}
+
+bool Config::updateInt(const string in_section, const string in_name, int& value) {
+    ValueNode* node = getNode(in_section, in_name);
+    if (node) {
+        value = node->getInt();
+        return true;
+    }
+    return false;
 }
 
 
@@ -192,120 +159,67 @@ Config::IntNode* Config::getIntNode(const string in_filename, const string in_se
 // Float - method #1
 
 float Config::getValueAsFloat(const string in_name, const float defaultValue) {
-    FloatNode* node = getFloatNode("", "", in_name);
-    return (node) ? node->value : defaultValue;
+    ValueNode* node = getNode("", in_name);
+    return (node) ? node->getFloat() : defaultValue;
 }
 
-float Config::getValueAsFloat(const string in_filename, const string in_section, const string in_name, const float defaultValue){
-    FloatNode* node = getFloatNode(in_filename, in_section, in_name);
-    return (node) ? node->value : defaultValue;
+float Config::getValueAsFloat(const string in_section, const string in_name, const float defaultValue){
+    ValueNode* node = getNode(in_section, in_name);
+    return (node) ? node->getFloat() : defaultValue;
 }
 
 // Float - method #2
 
 bool Config::updateFloat(const string in_name, float& value) {
-    FloatNode* node = getFloatNode("", "", in_name);
+    ValueNode* node = getNode("", in_name);
     if (node) {
-        value = node->value;
+        value = node->getFloat();
         return true;
     }
     return false;
 }
 
-bool Config::updateFloat(const string in_filename, const string in_section, const string in_name, float& value) {
-    FloatNode* node = getFloatNode("", "", in_name);
+bool Config::updateFloat(const string in_section, const string in_name, float& value) {
+    ValueNode* node = getNode(in_section, in_name);
     if (node) {
-        value = node->value;
+        value = node->getFloat();
         return true;
     }
     return false;
-}
-
-// Float - node methods
-
-Config::FloatNode* Config::getFloatNode(const string in_name) {
-    return getFloatNode("", "", in_name);
-}
-
-Config::FloatNode* Config::getFloatNode(const string in_filename, const string in_section, const string in_name) {
-    Setting* s;
-    for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-        s = (*iter);
-        if(s->name != in_name)
-            continue;
-        if(in_section != "" && s->section != in_section)
-            continue;
-        if(in_filename != "" && s->file != in_filename)
-            continue;
-        return static_cast<SettingFloat*>(s)->valueNode;
-    }
-    return NULL;
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
 // String - method #1
 
-string Config::getValueAsString(const string in_name, const string defaultValue) {
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name) {
-      return static_cast<SettingString*>(*iter)->valueNode->value;
-    }
-  }
-  return defaultValue;
+string Config::getValueAsString(const string in_name) {
+    ValueNode* node = getNode("", in_name);
+    return (node) ? node->getString() : ""; // defaultValue;
 }
 
-string Config::getValueAsString(const string in_filename, const string in_section, const string in_name, const string defaultValue) {
-  Setting* s;
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    s = (*iter);
-    if(s->name != in_name)
-      continue;
-    if(in_section != "" && s->section != in_section)
-      continue;
-    if(in_filename != "" && s->file != in_filename)
-      continue;
-    return static_cast<SettingString*>(*iter)->valueNode->value;
-  }
-  return defaultValue;
+string Config::getValueAsString(const string in_section, const string in_name, const string defaultValue) {
+    ValueNode* node = getNode(in_section, in_name);
+    return (node) ? node->getString() : defaultValue;
 }
 
 // String - method #2
 
 bool Config::updateString(const string in_name, string& value) {
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name) {
-      value = static_cast<SettingString*>(*iter)->valueNode->value;
-      return true; // setting was found and value updated
+    ValueNode* node = getNode("", in_name);
+    if (node) {
+        value = node->getString();
+        return true;
     }
-  }
-  return false; // setting was not found
+    return false;
 }
 
-bool Config::updateString(const string in_filename, const string in_section, const string in_name, string& value) {
-  Setting* s;
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    s = (*iter);
-    if(s->name != in_name)
-      continue;
-    if(in_section != "" && s->section != in_section)
-      continue;
-    if(in_filename != "" && s->file != in_filename)
-      continue;
-    value = static_cast<SettingString*>(*iter)->valueNode->value;
-    return true; // setting was found and value updated
-  }
-  return false; // setting was not found
-}
-
-// String - node methods
-
-Config::StringNode* Config::getStringNode(const string in_name) {
-  return NULL;
-}
-
-Config::StringNode* Config::getStringNode(const string in_file, const string in_section, const string in_name) {
-  return NULL;
+bool Config::updateString(const string in_section, const string in_name, string& value) {
+    ValueNode* node = getNode(in_section, in_name);
+    if (node) {
+        value = node->getString();
+        return true;
+    }
+    return false;
 }
 
 
@@ -313,91 +227,55 @@ Config::StringNode* Config::getStringNode(const string in_file, const string in_
 // Bool - method #1
 
 bool Config::getValueAsBool(const string in_name, const bool defaultValue) {
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name) {
-      return (((SettingInt*)(*iter))->valueNode->value) ? true : false;
-    }
-  }
-  return defaultValue;
+    ValueNode* node = getNode("", in_name);
+    return (node) ? node->getBool() : defaultValue;
 }
 
-bool Config::getValueAsBool(const string in_filename, const string in_section, const string in_name, const bool defaultValue) {
-  Setting* s;
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    s = (*iter);
-    if(s->name != in_name)
-      continue;
-    if(in_section != "" && s->section != in_section)
-      continue;
-    if(in_filename != "" && s->file != in_filename)
-      continue;
-    return (((SettingInt*)(*iter))->valueNode->value) ? true : false;
-  }
-  return defaultValue;
+bool Config::getValueAsBool(const string in_section, const string in_name, const bool defaultValue) {
+    ValueNode* node = getNode(in_section, in_name);
+    return (node) ? node->getBool() : defaultValue;
 }
 
 // Bool - method #2
 
 bool Config::updateBool(const string in_name, bool& value) {
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name) {
-      value = (((SettingInt*)(*iter))->valueNode->value) ? true : false;
-      return true; // setting was found and value updated
+    ValueNode* node = getNode("", in_name);
+    if (node) {
+        value = node->getBool();
+        return true;
     }
-  }
-  return false; // setting not found
+    return false;
 }
 
-bool Config::updateBool(const string in_filename, const string in_section, const string in_name, bool& value) {
-  Setting* s;
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    s = (*iter);
-    if(s->name != in_name)
-      continue;
-    if(in_section != "" && s->section != in_section)
-      continue;
-    if(in_filename != "" && s->file != in_filename)
-      continue;
-    value = (((SettingInt*)(*iter))->valueNode->value) ? true : false;
-    return true; // setting was found and value updated
-  }
-  return false; // setting not found
+bool Config::updateBool(const string in_section, const string in_name, bool& value) {
+    ValueNode* node = getNode(in_section, in_name);
+    if (node) {
+        value = node->getBool();
+        return true;
+    }
+    return false;
 }
 
 
 //////////////////////////////////////////////////////////////////////////////
 // Wide String
 
-wstring Config::getValueAsWString(const string in_name)
-{
-  std::wstring wstrname;
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    if((*iter)->name == in_name) {
-      string tmpname = static_cast<SettingString*>(*iter)->valueNode->value;
-      wstrname.assign(tmpname.begin(), tmpname.end());
-      return wstrname;
-    }
-  }
-  return wstrname;
-}
-
-wstring Config::getValueAsWString(string in_filename, string in_section, string in_name) {
-  Setting* s;
-  std::wstring wstrname;
-  for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-    s = (*iter);
-    if(s->name != in_name)
-      continue;
-    if(in_section != "" && s->section != in_section)
-      continue;
-    if(in_filename != "" && s->file != in_filename)
-      continue;
-    string tmpname = static_cast<SettingString*>(*iter)->valueNode->value;
+wstring Config::getValueAsWString(const string in_name) {
+    ValueNode* node = getNode("", in_name);
+    string tmpname = (node) ? node->getString() : "";
+    std::wstring wstrname;
     wstrname.assign(tmpname.begin(), tmpname.end());
     return wstrname;
-  }
-  return wstrname;
 }
+
+wstring Config::getValueAsWString(string in_section, string in_name) {
+    ValueNode* node = getNode(in_section, in_name);
+    string tmpname = (node) ? node->getString() : "";
+    std::wstring wstrname;
+    wstrname.assign(tmpname.begin(), tmpname.end());
+    return wstrname;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 // ===== Parsing
@@ -430,6 +308,7 @@ bool Config::isNumeric(string str) {
   }
   return out;
 }
+
 
 bool Config::isFloat(string str) {
   char merkki;
@@ -467,6 +346,7 @@ bool Config::isFloat(string str) {
   return out && point;
 }
 
+
 string Config::trim(string str) {
   string::size_type position = str.find_last_not_of(' ');
   if(position != string::npos) {
@@ -480,6 +360,7 @@ string Config::trim(string str) {
   return str;
 }
 
+
 bool Config::declaredAsArray(string trimmedStr) {
   if(
     trimmedStr.at(trimmedStr.length()-2) == '[' &&
@@ -490,6 +371,7 @@ bool Config::declaredAsArray(string trimmedStr) {
   return false;
 }
 
+
 string Config::cleanArrayKeyname(string trimmedStr) {
   string::size_type position = trimmedStr.find_first_of('[');
   if(position != string::npos) {
@@ -497,6 +379,7 @@ string Config::cleanArrayKeyname(string trimmedStr) {
   }
   return trimmedStr;
 }
+
 
 int Config::stringToInteger (string str) {
   stringstream ss(str);
@@ -509,6 +392,7 @@ int Config::stringToInteger (string str) {
   }
 }
 
+
 float Config::stringToFloat(string str) {
   stringstream ss(str);
   float floatingPoint;
@@ -520,178 +404,110 @@ float Config::stringToFloat(string str) {
   }
 }
 
-//*** Private ***
 
-void Config::addSetting(string in_name, string in_value, bool asArray) {
-    //addSetting(m_strFilename, m_strCurrentSection, in_name, in_value, asArray);
-    addSetting("", "", in_name, in_value, asArray);
+Config::Setting* Config::getSetting(string in_section, string in_name) {
+    Setting* s = NULL;
+    for(vector<Setting*>::iterator iter = settingData.begin(); iter != settingData.end(); ++iter) {
+        s = (*iter);
+        if(s->name == in_name && s->section == in_section) {
+            return s; // found match, break from loop
+        }
+    }
+    return NULL;
 }
 
-void Config::addSetting(string in_name, float in_value, bool asArray) {
-    //addSetting(m_strFilename, m_strCurrentSection, in_name, in_value, asArray);
-    addSetting("", "", in_name, in_value, asArray);
-}
 
+// ===== ADDING
+
+
+// add int
 void Config::addSetting(string in_name, int in_value, bool asArray) {
     //addSetting(m_strFilename, m_strCurrentSection, in_name, in_value, asArray);
-    addSetting("", "", in_name, in_value, asArray);
+    addSetting("",      "",         in_name, new ValueNodeInt(in_value, NULL), asArray);
 }
-
-//
-
-void Config::addSetting(string in_file, string in_section, string in_name, string in_value, bool asArray) {
-  if(!asArray) {
-    deleteSetting(in_file, in_section, in_name);
-  } else {
-    // search for pre-existing value and add to it
-    for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-      if((*iter)->name == in_name && (*iter)->file == in_file && (*iter)->section == in_section) {
-        // add new value node to existing setting
-        // check that we add only same type
-        if((*iter)->type == VARIABLE_STRING) {
-          SettingString* item = static_cast<SettingString*>(*iter);
-          StringNode* node = new StringNode(in_value, item->valueNode);
-          item->valueNode = node;
-          item->count++;
-        }
-        return;
-      }
-    }
-  }
-  // this is the first value, add it
-  VARIABLE_TYPE tyyppi = VARIABLE_STRING;
-  SettingString * set = new SettingString();
-  set->count = 1;
-  set->name = in_name;
-  set->type = tyyppi;
-  set->valueNode = new StringNode(in_value, NULL);
-  set->file = in_file;
-  set->section = in_section;
-  settingData.push_back(set);
-}
-
-void Config::addSetting(string in_file, string in_section, string in_name, float in_value, bool asArray) {
-  if(!asArray) {
-    deleteSetting(in_file, in_section, in_name);
-  } else {
-    // search for pre-existing value and add to it
-    for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-      if((*iter)->name == in_name && (*iter)->file == in_file && (*iter)->section == in_section) {
-        // add new value node to existing setting
-        // check that we add only same type
-        if((*iter)->type == VARIABLE_FLOAT) {
-          SettingFloat* item = static_cast<SettingFloat*>(*iter);
-          FloatNode* node = new FloatNode(in_value, item->valueNode);
-          item->valueNode = node;
-          item->count++;
-        }
-        return;
-      }
-    }
-  }
-  // this is the first value, add it
-  VARIABLE_TYPE tyyppi = VARIABLE_FLOAT;
-  SettingFloat * set = new SettingFloat();
-  set->count = 1;
-  set->name = in_name;
-  set->type = tyyppi;
-  set->valueNode = new FloatNode(in_value, NULL);
-  set->file = in_file;
-  set->section = in_section;
-  settingData.push_back(set);
-}
-
 void Config::addSetting(string in_file, string in_section, string in_name, int in_value, bool asArray) {
-  if(!asArray) {
-    deleteSetting(in_file, in_section, in_name);
-  } else {
-    // search for pre-existing value and add to it
-    for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
-      if((*iter)->name == in_name && (*iter)->file == in_file && (*iter)->section == in_section) {
-        // add new value node to existing setting
-        // check that we add only same type
-        if((*iter)->type == VARIABLE_INTEGER) {
-          SettingInt* item = static_cast<SettingInt*>(*iter);
-          IntNode* node = new IntNode(in_value, item->valueNode);
-          item->valueNode = node;
-          item->count++;
-        }
-        return;
-      }
-    }
-  }
-  // this is the first value, add it
-  VARIABLE_TYPE tyyppi = VARIABLE_INTEGER;
-  SettingInt * set = new SettingInt();
-  set->count = 1;
-  set->name = in_name;
-  set->type = tyyppi;
-  set->valueNode = new IntNode(in_value, NULL);
-  set->file = in_file;
-  set->section = in_section;
-  settingData.push_back(set);
+    addSetting(in_file, in_section, in_name, new ValueNodeInt(in_value, NULL), asArray);
 }
+
+// add float
+void Config::addSetting(string in_name, float in_value, bool asArray) {
+    //addSetting(m_strFilename, m_strCurrentSection, in_name, in_value, asArray);
+    addSetting("",      "",         in_name, new ValueNodeFloat(in_value, NULL), asArray);
+}
+void Config::addSetting(string in_file, string in_section, string in_name, float in_value, bool asArray) {
+    addSetting(in_file, in_section, in_name, new ValueNodeFloat(in_value, NULL), asArray);
+}
+
+// add string
+void Config::addSetting(string in_name, string in_value, bool asArray) {
+    //addSetting(m_strFilename, m_strCurrentSection, in_name, in_value, asArray);
+    addSetting("",      "",         in_name, new ValueNodeString(in_value, NULL), asArray);
+}
+void Config::addSetting(string in_file, string in_section, string in_name, string in_value, bool asArray) {
+    addSetting(in_file, in_section, in_name, new ValueNodeString(in_value, NULL), asArray);
+}
+
+
+// add general value node to setting
+void Config::addSetting(string in_file, string in_section, string in_name, ValueNode* valueNode, bool asArray) {
+    Setting* set = NULL;
+    // delete old setting - if any - if setting is not declared as array
+    if( !asArray ) {
+        deleteSetting(in_section, in_name);
+    }
+    // search pre-existing setting - if any - to add value
+    else {
+        set = getSetting(in_section, in_name);
+    }
+
+    // add value to pre-existing setting
+    if(set) {
+        // add node to setting
+        valueNode->next = set->node;
+        set->node = valueNode;
+        // update filename (that is not used anywhere)
+        set->file = in_file;
+        set->count++;
+        return;
+    }
+    set = new Setting();
+    set->count = 1;
+    set->name = in_name;
+    set->file = in_file;
+    set->section = in_section;
+    valueNode->next = NULL; // this is the only node
+    set->node = valueNode;
+    settingData.push_back(set);
+}
+
 
 // =====
 
+
 void Config::deleteValueNodes(Setting* setting) {
     // remove value nodes
-    switch( setting->type ) {
-        case VARIABLE_INTEGER: {
-            SettingInt* set = static_cast<SettingInt*>(setting);
-            IntNode* node = set->valueNode;
-            IntNode* temp;
-            while(node) {
-                temp = node;
-                node = node->next;
-                delete temp;
-            }
-            set->valueNode = NULL;
-            set->count = 0;
-            break;
-        }
-        case VARIABLE_FLOAT: {
-            SettingFloat* set = static_cast<SettingFloat*>(setting);
-            FloatNode* node = set->valueNode;
-            FloatNode* temp;
-            while(node) {
-                temp = node;
-                node = node->next;
-                delete temp;
-            }
-            set->valueNode = NULL;
-            set->count = 0;
-            break;
-        }
-        case VARIABLE_STRING: {
-            SettingString* set = static_cast<SettingString*>(setting);
-            StringNode* node = set->valueNode;
-            StringNode* temp;
-            while(node) {
-                temp = node;
-                node = node->next;
-                delete temp;
-            }
-            set->valueNode = NULL;
-            set->count = 0;
-            break;
-        }
+    ValueNode* node = setting->node;
+    ValueNode* temp;
+    while(node) {
+        temp = node;
+        node = node->next;
+        delete temp;
     }
+    setting->count = 0;
+    setting->node = NULL;
 }
 
 void Config::deleteSetting(string in_name) {
-    deleteSetting("", "", in_name);
+    deleteSetting("", in_name);
 }
 
-void Config::deleteSetting(string in_filename, string in_section, string in_name) {
+void Config::deleteSetting(string in_section, string in_name) {
     Setting* s;
     for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
         s = (*iter);
         if(s->name != in_name)
             continue;
         if(in_section != "" && s->section != in_section)
-            continue;
-        if(in_filename != "" && s->file != in_filename)
             continue;
         deleteValueNodes((*iter));
         settingData.erase(iter);
@@ -700,18 +516,16 @@ void Config::deleteSetting(string in_filename, string in_section, string in_name
 }
 
 bool Config::settingExists(string in_name) {
-  return settingExists("", "", in_name);
+    return settingExists("", in_name);
 }
 
-bool Config::settingExists(string in_filename, string in_section, string in_name) {
+bool Config::settingExists(string in_section, string in_name) {
   Setting* s;
   for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
     s = (*iter);
     if(s->name != in_name)
       continue;
     if(in_section != "" && s->section != in_section)
-      continue;
-    if(in_filename != "" && s->file != in_filename)
       continue;
     return true;
   }
@@ -720,7 +534,7 @@ bool Config::settingExists(string in_filename, string in_section, string in_name
 
 
 bool Config::parseRow(string row) {
-  row = trim(row);  
+  row = trim(row);
   if(row.length() == 0) {
     //tyhjä rivi, skipataan
     return true;

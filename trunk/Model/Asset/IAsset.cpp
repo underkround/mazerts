@@ -12,6 +12,8 @@
 #include "AssetCollection.h"
 
 #include "../Defs/Defs.h"
+#include "../Weapon/Damage.h"
+#include "Armor.h"
 
 int IAsset::m_InstanceCounter = 0;
 int IAsset::m_InstanceDestructionCounter = 0;
@@ -32,6 +34,7 @@ IAsset::IAsset(const Type assetType, AssetDef& def) : m_ConcreteType (assetType)
     m_pOwner = NULL;
     m_pWeapon = NULL;
     m_pRadar = NULL;
+    m_pArmor = new Armor(this);
 }
 
 IAsset::~IAsset()
@@ -68,6 +71,10 @@ void IAsset::release()
     notifyDestroyed();
     releaseWeapon();
     releaseRadar();
+    if(m_pArmor) {
+        delete m_pArmor;
+        m_pArmor = NULL;
+    }
 }
 
 void IAsset::releaseWeapon()
@@ -165,5 +172,23 @@ const int IAsset::addModifyHitpoints(const int amount)
     // we are ready and enter to active state
     else if(m_State == STATE_BEING_BUILT && m_Hitpoints == m_Def.maxHitpoints)
         changeState(STATE_ACTIVE);
+    return m_Hitpoints;
+}
+
+
+int IAsset::handleDamage(Damage* pDamage)
+{
+    // if we are already dead, there's no point to handle damage
+    if(m_Hitpoints > 0 && m_State != STATE_DESTROYED)
+    {
+        // filter the damage with our armor
+        if(m_pArmor)
+        {
+            m_pArmor->filterDamage(pDamage);
+        }
+        // reduce the hitpoints from our hitpoints
+        addModifyHitpoints(-pDamage->getTotalDamage());
+    }
+    delete pDamage;
     return m_Hitpoints;
 }

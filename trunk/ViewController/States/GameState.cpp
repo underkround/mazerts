@@ -89,7 +89,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     ProjectileCollection::create();
 
     //TEST
-    for(int i = 0; i < 2; i++)
+    for(int i = 0; i < 20; i++)
     {
         AssetFactory::createUnit(NULL, 2, 40+(i * 4), 20+(i % 5) * 4);
     }

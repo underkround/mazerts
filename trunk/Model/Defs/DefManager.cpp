@@ -84,10 +84,10 @@ void DefManager::loadConfigurations()
     c->readFile();
 
     // Load all declared asset definitions
-    Config::IntNode* node = c->getIntNode("", "def declarations", "declared assets");
+    Config::ValueNode* node = c->getNode("def declarations", "declared assets");
     while(node)
     {
-        loadAssetDef(node->value);
+        loadAssetDef(node->getInt());
         node = node->next;
     }
 }
@@ -107,7 +107,7 @@ bool DefManager::loadAssetDef(int tag)
         isNew = true;
     }
     // asset concrete type
-    int type = c->getValueAsInt("", tags, "asset concrete type");
+    int type = c->getValueAsInt(tags, "asset concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
     if( ((type & (type - 1)) != 0)  ||  !(type & (IAsset::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
@@ -121,46 +121,46 @@ bool DefManager::loadAssetDef(int tag)
     d->tag = tag;
 
     // load values
-    d->constructionCostEnergy = c->getValueAsInt(   "", tags, "asset constrcution cost energy", 0);
-    d->constructionCostOre  = c->getValueAsInt(     "", tags, "asset constrcution cost ore", 10);
+    d->constructionCostEnergy = c->getValueAsInt(   tags, "asset constrcution cost energy", 0);
+    d->constructionCostOre  = c->getValueAsInt(     tags, "asset constrcution cost ore", 10);
 
-    d->gridExitPointX       = c->getValueAsInt(     "", tags, "asset grid exit point x", 0);
-    d->gridExitPointY       = c->getValueAsInt(     "", tags, "asset grid exit point y", 0);
-    d->idleEnergyConsumption = c->getValueAsInt(    "", tags, "asset idle energy consumption", 1);
-    d->name                 = c->getValueAsString(  "", tags, "asset name", "unnamed");
-    d->description          = c->getValueAsString(  "", tags, "asset description", "unset description");
-    d->maxHitpoints         = c->getValueAsInt(     "", tags, "asset max hitpoints", 10);
-    d->width                = c->getValueAsInt(     "", tags, "asset width", 2);
-    d->height               = c->getValueAsInt(     "", tags, "asset height", 2);
+    d->gridExitPointX       = c->getValueAsInt(     tags, "asset grid exit point x", 0);
+    d->gridExitPointY       = c->getValueAsInt(     tags, "asset grid exit point y", 0);
+    d->idleEnergyConsumption = c->getValueAsInt(    tags, "asset idle energy consumption", 1);
+    d->name                 = c->getValueAsString(  tags, "asset name", "unnamed");
+    d->description          = c->getValueAsString(  tags, "asset description", "unset description");
+    d->maxHitpoints         = c->getValueAsInt(     tags, "asset max hitpoints", 10);
+    d->width                = c->getValueAsInt(     tags, "asset width", 2);
+    d->height               = c->getValueAsInt(     tags, "asset height", 2);
 
     // load component definitions for asset
     int t;
 
-    t = c->getValueAsInt("", tags, "asset radar tag");
+    t = c->getValueAsInt(tags, "asset radar tag");
     if(t && loadRadarDef(t))
         d->pDefRadar = getRadarDef(t);
     else
         d->pDefRadar = NULL;
 
-    t = c->getValueAsInt("", tags, "asset moving tag");
+    t = c->getValueAsInt(tags, "asset moving tag");
     if(t && loadMovingDef(t))
         d->pDefMoving = getMovingDef(t);
     else
         d->pDefMoving = NULL;
 
-    t = c->getValueAsInt("", tags, "asset weapon tag");
+    t = c->getValueAsInt(tags, "asset weapon tag");
     if(t && loadWeaponDef(t))
         d->pDefWeapon = getWeaponDef(t);
     else
         d->pDefWeapon = NULL;
 
-    t = c->getValueAsInt("", tags, "asset builder tag");
+    t = c->getValueAsInt(tags, "asset builder tag");
     if(t && loadBuilderDef(t))
         d->pDefBuilder = getBuilderDef(t);
     else
         d->pDefBuilder = NULL;
 
-    t = c->getValueAsInt("", tags, "asset resourer tag");
+    t = c->getValueAsInt(tags, "asset resourer tag");
     if(t && loadResourcerDef(t))
         d->pDefResourcer = getResourcerDef(t);
     else
@@ -187,7 +187,7 @@ bool DefManager::loadMovingDef(int tag)
         ::memset(d, 0, sizeof(MovingDef));
         isNew = true;
     }
-    int type = c->getValueAsInt("", tags, "moving concrete type");
+    int type = c->getValueAsInt(tags, "moving concrete type");
 
     // validate the concrete type - it needs to be n^2 value and declared concrete type
     if( ((type & (type - 1)) != 0)  ||  !(type & (IMovingLogic::TYPE_END - 1)) ) {
@@ -199,9 +199,9 @@ bool DefManager::loadMovingDef(int tag)
     d->tag = tag;
 
     // load values
-    d->acceleration = c->getValueAsFloat("", tags, "moving acceleration", 0.9f);
-    d->maxSpeed     = c->getValueAsFloat("", tags, "moving maximum speed", 1.0f);
-    d->turningSpeed = c->getValueAsFloat("", tags, "moving turning speed", 1.0f);
+    d->acceleration = c->getValueAsFloat(tags, "moving acceleration", 0.9f);
+    d->maxSpeed     = c->getValueAsFloat(tags, "moving maximum speed", 1.0f);
+    d->turningSpeed = c->getValueAsFloat(tags, "moving turning speed", 1.0f);
 
     // store if new
     if(isNew)
@@ -226,7 +226,7 @@ bool DefManager::loadWeaponDef(int tag)
     }
 
     // weapon concrete type
-    int type = c->getValueAsInt("", tags, "weapon concrete type");
+    int type = c->getValueAsInt(tags, "weapon concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
     if( ((type & (type - 1)) != 0)  ||  !(type & (IWeapon::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
@@ -236,7 +236,7 @@ bool DefManager::loadWeaponDef(int tag)
     d->concreteType = type;
 
     // projectile concrete type
-    type = c->getValueAsInt("", tags, "weapon projectile concrete type");
+    type = c->getValueAsInt(tags, "weapon projectile concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
     if( ((type & (type - 1)) != 0)  ||  !(type & (IProjectile::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
@@ -247,13 +247,13 @@ bool DefManager::loadWeaponDef(int tag)
     d->tag = tag;
 
     // load values
-    d->name         = c->getValueAsString("", tags, "weapon name");
-    d->clipSize     = c->getValueAsInt("", tags, "weapon clip size");
-    d->reloadTime   = c->getValueAsFloat("", tags, "weapon reload time");
-    d->rof          = c->getValueAsFloat("", tags, "weapon rof");
-    d->range        = c->getValueAsFloat("", tags, "weapon range");
-    d->turnSpeed    = c->getValueAsFloat("", tags, "weapon turning speed");
-    d->damage       = c->getValueAsInt("", tags, "weapon damage");
+    d->name         = c->getValueAsString(  tags, "weapon name", "unknown");
+    d->clipSize     = c->getValueAsInt(     tags, "weapon clip size", 0);
+    d->reloadTime   = c->getValueAsFloat(   tags, "weapon reload time", 1.0f);
+    d->rof          = c->getValueAsFloat(   tags, "weapon rof", 1.0f);
+    d->range        = c->getValueAsFloat(   tags, "weapon range", 10.0f);
+    d->turnSpeed    = c->getValueAsFloat(   tags, "weapon turning speed", 1.0f);
+    d->damage       = c->getValueAsInt(     tags, "weapon damage");
     // store if new
     if(isNew)
         m_WeaponDefs.pushHead(d);
@@ -278,7 +278,7 @@ bool DefManager::loadBuilderDef(int tag)
         isNew = true;
     }
     // values
-    int type = c->getValueAsInt("", tags, "builder concrete type");
+    int type = c->getValueAsInt(tags, "builder concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
 /*
     if( ((type & (type - 1)) != 0)  ||  !(type & (IBuilder::TYPE_END - 1)) ) {
@@ -317,7 +317,7 @@ bool DefManager::loadResourcerDef(int tag)
         isNew = true;
     }
     // values
-    int type = c->getValueAsInt("", tags, "resourcer concrete type");
+    int type = c->getValueAsInt(tags, "resourcer concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
     /*
     if( ((type & (type - 1)) != 0)  ||  !(type & (IResourcer::TYPE_END - 1)) ) {
@@ -352,7 +352,7 @@ bool DefManager::loadRadarDef(int tag)
         isNew = true;
     }
     // values
-    int type = c->getValueAsInt("", tags, "radar concrete type");
+    int type = c->getValueAsInt(tags, "radar concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
     if( ((type & (type - 1)) != 0)  ||  !(type & (IAssetRadar::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type

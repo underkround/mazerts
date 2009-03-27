@@ -15,10 +15,12 @@
 #include "ITerrainGenerator.h"
 #include "../Common/Vector3.h"
 #include <math.h>
- 
+
 #ifndef NULL
 #define NULL 0
 #endif
+
+class Damage;
 
 class Terrain
 {
@@ -289,6 +291,17 @@ public:
     }
 
 // MISC
+
+    /**
+     * HandleDamage
+     * Currently does nothing.
+     * Just a reminder how this could work =P
+     * From Damage-object, this only cares about TYPE_EXPLOSION.
+     * The ownership of the passed Damage-object is transferred to this,
+     * and the object will be destroyed inside this method.
+     * TODO
+     */
+    const int handleDamage(Damage* pDamage);
 
     /**
      * Sync the given vector's z-component to match the current level of the

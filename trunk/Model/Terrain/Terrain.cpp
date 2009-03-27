@@ -2,6 +2,8 @@
 //#include "DefaultTerrainGenerator.h"
 #include "../Asset/AssetCollection.h"
 
+#include "../Weapon/Damage.h"
+
 const float Terrain::DIAGONAL_MOVECOST_FACTOR = 1.4142f;
 
 Terrain* Terrain::getInstance()
@@ -464,4 +466,12 @@ void Terrain::smoothMap(int smoothPasses)
 
         //calculateHeightMapFromVertices();
     }//Smoothing cycle
+}
+
+
+const int Terrain::handleDamage(Damage* pDamage)
+{
+    // do nothing atm
+    delete pDamage;
+    return 0;
 }

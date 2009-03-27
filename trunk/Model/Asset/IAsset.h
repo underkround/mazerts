@@ -30,6 +30,9 @@
 #include "../Defs/Defs.h"
 
 class IAssetListener;
+class Damage;
+class Armor;
+
 
 class IAsset
 {
@@ -180,6 +183,17 @@ public:
      */
     inline const int addModifyHitpoints(const int amount);
 
+    /**
+     * When asset receives damage, it's done through this method.
+     *
+     * NOTE: ownership of the passed Damage-object is transferred
+     * to this asset, and the damage-object is destroyed inside this
+     * method.
+     *
+     * @return  asset's hitpoints after the hit
+     */
+    virtual int handleDamage(Damage* d);
+
 // ===== Position & direction
 
     virtual void forcePosition(short x, short y)
@@ -288,9 +302,7 @@ protected:
 
     int             m_Hitpoints;    // current hitpoints of the asset
 
-    // moved to def
-//    unsigned char   m_Width;        // sizes
-//    unsigned char   m_Height;
+    Armor*          m_pArmor;       // armor for filtering the received damage
 
     Vector3         m_Position;     // vector defining the absolute position
     Vector3         m_Direction;    // facing of the unit

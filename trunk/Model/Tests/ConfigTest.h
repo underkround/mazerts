@@ -51,14 +51,12 @@ void testConfig() {
 
     // these should return 5
     assert(c.getValueAsInt("integeri muut-sektionissa") == 5); // fetch only by value
-    assert(c.getValueAsInt("", "", "integeri muut-sektionissa") == 5); // another way to say previous line
-    assert(c.getValueAsInt("testi.ini", "", "integeri muut-sektionissa") == 5); // filter by filename
-    assert(c.getValueAsInt("", "muut", "integeri muut-sektionissa") == 5); // filter by section
-    assert(c.getValueAsInt("testi.ini", "muut", "integeri muut-sektionissa") == 5); // filter by file & section
-    // these have wrong filename or section, should not return 5
-    assert(c.getValueAsInt("foo", "", "integeri muut-sektionissa") != 5); // wrong file
-    assert(c.getValueAsInt("", "bar", "integeri muut-sektionissa") != 5); // wrong section
-    assert(c.getValueAsInt("foo", "bar", "integeri muut-sektionissa") != 5); // wrong file & section
+    assert(c.getValueAsInt("", "integeri muut-sektionissa") == 5); // another way to say previous line
+    assert(c.getValueAsInt("muut", "integeri muut-sektionissa") == 5); // filter by section
+    // this has wrong section and should not return 5
+    assert(c.getValueAsInt("bar", "integeri muut-sektionissa") != 5); // wrong section
+
+    cout << " value: \"int\" as float: " << c.getValueAsFloat("int") << endl;
 
 //    cout << c.getValueAsInt("", "sekt1", "olen monessa sectionissa") << endl;
 }

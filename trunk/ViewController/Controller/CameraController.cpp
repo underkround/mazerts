@@ -130,8 +130,8 @@ void CameraController::updateControls(const float frameTime)
         //Camera::current->setZoom(100.0f);
         Camera::current->setRotation(0.5f * D3DX_PI, 0.9f);
 //TODO: laske sijainnit
-        float moveViewToX = MouseState::mouseX;
-        float moveViewToY = MouseState::mouseY;
+        float moveViewToX = (float)MouseState::mouseX;
+        float moveViewToY = (float)MouseState::mouseY;
         float moveViewToZ = Camera::current->getPosition().z;
 //TODO: selvitä miksi tämä ei tee mitään?
         Camera::current->setPosition(moveViewToX, moveViewToY, moveViewToZ);

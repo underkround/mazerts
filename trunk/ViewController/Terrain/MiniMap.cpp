@@ -425,9 +425,9 @@ D3DXVECTOR3 MiniMap::intersectRay(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir, flo
 RECT MiniMap::getScreenSize()
 {
     RECT screenSize;
-    screenSize.left = m_Position.x;
-    screenSize.top = m_Position.y;
-    screenSize.right = m_Position.x+m_Size;
-    screenSize.bottom = m_Position.y+m_Size;
+    screenSize.left     = (LONG)m_Position.x;
+    screenSize.top      = (LONG)m_Position.y;
+    screenSize.right    = (LONG)(m_Position.x+m_Size);
+    screenSize.bottom   = (LONG)(m_Position.y+m_Size);
     return screenSize;
 }
