@@ -301,19 +301,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Weapon\IProjectile.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Weapon\IProjectile.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Weapon\IWeapon.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Weapon\IWeapon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\Projectile.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\Projectile.h"
 					>
 				</File>
 				<File

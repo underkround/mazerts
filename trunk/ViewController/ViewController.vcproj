@@ -218,19 +218,19 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Model\Weapon\IProjectile.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Model\Weapon\IProjectile.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Model\Weapon\IWeapon.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Model\Weapon\IWeapon.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Weapon\Projectile.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Weapon\Projectile.h"
 					>
 				</File>
 				<File
@@ -750,15 +750,15 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\PlayerColors.h"
-					>
-				</File>
-				<File
 					RelativePath=".\Unit\ParticleFactory.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Unit\ParticleFactory.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\PlayerColors.h"
 					>
 				</File>
 				<File
