@@ -1,0 +1,15 @@
+*** basic tank ***
+
+this is 3x3 game grid size unit
+
+actual model about 50x40 max units
+
+= basic tank component locations related to each other =
+
+  Turret should be placed at:
+    5 units up and 3 units backwards from tank base origo
+
+= files =
+
+basictank_base.X
+basictank_turret.X
