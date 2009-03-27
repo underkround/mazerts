@@ -97,6 +97,9 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     ExplosionCollection::create();
     ExplosionCollection::setCallBack(&ParticleFactory::createExplosion);
 
+    //Initialize particlefactory
+    ParticleFactory::create(pDevice);
+
     // Initialize player manager
     PlayerManager::create(1);
 

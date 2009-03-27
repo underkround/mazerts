@@ -141,9 +141,8 @@ UIUnit* UI3DObjectManager::pickUnit(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
     return result;
 }
 
-void UI3DObjectManager::loadMeshes(void)
+void UI3DObjectManager::loadMeshes(LPDIRECT3DDEVICE9 pDevice)
 {
-
     //Hardcoded filenames
     for(int i = 0; i < NUMBER_OF_UNITS_WITH_MESHES; i++)
     {
@@ -151,4 +150,13 @@ void UI3DObjectManager::loadMeshes(void)
         CXFileLoader::Load(g_ppUnitMeshNames[i][1], m_ResourceContainer, NULL);
         CXFileLoader::Load(g_ppUnitMeshNames[i][2], m_ResourceContainer, NULL);
     }    
+    
+    //Textures
+    LPDIRECT3DTEXTURE9 pTexture = NULL;
+
+    for(int i = 0; i < NUMBER_OF_TEXTURES; i++)
+    {
+        D3DXCreateTextureFromFile(pDevice, g_pTextureNames[i], &pTexture);
+        m_ResourceContainer.AddResource(g_pTextureNames[i], pTexture);
+    }
 }

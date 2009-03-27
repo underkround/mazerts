@@ -33,7 +33,7 @@ public:
     inline static void create(LPDIRECT3DDEVICE9 pDevice)
     {        
         getInstance()->m_ResourceContainer.Create(pDevice);
-        getInstance()->loadMeshes();
+        getInstance()->loadMeshes(pDevice);
         Config::getInstance()->setFilename("meshes.ini");
         Config::getInstance()->readFile();
     }
@@ -125,8 +125,9 @@ private:
 
     /**
      * Load meshes defined in configs into container
+     * @param pDevice Pointer to Direct3D-device
      */
-    void loadMeshes(void);
+    void loadMeshes(LPDIRECT3DDEVICE9 pDevice);
 
     /**
      * Root of the C3DObject-hierarchy

@@ -31,6 +31,11 @@ public:
 
     }
 
+    //Getters for position and radius
+    inline const unsigned short getX() const { return m_PositionX; }
+    inline const unsigned short getY() const { return m_PositionY; }
+    inline const unsigned short getRadius() const { return m_Radius; }
+
 private:
 
     unsigned short m_PositionX;

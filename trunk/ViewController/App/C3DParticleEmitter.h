@@ -75,7 +75,13 @@ public:
 		ePARTICLETYPE_FORCEDWORD = 0xFFFFFFFF
 	};
 
-	C3DParticleEmitter(void);
+    /**
+     * Constructor
+     * @param lifeTime Lifetime of emitter as seconds
+     */
+	C3DParticleEmitter(float lifeTime);
+
+
 	virtual ~C3DParticleEmitter(void);
 
 	/**
@@ -245,6 +251,10 @@ private:
 	D3DXMATRIX					m_RotationMatrix[NUM_ROTATIONMATRICES];
 	float						m_fRotationAngle[NUM_ROTATIONMATRICES][3];
 	float						m_fRotationDelta[NUM_ROTATIONMATRICES][3];
+
+
+    //Lifetime of emitter
+    float m_LifeTime;
 };
 
 #endif	// __3DPARTICLEEMITTER_H__

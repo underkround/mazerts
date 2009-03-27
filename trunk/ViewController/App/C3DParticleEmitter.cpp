@@ -9,7 +9,7 @@
 
 
 
-C3DParticleEmitter::C3DParticleEmitter(void)
+C3DParticleEmitter::C3DParticleEmitter(float lifeTime)
 {
 	m_dwNumTextures = 0;
 	m_eType = ePARTICLETYPE_BILLBOARD;
@@ -18,6 +18,8 @@ C3DParticleEmitter::C3DParticleEmitter(void)
     m_pParticleList = NULL;
 	m_pObject = NULL;
 	::memset(&m_ObjectMaterial, 0, sizeof(D3DMATERIAL9));
+
+    m_LifeTime = lifeTime;
 }
 
 
@@ -143,6 +145,13 @@ bool C3DParticleEmitter::Update(float fFrametime)
 
 	// update children
 	I3DObject::Update(fFrametime);
+
+
+    m_LifeTime -= fFrametime;
+    if(m_LifeTime < 0)
+    {
+        return false;
+    }
 
     return true;
 }

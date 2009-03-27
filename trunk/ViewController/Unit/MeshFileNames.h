@@ -14,7 +14,7 @@ static const int NUMBER_OF_UNITS_WITH_MESHES = 2;
 /**
  * Contains filenames for different meshes, 3 for every unit (leave unused parts as _T("") )
  */
-TCHAR g_ppUnitMeshNames[NUMBER_OF_UNITS_WITH_MESHES][3][256] = 
+static TCHAR g_ppUnitMeshNames[NUMBER_OF_UNITS_WITH_MESHES][3][256] = 
 {
     _T("../data/mesh/car_base.x"),              //Car, no separater barrel
     _T("../data/mesh/car_gun.x"),
@@ -31,7 +31,7 @@ TCHAR g_ppUnitMeshNames[NUMBER_OF_UNITS_WITH_MESHES][3][256] =
 /**
  * Contains offsets for different meshes, bases is relative to world, gun is relative to base, barrel is relative to gun
  */
-float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
+static float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
 {
     0, 0, 0,                //Car base
     0, 1.0f, 1.0f,          //Car gun
@@ -41,5 +41,22 @@ float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
     0, 1.0f, 0.65f,
     0, 0.3f, -0.5f
 };
+
+
+static const int NUMBER_OF_TEXTURES = 2;
+
+enum Textures
+{
+    BALLTEXTURE,
+    STARTEXTURE
+};
+
+static TCHAR g_pTextureNames[NUMBER_OF_TEXTURES][256] = 
+{
+    _T("../data/textures/16ball.png"),
+    _T("../data/textures/16star.png")
+};
+
+
 
 #endif

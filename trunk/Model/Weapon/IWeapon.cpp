@@ -15,4 +15,6 @@ void IWeapon::fire()
 {
     IProjectile* pProjectile = new IProjectile(m_Def, m_pTarget->getTargetX(), m_pTarget->getTargetY(), this);
     ProjectileCollection::addProjectile(pProjectile);
+    --m_Ammo;
+    m_ROFTimer = m_Def.rof;
 }
