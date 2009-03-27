@@ -20,8 +20,6 @@
 // TODO: remove when implementing real marker object
 #include "../3DDebug/C3DObjectDebug.h"
 
-#define HEALTHBAR_UPDATE_INTERVAL 0.2f
-
 class UIUnit : public C3DObject, IAssetListener
 {
 public:
