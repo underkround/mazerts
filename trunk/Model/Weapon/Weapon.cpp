@@ -25,9 +25,9 @@ void Weapon::update(const float deltaT)
         m_TargetDirection.normalize();
 
         float unitAngle = atan2(dir->y, dir->x);
-        float targetAngle = atan2(m_TargetDirection.y, m_TargetDirection.x);
+        float targetAngle = atan2(m_TargetDirection.y, m_TargetDirection.x) - unitAngle;
         float currentAngle = atan2(m_Direction.y, m_Direction.x);
-        float turn = fmod(targetAngle - currentAngle - unitAngle, (2.0f * 3.141592653589793238462f) );
+        float turn = fmod(targetAngle - currentAngle, (2.0f * 3.141592653589793238462f) );
         
         //Select "shorter route"
         if(fabs(turn) > 3.141592653589793238462f)        
@@ -42,12 +42,18 @@ void Weapon::update(const float deltaT)
         
         if(fabs(turn) > 0.0001f)
         {
+            float turnAmount = 0.0f;
+
             if(fabs(turn) > turnSpeed)
             {
-                turn = sgn(turn) * turnSpeed;
+                turnAmount = sgn(turn) * turnSpeed;
             }
-            m_Direction.x = cos(currentAngle + turn);
-            m_Direction.y = sin(currentAngle + turn);
+            else
+            {
+                turnAmount = turn;
+            }
+            m_Direction.x = cos(currentAngle + turnAmount);
+            m_Direction.y = sin(currentAngle + turnAmount);
         }        
 
         //Reloading if necessary
@@ -72,7 +78,8 @@ void Weapon::update(const float deltaT)
         }
 
         //Shooting (TODO: only enemy) assets or forced targets
-        if(m_pTarget->getTargetType() == Target::ASSET || m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
+        if((m_pTarget->getTargetType() == Target::ASSET && m_pTarget->getTargetAsset()->getOwner() != m_pHost->getOwner()) 
+            || m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
         {
             //Ready to fire?
             if(m_Ammo > 0 && m_ROFTimer == 0)
@@ -82,7 +89,7 @@ void Weapon::update(const float deltaT)
                 if(targetDist < m_Def.range)
                 {
                     //...and turret points in right direction, fire
-                    if(turn < 0.0001f)
+                    if(fabs(turn) < 0.01f)
                     {
                         fire();
                     }

@@ -8,7 +8,6 @@
 #define __MESHFILENAMES_H__
 
 #include <tchar.h>
-#include "PlayerColors.h"
 
 static const int NUMBER_OF_UNITS_WITH_MESHES = 2;
 
@@ -43,17 +42,6 @@ static float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
     0, 0.3f, -0.5f
 };
 
-const TCHAR g_ppPlayerMaterialNames[MAXPLAYERCOUNT][256] =
-{
-    _T("PlayerMaterial0"),
-    _T("PlayerMaterial1"),
-    _T("PlayerMaterial2"),
-    _T("PlayerMaterial3"),
-    _T("PlayerMaterial4"),
-    _T("PlayerMaterial5"),
-    _T("PlayerMaterial6"),
-    _T("PlayerMaterial7"),
-};
 
 static const int NUMBER_OF_TEXTURES = 2;
 
