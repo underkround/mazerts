@@ -1,6 +1,6 @@
 #include "IWeapon.h"
 #include "../Command/Target.h"
-#include "IProjectile.h"
+#include "Projectile.h"
 
 void IWeapon::setTarget(Target* pTarget)
 {
@@ -13,7 +13,19 @@ void IWeapon::setTarget(Target* pTarget)
 
 void IWeapon::fire()
 {
-    IProjectile* pProjectile = new IProjectile(m_Def, m_pTarget->getTargetX(), m_pTarget->getTargetY(), this);
+    Projectile* pProjectile = NULL;
+    
+    //Fix offsets for ASSET-targets
+    if(m_pTarget->getTargetType() == Target::ASSET)
+    {
+        pProjectile = new Projectile(m_Def, m_pTarget->getTargetX() + (m_pTarget->getTargetAsset()->getWidth() >> 1),
+                               m_pTarget->getTargetY() + (m_pTarget->getTargetAsset()->getHeight() >> 1), this);
+    }
+    else
+    {
+        pProjectile = new Projectile(m_Def, m_pTarget->getTargetX(), m_pTarget->getTargetY(), this);
+    }
+    
     ProjectileCollection::addProjectile(pProjectile);
     --m_Ammo;
     m_ROFTimer = m_Def.rof;

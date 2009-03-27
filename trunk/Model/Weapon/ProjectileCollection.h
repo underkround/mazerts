@@ -11,7 +11,7 @@
 #ifndef __PROJECTILECOLLECTION_H__
 #define __PROJECTILECOLLECTION_H__
 
-#include "IProjectile.h"
+#include "Projectile.h"
 #include "../Common/DoubleLinkedList.h"
 
 class ProjectileCollection
@@ -32,12 +32,12 @@ public:
     /**
      * Adds the given projectile to collection
      */
-    inline static void addProjectile(IProjectile* pProjectile) { pProjectileList->pushTail(pProjectile); }
+    inline static void addProjectile(Projectile* pProjectile) { pProjectileList->pushTail(pProjectile); }
 
     /**
      * Gets the list within the collection (for testing purposes)
      */
-    inline static DoubleLinkedList<IProjectile*>* getList() { return pProjectileList; }
+    inline static DoubleLinkedList<Projectile*>* getList() { return pProjectileList; }
     
 
 private:
@@ -45,7 +45,7 @@ private:
     /**
      * List of projectiles within collection
      */
-    static DoubleLinkedList<IProjectile*>* pProjectileList;
+    static DoubleLinkedList<Projectile*>* pProjectileList;
 };
 
 #endif //__PROJECTILECOLLECTION_H__

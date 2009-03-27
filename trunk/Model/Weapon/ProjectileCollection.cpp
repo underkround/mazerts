@@ -1,12 +1,12 @@
 #include "ProjectileCollection.h"
 
-DoubleLinkedList<IProjectile*>* ProjectileCollection::pProjectileList = NULL;
+DoubleLinkedList<Projectile*>* ProjectileCollection::pProjectileList = NULL;
 
 void ProjectileCollection::create()
 {
     if(pProjectileList)
     {
-        ListNode<IProjectile*>* node = pProjectileList->headNode();    
+        ListNode<Projectile*>* node = pProjectileList->headNode();    
         while(node)
         {
             delete node->item;
@@ -15,12 +15,12 @@ void ProjectileCollection::create()
 
         pProjectileList->release();
     }
-    pProjectileList = new DoubleLinkedList<IProjectile*>();
+    pProjectileList = new DoubleLinkedList<Projectile*>();
 }
 
 void ProjectileCollection::update(const float deltaTime)
 {
-    ListNode<IProjectile*>* node = pProjectileList->headNode();
+    ListNode<Projectile*>* node = pProjectileList->headNode();
     
     while(node)
     {

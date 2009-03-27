@@ -1,5 +1,5 @@
 /**
- * IProjectile
+ * Projectile
  *
  * Projectile is the object that is launched by weapon, and travels to it's
  * target casting damage or creating explosioin-object to do the casting.
@@ -17,7 +17,7 @@
 //Forward declaration
 class IWeapon;
 
-class IProjectile
+class Projectile
 {
 public:
 
@@ -36,8 +36,8 @@ public:
         TYPE_END    = 1 << 3    // remember to advance the shift when adding new concrete type
     };
 
-    IProjectile(WeaponDef& def, unsigned short targetX, unsigned short targetY, IWeapon* launcher) 
-        : m_ConcreteType((IProjectile::Type)def.projectileConcreteType), m_pHost(launcher)
+    Projectile(WeaponDef& def, unsigned short targetX, unsigned short targetY, IWeapon* launcher) 
+        : m_ConcreteType((Projectile::Type)def.projectileConcreteType), m_pHost(launcher)
     {
         m_TargetX = targetX;
         m_TargetY = targetY;
@@ -45,7 +45,7 @@ public:
         m_FlightTime = 0;
     }
 
-    virtual ~IProjectile()
+    virtual ~Projectile()
     {
     }
 

@@ -1,8 +1,8 @@
-#include "IProjectile.h"
+#include "Projectile.h"
 #include "Explosion.h"
 #include "ExplosionCollection.h"
 
-bool IProjectile::update(const float deltaT)
+bool Projectile::update(const float deltaT)
 {
     Explosion* pExplosion = NULL;
 

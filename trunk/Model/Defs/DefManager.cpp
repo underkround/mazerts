@@ -11,7 +11,7 @@
 #include "../Asset/IAssetRadar.h"   // for Type-enum validation
 #include "../Asset/IMovingLogic.h"  // for Type-enum validation
 #include "../Weapon/IWeapon.h"      // for Type-enum validation
-#include "../Weapon/IProjectile.h"  // for Type-enum validation
+#include "../Weapon/Projectile.h"  // for Type-enum validation
 
 
 DefManager::DefManager()
@@ -238,7 +238,7 @@ bool DefManager::loadWeaponDef(int tag)
     // projectile concrete type
     type = c->getValueAsInt(tags, "weapon projectile concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
-    if( ((type & (type - 1)) != 0)  ||  !(type & (IProjectile::TYPE_END - 1)) ) {
+    if( ((type & (type - 1)) != 0)  ||  !(type & (Projectile::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
         if(isNew) delete d;
         return false;
