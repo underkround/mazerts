@@ -20,6 +20,8 @@
 // TODO: remove when implementing real marker object
 #include "../3DDebug/C3DObjectDebug.h"
 
+#define HEALTHBAR_UPDATE_INTERVAL 0.2f
+
 class UIUnit : public C3DObject, IAssetListener
 {
 public:
@@ -128,6 +130,20 @@ public:
         AddChild(m_pUIWeapon);
     }
 
+    /**
+     * Creates health bar
+     */
+    void createHealthBar(LPDIRECT3DDEVICE9 pDevice);
+
+    /**
+     * Set base material
+     * Used for player colors
+     */
+    inline void setBaseMaterial(D3DMATERIAL9* pMaterial)
+    {
+        GetMeshDataArray()[0].pMaterial = pMaterial;
+    }
+
 protected:
 
     /**
@@ -183,6 +199,7 @@ protected:
      * Used to keep track if unit has turned
      */
     D3DXVECTOR3 m_OldDirection;
+
 };
 
 #endif //__UIUNIT_H__

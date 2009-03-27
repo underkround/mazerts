@@ -36,6 +36,7 @@ public:
         getInstance()->loadMeshes(pDevice);
         Config::getInstance()->setFilename("meshes.ini");
         Config::getInstance()->readFile();
+        getInstance()->createPlayerMaterials();
     }
 
     /**
@@ -96,6 +97,17 @@ public:
      * @param pAsset  pointer to asset instance to be deteled
      */
     virtual void handleReleasedAsset(IAsset* pAsset);
+
+    /**
+     * Returns player material (color)
+     * @param playerIndex   index of the player
+     */
+    D3DMATERIAL9* getPlayerMaterials(const unsigned int playerIndex);
+
+    /**
+     * Creates player materials
+     */
+    void createPlayerMaterials();
 
 private:
 

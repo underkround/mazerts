@@ -101,12 +101,12 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     ParticleFactory::create(pDevice);
 
     // Initialize player manager
-    PlayerManager::create(1);
+    PlayerManager::create(2);
 
     //TEST
     for(int i = 0; i < 20; i++)
     {
-        AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 40+(i * 4), 20+(i % 5) * 4);
+        AssetFactory::createUnit(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 2, 40+(i * 4), 20+(i % 5) * 4);
     }
 
 

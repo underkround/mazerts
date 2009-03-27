@@ -7,7 +7,9 @@
 #ifndef __PLAYERCOLORS_H__
 #define __PLAYERCOLORS_H__
 
-const DWORD PLAYERCOLORS[8] =
+#define MAXPLAYERCOUNT 8
+
+const DWORD PLAYERCOLORS[MAXPLAYERCOUNT] =
 {
     0xff000000, // player 0, null/neutral player
     0xffff0000, // player 1

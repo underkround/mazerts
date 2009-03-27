@@ -58,8 +58,7 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
     CXFileLoader::Load(g_ppUnitMeshNames[tag][0], m_ResourceContainer, pUIUnit);
 
     // change base mesh color to player color
-    C3DObject::MESHDATA& data = pUIUnit->GetMeshDataArray()[0];
-    data.pMaterial->Diffuse = D3DXCOLOR(PLAYERCOLORS[pUnit->getOwner()->getIndex()]);
+    pUIUnit->setBaseMaterial(getPlayerMaterials(pUnit->getOwner()->getIndex()));
 
     m_RootObject.AddChild(pUIUnit);
     m_UnitList.pushTail(pUIUnit);
@@ -150,7 +149,6 @@ void UI3DObjectManager::loadMeshes(LPDIRECT3DDEVICE9 pDevice)
         CXFileLoader::Load(g_ppUnitMeshNames[i][1], m_ResourceContainer, NULL);
         CXFileLoader::Load(g_ppUnitMeshNames[i][2], m_ResourceContainer, NULL);
     }    
-    
     //Textures
     LPDIRECT3DTEXTURE9 pTexture = NULL;
 
@@ -159,4 +157,23 @@ void UI3DObjectManager::loadMeshes(LPDIRECT3DDEVICE9 pDevice)
         D3DXCreateTextureFromFile(pDevice, g_pTextureNames[i], &pTexture);
         m_ResourceContainer.AddResource(g_pTextureNames[i], pTexture);
     }
+}
+
+void UI3DObjectManager::createPlayerMaterials()
+{
+    for (int i = 0; i < MAXPLAYERCOUNT; i++)
+    {
+        D3DMATERIAL9* pMaterial = new D3DMATERIAL9();
+        pMaterial->Ambient = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+        pMaterial->Diffuse = D3DXCOLOR(PLAYERCOLORS[i]);
+        pMaterial->Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+        pMaterial->Specular = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+        pMaterial->Power = 0.0f;
+        m_ResourceContainer.AddResource(g_ppPlayerMaterialNames[i], *pMaterial);
+    }
+}
+
+D3DMATERIAL9* UI3DObjectManager::getPlayerMaterials(const unsigned int playerIndex)
+{
+    return m_ResourceContainer.FindMaterial(g_ppPlayerMaterialNames[playerIndex]);
 }

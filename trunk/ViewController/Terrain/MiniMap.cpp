@@ -12,6 +12,7 @@
 #include "../../Model/Terrain/Terrain.h"
 #include "../Terrain/UITerrain.h"
 #include "../Input/MouseState.h"
+#include "../Unit/PlayerColors.h"
 
 MiniMap::MiniMap()
 {
@@ -347,8 +348,7 @@ void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
                 pUnitVertices[index].tu = 0.5f;
                 pUnitVertices[index].tv = 0.0f;
                 pUnitVertices[index].rhw = 0.999f;
-                //TODO: Colors from unit owner
-                pUnitVertices[index++].dwColor = 0xFFFF0000;
+                pUnitVertices[index++].dwColor = PLAYERCOLORS[pNode->item->getUnit()->getOwner()->getIndex()];
                 
                 pUnitVertices[index].x = posX - MARKERSIZE;
                 pUnitVertices[index].y = posY - (MARKERSIZE * 2.0f);
@@ -356,7 +356,7 @@ void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
                 pUnitVertices[index].tu = 1.0f;
                 pUnitVertices[index].tv = 1.0f;
                 pUnitVertices[index].rhw = 0.999f;
-                pUnitVertices[index++].dwColor = 0xFFFF0000;
+                pUnitVertices[index++].dwColor = PLAYERCOLORS[pNode->item->getUnit()->getOwner()->getIndex()];
 
                 pUnitVertices[index].x = posX + MARKERSIZE;
                 pUnitVertices[index].y = posY - (MARKERSIZE * 2.0f);
@@ -364,7 +364,7 @@ void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
                 pUnitVertices[index].tu = 0.0f;
                 pUnitVertices[index].tv = 1.0f;
                 pUnitVertices[index].rhw = 0.999f;
-                pUnitVertices[index++].dwColor = 0xFFFF0000;
+                pUnitVertices[index++].dwColor = PLAYERCOLORS[pNode->item->getUnit()->getOwner()->getIndex()];
 
             }
             pNode = pNode->next;
