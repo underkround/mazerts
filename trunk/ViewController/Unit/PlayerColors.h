@@ -1,11 +1,17 @@
+/**
+ * PlayerColors
+ * Contains list of player colors
+ */
+
+
 #ifndef __PLAYERCOLORS_H__
 #define __PLAYERCOLORS_H__
 
-DWORD PLAYERCOLORS[8] =
+const DWORD PLAYERCOLORS[8] =
 {
-    0xff000000,
-    0xffff0000,
-    0xff00ff00,
+    0xff000000, // player 0, null/neutral player
+    0xffff0000, // player 1
+    0xff00ff00, // player 2 etc.
     0xff0000ff,
     0xffffff00,
     0xffff00ff,
