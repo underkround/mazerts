@@ -604,6 +604,14 @@
 					RelativePath=".\Player\Player.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Player\PlayerManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Player\PlayerManager.h"
+					>
+				</File>
 				<Filter
 					Name="PathFinding"
 					>

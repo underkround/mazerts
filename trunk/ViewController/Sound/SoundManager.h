@@ -94,7 +94,7 @@ public:
 
     /**
      * Gets the SoundManager-instance
-     * @return Pointer to UI3DObjectManager
+     * @return Pointer to SoundManager
      */
     inline static SoundManager* getInstance() 
     { 

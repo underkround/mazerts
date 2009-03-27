@@ -13,6 +13,9 @@
 #include "../Input/KeyboardState.h"
 #include "../../Model/Common/Config.h"
 
+// player manager
+#include "../../Model/Player/PlayerManager.h"
+
 // Camera related
 #include "../Camera/SphereCamera.h"
 
@@ -94,10 +97,13 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     ExplosionCollection::create();
     ExplosionCollection::setCallBack(&ParticleFactory::createExplosion);
 
+    // Initialize player manager
+    PlayerManager::create(1);
+
     //TEST
     for(int i = 0; i < 20; i++)
     {
-        AssetFactory::createUnit(NULL, 2, 40+(i * 4), 20+(i % 5) * 4);
+        AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 40+(i * 4), 20+(i % 5) * 4);
     }
 
 
@@ -177,6 +183,9 @@ void GameState::release()
 
     //Release anything else left (effect-objects, debug-objects...)
     m_pManager->release();
+
+    // release player manager
+    PlayerManager::release();
     
     m_pUITerrain->release();
 }

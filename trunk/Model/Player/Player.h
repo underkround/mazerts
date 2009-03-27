@@ -13,7 +13,7 @@ class Player
 {
 public:
 
-    Player(const int id);
+    Player(const int index);
     ~Player();
 
     /**
@@ -25,6 +25,7 @@ public:
      */
 
     inline const int getId() { return m_Id; }
+    inline const int getIndex() { return m_Index; }
 
     inline void setEnemies(const int enemies) { m_Enemies = enemies; }
     inline const int getEnemies() { return m_Enemies; }
@@ -34,6 +35,7 @@ public:
 
 private:
     int         m_Id; // id of this player
+    int         m_Index; // index of this player
 
     // these two are probably not needed, but are here anyways
     int         m_Enemies;

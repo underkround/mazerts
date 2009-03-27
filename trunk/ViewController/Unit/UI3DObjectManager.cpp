@@ -7,6 +7,7 @@
 #include "../../Model/Defs/DefManager.h"
 
 #include "MeshFileNames.h"
+#include "PlayerColors.h"
 
 
 void UI3DObjectManager::handleCreatedAsset(IAsset* pAsset)
@@ -55,6 +56,10 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
     int tag = pUnit->getTypeTag()-1;
 
     CXFileLoader::Load(g_ppUnitMeshNames[tag][0], m_ResourceContainer, pUIUnit);
+
+    // change base mesh color to player color
+    C3DObject::MESHDATA& data = pUIUnit->GetMeshDataArray()[0];
+    data.pMaterial->Diffuse = D3DXCOLOR(PLAYERCOLORS[pUnit->getOwner()->getIndex()]);
 
     m_RootObject.AddChild(pUIUnit);
     m_UnitList.pushTail(pUIUnit);

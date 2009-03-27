@@ -561,6 +561,14 @@
 					RelativePath="..\Model\Player\Player.h"
 					>
 				</File>
+				<File
+					RelativePath="..\Model\Player\PlayerManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Player\PlayerManager.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Defs"
@@ -739,6 +747,10 @@
 				>
 				<File
 					RelativePath=".\Unit\MeshFileNames.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\PlayerColors.h"
 					>
 				</File>
 				<File
