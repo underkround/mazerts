@@ -4,7 +4,9 @@
 #include "../../Model/Terrain/AntinTerrainGenerator.h"
 #include "../../Model/Terrain/ImageTerrainGenerator.h"
 #include "../../Model/PathFinding/PathFinderMaster.h"
+#include "../../Model/Asset/AssetCollection.h"
 #include "../../Model/Asset/AssetFactory.h"
+#include "../../Model/Weapon/ProjectileCollection.h"
 
 #include "../Input/MouseState.h"
 #include "../Input/KeyboardState.h"
@@ -83,6 +85,8 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     // initialize asset collection
     AssetCollection::create(pTerrain->getSize());
+    //Initialize projectile collection
+    ProjectileCollection::create();
 
     //TEST
     for(int i = 0; i < 2; i++)
@@ -178,6 +182,8 @@ bool GameState::update(const float frameTime)
 
     //Updating the actual game logic    
     AssetCollection::updateUnits(frameTime);
+    ProjectileCollection::update(frameTime);
+
     m_pManager->getRootObject()->Update(frameTime);
 
     //Update minimap

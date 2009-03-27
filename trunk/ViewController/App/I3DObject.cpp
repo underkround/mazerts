@@ -66,14 +66,14 @@ bool I3DObject::Update(float fFrametime)
     if (IsActive())
     {
         // apply velocity to position
-        m_mLocal._41 += m_vVelocity.x * fFrametime;
+        /*m_mLocal._41 += m_vVelocity.x * fFrametime;
         m_mLocal._42 += m_vVelocity.y * fFrametime;
         m_mLocal._43 += m_vVelocity.z * fFrametime;
 
         // apply the acceleration to velocity
         m_vVelocity.x += m_vAcceleration.x * fFrametime;
         m_vVelocity.y += m_vAcceleration.y * fFrametime;
-        m_vVelocity.z += m_vAcceleration.z * fFrametime;
+        m_vVelocity.z += m_vAcceleration.z * fFrametime;*/
 
         if (m_pParent)
         {
@@ -101,8 +101,11 @@ bool I3DObject::Update(float fFrametime)
     while(node)
     {
         if (node->item->Update(fFrametime))
+        {
             node = node->next;
-        else {
+        }
+        else 
+        {
             node->item->Release();
             delete node->item;
             node = m_arrChildren.removeGetNext(node);

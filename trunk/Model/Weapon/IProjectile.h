@@ -4,15 +4,18 @@
  * Projectile is the object that is launched by weapon, and travels to it's
  * target casting damage or creating explosioin-object to do the casting.
  *
- * $Revision$
- * $Date$
- * $Id$
+ * $Revision:$
+ * $Date:$
+ * $Id:$
  */
 
 #ifndef __IPROJECTILE_H__
 #define __IPROJECTILE_H__
 
 #include "../Defs/Defs.h"
+
+//Forward declaration
+class IWeapon;
 
 class IProjectile
 {
@@ -33,8 +36,13 @@ public:
         TYPE_END    = 1 << 4    // remember to advance the shift when adding new concrete type
     };
 
-    IProjectile(Type concreteType, IWeapon* launcher) : m_ConcreteType(concreteType), m_pHost(launcher)
+    IProjectile(WeaponDef& def, unsigned short targetX, unsigned short targetY, IWeapon* launcher) 
+        : m_ConcreteType((IProjectile::Type)def.projectileConcreteType), m_pHost(launcher)
     {
+        m_TargetX = targetX;
+        m_TargetY = targetY;
+        m_Damage = def.damage;
+        m_FlightTime = 0;
     }
 
     virtual ~IProjectile()
@@ -44,8 +52,9 @@ public:
     /**
      * Normal per-frame update call from the hosting unit.
      * @param deltaT    time from last update
+     * @return True if the projectile is still alive, otherwise false
      */
-    virtual void update(const float deltaT) = 0;
+    virtual bool update(const float deltaT);
 
 protected:
 
@@ -53,6 +62,15 @@ protected:
 
     const Type      m_ConcreteType; // the type of the concrete class
 
+    //Target location
+    unsigned short m_TargetX;
+    unsigned short m_TargetY;
+
+    //Damage
+    int m_Damage;
+
+    //Flight time for Shell-projectiles, used to advance the shell along the flightPath
+    float m_FlightTime;
 };
 
 #endif // __IPROJECTILE_H__

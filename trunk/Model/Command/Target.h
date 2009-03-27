@@ -31,7 +31,8 @@ public:
 
     enum TargetFlags
     {
-        TGTFLAG_MAKEWAY = 1     //When forcing units to move out of the way
+        TGTFLAG_MAKEWAY = 1,     //When forcing units to move out of the way
+        TGTFLAG_FORCEATTACK      //For forcing weapons to attack ground
     };
 
     /**

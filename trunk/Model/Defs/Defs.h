@@ -46,7 +46,10 @@ struct WeaponDef //: public BaseDef
     // turning speed
     float turnSpeed;
 
-    // TODO: damage values, damage range..
+    //Damage caused by single projectile
+    int damage;
+
+    // TODO: damage range?    
 };
 
 

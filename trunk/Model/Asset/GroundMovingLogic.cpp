@@ -297,12 +297,6 @@ void GroundMovingLogic::move(float deltaTime)
     Vector3* dir = m_pUnit->getDirection();
     Vector3* pos = m_pUnit->getPosition();
 
-    //TODO: Maximum turning speed as radians per second to unit TYPE data
-    static const float maxTurnSpeed = 1.0f * PI;
-
-    //TODO: Maximum moving speed as units (grid squares) per second to unit TYPE data
-    static const float maxMoveSpeed = 10.0f;
-
     //Static deceleration, due to friction etc.
     m_CurrentSpeed *= (0.95f - (0.95f * deltaTime));
 
@@ -320,7 +314,7 @@ void GroundMovingLogic::move(float deltaTime)
     }
     
     //Turning speed        
-    float turnSpeed = maxTurnSpeed * deltaTime;
+    float turnSpeed = m_Def.turningSpeed * deltaTime;
 
     //If current direction differs more than 45 degrees, slow down
     if(fabs(turn) > PI * 0.25f || m_State == IDLE)
@@ -454,7 +448,7 @@ void GroundMovingLogic::move(float deltaTime)
                 //Heading (pretty much) toward correct direction and the road is clear, hit the pedal to the metal    
                 //Offsets (m_HalfSize) are needed because the speed is calculated from "center" of unit
                 float factor = Terrain::getInstance()->getUnitMoveSpeed( (short)(pos->x + m_HalfSize), (short)(pos->y + m_HalfSize), dirX, dirY);            
-                m_CurrentSpeed = factor * maxMoveSpeed;
+                m_CurrentSpeed = factor * m_Def.maxSpeed;
             }
             else
             {

@@ -289,6 +289,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Weapon\IProjectile.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Weapon\IProjectile.h"
 					>
 				</File>
@@ -298,6 +302,14 @@
 				</File>
 				<File
 					RelativePath=".\Weapon\IWeapon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\ProjectileCollection.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\ProjectileCollection.h"
 					>
 				</File>
 				<File

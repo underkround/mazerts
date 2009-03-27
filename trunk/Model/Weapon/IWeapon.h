@@ -19,6 +19,7 @@
 #include "../Common/Vector3.h"
 //#include "../Asset/IAsset.h"
 #include "../Defs/Defs.h"
+#include "ProjectileCollection.h"
 
 class Target;
 class IAsset;
@@ -48,6 +49,10 @@ public:
         m_KillCount = 0;
         m_pHost = NULL;
         m_pTarget = NULL;
+        
+        m_Ammo = def.clipSize;
+        m_ReloadTimer = 0.0f;
+        m_ROFTimer = 0.0f;
     }
 
     virtual ~IWeapon()
@@ -119,16 +124,26 @@ public:
 
 protected:
 
-    IAsset*         m_pHost;            //Weapon owner
-    Vector3         m_Direction;        //Current direction of the weapon
-    Vector3         m_TargetDirection;  //Target direction to turn into
-    int             m_KillCount;        //Killcount of the weapon
-    Target*         m_pTarget;          //Weapon target
+    /**
+     * Creates a new projectile and adds it to ProjectileCollection
+     */
+    void fire();
 
+    IAsset*         m_pHost;            //Weapon owner
+    Vector3         m_Direction;        //Current direction of the weapon   
+    int             m_KillCount;        //Killcount of the weapon
+    
     WeaponDef&      m_Def;
 
     const Type      m_ConcreteType;     // the type of the concrete class
 
+
+    Vector3 m_TargetDirection;  //Target direction to turn into
+    Target* m_pTarget;          //Weapon target
+    //Reload/ROF-timers
+    float m_ReloadTimer;        //Reload-timer
+    float m_ROFTimer;           //Rate of fire-timer    
+    int m_Ammo;                 //"Clip", after each reload this is filled to m_Def.clipSize
 };
 
 #endif // __IWEAPON_H__

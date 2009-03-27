@@ -39,9 +39,9 @@ public:
      * weapon instance.
      */
     virtual bool release();
-
+    
 private:
-
+    
 };
 
 #endif // __WEAPON_H__

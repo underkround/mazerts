@@ -206,11 +206,27 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Model\Weapon\IProjectile.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Weapon\IProjectile.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Model\Weapon\IWeapon.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\Model\Weapon\IWeapon.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Weapon\ProjectileCollection.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Weapon\ProjectileCollection.h"
 					>
 				</File>
 				<File
@@ -591,6 +607,14 @@
 				</File>
 				<File
 					RelativePath=".\App\C3DObjectControllerKeyboard.h"
+					>
+				</File>
+				<File
+					RelativePath=".\App\C3DParticleEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\C3DParticleEmitter.h"
 					>
 				</File>
 				<File
