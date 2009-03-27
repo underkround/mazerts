@@ -7,6 +7,7 @@
 #include "../../Model/Asset/AssetCollection.h"
 #include "../../Model/Asset/AssetFactory.h"
 #include "../../Model/Weapon/ProjectileCollection.h"
+#include "../../Model/Weapon/ExplosionCollection.h"
 
 #include "../Input/MouseState.h"
 #include "../Input/KeyboardState.h"
@@ -16,6 +17,8 @@
 #include "../Camera/SphereCamera.h"
 
 #include "../Sound/SoundManager.h"
+
+#include "../Unit/ParticleFactory.h"
 
 // Controllers
 #include "../Controller/UIAssetController.h"
@@ -87,6 +90,9 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     AssetCollection::create(pTerrain->getSize());
     //Initialize projectile collection
     ProjectileCollection::create();
+    //Initialize explosion collection and set callback-method
+    ExplosionCollection::create();
+    ExplosionCollection::setCallBack(&ParticleFactory::createExplosion);
 
     //TEST
     for(int i = 0; i < 20; i++)
@@ -183,6 +189,7 @@ bool GameState::update(const float frameTime)
     //Updating the actual game logic    
     AssetCollection::updateUnits(frameTime);
     ProjectileCollection::update(frameTime);
+    ExplosionCollection::update(frameTime);
 
     m_pManager->getRootObject()->Update(frameTime);
 

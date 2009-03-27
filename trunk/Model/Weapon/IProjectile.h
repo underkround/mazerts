@@ -30,10 +30,10 @@ public:
      */
     enum Type
     {
-        BULLET      = 1 << 1,
-        SHELL       = 1 << 2,
-        BEAM        = 1 << 3,
-        TYPE_END    = 1 << 4    // remember to advance the shift when adding new concrete type
+        BULLET      = 1 << 0,
+        SHELL       = 1 << 1,
+        BEAM        = 1 << 2,
+        TYPE_END    = 1 << 3    // remember to advance the shift when adding new concrete type
     };
 
     IProjectile(WeaponDef& def, unsigned short targetX, unsigned short targetY, IWeapon* launcher) 

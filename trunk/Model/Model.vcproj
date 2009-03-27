@@ -289,6 +289,18 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Weapon\Explosion.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\ExplosionCollection.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\ExplosionCollection.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Weapon\IProjectile.cpp"
 					>
 				</File>

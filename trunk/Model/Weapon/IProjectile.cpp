@@ -1,10 +1,16 @@
 #include "IProjectile.h"
+#include "Explosion.h"
+#include "ExplosionCollection.h"
 
 bool IProjectile::update(const float deltaT)
 {
+    Explosion* pExplosion = NULL;
+
     switch(m_ConcreteType)
     {
         case BULLET:
+            pExplosion = new Explosion(m_TargetX, m_TargetY, 1);
+            ExplosionCollection::addExplosion(pExplosion);
             return false;
             break;
 

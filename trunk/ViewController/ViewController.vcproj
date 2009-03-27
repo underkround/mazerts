@@ -206,6 +206,18 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Model\Weapon\Explosion.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Weapon\ExplosionCollection.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Weapon\ExplosionCollection.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Model\Weapon\IProjectile.cpp"
 					>
 				</File>
@@ -727,6 +739,14 @@
 				>
 				<File
 					RelativePath=".\Unit\MeshFileNames.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\ParticleFactory.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\ParticleFactory.h"
 					>
 				</File>
 				<File
