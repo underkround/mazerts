@@ -60,6 +60,10 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
     // change base mesh color to player color
     pUIUnit->setBaseMaterial(getPlayerMaterials(pUnit->getOwner()->getIndex()));
 
+    //give health indicator to UI unit
+    HealthBar* hb = new HealthBar();
+    pUIUnit->setHealthBar(hb);
+
     m_RootObject.AddChild(pUIUnit);
     m_UnitList.pushTail(pUIUnit);
 

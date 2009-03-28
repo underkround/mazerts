@@ -16,6 +16,7 @@
 #include "../../Model/Asset/Unit.h"
 #include "../../Model/Asset/IAssetListener.h"
 #include "UIWeapon.h"
+#include "HealthBar.h"
 
 // TODO: remove when implementing real marker object
 #include "../3DDebug/C3DObjectDebug.h"
@@ -36,6 +37,7 @@ public:
         m_Selected = false;
         m_SelectionMarker = NULL;
         m_pUIWeapon = NULL;
+        m_pHealthBar = NULL;
         //Register as listener to pUnit
         pUnit->registerListener(this);        
     }
@@ -129,9 +131,24 @@ public:
     }
 
     /**
+     * Gets the health indicator of the UIUnit
+     * @return Pointer to HealthBar
+     */
+    inline HealthBar* getHealthBar() { return m_pHealthBar; }
+
+    inline void setHealthBar(HealthBar* pHealthBar)
+    {
+        if(!m_pHealthBar)
+        {
+            m_pHealthBar = pHealthBar;
+            AddChild(m_pHealthBar);
+        }
+    }
+
+    /**
      * Creates health bar
      */
-    void createHealthBar(LPDIRECT3DDEVICE9 pDevice);
+    //void createHealthBar(LPDIRECT3DDEVICE9 pDevice);
 
     /**
      * Set base material
@@ -197,6 +214,11 @@ protected:
      * Used to keep track if unit has turned
      */
     D3DXVECTOR3 m_OldDirection;
+
+    /**
+     * pointer to unit's health status indicator
+     */
+    HealthBar* m_pHealthBar;
 
 };
 

@@ -750,6 +750,14 @@
 				Name="Unit"
 				>
 				<File
+					RelativePath=".\Unit\HealthBar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\HealthBar.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Unit\MeshFileNames.h"
 					>
 				</File>
