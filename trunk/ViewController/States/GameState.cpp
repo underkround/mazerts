@@ -137,7 +137,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     // Camera
     Camera::create(pDevice);
     // configure the default (SphereCamera) camera
-    Camera::getCurrent()->setPosition(127.0f, 127.0f, -200.0f);
+    Camera::getCurrent()->setPosition(127.0f, 127.0f, 0.0f);
 
     // Controllers
     m_UIControllers.pushHead(new UIAssetController(pDevice, &m_Selector));

@@ -65,17 +65,20 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
 
     if(pUnit->hasWeapon())
     {
-        //TODO: move loading & offsetting to method
+        //Create weapon (turret), get mesh and offset accordingly
         UIWeapon* pUIWeapon = new UIWeapon(pUnit->getWeapon());
         CXFileLoader::Load(g_ppUnitMeshNames[tag][1], m_ResourceContainer, pUIWeapon);
         D3DXMATRIX& m = pUIWeapon->GetMatrix();
         m._41 = g_ppUnitMeshOffsets[tag][1][0];
         m._42 = g_ppUnitMeshOffsets[tag][1][1];
         m._43 = g_ppUnitMeshOffsets[tag][1][2];
+        
+        //SetUIWeapon takes care of parenting
         pUIUnit->setUIWeapon(pUIWeapon);
 
         if(g_ppUnitMeshNames[tag][2] != _T(""))
         {
+            //Same as above for barrel
             C3DObject* pObject = new C3DObject();
             CXFileLoader::Load(g_ppUnitMeshNames[tag][2], m_ResourceContainer, pObject);
             D3DXMATRIX& m = pObject->GetMatrix();

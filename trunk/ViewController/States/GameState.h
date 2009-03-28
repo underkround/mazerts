@@ -72,7 +72,7 @@ public:
      */
     virtual HRESULT onRestore()
     {
-        Camera::current->forceUpdate();
+        Camera::getCurrent()->forceUpdate();
         HRESULT hres = m_pUITerrain->onRestore(m_pDevice);
         if(FAILED(hres))
         {

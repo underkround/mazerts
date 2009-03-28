@@ -126,7 +126,7 @@ public:
         m_View = view;
     }
 
-    inline D3DXVECTOR3& getPosition() { return m_Position; }
+    virtual inline D3DXVECTOR3& getPosition() { return m_Position; }
 
     /**
      * Returns the current view-matrix
@@ -220,13 +220,13 @@ public:
         return m_Cameras.count();
     }
 
-    // Pointer to current camera, which is either the default or top
-    // from the stack. Keeping this just to reduce overhead for checking
-    // which is the default ;)
-    //
-    // NOTE: this is set to public only to reduce overhead. DO NOT modify
-    // this, use as read-only ;P
-    static Camera*                     current;
+    /**
+     * Gets the changecounter-value to track when camera position has changed
+     * Used, for example, to update the camera position on minimap only when it
+     * has changed
+     * @return Changecounter-value
+     */
+    inline unsigned short getChangeCounter() { return m_ChangeCounter; }
 
 protected:
 
@@ -267,6 +267,16 @@ protected:
      */
     bool m_NeedsUpdate;
 
+    /**
+     * Used to track camera changes from outside of object
+     */
+    unsigned short m_ChangeCounter;
+
+    // Pointer to current camera, which is either the default or top
+    // from the stack. Keeping this just to reduce overhead for checking
+    // which is the default ;)
+    //
+    static Camera*                     current;
 
 };
 

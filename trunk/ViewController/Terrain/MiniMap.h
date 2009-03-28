@@ -88,10 +88,9 @@ public:
     HRESULT onRestore(LPDIRECT3DDEVICE9 pDevice);
 
     /**
-     * @note RECT structure is { left, top, right, bottom }
-     * @return actual pixel coordinates of minimap in screen
+     * Updates the camera to new position if minimap is clicked
      */
-    RECT getScreenSize();
+    void moveCameraOnClick();
 
 private:
 
@@ -148,6 +147,12 @@ private:
      * Update counter for interval measuring
      */
     float m_UpdateCounter;
+
+    /**
+     * Used to update the camera location in minimap only
+     * when countervalue has changed in Camera->getChangeCounter
+     */
+    unsigned short m_CameraChangeCounter;
 };
 
 

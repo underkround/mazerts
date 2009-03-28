@@ -16,6 +16,7 @@ Camera::Camera()
     m_Pitch = 0.0f;
     m_Yaw = 0.0f;
     m_Zoom = 1.0f;
+    m_ChangeCounter = 0;
 
     m_NeedsUpdate = true;
 }
@@ -57,11 +58,13 @@ void Camera::update()
         D3DXMATRIX proj;
         pDevice->GetTransform(D3DTS_PROJECTION, &proj);
         
-        //TEST
+        //TODO: Test for shutting down frustum rebuilding, remove when not needed anymore
         if(m_Test)
         {
             FrustumCull::rebuildFrustum(&m_View, &proj);
         }
+        
+        m_ChangeCounter++;
 
         m_NeedsUpdate = false;
     }

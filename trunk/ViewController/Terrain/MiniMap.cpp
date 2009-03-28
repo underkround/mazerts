@@ -188,126 +188,136 @@ HRESULT MiniMap::onRestore(LPDIRECT3DDEVICE9 pDevice)
 
 void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
 {
-    //TODO: "ChangeCounter"-poll for camera!
-
-    const static float CLIPZ = -0.0f * UITerrain::HEIGHTFACTOR;
-
-    D3DXMATRIX matProj;
-    pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
-
-    D3DXMATRIX matView;
-    pDevice->GetTransform(D3DTS_VIEW, &matView);    
-
-    D3DXVECTOR3 rayOrigin,rayDir;    
-
-    D3DVIEWPORT9 viewPort;
-
-    pDevice->GetViewport(&viewPort);
-
-    MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir, 0, 0);    
-    D3DXVECTOR3 upperLeft = intersectRay(rayOrigin, rayDir, CLIPZ);
-
-    MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir, viewPort.Width, 0);
-    D3DXVECTOR3 upperRight = intersectRay(rayOrigin, rayDir, CLIPZ);
-
-    MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir,0, viewPort.Height);
-    D3DXVECTOR3 lowerLeft = intersectRay(rayOrigin, rayDir, CLIPZ);
-
-    MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir,viewPort.Width, viewPort.Height);
-    D3DXVECTOR3 lowerRight = intersectRay(rayOrigin, rayDir, CLIPZ);
-
-    TRANSLITVERTEX* pVertices = NULL;
-
-    m_pCameraVB->Lock(0, 4 * sizeof(TRANSLITVERTEX), (void**)&pVertices, D3DLOCK_DISCARD);
+    if(m_CameraChangeCounter != Camera::getCurrent()->getChangeCounter())
     {
-        float posX = m_Position.x + (lowerLeft.x * m_SizeFactor);
-        float posY = m_Position.y + m_Size - (lowerLeft.y * m_SizeFactor);
+        m_CameraChangeCounter = Camera::getCurrent()->getChangeCounter();
 
-        pVertices[0].x = posX;
-        pVertices[0].y = posY;
-        pVertices[0].z = 0.0f;
-        pVertices[0].tu = 0.0f;
-        pVertices[0].tv = 1.0f;
-        pVertices[0].dwColor = 0xAAFFFFFF;
-        pVertices[0].rhw = 0.99f;
+        const static float CLIPZ = -0.0f * UITerrain::HEIGHTFACTOR;
 
-        if(upperLeft)
+        D3DXMATRIX matProj;
+        pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
+
+        D3DXMATRIX matView;
+        pDevice->GetTransform(D3DTS_VIEW, &matView);    
+
+        D3DXVECTOR3 rayOrigin,rayDir;    
+
+        D3DVIEWPORT9 viewPort;
+
+        pDevice->GetViewport(&viewPort);
+
+        MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir, 0, 0);
+        if(rayDir.z < 0)
         {
-            posX = m_Position.x + (upperLeft.x * m_SizeFactor);
-            posY = m_Position.y + m_Size - (upperLeft.y * m_SizeFactor);
-
-            /*if(posX < m_Position.x)
-            {
-                posX = m_Position.x;
-            }
-            else if(posX > m_Position.x + m_Size)
-            {
-                posX = m_Position.x + m_Size;
-            }
-
-            if(posY < m_Position.y)
-            {
-                posY = m_Position.y;
-            }
-            else if(posY > m_Position.y + m_Size)
-            {
-                posY = m_Position.y + m_Size;
-            }*/
+            rayDir.z = 0.000001f;
         }
+        D3DXVECTOR3 upperLeft = intersectRay(rayOrigin, rayDir, CLIPZ);
 
-        pVertices[1].x = posX;
-        pVertices[1].y = posY;
-        pVertices[1].z = 0.0f;
-        pVertices[1].tu = 0.0f;
-        pVertices[1].tv = 1.0f;
-        pVertices[1].dwColor = 0xAAFFFFFF;
-        pVertices[1].rhw = 0.99f;
-
-        if(upperRight)
+        MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir, viewPort.Width, 0);
+        if(rayDir.z < 0)
         {
-            posX = m_Position.x + (upperRight.x * m_SizeFactor);
-            posY = m_Position.y + m_Size - (upperRight.y * m_SizeFactor);
-
-            /*if(posX < m_Position.x)
-            {
-                posX = m_Position.x;
-            }
-            else if(posX > m_Position.x + m_Size)
-            {
-                posX = m_Position.x + m_Size;
-            }
-
-            if(posY < m_Position.y)
-            {
-                posY = m_Position.y;
-            }
-            else if(posY > m_Position.y + m_Size)
-            {
-                posY = m_Position.y + m_Size;
-            }*/
+            rayDir.z = 0.000001f;
         }
+        D3DXVECTOR3 upperRight = intersectRay(rayOrigin, rayDir, CLIPZ);
 
-        pVertices[2].x = posX;
-        pVertices[2].y = posY;
-        pVertices[2].z = 0.0f;
-        pVertices[2].tu = 0.0f;
-        pVertices[2].tv = 1.0f;
-        pVertices[2].dwColor = 0xAAFFFFFF;
-        pVertices[2].rhw = 0.99f;
+        MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir,0, viewPort.Height);
+        D3DXVECTOR3 lowerLeft = intersectRay(rayOrigin, rayDir, CLIPZ);
 
-        posX = m_Position.x + (lowerRight.x * m_SizeFactor);
-        posY = m_Position.y + m_Size - (lowerRight.y * m_SizeFactor);
+        MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir,viewPort.Width, viewPort.Height);
+        D3DXVECTOR3 lowerRight = intersectRay(rayOrigin, rayDir, CLIPZ);
 
-        pVertices[3].x = posX;
-        pVertices[3].y = posY;
-        pVertices[3].z = 0.0f;
-        pVertices[3].tu = 0.0f;
-        pVertices[3].tv = 1.0f;
-        pVertices[3].dwColor = 0xAAFFFFFF;
-        pVertices[3].rhw = 0.99f;
+        TRANSLITVERTEX* pVertices = NULL;
+
+        m_pCameraVB->Lock(0, 4 * sizeof(TRANSLITVERTEX), (void**)&pVertices, D3DLOCK_DISCARD);
+        {
+            float posX = m_Position.x + (lowerLeft.x * m_SizeFactor);
+            float posY = m_Position.y + m_Size - (lowerLeft.y * m_SizeFactor);
+
+            pVertices[0].x = posX;
+            pVertices[0].y = posY;
+            pVertices[0].z = 0.0f;
+            pVertices[0].tu = 0.0f;
+            pVertices[0].tv = 1.0f;
+            pVertices[0].dwColor = 0xAAFFFFFF;
+            pVertices[0].rhw = 0.99f;
+
+            if(upperLeft)
+            {
+                posX = m_Position.x + (upperLeft.x * m_SizeFactor);
+                posY = m_Position.y + m_Size - (upperLeft.y * m_SizeFactor);
+
+                /*if(posX < m_Position.x)
+                {
+                    posX = m_Position.x;
+                }
+                else if(posX > m_Position.x + m_Size)
+                {
+                    posX = m_Position.x + m_Size;
+                }
+
+                if(posY < m_Position.y)
+                {
+                    posY = m_Position.y;
+                }
+                else if(posY > m_Position.y + m_Size)
+                {
+                    posY = m_Position.y + m_Size;
+                }*/
+            }
+
+            pVertices[1].x = posX;
+            pVertices[1].y = posY;
+            pVertices[1].z = 0.0f;
+            pVertices[1].tu = 0.0f;
+            pVertices[1].tv = 1.0f;
+            pVertices[1].dwColor = 0xAAFFFFFF;
+            pVertices[1].rhw = 0.99f;
+
+            if(upperRight)
+            {
+                posX = m_Position.x + (upperRight.x * m_SizeFactor);
+                posY = m_Position.y + m_Size - (upperRight.y * m_SizeFactor);
+
+                /*if(posX < m_Position.x)
+                {
+                    posX = m_Position.x;
+                }
+                else if(posX > m_Position.x + m_Size)
+                {
+                    posX = m_Position.x + m_Size;
+                }
+
+                if(posY < m_Position.y)
+                {
+                    posY = m_Position.y;
+                }
+                else if(posY > m_Position.y + m_Size)
+                {
+                    posY = m_Position.y + m_Size;
+                }*/
+            }
+
+            pVertices[2].x = posX;
+            pVertices[2].y = posY;
+            pVertices[2].z = 0.0f;
+            pVertices[2].tu = 0.0f;
+            pVertices[2].tv = 1.0f;
+            pVertices[2].dwColor = 0xAAFFFFFF;
+            pVertices[2].rhw = 0.99f;
+
+            posX = m_Position.x + (lowerRight.x * m_SizeFactor);
+            posY = m_Position.y + m_Size - (lowerRight.y * m_SizeFactor);
+
+            pVertices[3].x = posX;
+            pVertices[3].y = posY;
+            pVertices[3].z = 0.0f;
+            pVertices[3].tu = 0.0f;
+            pVertices[3].tv = 1.0f;
+            pVertices[3].dwColor = 0xAAFFFFFF;
+            pVertices[3].rhw = 0.99f;
+        }
+        m_pCameraVB->Unlock();
     }
-    m_pCameraVB->Unlock();
-
 }
 
 
@@ -422,12 +432,15 @@ D3DXVECTOR3 MiniMap::intersectRay(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir, flo
     return result;
 }
 
-RECT MiniMap::getScreenSize()
+void MiniMap::moveCameraOnClick()
 {
-    RECT screenSize;
-    screenSize.left     = (LONG)m_Position.x;
-    screenSize.top      = (LONG)m_Position.y;
-    screenSize.right    = (LONG)(m_Position.x+m_Size);
-    screenSize.bottom   = (LONG)(m_Position.y+m_Size);
-    return screenSize;
+    if(MouseState::mouseX > m_Position.x && MouseState::mouseX < (m_Position.x + m_Size)
+        && MouseState::mouseY > m_Position.y && MouseState::mouseY < m_Position.y + m_Size)
+    {
+        float moveViewToX = (MouseState::mouseX - m_Position.x) / m_SizeFactor;
+        float moveViewToY = (m_Position.y + m_Size - MouseState::mouseY) / m_SizeFactor;
+        float moveViewToZ = Camera::getCurrent()->getPosition().z;
+
+        Camera::getCurrent()->setPosition(moveViewToX, moveViewToY, moveViewToZ);
+    }
 }

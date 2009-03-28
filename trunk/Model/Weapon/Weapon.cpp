@@ -35,7 +35,7 @@ void Weapon::update(const float deltaT)
             turn = -turn;
         }
 
-        //TODO: Use m_Def.turnSpeed (when it actually has the value) instead of 4.0f
+        //Turnspeed from unit data
         float turnSpeed = m_Def.turnSpeed * deltaT;
         
 #define sgn(a) ((a > 0) ? 1 : (a < 0) ? -1 : 0)
@@ -77,7 +77,7 @@ void Weapon::update(const float deltaT)
             }
         }
 
-        //Shooting (TODO: only enemy) assets or forced targets
+        //Shooting only enemy assets or forced targets
         if((m_pTarget->getTargetType() == Target::ASSET && m_pTarget->getTargetAsset()->getOwner() != m_pHost->getOwner()) 
             || m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
         {

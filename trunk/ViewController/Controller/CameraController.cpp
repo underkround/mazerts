@@ -82,82 +82,72 @@ void CameraController::updateControls(const float frameTime)
     // if there is no real overhead from the getter..
 
     // ===== Keyboard
+    Camera* camera = Camera::getCurrent();
 
     if (KeyboardState::keyDown[m_KeyCameraPanUp])
     {
-        Camera::current->move(KEYBOARD_CAMSPEED * frameTime, 0, 0);
+        camera->move(KEYBOARD_CAMSPEED * frameTime, 0, 0);
     }
     else if (KeyboardState::keyDown[m_KeyCameraPanDown])
     {
-        Camera::current->move(-KEYBOARD_CAMSPEED * frameTime, 0, 0);
+        camera->move(-KEYBOARD_CAMSPEED * frameTime, 0, 0);
     }
     
     if (KeyboardState::keyDown[m_KeyCameraPanRight])
     {
-        Camera::current->move(0, KEYBOARD_CAMSPEED * frameTime, 0);
+        camera->move(0, KEYBOARD_CAMSPEED * frameTime, 0);
     }
     else if (KeyboardState::keyDown[m_KeyCameraPanLeft])
     {
-        Camera::current->move(0, -KEYBOARD_CAMSPEED * frameTime, 0);
+        camera->move(0, -KEYBOARD_CAMSPEED * frameTime, 0);
     }
     
     if (KeyboardState::keyDown[m_KeyCameraZoomIn])
     {
-        Camera::current->move(0, 0, KEYBOARD_CAMSPEED * frameTime);
+        camera->move(0, 0, KEYBOARD_CAMSPEED * frameTime);
     }
     else if (KeyboardState::keyDown[m_KeyCameraZoomOut])
     {
-        Camera::current->move(0, 0, -KEYBOARD_CAMSPEED * frameTime);
+        camera->move(0, 0, -KEYBOARD_CAMSPEED * frameTime);
     }
 
     //Reset camera
     if(KeyboardState::keyDown[m_KeyCameraReset])
     {
-        Camera::current->setZoom(100.0f);
-        Camera::current->setRotation(0.5f * D3DX_PI, 0.9f);
+        camera->setZoom(100.0f);
+        camera->setRotation(0.5f * D3DX_PI, 0.9f);
     }
 
     // ===== Mouse
 
     //move camera by minimap clicks
-    RECT screenSize = UITerrain::getInstance()->getMiniMap()->getScreenSize();
-    if(MouseState::mouseButtonReleased[m_KeyMouseMinimapButton]
-       && MouseState::mouseX > screenSize.left
-       && MouseState::mouseX < screenSize.right
-       && MouseState::mouseY > screenSize.top
-       && MouseState::mouseY < screenSize.bottom)
+    if(MouseState::mouseButtonReleased[m_KeyMouseMinimapButton])
     {
-        //Camera::current->setZoom(100.0f);
-        Camera::current->setRotation(0.5f * D3DX_PI, 0.9f);
-//TODO: laske sijainnit
-        float moveViewToX = (float)MouseState::mouseX;
-        float moveViewToY = (float)MouseState::mouseY;
-        float moveViewToZ = Camera::current->getPosition().z;
-//TODO: selvitä miksi tämä ei tee mitään?
-        Camera::current->setPosition(moveViewToX, moveViewToY, moveViewToZ);
+        UITerrain::getInstance()->getMiniMap()->moveCameraOnClick();
     }
+
 
     //mouse zoom
     if(MouseState::mouseZSpeed)
     {
-        Camera::current->zoom(-MouseState::mouseZSpeed * m_ModifyMouseZoom);
+        camera->zoom(-MouseState::mouseZSpeed * m_ModifyMouseZoom);
     }
 
     //camera mouse panning
     if(MouseState::mouseButton[m_KeyMousePanningButton] && (!m_KeyPanningModifier || KeyboardState::keyDown[m_KeyPanningModifier]))
     {
-        Camera::current->move(MouseState::mouseYSpeed * m_ModifyMouseDragY, -MouseState::mouseXSpeed * m_ModifyMouseDragX, 0);
+        camera->move(MouseState::mouseYSpeed * m_ModifyMouseDragY, -MouseState::mouseXSpeed * m_ModifyMouseDragX, 0);
     }
 
     //Camera pitching
     if(MouseState::mouseButton[m_KeyMouseRotateButton] && (!m_KeyRotateModifier || KeyboardState::keyDown[m_KeyRotateModifier]))
     {
-        Camera::current->rotate(MouseState::mouseXSpeed * 0.05f * m_ModifyMouseRotationX, MouseState::mouseYSpeed * 0.01f * m_ModifyMouseRotationY);
+        camera->rotate(MouseState::mouseXSpeed * 0.05f * m_ModifyMouseRotationX, MouseState::mouseYSpeed * 0.01f * m_ModifyMouseRotationY);
     }
 
     if(KeyboardState::keyReleased[28])
     {
-        Camera::current->m_Test = !Camera::current->m_Test;
+        camera->m_Test = !camera->m_Test;
     }
 
 }
