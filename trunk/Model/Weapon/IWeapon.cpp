@@ -27,6 +27,13 @@ void IWeapon::fire()
     }
     
     ProjectileCollection::addProjectile(pProjectile);
+
+    //Callback for effects
+    if(m_pFiringCallBack)
+    {
+        m_pFiringCallBack->callBack();
+    }
+
     --m_Ammo;
     m_ROFTimer = m_Def.rof;
 }

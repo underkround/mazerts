@@ -525,6 +525,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Common\IUICallback.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Common\JString.cpp"
 					>
 				</File>

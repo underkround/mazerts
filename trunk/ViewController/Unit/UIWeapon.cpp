@@ -3,6 +3,7 @@
 #include "UI3DObjectManager.h"
 #include "../App/I3DObject.h"
 #include <math.h>
+#include "ParticleFactory.h"
 
 bool UIWeapon::Update(float fFrameTime) 
 {
@@ -31,4 +32,20 @@ bool UIWeapon::Update(float fFrameTime)
     }
 
     return m_Alive;
+}
+
+void UIWeapon::callBack()
+{
+    if(m_pBarrel)
+    {
+        D3DXVECTOR3* pPos = (D3DXVECTOR3*)(&m_pBarrel->GetWorldMatrix()._41);
+        D3DXVECTOR3* pDir = (D3DXVECTOR3*)(&m_pBarrel->GetWorldMatrix()._31);
+
+        //TODO: Where to get barrel-length? (The factor here)
+        pPos->x -= pDir->x * 2.0f;
+        pPos->z += pDir->z * 2.0f;
+        pPos->y -= pDir->y * 2.0f;
+        *pDir *= -20.0f;
+        ParticleFactory::createFlame(*pPos, *pDir, 0.1f);
+    }
 }

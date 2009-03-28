@@ -14,8 +14,9 @@
 #include <d3dx9.h>
 #include "../App/C3DObject.h"
 #include "../../Model/Weapon/IWeapon.h"
+#include "../../Model/Common/IUICallback.h"
 
-class UIWeapon : public C3DObject
+class UIWeapon : public C3DObject, IUICallback
 {
 public:
 
@@ -26,6 +27,7 @@ public:
     UIWeapon(IWeapon* pWeapon)
     {
         m_pWeapon = pWeapon;
+        m_pBarrel = NULL;
         m_Alive = true;
     }
 
@@ -50,6 +52,21 @@ public:
      */
     inline void setAlive(bool alive) { m_Alive = alive; }
 
+    /**
+     * Set the object acting as weapon barrel, handles parenting
+     * @param pBarrel Pointer to C3DObject acting as barrel
+     */
+    inline void setBarrel(C3DObject* pBarrel)
+    {
+        m_pBarrel = pBarrel;
+        AddChild(pBarrel);
+    }
+
+    /**
+     * Callback-method for firing
+     */
+    virtual void callBack(void);
+
 protected:
 
 // ===== Members
@@ -68,6 +85,11 @@ protected:
      * Old weapon heading, used to check if updating matrix is necessary
      */
     D3DXVECTOR3 m_OldHeading;
+
+    /**
+     * Pointer to object acting as weapon barrel
+     */
+    C3DObject* m_pBarrel;
 };
 
 #endif //__UIWEAPON_H__

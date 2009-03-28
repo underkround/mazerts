@@ -20,6 +20,7 @@
 //#include "../Asset/IAsset.h"
 #include "../Defs/Defs.h"
 #include "ProjectileCollection.h"
+#include "../Common/IUICallback.h"
 
 class Target;
 class IAsset;
@@ -27,6 +28,7 @@ class IAsset;
 class IWeapon
 {
 public:
+
 
     /**
      * Concrete class types are declared here.
@@ -49,6 +51,7 @@ public:
         m_KillCount = 0;
         m_pHost = NULL;
         m_pTarget = NULL;
+        m_pFiringCallBack = NULL;
         
         m_Ammo = def.clipSize;
         m_ReloadTimer = 0.0f;
@@ -122,6 +125,12 @@ public:
      */
     void setTarget(Target* pTarget);
 
+    /**
+     * Set callback-object to UI-side, callBack() gets called when the weapon fires
+     * @param pObject Pointer to object implementing IUICallback-interface
+     */
+    void setFiringCallback(IUICallback* pObject) { m_pFiringCallBack = pObject; }
+
 protected:
 
     /**
@@ -140,10 +149,15 @@ protected:
 
     Vector3 m_TargetDirection;  //Target direction to turn into
     Target* m_pTarget;          //Weapon target
-    //Reload/ROF-timers
     float m_ReloadTimer;        //Reload-timer
     float m_ROFTimer;           //Rate of fire-timer    
     int m_Ammo;                 //"Clip", after each reload this is filled to m_Def.clipSize
+
+    /**
+     * Pointer to ui-side -object, used to tell UI-weapon that weapon was fired (particle-effects for turrets)
+     */    
+    IUICallback* m_pFiringCallBack;
+
 };
 
 #endif // __IWEAPON_H__

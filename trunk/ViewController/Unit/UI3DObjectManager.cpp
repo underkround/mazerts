@@ -75,6 +75,8 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
         
         //SetUIWeapon takes care of parenting
         pUIUnit->setUIWeapon(pUIWeapon);
+        //Firing callback for effects
+        pUnit->getWeapon()->setFiringCallback((IUICallback*)pUIWeapon);
 
         if(g_ppUnitMeshNames[tag][2] != _T(""))
         {
@@ -85,7 +87,7 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
             m._41 = g_ppUnitMeshOffsets[tag][2][0];
             m._42 = g_ppUnitMeshOffsets[tag][2][1];
             m._43 = g_ppUnitMeshOffsets[tag][2][2];
-            pUIWeapon->AddChild(pObject);
+            pUIWeapon->setBarrel(pObject);
         }
     }
 }

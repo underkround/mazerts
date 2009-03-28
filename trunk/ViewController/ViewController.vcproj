@@ -450,6 +450,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Model\Common\IUICallback.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Model\Common\JString.cpp"
 					>
 				</File>

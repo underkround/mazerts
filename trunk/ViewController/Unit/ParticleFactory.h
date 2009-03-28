@@ -32,6 +32,14 @@ public:
      */
     static void createExplosion(Explosion* pExplosion);
 
+    /**
+     * Small directional flame for muzzle flashes etc
+     * @param pos Reference to D3DXVECTOR3 which contains the position
+     * @param dir Reference to D3DXVECTOR3 which contains the direction
+     * @param lifeTime Lifetime of emitter in seconds
+     */
+    static void createFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir, float lifeTime);
+
 private:
 
     static LPDIRECT3DDEVICE9 pDevice;

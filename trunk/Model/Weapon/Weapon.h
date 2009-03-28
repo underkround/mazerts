@@ -42,6 +42,11 @@ public:
     
 private:
     
+    /**
+     * Used to prevent unnecessary turning calculations (no turning needed)
+     */
+    Vector3 m_OldUnnormalizedTargetDirection;
+    
 };
 
 #endif // __WEAPON_H__

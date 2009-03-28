@@ -13,6 +13,9 @@ void Weapon::update(const float deltaT)
     //      increases counterclockwise, value is between -PI...PI
     Vector3* dir = m_pHost->getDirection();
 
+    //Used to control firing
+    bool pointingInRightDirection = false;
+
     if(m_pTarget)
     {
         Vector3* pos = m_pHost->getPosition();
@@ -20,7 +23,7 @@ void Weapon::update(const float deltaT)
         m_TargetDirection.y = m_pTarget->getTargetY() - pos->y;
 
         //Calculate squared distance before normalizing
-        float targetDistSq = m_TargetDirection.x *  m_TargetDirection.x +  m_TargetDirection.y +  m_TargetDirection.y;
+        float targetDistSq = m_TargetDirection.x *  m_TargetDirection.x +  m_TargetDirection.y *  m_TargetDirection.y;
 
         m_TargetDirection.normalize();
 
@@ -40,7 +43,7 @@ void Weapon::update(const float deltaT)
         
 #define sgn(a) ((a > 0) ? 1 : (a < 0) ? -1 : 0)
         
-        if(fabs(turn) > 0.0001f)
+        if(fabs(turn) > 0.01f)
         {
             float turnAmount = 0.0f;
 
@@ -54,7 +57,11 @@ void Weapon::update(const float deltaT)
             }
             m_Direction.x = cos(currentAngle + turnAmount);
             m_Direction.y = sin(currentAngle + turnAmount);
-        }        
+        }
+        else
+        {
+            pointingInRightDirection = true;
+        }
 
         //Reloading if necessary
         if(m_Ammo == 0)
@@ -89,7 +96,7 @@ void Weapon::update(const float deltaT)
                 if(targetDist < m_Def.range)
                 {
                     //...and turret points in right direction, fire
-                    if(fabs(turn) < 0.01f)
+                    if(pointingInRightDirection)
                     {
                         fire();
                     }
