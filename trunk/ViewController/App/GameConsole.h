@@ -31,12 +31,17 @@ public:
 
     static void input(TCHAR input);
 
-    inline static TCHAR output() { return *m_arrMessage; }
+    static TCHAR* output();
 
     /**
      * Clear messages
      */
     static void clear(void);
+
+    /**
+     * perform command
+     */
+    static void parse();
 
     inline int getSize() { return CONSOLE_BUFFERLENGTH; }
 

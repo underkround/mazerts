@@ -180,7 +180,10 @@ void CTheApp::OnFlip(void)
         {
             GameConsole & co = *GameConsole::getInstance();
             DrawText(100, 400, _T("konsoli p‰‰ll‰"), 0xFFFFFFFF);
-            DrawText(100, 450, (LPCTSTR)co.output(), 0xFFFFFFFF);
+            TCHAR msg[128];
+			_stprintf_s(msg, _T("%s"), (LPCTSTR)co.output());
+            
+            DrawText(100, 450, msg, 0xFFFFFFFF);
         }
 
         TCHAR text[100];

@@ -141,6 +141,7 @@ public:
         if(!m_pHealthBar)
         {
             m_pHealthBar = pHealthBar;
+            //m_pHealthBar->Create(
             AddChild(m_pHealthBar);
         }
     }

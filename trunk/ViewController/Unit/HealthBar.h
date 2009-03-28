@@ -2,6 +2,7 @@
 
 #include <d3dx9.h>
 #include "../App/Vertices.h"
+#include "../App/I3DObject.h"
 #include "../App/C3DObject.h"
 
 class HealthBar : public C3DObject //, IAssetListener
@@ -10,14 +11,14 @@ public:
     HealthBar(void);
     virtual ~HealthBar(void);
 
-    HRESULT create(LPDIRECT3DDEVICE9 pDevice);
+    virtual HRESULT Create(LPDIRECT3DDEVICE9 pDevice);
 
-    void release();
+    virtual void Release();
 
     /**
      * Update the health bar
      * @param fFrametime Time elapsed in frame as seconds
-     * @return False, if no action should take place, true
+     * @return true, if no action should take place, false
      *         if the child should be removed by parent
      */
     virtual bool Update(float fFrametime);
@@ -30,6 +31,10 @@ public:
 
 private:
 
+    VERTEX      			m_pVertices[4];
     LPDIRECT3DVERTEXBUFFER9 m_pVertBuf;
+
+    //health bar's actual location on screen
+    D3DXVECTOR2             m_Position;
 
 };
