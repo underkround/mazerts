@@ -160,15 +160,21 @@ void IAsset::notifyDestroyed()
 // ===== Damage and hitpoints
 
 
-const int IAsset::addModifyHitpoints(const int amount)
+const float IAsset::modifyHitpoints(const float amount)
 {
-    if(amount > 0  &&  (m_Hitpoints + amount) > m_Def.maxHitpoints)
-        m_Hitpoints = m_Def.maxHitpoints;
+    // if we are already dead, no hitpoint modification thank you
+    if(m_State == STATE_DESTROYED)
+        return 0;
+    if(amount > 0  &&  (m_Hitpoints + amount) > (float)m_Def.maxHitpoints)
+        m_Hitpoints = (float)m_Def.maxHitpoints;
     else
         m_Hitpoints += amount;
     // if our hitpoints reached zero, we are dead and enter destroyed state
     if(m_Hitpoints <= 0)
+    {
         changeState(STATE_DESTROYED);
+        m_Hitpoints = 0; // prevent the hitpoints to go below 0
+    }
     // if we are in the state of being build and our hitpoints reach max,
     // we are ready and enter to active state
     else if(m_State == STATE_BEING_BUILT && m_Hitpoints == m_Def.maxHitpoints)
@@ -177,10 +183,10 @@ const int IAsset::addModifyHitpoints(const int amount)
 }
 
 
-int IAsset::handleDamage(Damage* pDamage)
+float IAsset::handleDamage(Damage* pDamage)
 {
     // if we are already dead, there's no point to handle damage
-    if(m_Hitpoints > 0 && m_State != STATE_DESTROYED)
+    if(m_State != STATE_DESTROYED)
     {
         // filter the damage with our armor
         if(m_pArmor)
@@ -188,7 +194,7 @@ int IAsset::handleDamage(Damage* pDamage)
             m_pArmor->filterDamage(pDamage);
         }
         // reduce the hitpoints from our hitpoints
-        addModifyHitpoints(-pDamage->getTotalDamage());
+        modifyHitpoints(-pDamage->getTotalDamage());
     }
     delete pDamage;
     return m_Hitpoints;

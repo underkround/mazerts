@@ -40,7 +40,7 @@ public:
      */
     Damage()
     {
-        ::memset(m_Damage, 0, DAMAGETYPE_AMOUNT * sizeof(int));
+        ::memset(m_Damage, 0, DAMAGETYPE_AMOUNT * sizeof(float));
     }
 
     /**
@@ -48,9 +48,10 @@ public:
      * @param damageValue amount of damage associated with given type
      * @param damageType the type of the damage
      */
-    Damage(int damageValue, DamageType damageType)
+    Damage(DamageType damageType, float damageValue)
     {
-        ::memset(m_Damage, 0, DAMAGETYPE_AMOUNT * sizeof(int));
+        ::memset(m_Damage, 0, DAMAGETYPE_AMOUNT * sizeof(float));
+        setDamage(damageType, damageValue);
     }
 
     /**
@@ -58,7 +59,7 @@ public:
      * @param  type the type indicator for damage value to return
      * @return the damage value for type
      */
-    int getDamage(const int type)
+    float getDamage(const int type)
     {
         return m_Damage[type];
     }
@@ -68,7 +69,7 @@ public:
      * @param type DamageType to set, see enumeration
      * @param value Damage-value
      */
-    void setDamage(const int type, const int value)
+    void setDamage(const int type, const float value)
     {
         m_Damage[type] = value;
     }
@@ -76,10 +77,10 @@ public:
     /**
      * Return the total amount of damage, sum from all types
      */
-    int getTotalDamage(void)
+    float getTotalDamage(void)
     {
         int i;
-        int sum = 0;
+        float sum = 0;
         for(i=0; i<DAMAGETYPE_AMOUNT; i++)
             sum += m_Damage[i];
         return sum;
@@ -90,7 +91,7 @@ private:
     /**
      * Array for damage-values per type (see DamageType-enumeration)
      */
-    int m_Damage[DAMAGETYPE_AMOUNT];
+    float m_Damage[DAMAGETYPE_AMOUNT];
 };
 
 #endif // __DAMAGE_H__

@@ -79,7 +79,7 @@ public:
     {
         for(int i = 0; i < Damage::DAMAGETYPE_AMOUNT; i++)
         {
-            pDamage->setDamage(i, (int) (pDamage->getDamage(i) * m_DamageFactor[i]) );
+            pDamage->setDamage(i, (pDamage->getDamage(i) * m_DamageFactor[i]) );
         }
     }
 

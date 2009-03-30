@@ -164,7 +164,7 @@ public:
 
 // ===== Damage and hitpoints
 
-    inline const int getHitpoints() { return m_Hitpoints; }
+    inline const float getHitpoints() { return m_Hitpoints; }
 
     /**
      * Return the maximum hitpoints for this asset
@@ -181,7 +181,7 @@ public:
      *                  value to reduce
      * @return          hitpoins after modification
      */
-    inline const int addModifyHitpoints(const int amount);
+    inline const float modifyHitpoints(const float amount);
 
     /**
      * When asset receives damage, it's done through this method.
@@ -192,7 +192,7 @@ public:
      *
      * @return  asset's hitpoints after the hit
      */
-    virtual int handleDamage(Damage* d);
+    virtual float handleDamage(Damage* d);
 
 // ===== Position & direction
 
@@ -300,7 +300,7 @@ protected:
 
     Player*         m_pOwner;       // the owner of this unit
 
-    int             m_Hitpoints;    // current hitpoints of the asset
+    float           m_Hitpoints;    // current hitpoints of the asset
 
     Armor*          m_pArmor;       // armor for filtering the received damage
 

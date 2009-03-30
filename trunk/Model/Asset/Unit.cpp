@@ -74,7 +74,15 @@ char Unit::update(const float deltaT)
         // TODO: for now since there is no builder-stuff implemented,
         // we just enter to the active-state. Later it will happen
         // by growing the hitpoints until they reach max
-        addModifyHitpoints(m_Def.maxHitpoints);
+        //modifyHitpoints((float)m_Def.maxHitpoints);
+
+        // for debugging, let's advance our hitpoints so that we will be
+        // around 5 seconds in building state (for the ui-state-implementation)
+        {
+            float hpMod = (float)m_Def.maxHitpoints;
+            hpMod /= 5;
+            modifyHitpoints(hpMod*deltaT);
+        }
         break;
 
     case STATE_PARALYZED:
