@@ -447,7 +447,7 @@ HRESULT ID3DApplication::SetTextFont(LOGFONT* pFont)
         lf.lfClipPrecision = 2;
         lf.lfQuality = 1;
         lf.lfPitchAndFamily = 49;
-        ::_tcscpy_s(lf.lfFaceName, _T("Fixedsys"));
+        ::_tcscpy_s(lf.lfFaceName, _T("Lucida Console"));
     }
 
     // release the previous font
