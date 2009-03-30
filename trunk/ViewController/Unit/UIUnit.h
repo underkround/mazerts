@@ -16,7 +16,8 @@
 #include "../../Model/Asset/Unit.h"
 #include "../../Model/Asset/IAssetListener.h"
 #include "UIWeapon.h"
-#include "HealthBar.h"
+//#include "HealthBar.h"
+#include "HealthBlock.h"
 
 // TODO: remove when implementing real marker object
 #include "../3DDebug/C3DObjectDebug.h"
@@ -37,7 +38,8 @@ public:
         m_Selected = false;
         m_SelectionMarker = NULL;
         m_pUIWeapon = NULL;
-        m_pHealthBar = NULL;
+//        m_pHealthBar = NULL;
+        m_pHealthBlock = NULL;
         //Register as listener to pUnit
         pUnit->registerListener(this);        
     }
@@ -134,6 +136,7 @@ public:
      * Gets the health indicator of the UIUnit
      * @return Pointer to HealthBar
      */
+    /*
     inline HealthBar* getHealthBar() { return m_pHealthBar; }
 
     inline void setHealthBar(HealthBar* pHealthBar)
@@ -145,11 +148,7 @@ public:
             AddChild(m_pHealthBar);
         }
     }
-
-    /**
-     * Creates health bar
-     */
-    //void createHealthBar(LPDIRECT3DDEVICE9 pDevice);
+    */
 
     /**
      * Set base material
@@ -158,6 +157,15 @@ public:
     inline void setBaseMaterial(D3DMATERIAL9* pMaterial)
     {
         GetMeshDataArray()[0].pMaterial = pMaterial;
+    }
+
+    /**
+     * HealthBlock calls this internally
+     */
+    inline void setHealthBlock(HealthBlock* pHealthBlock)
+    {
+        m_pHealthBlock = pHealthBlock;
+        AddChild(pHealthBlock);
     }
 
 protected:
@@ -219,7 +227,8 @@ protected:
     /**
      * pointer to unit's health status indicator
      */
-    HealthBar* m_pHealthBar;
+    //HealthBar* m_pHealthBar;
+    HealthBlock* m_pHealthBlock;
 
 };
 

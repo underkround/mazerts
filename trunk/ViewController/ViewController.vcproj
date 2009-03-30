@@ -758,6 +758,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Unit\HealthBlock.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Unit\HealthBlock.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Unit\MeshFileNames.h"
 					>
 				</File>

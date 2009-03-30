@@ -202,7 +202,10 @@ void UIUnit::handleAssetStateChange(IAsset* pAsset, IAsset::State newState)
 
 void UIUnit::setSelected(bool value)
 {
+    // Obsolete?
+
     // remove old marker object, if any
+    /*
     if(m_SelectionMarker)
     {
         m_SelectionMarker->selfDestruct();
@@ -219,5 +222,17 @@ void UIUnit::setSelected(bool value)
 
         // play sound for selection
         SoundManager::playSound(SOUND_READY, 0.1f, (D3DXVECTOR3)&GetMatrix()._41);
+    }
+    */
+
+    m_Selected = value;
+    if (value)
+    {
+        // set health block visible
+        m_pHealthBlock->SetVisible(true);
+    }
+    else
+    {
+        m_pHealthBlock->SetVisible(false);
     }
 }

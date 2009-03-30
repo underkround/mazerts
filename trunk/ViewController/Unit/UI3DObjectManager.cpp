@@ -8,7 +8,7 @@
 
 #include "MeshFileNames.h"
 #include "PlayerColors.h"
-
+#include "HealthBlock.h"
 
 void UI3DObjectManager::handleCreatedAsset(IAsset* pAsset)
 {
@@ -60,9 +60,12 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
     // change base mesh color to player color
     pUIUnit->setBaseMaterial(getPlayerMaterials(pUnit->getOwner()->getIndex()));
 
+    HealthBlock* hb = new HealthBlock(pUIUnit, 0.5f);
+    hb->Create(getHealthBlockMesh(sqrtf((float)(pUnit->getWidth() * pUnit->getWidth() + pUnit->getHeight() * pUnit->getHeight()))));
+
     //give health indicator to UI unit
-    HealthBar* hb = new HealthBar();
-    pUIUnit->setHealthBar(hb);
+    //HealthBar* hb = new HealthBar();
+    //pUIUnit->setHealthBar(hb);
 
     m_RootObject.AddChild(pUIUnit);
     m_UnitList.pushTail(pUIUnit);
@@ -185,4 +188,19 @@ void UI3DObjectManager::createPlayerMaterials()
 D3DMATERIAL9* UI3DObjectManager::getPlayerMaterials(const unsigned int playerIndex)
 {
     return m_ResourceContainer.FindMaterial(g_ppPlayerMaterialNames[playerIndex]);
+}
+
+LPD3DXMESH UI3DObjectManager::getHealthBlockMesh(const float radius)
+{
+    LPD3DXMESH pMesh;
+    pMesh = m_ResourceContainer.FindMesh(HEALTHBLOCK_MESHNAME);
+    if (!pMesh)
+    {
+//        D3DXCreateBox(m_ResourceContainer.GetDevice(), HEALTHBLOCK_WIDTH, HEALTHBLOCK_HEIGHT, HEALTHBLOCK_DEPTH, &pMesh, NULL);
+        D3DXCreateTorus(m_ResourceContainer.GetDevice(), 0.03f * radius, 0.4f * radius, 8, 16, &pMesh, NULL);
+        // TODO: Catch FAILED?
+        m_ResourceContainer.AddResource(HEALTHBLOCK_MESHNAME, pMesh);
+        pMesh = m_ResourceContainer.FindMesh(HEALTHBLOCK_MESHNAME);
+    }
+    return pMesh;
 }
