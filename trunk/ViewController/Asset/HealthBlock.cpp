@@ -1,12 +1,16 @@
 #include "HealthBlock.h"
 #include "UIAsset.h"
 
-HealthBlock::HealthBlock(UIAsset* pAsset, float yOffset)
+#define HEALTHBLOCK_ROTATIONSPEED 0.5f // comment this line out to disable rotation
+#define HEALTHBLOCK_TORUS_CORNERS 6
+
+HealthBlock::HealthBlock(UIAsset* pAsset, float yOffset, C3DResourceContainer* pContainer)
 {
     m_pAsset = pAsset->getAsset();
     pAsset->setHealthBlock(this);
     SetVisible(false);
     GetMatrix()._42 += yOffset;
+    Create(getHealthBlockMesh(pContainer, pAsset->getHalfSize()));
 }
 
 HealthBlock::~HealthBlock(void)
@@ -62,6 +66,15 @@ bool HealthBlock::Update(float fFrametime)
         if (g > 255) g = 255;
 
         GetMeshDataArray()[0].pMaterial->Diffuse = D3DXCOLOR(0xff000000 + (r << 16) + (g << 8));
+
+        // rotate
+#ifdef HEALTHBLOCK_ROTATIONSPEED
+        D3DXMATRIX matrix;
+        D3DXMATRIX& matrix2 = GetMatrix();
+        D3DXMatrixIdentity(&matrix);
+        D3DXMatrixRotationY(&matrix, fFrametime * HEALTHBLOCK_ROTATIONSPEED);
+        D3DXMatrixMultiply(&matrix2, &matrix2, &matrix);
+#endif
     }
 
     return true;
@@ -71,4 +84,19 @@ void HealthBlock::Render(LPDIRECT3DDEVICE9 pDevice)
 {
     // might be nice to set lighting & whatnot to false
     C3DObject::Render(pDevice);
+}
+
+LPD3DXMESH HealthBlock::getHealthBlockMesh(C3DResourceContainer* pContainer, const float radius)
+{
+    LPD3DXMESH pMesh;
+    pMesh = pContainer->FindMesh(HEALTHBLOCK_MESHNAME);
+    if (!pMesh)
+    {
+//        D3DXCreateBox(m_ResourceContainer.GetDevice(), HEALTHBLOCK_WIDTH, HEALTHBLOCK_HEIGHT, HEALTHBLOCK_DEPTH, &pMesh, NULL);
+        D3DXCreateTorus(pContainer->GetDevice(), 0.1f * radius, 1.1f * radius, 3, HEALTHBLOCK_TORUS_CORNERS, &pMesh, NULL);
+        // TODO: Catch FAILED?
+        pContainer->AddResource(HEALTHBLOCK_MESHNAME, pMesh);
+        pMesh = pContainer->FindMesh(HEALTHBLOCK_MESHNAME);
+    }
+    return pMesh;
 }

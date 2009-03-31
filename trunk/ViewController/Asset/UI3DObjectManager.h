@@ -142,11 +142,6 @@ private:
     void loadMeshes(LPDIRECT3DDEVICE9 pDevice);
 
     /**
-     * Creates (if needed) and returns mesh for health block
-     */
-    LPD3DXMESH getHealthBlockMesh(const float radius);
-
-    /**
      * Root of the C3DObject-hierarchy
      */
     C3DObject m_RootObject;
