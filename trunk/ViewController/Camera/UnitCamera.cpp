@@ -61,8 +61,11 @@ void UnitCamera::update()
 
         D3DXMATRIX& umat = m_pUIUnit->GetMatrix();
 
+        m_Position.x = umat._41;
+        m_Position.y = umat._42;
+        m_Position.z = umat._43 - m_HeightMod;
         D3DXMatrixLookAtLH( &m_View,
-                            &D3DXVECTOR3(umat._41,              umat._42,               umat._43 - m_HeightMod),
+                            &D3DXVECTOR3(m_Position.x,          m_Position.y,           m_Position.z),
                             &D3DXVECTOR3(umat._41-(umat._31*5), umat._42-(umat._32)*5,  umat._43-(umat._33)-2.0f),
                             &D3DXVECTOR3(umat._21,              umat._22,               umat._23));
 

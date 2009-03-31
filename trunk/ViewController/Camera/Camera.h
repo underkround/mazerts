@@ -129,6 +129,15 @@ public:
     virtual inline D3DXVECTOR3& getPosition() { return m_Position; }
 
     /**
+     * Get the position of the camera (the eye-point). Concrete cameras
+     * should keep this vector updated by their real position, since it
+     * is used with sounds etc.
+     */
+    inline const D3DXVECTOR3& getCameraPosition() {
+        return m_Position;
+    }
+
+    /**
      * Returns the current view-matrix
      * @return the view-matrix
      */
