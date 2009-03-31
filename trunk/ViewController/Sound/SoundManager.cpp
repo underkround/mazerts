@@ -1,4 +1,5 @@
 #include "SoundManager.h"
+#include "../Camera/Camera.h"
 
 SoundManager::SoundManager(void)
 {
@@ -211,15 +212,6 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const i
 
 void SoundManager::playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos)
 {
-    // use current camera, or no camera at all if it's not set
-    if(Camera::getCurrent())
-        playSound(type, distort, soundPos, Camera::getCurrent());
-    else
-        playSound(type, distort);
-}
-
-void SoundManager::playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos, Camera* pCamera)
-{
     SoundManager* pInstance = getInstance();
     if (!pInstance->m_SoundsEnabled) return;
 
@@ -240,7 +232,6 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const D
 
     SoundNode* sn = new SoundNode();
     sn->pWave = pWave;
-    sn->pCamera = pCamera;
     sn->position = soundPos;
     sn->duplicate = duplicate;
     if (fixPanVol(sn))
@@ -253,9 +244,16 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const D
 
 bool SoundManager::fixPanVol(SoundNode* sn)
 {
+    Camera* pCamera = Camera::getCurrent();
+    if (!pCamera)
+    {
+        // no current camera
+        return false;
+    }
+
     // calculate distance
     D3DXVECTOR3 distvect;
-    D3DXVec3Subtract(&distvect, &sn->position, &sn->pCamera->getPosition());
+    D3DXVec3Subtract(&distvect, &sn->position, &pCamera->getCameraPosition());//(D3DXVECTOR3*)(&pCamera->getMatrix()._41));
     float dist = D3DXVec3Length(&distvect);
     if (dist > HEARING_DISTANCE) {
         // sound is too far away
@@ -265,7 +263,7 @@ bool SoundManager::fixPanVol(SoundNode* sn)
     // calculate angle
     D3DXVECTOR2 normpos(distvect.x, distvect.y);
     D3DXVec2Normalize(&normpos, &normpos);
-    D3DXVECTOR2 right(sn->pCamera->getMatrix()._11, -sn->pCamera->getMatrix()._12); // second parameter is inversed because of hitler, seems like _21 would work too
+    D3DXVECTOR2 right(pCamera->getMatrix()._11, -pCamera->getMatrix()._12); // second parameter is inversed because of hitler, seems like _21 would work too
     float dot = D3DXVec2Dot(&normpos, &right);
 
     int pan = (int)(2000 * dot);

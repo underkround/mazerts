@@ -17,7 +17,6 @@
 #include "../App/IApplication.h"
 #include "SoundWave.h"
 #include "SoundMP3Player.h"
-#include "../Camera/Camera.h"
 #include "../../Model/Common/DoubleLinkedList.h"
 #include "sounds.h"
 
@@ -65,7 +64,6 @@ public:
     struct SoundNode
     {
         CSoundWave*     pWave;
-        Camera*         pCamera;
         D3DXVECTOR3     position;
         DWORD           duplicate;
     };
@@ -106,11 +104,6 @@ public:
 
 
     /**
-     * Set default camera to use with panning
-     */
-    static void setDefaultCamera(Camera* pCamera);
-
-    /**
      * Plays sound. Uses max volume and center pan.
      * @param type      which sound to play
      * @param distort   how much sound is to be distorted (in percents)
@@ -125,15 +118,6 @@ public:
      * @param pan       left<->right speaker, (-10k = full left, 10k full right)
      */
     static void playSound(const SoundTypes type, const float distort, const int volume, const int pan);
-
-    /**
-     * Plays sound. Calculates panning and volume according to camera & target.
-     * @param type      which sound to play
-     * @param distort   how much sound is to be distorted (in percents)
-     * @param pSoundPos where in world the sound is coming from
-     * @param pCamera   pointer to camera or NULL/unset to use current default camera
-     */
-    static void playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos, Camera* pCamera);
 
     /**
      * Plays sound with default camera, if any. Calculates panning and volume
