@@ -37,7 +37,7 @@ void HealthBlock::Create(LPD3DXMESH pMesh)
 	data.pTexture = NULL;
 	D3DMATERIAL9* material = new D3DMATERIAL9;
 	::memset(material, 0, sizeof(D3DMATERIAL9));
-	material->Diffuse = D3DXCOLOR(0xff00ff00);
+	material->Emissive = D3DXCOLOR(0xff00ff00);
     data.pMaterial = material;
 
 	AddMeshData(data);
@@ -65,7 +65,7 @@ bool HealthBlock::Update(float fFrametime)
         int g = (int)(ratio * 512);
         if (g > 255) g = 255;
 
-        GetMeshDataArray()[0].pMaterial->Diffuse = D3DXCOLOR(0xff000000 + (r << 16) + (g << 8));
+        GetMeshDataArray()[0].pMaterial->Emissive = D3DXCOLOR(0xff000000 + (r << 16) + (g << 8));
 
         // rotate
 #ifdef HEALTHBLOCK_ROTATIONSPEED
