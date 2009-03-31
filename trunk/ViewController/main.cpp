@@ -8,6 +8,7 @@
 #define MAZERTS_DX 1
 
 #include "App/TheApp.h"
+#include "../Model/Common/Config.h"
 
 int APIENTRY WinMain(   HINSTANCE hInstance,
                         HINSTANCE hPreviousInstance,
@@ -17,11 +18,20 @@ int APIENTRY WinMain(   HINSTANCE hInstance,
     HRESULT hres;
     CTheApp    theApp;
 
+    // Load basic config
+    Config& c = *Config::getInstance();
+    c.setFilename("../data/config.ini");
+    c.readFile();
+    int resw    = c.getValueAsInt("screen width",  1024);
+    int resh    = c.getValueAsInt("screen height",   768);
+    int bpp     = c.getValueAsInt("screen bpp",  32);
+    bool windowed = c.getValueAsBool("screen windowed",   true);
+
     // create application
-    hres = theApp.Create(    1024,
-                            768,
-                            32,
-                            TRUE,
+    hres = theApp.Create(   resw,
+                            resh,
+                            bpp,
+                            windowed,
                             _T("Maze Game Engine"),
                             0);
     if (FAILED(hres))
@@ -37,6 +47,5 @@ int APIENTRY WinMain(   HINSTANCE hInstance,
     // run the application
     int retval = theApp.Run();
     theApp.Release();
-
     return retval;
 }

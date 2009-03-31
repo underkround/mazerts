@@ -17,7 +17,7 @@ HRESULT Cursor::create(LPDIRECT3DDEVICE9 pDevice)
     }
 
     //TODO: Get texture from resource container
-    hres = D3DXCreateTextureFromFile(pDevice, _T("cursors3.png"), &m_pTexture);
+    hres = D3DXCreateTextureFromFile(pDevice, _T("../data/textures/cursors3.png"), &m_pTexture);
     if(FAILED(hres))
     {
         return hres;

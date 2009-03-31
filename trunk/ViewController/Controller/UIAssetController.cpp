@@ -57,7 +57,7 @@ void UIAssetController::loadConfiguration(const bool confFileLoaded)
     Config & c = * Config::getInstance();
     if(!confFileLoaded)
     {
-        c.setFilename("controls.ini");
+        c.setFilename("../data/controls.ini");
         c.readFile();
     }
     // mouse buttons

@@ -361,11 +361,19 @@ void GameState::updateControls(const float frameTime)
         DefManager::getInstance()->loadConfigurations();
     }
 
+    // reload config files on the fly
+    /**
+     * Figure out key for this
+    if(KeyboardState::keyReleased[0x25]) // key: K
+    {
+        loadConfiguration();
+    }
+    */
 
     // change the components, testing stuff
     if(KeyboardState::keyReleased[0x25]) // key: K
     {
-        m_pRootContainer->setTransparent(!m_pRootContainer->isTransparent());
+        //m_pRootContainer->setTransparent(!m_pRootContainer->isTransparent());
     }
 
     /*
@@ -455,7 +463,7 @@ void GameState::loadConfiguration()
      */
 
     Config & c = * Config::getInstance();
-    c.setFilename("controls.ini");
+    c.setFilename("../data/controls.ini");
     c.readFile();
 
     c.updateInt("key generate new terrain",         m_KeyGenerateNewTerrain);

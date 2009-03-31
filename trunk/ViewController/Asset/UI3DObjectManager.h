@@ -34,7 +34,7 @@ public:
     {        
         getInstance()->m_ResourceContainer.Create(pDevice);
         getInstance()->loadMeshes(pDevice);
-        Config::getInstance()->setFilename("meshes.ini");
+        Config::getInstance()->setFilename("../Data/meshes.ini");
         Config::getInstance()->readFile();
         getInstance()->createPlayerMaterials();
     }

@@ -277,7 +277,7 @@ HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice)
     }
 
     //TODO: Get texture from resourcecontainer
-    hres = D3DXCreateTextureFromFile(pDevice, _T("grass01.png"), &pInstance->m_pTexture);
+    hres = D3DXCreateTextureFromFile(pDevice, _T("../data/textures/grass01.png"), &pInstance->m_pTexture);
     if(FAILED(hres))
     {
         return hres;
