@@ -13,7 +13,7 @@
 #include "d3dx9.h"
 
 #include "../../Model/Asset/IAssetListener.h"
-#include "../Unit/UIUnit.h"
+#include "../Asset/UIUnit.h"
 #include "../App/I3DObject.h"
 
 class UnitCamera : public Camera, public I3DObject, public IAssetListener

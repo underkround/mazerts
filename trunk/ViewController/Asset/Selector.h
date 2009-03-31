@@ -1,13 +1,13 @@
 /**
- * Mesh and methods for selecting units and terrain with mouse dragging
+ * Mesh and methods for selecting assets and terrain with mouse dragging
  *
- * $Revision$
- * $Date$
- * $Id$
+ * $Revision: 218 $
+ * $Date: 2009-03-26 19:36:13 +0200 (to, 26 maalis 2009) $
+ * $Id: Selector.h 218 2009-03-26 17:36:13Z ezbe $
  */
 
 #include "d3dx9.h"
-#include "UIUnit.h"
+#include "UIAsset.h"
 #include "UI3DObjectManager.h"
 
 #ifndef __SELECTOR_H__
@@ -28,9 +28,9 @@ public:
     struct SELECTION
     {
         /** 
-         * DoubleLinkedList of selected UI-units
+         * DoubleLinkedList of selected UI-assets
          */
-        DoubleLinkedList<UIUnit*> units;
+        DoubleLinkedList<UIAsset*> assets;
 
         /**
          * The two selection points in 3d (terrain points)
@@ -149,7 +149,7 @@ public:
     void render(LPDIRECT3DDEVICE9 pDevice);
 
     /**
-     * Called when the mouse button is released, the selector will return any selected units and
+     * Called when the mouse button is released, the selector will return any selected assets and
      * two D3DXVECTOR3s representing the selected points in terrain and disable the rendering of
      * the selector-mesh
      * @return Pointer to SELECTION

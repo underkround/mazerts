@@ -747,70 +747,78 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Unit"
+				Name="Asset"
 				>
 				<File
-					RelativePath=".\Unit\HealthBar.cpp"
+					RelativePath=".\Asset\HealthBar.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\HealthBar.h"
+					RelativePath=".\Asset\HealthBar.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\HealthBlock.cpp"
+					RelativePath=".\Asset\HealthBlock.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\HealthBlock.h"
+					RelativePath=".\Asset\HealthBlock.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\MeshFileNames.h"
+					RelativePath=".\Asset\MeshFileNames.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\ParticleFactory.cpp"
+					RelativePath=".\Asset\ParticleFactory.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\ParticleFactory.h"
+					RelativePath=".\Asset\ParticleFactory.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\PlayerColors.h"
+					RelativePath=".\Asset\PlayerColors.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\Selector.cpp"
+					RelativePath=".\Asset\Selector.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\Selector.h"
+					RelativePath=".\Asset\Selector.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UI3DObjectManager.cpp"
+					RelativePath=".\Asset\UI3DObjectManager.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UI3DObjectManager.h"
+					RelativePath=".\Asset\UI3DObjectManager.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UIUnit.cpp"
+					RelativePath=".\Asset\UIAsset.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UIUnit.h"
+					RelativePath=".\Asset\UIAsset.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UIWeapon.cpp"
+					RelativePath=".\Asset\UIUnit.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UIWeapon.h"
+					RelativePath=".\Asset\UIUnit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIWeapon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIWeapon.h"
 					>
 				</File>
 			</Filter>

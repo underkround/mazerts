@@ -38,18 +38,18 @@ Selector::SELECTION* Selector::buttonUp()
     }    
    
     //UI-side units
-    DoubleLinkedList<UIUnit*>* unitList = UI3DObjectManager::getInstance()->getUnitList();
+    DoubleLinkedList<UIAsset*>* assetList = UI3DObjectManager::getInstance()->getAssetList();
 
-    ListNode<UIUnit*>* pNode = unitList->headNode();
+    ListNode<UIAsset*>* pNode = assetList->headNode();
 
     while(pNode)
     {
-        D3DXVECTOR2* pPos = (D3DXVECTOR2*)pNode->item->getUnit()->getPosition();
+        D3DXVECTOR2* pPos = (D3DXVECTOR2*)pNode->item->getAsset()->getPosition();
         int x = (int)(pPos->x + pNode->item->getHalfSize());
         int y = (int)(pPos->y + pNode->item->getHalfSize());
         if(x > minX && x < maxX && y > minY && y < maxY)
         {
-            result->units.pushTail(pNode->item);
+            result->assets.pushTail(pNode->item);
         }
 
         pNode = pNode->next;

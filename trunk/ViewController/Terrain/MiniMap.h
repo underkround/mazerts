@@ -12,11 +12,11 @@
 #include <d3dx9.h>
 #include "../App/Vertices.h"
 #include "../../Model/Common/DoubleLinkedList.h"
-#include "../Unit/UiUnit.h"
+#include "../Asset/UIAsset.h"
 #include "../Camera/Camera.h"
 
 //Maximum amount of unit-markers the minimap allocates vertexbuffer for
-#define MINIMAP_MAX_UNITS 2000
+#define MINIMAP_MAX_ASSETS 2000
 
 
 class MiniMap
@@ -57,11 +57,11 @@ public:
     inline void setUpdateInterval(const float interval) { m_UpdateInterval = interval; }
 
     /** 
-     * Updates the unit positions in minimap
-     * @param pUnitList Pointer to list containing the units
+     * Updates the Asset positions in minimap
+     * @param pAssetList Pointer to list containing the units
      * @param deltaTime Time passed since last update in seconds
      */
-    void updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime);
+    void updateAssets(DoubleLinkedList<UIAsset*>* pAssetList, float deltaTime);
 
     /**
      * Updates the camera position in minimap
@@ -126,7 +126,7 @@ private:
     /**
      * Unit-marker vertexbuffer
      */
-    LPDIRECT3DVERTEXBUFFER9 m_pUnitVB;
+    LPDIRECT3DVERTEXBUFFER9 m_pAssetVB;
 
     /**
      * Camera-marker vertexbuffer
@@ -134,9 +134,9 @@ private:
     LPDIRECT3DVERTEXBUFFER9 m_pCameraVB;
 
     /**
-     * Number of unit primitives
+     * Number of Asset primitives
      */
-    int m_UnitPrimitiveCount;
+    int m_AssetPrimitiveCount;
 
     /**
      * Time in seconds between which the minimap is updated

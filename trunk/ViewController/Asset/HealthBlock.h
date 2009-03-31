@@ -4,7 +4,7 @@
 #include "../App/C3DObject.h"
 #include "../../Model/Asset/IAsset.h"
 
-class UIUnit; // forward declaration
+class UIAsset; // forward declaration
 
 static const TCHAR HEALTHBLOCK_MESHNAME[256] = _T("HealthBlockMesh");
 
@@ -17,7 +17,7 @@ public:
      * @param pAsset    what asset's health this is supposed to monitor
      * @param yOffset   what height is this situated
      */
-    HealthBlock(UIUnit* pAsset, float yOffset);
+    HealthBlock(UIAsset* pAsset, float yOffset);
     virtual ~HealthBlock(void);
 
     /**

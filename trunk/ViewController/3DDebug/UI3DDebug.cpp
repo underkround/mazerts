@@ -1,7 +1,7 @@
 #include "UI3DDebug.h"
 #include <d3dx9.h>
 #include "C3DObjectDebug.h"
-#include "../Unit/UI3DObjectManager.h"
+#include "../Asset/UI3DObjectManager.h"
 
 LPDIRECT3DDEVICE9 UI3DDebug::pDevice = NULL;
 

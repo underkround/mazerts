@@ -10,7 +10,7 @@
 #define __UIASSETCONTROLLER_H__
 
 #include "IUIController.h"
-#include "../Unit/Selector.h"
+#include "../Asset/Selector.h"
 #include "../../Model/Command/UnitCommandDispatcher.h"
 #include "../Camera/Camera.h"
 #include "../Camera/UnitCamera.h"
@@ -28,6 +28,14 @@ public:
         IDLE = 0,
         CLICK,
         DRAG
+    };
+
+    // what kind of assets are selected
+    enum SelectedType
+    {
+        NONE = 0,
+        UNIT,
+        BUILDING
     };
 
     UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* pSelector);
@@ -98,7 +106,8 @@ private:
     // TODO: either building command dispatcher, or static (non target) command
     // dispatcher for all assets
 
-    DoubleLinkedList<UIUnit*>   m_SelectedUIUnits;
+    DoubleLinkedList<UIAsset*>  m_SelectedUIAssets;
+    SelectedType                m_SelectedAssetType; // what kind of assets are selected
 
 //    UnitCamera*                 m_pUnitCamera;
     UnitCamera                  m_UnitCamera;

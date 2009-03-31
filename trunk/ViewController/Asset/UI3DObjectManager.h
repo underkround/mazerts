@@ -5,9 +5,9 @@
  * Handles the creation and destruction of the 3d-representations of Assets and
  * manages the object hierarchy.
  *
- * $Revision$
- * $Date$
- * $Id$
+ * $Revision: 242 $
+ * $Date: 2009-03-31 00:27:53 +0300 (ti, 31 maalis 2009) $
+ * $Id: UI3DObjectManager.h 242 2009-03-30 21:27:53Z murgo $
  */
 
 #ifndef __UI3DOBJECTMANAGER_H__
@@ -20,7 +20,7 @@
 #include "../../Model/Common/Config.h"
 
 //FORWARD DECLARATIONS
-class UIUnit;
+class UIAsset;
 
 class UI3DObjectManager : public IAssetCollectionListener
 {
@@ -62,10 +62,10 @@ public:
     inline C3DResourceContainer* getResourceContainer() { return &m_ResourceContainer; }
 
     /**
-     * Gets the list of units within the object manager
-     * @return Pointer to unit list
+     * Gets the list of assets within the object manager
+     * @return Pointer to asset list
      */
-    inline DoubleLinkedList<UIUnit*>* getUnitList() { return &m_UnitList; }
+    inline DoubleLinkedList<UIAsset*>* getAssetList() { return &m_AssetList; }
 
     /** 
      * Releases the children of root-object
@@ -77,12 +77,12 @@ public:
     }
 
     /**
-     * Picks the units with given ray and returns the picked unit (if any)
+     * Picks the assets with given ray and returns the picked Asset (if any)
      * @param rayOrigin  Origin of the ray (world-space)
      * @param rayDir     Direction of the ray (world-space)
-     * @Return UIUnit-pointer to picked unit or NULL if no unit was hit
+     * @Return UIAsset-pointer to picked asset or NULL if no asset was hit
      */
-    static UIUnit* pickUnit(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir);
+    static UIAsset* pickAsset(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir);
 
 //IAssetCollectionListener
     /**
@@ -157,9 +157,10 @@ private:
     C3DResourceContainer m_ResourceContainer;
 
     /**
-     * List of units
+     * List of assets
      */
-    DoubleLinkedList<UIUnit*> m_UnitList;
+    DoubleLinkedList<UIAsset*> m_AssetList;
+
 };
 
 #endif //__UI3DOBJECTMANAGER_H__

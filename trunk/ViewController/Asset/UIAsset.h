@@ -1,53 +1,47 @@
 /**
- * UIUnit
+ * UIAsset
  *
- * Handles the ui 3d-representation of a single unit
+ * Base for UIUnit/UIBuilding
  *
- * $Revision$
- * $Date$
- * $Id$
+ * $Revision: 242 $
+ * $Date: 2009-03-31 00:27:53 +0300 (ti, 31 maalis 2009) $
+ * $Id: UIUnit.h 242 2009-03-30 21:27:53Z murgo $
  */
 
-#ifndef __UIUNIT_H__
-#define __UIUNIT_H__
+#ifndef __UIASSET_H__
+#define __UIASSET_H__
 
 #include <d3dx9.h>
 #include "../App/C3DObject.h"
-#include "../../Model/Asset/Unit.h"
+#include "../../Model/Asset/IAsset.h"
 #include "../../Model/Asset/IAssetListener.h"
-#include "UIWeapon.h"
 //#include "HealthBar.h"
 #include "HealthBlock.h"
+#include "UiWeapon.h"
 
-// TODO: remove when implementing real marker object
-#include "../3DDebug/C3DObjectDebug.h"
-
-class UIUnit : public C3DObject, IAssetListener
+class UIAsset : public C3DObject, IAssetListener
 {
 public:
 
     /**
      * Constructor
-     * @param pUnit Pointer to Model-side unit this UIUnit represents
+     * @param pUnit Pointer to Model-side unit this UIAsset represents
      */
-    UIUnit(Unit* pUnit)
+    UIAsset(IAsset* pAsset)
     {
-        m_pUnit = pUnit;
-        m_HalfSize = pUnit->getWidth() * 0.5f;        
+        m_pAsset = pAsset;
+        m_HalfSize = pAsset->getWidth() * 0.5f;        
         m_Alive = true;
         m_Selected = false;
-        m_SelectionMarker = NULL;
-        m_pUIWeapon = NULL;
-//        m_pHealthBar = NULL;
         m_pHealthBlock = NULL;
         //Register as listener to pUnit
-        pUnit->registerListener(this);        
+        pAsset->registerListener(this);        
     }
 
     /**
      * Destructor
      */
-    virtual ~UIUnit()
+    virtual ~UIAsset()
     {
     }
 
@@ -58,12 +52,6 @@ public:
      *         if the child should be removed by parent
      */
     virtual bool Update(float fFrametime);
-
-    /**
-     * Render the unit
-     * @param pDevice pointer to Direct3D-device to use
-     */
-    virtual void Render(LPDIRECT3DDEVICE9 pDevice);
 
     /**
      * This gets called when the target assets's state changes.
@@ -81,10 +69,6 @@ public:
      */
     virtual void handleAssetReleased(IAsset* pAsset)
     {
-        if(m_pUIWeapon)
-        {
-            m_pUIWeapon->setAlive(false);
-        }
         m_Alive = false;
     };
 
@@ -106,30 +90,9 @@ public:
     /**
      * @return pointer to the model-size unit that this UiUnit represents
      */
-    inline Unit* getUnit()
+    inline IAsset* getAsset()
     {
-        return m_pUnit;
-    }
-
-    /**
-     * Gets the weapon of the UIUnit
-     * @return Pointer to UIWeapon
-     */
-    inline UIWeapon* getUIWeapon() { return m_pUIWeapon; }
-
-    /**
-     * Sets the weapon of the UIUnit and connects the parent-child -relationship
-     * @param pWeapon Pointer to UIWeapon to set for this unit
-     */
-    inline void setUIWeapon(UIWeapon* pUIWeapon) 
-    { 
-        if(m_pUIWeapon)
-        {            
-            //If current weapon exists, it will be destroyed on next update
-            m_pUIWeapon->setAlive(false);
-        }
-        m_pUIWeapon = pUIWeapon; 
-        AddChild(m_pUIWeapon);
+        return m_pAsset;
     }
 
     /**
@@ -164,35 +127,53 @@ public:
      */
     inline void setHealthBlock(HealthBlock* pHealthBlock)
     {
+        if (m_pHealthBlock)
+        {
+            // this might be buggy (doesn't remove from hierarchy), then again
+            // you're not supposed to come here
+            m_pHealthBlock->Release();
+            delete m_pHealthBlock;
+        }
         m_pHealthBlock = pHealthBlock;
         AddChild(pHealthBlock);
     }
 
-protected:
+    inline HealthBlock* getHealthBlock() { return m_pHealthBlock; }
 
     /**
-     * Handles updating the unit-matrix and (if ground unit)
-     * aligns the model to the terrain below it
+     * Gets the weapon of the UIAsset
+     * @return Pointer to UIWeapon
      */
-    void updatePosition();
+    inline UIWeapon* getUIWeapon() { return m_pUIWeapon; }
+
+    /**
+     * Sets the weapon of the UIUnit and connects the parent-child -relationship
+     * @param pWeapon Pointer to UIWeapon to set for this unit
+     */
+    inline void setUIWeapon(UIWeapon* pUIWeapon) 
+    { 
+        if(m_pUIWeapon)
+        {            
+            //If current weapon exists, it will be destroyed on next update
+            m_pUIWeapon->setAlive(false);
+        }
+        m_pUIWeapon = pUIWeapon; 
+        AddChild(m_pUIWeapon);
+    }
+
+protected:
 
 // ===== Members
 
     /**
-     * If set true, this unit is currently selected
+     * If set true, this asset is currently selected
      */
     bool            m_Selected;
 
     /**
-     * TODO: change to regular object when implementing real marker
-     * instead of debug-one
+     * Pointer to Model-side IAsset-instance this is a representation of
      */
-    C3DObjectDebug* m_SelectionMarker;
-
-    /**
-     * Pointer to Model-side Unit-instance this is a representation of
-     */
-    Unit*           m_pUnit;
+    IAsset*         m_pAsset;
 
     /**
      * Half of the actual unit "grid-size", used to offset the model correctly
@@ -205,31 +186,16 @@ protected:
     bool            m_Alive;
 
     /**
-     * Pointer to UIWeapon of this unit
-     */
-    UIWeapon* m_pUIWeapon;
-
-    /**
-     * Used to keep track of terrain changes
-     */
-    unsigned short m_UITerrain_ChangeCounter;
-
-    /**
-     * Used to keep track if unit has moved
-     */
-    D3DXVECTOR3 m_OldPosition;
-
-    /**
-     * Used to keep track if unit has turned
-     */
-    D3DXVECTOR3 m_OldDirection;
-
-    /**
      * pointer to unit's health status indicator
      */
     //HealthBar* m_pHealthBar;
     HealthBlock* m_pHealthBlock;
 
+    /**
+     * Pointer to UIWeapon of this asset
+     */
+    UIWeapon* m_pUIWeapon;
+
 };
 
-#endif //__UIUNIT_H__
+#endif //__UIASSET_H__

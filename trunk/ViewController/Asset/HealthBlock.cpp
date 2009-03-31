@@ -1,9 +1,9 @@
 #include "HealthBlock.h"
-#include "UIUnit.h"
+#include "UIAsset.h"
 
-HealthBlock::HealthBlock(UIUnit* pAsset, float yOffset)
+HealthBlock::HealthBlock(UIAsset* pAsset, float yOffset)
 {
-    m_pAsset = pAsset->getUnit();
+    m_pAsset = pAsset->getAsset();
     pAsset->setHealthBlock(this);
     SetVisible(false);
     GetMatrix()._42 += yOffset;

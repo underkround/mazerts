@@ -11,7 +11,7 @@
 #include "../Input/MouseState.h"
 #include "../Input/KeyboardState.h"
 #include "../Terrain/TerrainIntersection.h"
-#include "../Unit/UI3DObjectManager.h"
+#include "../Asset/UI3DObjectManager.h"
 #include "../Sound/SoundManager.h"
 
 #include "../Camera/UnitCamera.h"
@@ -38,6 +38,8 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_KeyPickModifier = 0;
     m_KeyActionModifier = 0;
     m_KeyActionWhileDragging = false;
+
+    m_SelectedAssetType = NONE;
 
     m_KeyFirstPersonCamera = 46;
 }
@@ -117,9 +119,9 @@ void UIAssetController::updateControls(const float frameTime)
             m_UnitCamera.detach();
             m_pUnitCarryingCamera = NULL;
         }
-        else if(!m_SelectedUIUnits.empty())
+        else if(!m_SelectedUIAssets.empty() && m_SelectedAssetType == UNIT)
         {
-            m_pUnitCarryingCamera = m_SelectedUIUnits.peekHead();
+            m_pUnitCarryingCamera = (UIUnit*)m_SelectedUIAssets.peekHead();
             m_UnitCamera.attach(m_pUnitCarryingCamera);
             Camera::pushTop(&m_UnitCamera);
         }
@@ -130,14 +132,15 @@ void UIAssetController::updateControls(const float frameTime)
 void UIAssetController::clearSelection()
 {
     m_pUnitCommandDispatcher->clearUnits();
-    if(!m_SelectedUIUnits.empty())
+    if(!m_SelectedUIAssets.empty())
     {
-        ListNode<UIUnit*>* node = m_SelectedUIUnits.headNode();
+        ListNode<UIAsset*>* node = m_SelectedUIAssets.headNode();
         while(node) {
             node->item->setSelected(false);
-            node = m_SelectedUIUnits.removeGetNext(node);
+            node = m_SelectedUIAssets.removeGetNext(node);
         }
     }
+    m_SelectedAssetType = NONE;
 }
 
 
@@ -164,18 +167,41 @@ void UIAssetController::onPickRelease(const float frameTime)
     case DRAG:
         {
             Selector::SELECTION* selection = m_pSelector->buttonUp();
-            if(!selection->units.empty())
+            if(!selection->assets.empty())
             {
-                // add the selection to units under control
-                ListNode<UIUnit*>* pNode = selection->units.headNode();
+                // check if selection is buildings or units
+                DoubleLinkedList<UIAsset*> templist;
+
+                ListNode<UIAsset*>* pNode = selection->assets.headNode();
                 while(pNode)
                 {
-                    UIUnit* pUnit = pNode->item;
-                    if(!pUnit->isSelected())
+                   UIAsset* pAsset = pNode->item;
+                   if (pAsset->getAsset()->getAssetType() == IAsset::UNIT)
+                   {
+                        if (m_SelectedAssetType == BUILDING)
+                            templist.release();
+                        m_SelectedAssetType = UNIT;
+                        templist.pushHead(pAsset);
+                   }
+                   else if (m_SelectedAssetType == NONE && pAsset->getAsset()->getAssetType() == IAsset::BUILDING)
+                   {
+                       m_SelectedAssetType = BUILDING;
+                       templist.pushHead(pAsset);
+                   }
+                   pNode = pNode->next;
+                }
+
+                // add the selection to units under control
+                pNode = templist.headNode();
+                while(pNode)
+                {
+                    UIAsset* pAsset = pNode->item;
+                    if(!pAsset->isSelected())
                     {
-                        m_pUnitCommandDispatcher->addUnit(pUnit->getUnit());
-                        pUnit->setSelected(true);
-                        m_SelectedUIUnits.pushHead(pUnit);
+                        if (pAsset->getAsset()->getAssetType() == IAsset::UNIT)
+                            m_pUnitCommandDispatcher->addUnit((Unit*)pAsset->getAsset());
+                        pAsset->setSelected(true);
+                        m_SelectedUIAssets.pushHead(pAsset);
                     }
                     pNode = pNode->next;
                 }
@@ -213,12 +239,21 @@ void UIAssetController::onPickButton(const float frameTime)
                 clearSelection();
             m_TempMouseX = MouseState::mouseX;
             m_TempMouseY = MouseState::mouseY;
-            UIUnit* pUIUnit = UI3DObjectManager::pickUnit(rayOrigin, rayDir);
-            if(pUIUnit && !pUIUnit->isSelected())
+            UIAsset* pUIAsset = UI3DObjectManager::pickAsset(rayOrigin, rayDir);
+            if(pUIAsset && !pUIAsset->isSelected())
             {
-                pUIUnit->setSelected(true);
-                m_pUnitCommandDispatcher->addUnit(pUIUnit->getUnit());
-                m_SelectedUIUnits.pushHead(pUIUnit);
+                pUIAsset->setSelected(true);
+                if (pUIAsset->getAsset()->getAssetType() == IAsset::UNIT)
+                {
+                    m_pUnitCommandDispatcher->addUnit((Unit*)pUIAsset->getAsset());
+                    m_SelectedAssetType = UNIT;
+                }
+                else if (pUIAsset->getAsset()->getAssetType() == IAsset::BUILDING)
+                {
+                    // TODO: Buildingdispatcher
+                    m_SelectedAssetType = BUILDING;
+                }
+                m_SelectedUIAssets.pushHead(pUIAsset);
             }
             m_SelectionState = CLICK;
             break;
@@ -322,11 +357,11 @@ void UIAssetController::onActionRelease(const float frameTime)
         MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir);
 
         // first check if the click hits to asset as target
-        UIUnit* pUIUnit = UI3DObjectManager::pickUnit(rayOrigin, rayDir);
-        if(pUIUnit)
+        UIAsset* pUIAsset = UI3DObjectManager::pickAsset(rayOrigin, rayDir);
+        if(pUIAsset)
         {
             // asset as target
-            m_pUnitCommandDispatcher->getTarget()->setTarget(pUIUnit->getUnit());
+            m_pUnitCommandDispatcher->getTarget()->setTarget(pUIAsset->getAsset());
             m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
             SoundManager::playSound(SOUND_OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
         }

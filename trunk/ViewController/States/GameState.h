@@ -11,8 +11,8 @@
 
 #include "IState.h"
 #include "../App/ID3DApplication.h"
-#include "../Unit/UI3DObjectManager.h"
-#include "../Unit/Selector.h"
+#include "../Asset/UI3DObjectManager.h"
+#include "../Asset/Selector.h"
 #include "../Terrain/UITerrain.h"
 #include "../Camera/Camera.h"
 

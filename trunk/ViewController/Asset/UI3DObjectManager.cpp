@@ -68,7 +68,7 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
     //pUIUnit->setHealthBar(hb);
 
     m_RootObject.AddChild(pUIUnit);
-    m_UnitList.pushTail(pUIUnit);
+    m_AssetList.pushTail(pUIUnit);
 
     if(pUnit->hasWeapon())
     {
@@ -100,15 +100,15 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
 }
 
 
-UIUnit* UI3DObjectManager::pickUnit(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
+UIAsset* UI3DObjectManager::pickAsset(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
 {
 //http://www.toymaker.info/Games/html/picking.html
 
     UI3DObjectManager* pManager = getInstance();
 
-    ListNode<UIUnit*>* node = pManager->m_UnitList.headNode();
+    ListNode<UIAsset*>* node = pManager->m_AssetList.headNode();
     
-    UIUnit* result = NULL;
+    UIAsset* result = NULL;
 
     float dist;
     float smallestDist = 1000000.0f;
@@ -122,21 +122,21 @@ UIUnit* UI3DObjectManager::pickUnit(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
     {
         BOOL hit = false;
 
-        UIUnit* pUnit = node->item;
+        UIAsset* pAsset = node->item;
 
-        pUnit->getAABBVectors(&AABBMin, &AABBMax);
+        pAsset->getAABBVectors(&AABBMin, &AABBMax);
 
         //AABB-culling
         if(D3DXBoxBoundProbe(&AABBMin, &AABBMax, &rayOrigin, &rayDir))
         {
             //Intersection test
-            D3DXMatrixInverse(&inverseMat, NULL, &pUnit->GetMatrix());
+            D3DXMatrixInverse(&inverseMat, NULL, &pAsset->GetMatrix());
 
             D3DXVec3TransformCoord(&rayObjOrigin, &rayOrigin, &inverseMat);
             D3DXVec3TransformNormal(&rayObjDir, &rayDir, &inverseMat);
             D3DXVec3Normalize(&rayObjDir, &rayObjDir);
 
-            D3DXIntersect(pUnit->GetMesh(), &rayObjOrigin, &rayObjDir, &hit, NULL, NULL, NULL, &dist, NULL, NULL);
+            D3DXIntersect(pAsset->GetMesh(), &rayObjOrigin, &rayObjDir, &hit, NULL, NULL, NULL, &dist, NULL, NULL);
 
             if(hit && dist < smallestDist)
             {

@@ -12,11 +12,11 @@
 #include "../../Model/Terrain/Terrain.h"
 #include "../Terrain/UITerrain.h"
 #include "../Input/MouseState.h"
-#include "../Unit/PlayerColors.h"
+#include "../Asset/PlayerColors.h"
 
 MiniMap::MiniMap()
 {
-    m_pUnitVB = NULL;
+    m_pAssetVB = NULL;
     m_pBackVB = NULL;
     m_pCameraVB = NULL;
 
@@ -116,10 +116,10 @@ void MiniMap::release()
         m_pBackVB = NULL;
     }
 
-    if(m_pUnitVB)
+    if(m_pAssetVB)
     {
-        m_pUnitVB->Release();        
-        m_pUnitVB = NULL;
+        m_pAssetVB->Release();        
+        m_pAssetVB = NULL;
     }
 
     if(m_pCameraVB)
@@ -133,16 +133,16 @@ void MiniMap::release()
 HRESULT MiniMap::onDeviceLost()
 {
     HRESULT hres = S_OK;
-    if(m_pUnitVB)
+    if(m_pAssetVB)
     {
-        hres = m_pUnitVB->Release();        
+        hres = m_pAssetVB->Release();        
 
         if(FAILED(hres))
         {
             return hres;
         }
 
-        m_pUnitVB = NULL;
+        m_pAssetVB = NULL;
     }
 
     if(m_pCameraVB)
@@ -164,9 +164,9 @@ HRESULT MiniMap::onRestore(LPDIRECT3DDEVICE9 pDevice)
 {
     HRESULT hres;
 
-    //Unit-marker vertexbuffer
-    hres = pDevice->CreateVertexBuffer(MINIMAP_MAX_UNITS * 3 * sizeof(TRANSLITVERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 
-                                        TRANSLITVERTEX::GetFVF(), D3DPOOL_DEFAULT, &m_pUnitVB, NULL);
+    //Asset-marker vertexbuffer
+    hres = pDevice->CreateVertexBuffer(MINIMAP_MAX_ASSETS * 3 * sizeof(TRANSLITVERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, 
+                                        TRANSLITVERTEX::GetFVF(), D3DPOOL_DEFAULT, &m_pAssetVB, NULL);
 
     if(FAILED(hres))
     {
@@ -321,7 +321,7 @@ void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
 }
 
 
-void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
+void MiniMap::updateAssets(DoubleLinkedList<UIAsset*>* pAssetList, float deltaTime)
 {
     m_UpdateCounter += deltaTime;
 
@@ -329,58 +329,58 @@ void MiniMap::updateUnits(DoubleLinkedList<UIUnit*>* pUnitList, float deltaTime)
     {
         m_UpdateCounter = 0.0f;
 
-        m_UnitPrimitiveCount = pUnitList->count();
+        m_AssetPrimitiveCount = pAssetList->count();
         
-        TRANSLITVERTEX* pUnitVertices;
+        TRANSLITVERTEX* pAssetVertices;
 
-        ListNode<UIUnit*>* pNode = pUnitList->headNode();
+        ListNode<UIAsset*>* pNode = pAssetList->headNode();
 
         //int count = 0;
         const float MARKERSIZE = 3.0f;
         int index = 0;
 
-        m_pUnitVB->Lock(0, m_UnitPrimitiveCount * 3 * sizeof(TRANSLITVERTEX), (void**)&pUnitVertices, D3DLOCK_DISCARD);
+        m_pAssetVB->Lock(0, m_AssetPrimitiveCount * 3 * sizeof(TRANSLITVERTEX), (void**)&pAssetVertices, D3DLOCK_DISCARD);
 
         while(pNode)
         {        
             //TODO: Visibility check (do not mark units that don't show on radar)
             //if(PIIPPOLANVAARILLAOLITALO)
             {
-                D3DXVECTOR2* pos = (D3DXVECTOR2*)pNode->item->getUnit()->getPosition();
+                D3DXVECTOR2* pos = (D3DXVECTOR2*)pNode->item->getAsset()->getPosition();
 
                 //int index = count * 3;
                 float posX = m_Position.x + (pos->x * m_SizeFactor);
                 float posY = m_Position.y + m_Size - (pos->y * m_SizeFactor);
 
-                pUnitVertices[index].x = posX;
-                pUnitVertices[index].y = posY;
-                pUnitVertices[index].z = 0.0f;
-                pUnitVertices[index].tu = 0.5f;
-                pUnitVertices[index].tv = 0.0f;
-                pUnitVertices[index].rhw = 0.999f;
-                pUnitVertices[index++].dwColor = PLAYERCOLORS[pNode->item->getUnit()->getOwner()->getIndex()];
+                pAssetVertices[index].x = posX;
+                pAssetVertices[index].y = posY;
+                pAssetVertices[index].z = 0.0f;
+                pAssetVertices[index].tu = 0.5f;
+                pAssetVertices[index].tv = 0.0f;
+                pAssetVertices[index].rhw = 0.999f;
+                pAssetVertices[index++].dwColor = PLAYERCOLORS[pNode->item->getAsset()->getOwner()->getIndex()];
                 
-                pUnitVertices[index].x = posX - MARKERSIZE;
-                pUnitVertices[index].y = posY - (MARKERSIZE * 2.0f);
-                pUnitVertices[index].z = 0.0f;
-                pUnitVertices[index].tu = 1.0f;
-                pUnitVertices[index].tv = 1.0f;
-                pUnitVertices[index].rhw = 0.999f;
-                pUnitVertices[index++].dwColor = PLAYERCOLORS[pNode->item->getUnit()->getOwner()->getIndex()];
+                pAssetVertices[index].x = posX - MARKERSIZE;
+                pAssetVertices[index].y = posY - (MARKERSIZE * 2.0f);
+                pAssetVertices[index].z = 0.0f;
+                pAssetVertices[index].tu = 1.0f;
+                pAssetVertices[index].tv = 1.0f;
+                pAssetVertices[index].rhw = 0.999f;
+                pAssetVertices[index++].dwColor = PLAYERCOLORS[pNode->item->getAsset()->getOwner()->getIndex()];
 
-                pUnitVertices[index].x = posX + MARKERSIZE;
-                pUnitVertices[index].y = posY - (MARKERSIZE * 2.0f);
-                pUnitVertices[index].z = 0.0f;
-                pUnitVertices[index].tu = 0.0f;
-                pUnitVertices[index].tv = 1.0f;
-                pUnitVertices[index].rhw = 0.999f;
-                pUnitVertices[index++].dwColor = PLAYERCOLORS[pNode->item->getUnit()->getOwner()->getIndex()];
+                pAssetVertices[index].x = posX + MARKERSIZE;
+                pAssetVertices[index].y = posY - (MARKERSIZE * 2.0f);
+                pAssetVertices[index].z = 0.0f;
+                pAssetVertices[index].tu = 0.0f;
+                pAssetVertices[index].tv = 1.0f;
+                pAssetVertices[index].rhw = 0.999f;
+                pAssetVertices[index++].dwColor = PLAYERCOLORS[pNode->item->getAsset()->getOwner()->getIndex()];
 
             }
             pNode = pNode->next;
         }
 
-        m_pUnitVB->Unlock();
+        m_pAssetVB->Unlock();
     }
 }
 
@@ -404,8 +404,8 @@ void MiniMap::render(LPDIRECT3DDEVICE9 pDevice, LPDIRECT3DTEXTURE9 pTexture)
 
     pDevice->SetTexture(0, NULL);
 
-    pDevice->SetStreamSource(0, m_pUnitVB, 0, sizeof(TRANSLITVERTEX));
-    pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, m_UnitPrimitiveCount);
+    pDevice->SetStreamSource(0, m_pAssetVB, 0, sizeof(TRANSLITVERTEX));
+    pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, m_AssetPrimitiveCount);
 
     pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
     pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);

@@ -21,7 +21,7 @@
 
 #include "../Sound/SoundManager.h"
 
-#include "../Unit/ParticleFactory.h"
+#include "../Asset/ParticleFactory.h"
 
 // Controllers
 #include "../Controller/UIAssetController.h"
@@ -251,7 +251,7 @@ bool GameState::update(const float frameTime)
     m_pManager->getRootObject()->Update(frameTime);
 
     //Update minimap
-    m_pUITerrain->getMiniMap()->updateUnits(m_pManager->getUnitList(), frameTime);
+    m_pUITerrain->getMiniMap()->updateAssets(m_pManager->getAssetList(), frameTime);
     m_pUITerrain->getMiniMap()->updateCamera(m_pDevice);
 
     //CURSOR-TEST, REMOVE
