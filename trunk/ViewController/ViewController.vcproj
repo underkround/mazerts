@@ -1034,6 +1034,46 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="UIComponent"
+				>
+				<File
+					RelativePath=".\UIComponent\ComponentCommon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\DummyComponent.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\DummyComponent.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\GridPanel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\GridPanel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\UIComponent.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\UIComponent.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\UIContainer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\UIContainer.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath="..\..\docs\maze.ico"

@@ -12,9 +12,17 @@ int MouseState::mouseXSpeed = 0;
 int MouseState::mouseYSpeed = 0;
 int MouseState::mouseZSpeed = 0;
 
+int MouseState::mouseButtonCount = 0;
+
+bool* MouseState::mouseButtonPressed = NULL;
 bool* MouseState::mouseButton = NULL;
-bool* MouseState::mouseButtonOld = NULL;
 bool* MouseState::mouseButtonReleased = NULL;
+
+int MouseState::mouseButtonPressedBits = 0;
+int MouseState::mouseButtonBits = 0;
+int MouseState::mouseButtonReleasedBits = 0;
+
+bool* MouseState::mouseButtonOld = NULL;
 
 IApplication* MouseState::pApp = NULL;
 
@@ -41,13 +49,16 @@ void MouseState::create(IApplication* pApplication)
     }
 
     DWORD buttons = Input::mouse.GetButtonCount();
+    mouseButtonCount = (int)buttons;
+    mouseButtonPressed = new bool[buttons];
     mouseButton = new bool[buttons];
-    mouseButtonOld = new bool[buttons];
     mouseButtonReleased = new bool[buttons];
+    mouseButtonOld = new bool[buttons];
 
+    ::memset(&mouseButtonPressed[0], 0, buttons);
     ::memset(&mouseButton[0], 0, buttons);
-    ::memset(&mouseButtonOld[0], 0, buttons);
     ::memset(&mouseButtonReleased[0], 0, buttons);
+    ::memset(&mouseButtonOld[0], 0, buttons);
 }
 
 
@@ -59,7 +70,7 @@ void MouseState::update()
         mouseXSpeed = (int)(mouseState.lX * mouseSens);
         mouseYSpeed = (int)(mouseState.lY * mouseSens);
         mouseZSpeed = mouseState.lZ;
- 
+
         mouseX += mouseXSpeed;
         mouseY += mouseYSpeed;
         mouseZ += mouseZSpeed;
@@ -97,27 +108,43 @@ void MouseState::update()
         {
             mouseY = iMaxY;
         }
-        
+
         for (DWORD i = 0; i < Input::mouse.GetButtonCount(); i++)
         { 
             if (Input::mouse.GetButton(i))
             {
+                //Detect the first frame when pressed
+                if(!mouseButton[i])
+                {
+                    mouseButtonPressed[i] = true;
+                    mouseButtonPressedBits |= (1 << i);
+                } else {
+                    mouseButtonPressed[i] = false;
+                    mouseButtonPressedBits &= ~(1 << i);
+                }
                 //Button down
                 mouseButton[i] = true;
                 mouseButtonReleased[i] = false;
+                mouseButtonBits |= (1 << i);
+                mouseButtonReleasedBits &= ~(1 << i);
             }
             else
             {
                 mouseButton[i] = false;
-                
+                mouseButtonPressed[i] = false;
+                mouseButtonBits &= ~(1 << i);
+                mouseButtonPressedBits &= ~(1 << i);
+
                 //Detect button release
                 if(mouseButtonOld[i] == true)
                 {
                     mouseButtonReleased[i] = true;
+                    mouseButtonReleasedBits |= (1 << i);
                 }
                 else
                 {
                     mouseButtonReleased[i] = false;
+                    mouseButtonReleasedBits &= ~(1 << i);
                 }
             }
 

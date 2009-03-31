@@ -20,6 +20,9 @@
 
 #include "../Controller/Cursor.h"
 
+#include "../UIComponent/DummyComponent.h"
+#include "../UIComponent/UIContainer.h"
+
 class GameState : public IState
 {
 public:
@@ -140,6 +143,10 @@ private:
     int m_KeyToggleWireframe;
     int m_KeyTerrainDetailUp;
     int m_KeyTerrainDetailDown;
+
+    UIComponent*    m_pDummy;
+
+    UIContainer*    m_pRootContainer;
 
 };
 

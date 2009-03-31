@@ -75,9 +75,17 @@ public:
     static int mouseXSpeed;
     static int mouseYSpeed;
     static int mouseZSpeed;
+    static int mouseButtonCount;
+    static bool* mouseButtonPressed;    //New mousebutton(s) down. True if the button was pressed
+                                        //after last update, true for one frame only.
     static bool* mouseButton;           //Current mousebutton state, true = pressed
     static bool* mouseButtonReleased;   //Mousebutton state change between last two update-calls, 
                                         //true if the button was released between them
+
+    // bit-versions of the previous values
+    static int mouseButtonPressedBits;
+    static int mouseButtonBits;
+    static int mouseButtonReleasedBits;
 
     /** 
      * Project 2d-mouse position as a ray into 3d-space

@@ -35,6 +35,9 @@
 #include "../3DDebug/UI3DDebug.h"
 
 
+#include "../UIComponent/GridPanel.h"
+
+
 #define KEYBOARD_CAMSPEED 60.0f
 #define MOUSE_CAMSPEED 0.01f
 
@@ -87,7 +90,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     //ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/murgo.bmp");// :P
     pTerrain->initialize(pGenerator);
 
-    pTerrain->setWaterLevel(50); // TODO: imho this is for the terrain generator to decide! move it there?
+//    pTerrain->setWaterLevel(50); // TODO: imho this is for the terrain generator to decide! move it there?
 
     // initialize asset collection
     AssetCollection::create(pTerrain->getSize());
@@ -109,6 +112,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
         AssetFactory::createUnit(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 2, 40+(i * 4), 20+(i % 5) * 4);
     }
 
+    Player* p = PlayerManager::getPlayer(2);
 
     //UI-Terrain
     m_pUITerrain = UITerrain::getInstance();
@@ -152,6 +156,40 @@ HRESULT GameState::create(ID3DApplication* pApplication)
         node = node->next;
     }
 
+    // create standalone component (without container). This will not happen in real situation
+    // (there will be root container for every component) - AND IT "#¤!%! TOOK ME HOURS :D :D
+    // TODO: REMOVEME
+    m_pDummy = new DummyComponent(10, 600, 80, 80);
+
+    // Create the transparent root component
+//    m_pRootContainer = new GridPanel();
+    m_pRootContainer = new UIContainer();
+    m_pRootContainer->setTransparent(true);
+    m_pRootContainer->setPosition(624, 0);
+    m_pRootContainer->setSize(400, 400);
+    m_pRootContainer->setBackgroundStyle(FILLSTYLE_GRADIENT_H);
+    m_pRootContainer->setBackground(0xAACCFF00, 0xAA00CCFF);
+
+    // create few test-components, by no means these are not intented to use this
+    // way later..
+    DummyComponent* dc;
+
+    dc = new DummyComponent(10,10,40,40);
+    dc->setupBouncer();
+    m_pRootContainer->addComponent(dc);
+
+    dc = new DummyComponent(300, 300, 80, 80);
+    dc->setupBouncer();
+    dc->unstealMouseButton(0);
+    dc->stealMouseButton(1);
+    m_pRootContainer->addComponent(dc);
+
+    dc = new DummyComponent(100, 0, 50, 30);
+    dc->setBackground(0xAA151515, 0xFF3F3F3F);
+    dc->setForeground(0xFFF0DFAF);
+    dc->setupTestButton(m_pApp);
+    m_pRootContainer->addComponent(dc);
+
     m_Created = true;
 
     return S_OK;
@@ -174,6 +212,13 @@ void GameState::release()
         node->item->release();
         delete node->item;
         node = m_UIControllers.removeGetNext(node);
+    }
+
+    if(m_pDummy) { m_pDummy->release(); delete m_pDummy; } // TODO: REMOVEME
+    if(m_pRootContainer)
+    {
+        m_pRootContainer->release();
+        delete m_pRootContainer;
     }
 
     // Clear the camera-stack
@@ -226,6 +271,7 @@ bool GameState::update(const float frameTime)
     //Update cursor position and texture
     Cursor::getInstance()->update();
 
+    m_pRootContainer->update(frameTime);
     //Keep running
     return true;
 }
@@ -285,6 +331,9 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
     m_pUITerrain->render(pDevice);
 
+    m_pRootContainer->render(pDevice);
+    m_pDummy->render(pDevice); // REMOVEME
+
     //Antsys models need reverse backface-culling
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
     //pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
@@ -301,18 +350,41 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 
 void GameState::updateControls(const float frameTime)
 {
-    // Controllers
-    ListNode<IUIController*>* node = m_UIControllers.headNode();
-    while(node)
-    {
-        node->item->updateControls(frameTime);
-        node = node->next;
-    }
+    /*
+     * Controls that should always be accessed (cannot be stealed)
+     * should go here.
+     */
 
     // reload def-files on fly
     if(KeyboardState::keyReleased[32]) // key: D
     {
         DefManager::getInstance()->loadConfigurations();
+    }
+
+
+    // change the components, testing stuff
+    if(KeyboardState::keyReleased[0x25]) // key: K
+    {
+        m_pRootContainer->setTransparent(!m_pRootContainer->isTransparent());
+    }
+
+    /*
+     * Controls that should not be run if one of the components steals
+     * the input (mouse stuff, text input) should go below.
+     *
+     * Update components. Components can steal the input (at least the mouse etc)
+     * so if one of they do, we'll exit here
+     */
+    if(m_pDummy->updateControls(frameTime)) return; // TODO: REMOVEME
+    if(m_pRootContainer->updateControls(frameTime))
+        return;
+
+    // Update normal controllers
+    ListNode<IUIController*>* node = m_UIControllers.headNode();
+    while(node)
+    {
+        node->item->updateControls(frameTime);
+        node = node->next;
     }
 
     // Terrain
@@ -370,69 +442,18 @@ void GameState::updateControls(const float frameTime)
         }
     }
 
-/*
-    //Terrain picking test
-    //if(MouseState::mouseButton[m_KeyMousePickButton])
-    if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
-    {
-        D3DXMATRIX matProj;
-        m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
-
-        D3DXMATRIX matView;
-        m_pDevice->GetTransform(D3DTS_VIEW, &matView);
-
-        D3DXVECTOR3 rayOrigin,rayDir;
-
-        MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir);
-
-        UIUnit* pUnit = UI3DObjectManager::pickUnit(rayOrigin, rayDir);
-
-        // if unit selected, give target to it
-        if(m_tmpSelectedUnit)
-        {
-            // TODO: remove after testing single unit moving
-            D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
-            if(pUnit)
-            {
-                m_tmpSelectedUnit->getUnit()->getMovingLogic()->setTarget(new Target(pUnit->getUnit()));
-                m_tmpSelectedUnit = NULL;
-            }
-            else if(hitSquare)
-            {
-                unsigned short targetX = (unsigned short)hitSquare->x;
-                unsigned short targetY = (unsigned short)hitSquare->y;
-                m_tmpSelectedUnit->getUnit()->getMovingLogic()->setTarget(new Target(targetX, targetY, true));
-                // clear selection
-                m_tmpSelectedUnit = NULL;
-                //m_Selector.setPoint(D3DXVECTOR2(hitSquare->x, hitSquare->y));    
-            }
-
-            delete hitSquare;
-        }
-
-        // try to pick unit to control
-        else if(pUnit)
-        {
-            D3DXMATRIX pMat = pUnit->GetMatrix();
-            C3DObject* pObj = (C3DObject*)UI3DDebug::addSphere(0, 2.0f, 0.0f, 1.0f, 1.0f);
-            //Debug-object, added automatically to root
-            m_pManager->getRootObject()->RemoveChild(pObj);
-            pUnit->AddChild(pObj);
-            SoundManager::playSound(SoundManager::READY, 0.1f, (D3DXVECTOR3)&pUnit->GetMatrix()._41, m_pCamera);
-
-            m_tmpSelectedUnit = pUnit; // TODO: remove after testing single unit moving
-        }
-    }
-    else if(MouseState::mouseButtonReleased[m_KeyMousePickButton])
-    {       
-        m_Selector.buttonUp();
-    }
-*/
-
 }
 
 void GameState::loadConfiguration()
 {
+    /*
+     * If you want some confingurations (other than def:s) to be reloaded
+     * at runtime, declare it here.
+     * This method is run on startup, and possibly again in runtime with
+     * hotkey.
+     * Make this the main place to call all necessary updates?
+     */
+
     Config & c = * Config::getInstance();
     c.setFilename("controls.ini");
     c.readFile();

@@ -199,7 +199,7 @@ void CTheApp::OnFlip(void)
         m_TextRow = 0;
         EndText();
 
-        
+
         //Render state
         m_pCurrentState->render(pDevice);
 
