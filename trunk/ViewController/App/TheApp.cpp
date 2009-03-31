@@ -162,7 +162,11 @@ void CTheApp::OnFlip(void)
         //Text drawing
         BeginText();
 
-       
+        // Call those that use this for text rendering
+        Cursor::getInstance()->renderText(this);
+        //TextComponent::renderText();
+
+
         if(m_Help)
         {
             DrawTextRow(_T("Drag with right mouse button pressed to pan view"), 0xFFFFFFFF);

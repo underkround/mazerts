@@ -10,7 +10,7 @@
 
 
 // button used to transfer the focus
-#define MOUSE_FOCUS_BUTTON 0
+//#define MOUSE_FOCUS_BUTTON 0
 
 
 /**

@@ -1046,6 +1046,14 @@
 				Name="UIComponent"
 				>
 				<File
+					RelativePath=".\UIComponent\BasicButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\BasicButton.h"
+					>
+				</File>
+				<File
 					RelativePath=".\UIComponent\ComponentCommon.h"
 					>
 				</File>
@@ -1063,6 +1071,26 @@
 				</File>
 				<File
 					RelativePath=".\UIComponent\GridPanel.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\IButtonListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\RootContainer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\RootContainer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\TextComponent.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\TextComponent.h"
 					>
 				</File>
 				<File

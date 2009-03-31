@@ -30,7 +30,7 @@ public:
     /**
      * @see IUIController
      */
-    virtual void loadConfiguration(const bool confFileLoaded=false);
+    virtual void loadConfigurations();
 
 private:
 

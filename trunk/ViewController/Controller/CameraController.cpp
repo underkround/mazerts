@@ -44,14 +44,10 @@ CameraController::~CameraController()
 }
 
 
-void CameraController::loadConfiguration(const bool confFileLoaded)
+void CameraController::loadConfigurations()
 {
     Config & c = * Config::getInstance();
-    if(!confFileLoaded)
-    {
-        c.setFilename("../data/controls.ini");
-        c.readFile();
-    }
+    // we trust that config files have been loaded when this is called
 
     c.updateInt("camera pan up",    m_KeyCameraPanUp);
     c.updateInt("camera pan down",  m_KeyCameraPanDown);

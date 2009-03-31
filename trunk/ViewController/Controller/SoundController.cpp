@@ -27,14 +27,10 @@ SoundController::~SoundController()
 {
 }
 
-void SoundController::loadConfiguration(const bool confFileLoaded)
+void SoundController::loadConfigurations()
 {
     Config & c = * Config::getInstance();
-    if(!confFileLoaded)
-    {
-        c.setFilename("../data/controls.ini");
-        c.readFile();
-    }
+    // we trust that config files have been loaded when this is called
     c.updateInt("key toggle sound",         m_KeySoundToggle);
     c.updateInt("key toggle music",         m_KeyMusicToggle);
     c.updateInt("key master volume up",     m_KeyVolumeUp);

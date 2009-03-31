@@ -32,7 +32,7 @@ public:
     /**
      * Load configurations from config object
      */
-    virtual void loadConfiguration(const bool confFileLoaded) { };
+    virtual void loadConfigurations() = 0;
 
 };
 

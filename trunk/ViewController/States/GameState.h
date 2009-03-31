@@ -103,7 +103,7 @@ private:
     /**
      * initializes controls
      */
-    void loadConfiguration(void);
+    void loadConfigurations(void);
 
     /**
      * Main application

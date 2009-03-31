@@ -43,7 +43,7 @@
 
 GameState::GameState()
 {
-    loadConfiguration();
+    loadConfigurations();
 
     m_pManager = NULL;
     m_pUITerrain = NULL;
@@ -88,7 +88,10 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     Terrain* pTerrain = Terrain::getInstance();
     AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
     //ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/murgo.bmp");// :P
-    pTerrain->initialize(pGenerator);
+
+    // for zemm's slow computer's local override
+    if(!Config::getInstance()->getValueAsBool("debug skip terrain generating", false))
+        pTerrain->initialize(pGenerator);
 
 //    pTerrain->setWaterLevel(50); // TODO: imho this is for the terrain generator to decide! move it there?
 
@@ -152,7 +155,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     ListNode<IUIController*>* node = m_UIControllers.headNode();
     while(node)
     {
-        node->item->loadConfiguration(true);
+        node->item->loadConfigurations();
         node = node->next;
     }
 
@@ -257,19 +260,25 @@ bool GameState::update(const float frameTime)
     //CURSOR-TEST, REMOVE
     if(MouseState::mouseButton[0])
     {
-       Cursor::getInstance()->setType(Cursor::CURS_ATTACK);
+        Cursor::getInstance()->setType(Cursor::CURS_ATTACK);
+        Cursor::getInstance()->setTooltip(_T("0"), 2);
     }
     else if(MouseState::mouseButton[1])    
     {
         Cursor::getInstance()->setType(Cursor::CURS_SELECT);
+        Cursor::getInstance()->setTooltip(_T("1"), 2);
     }
     else
     {
         Cursor::getInstance()->setType(Cursor::CURS_NORMAL);
     }
+    if(MouseState::mouseButtonReleasedBits)
+    {
+        Cursor::getInstance()->clearTooltip();
+    }
 
     //Update cursor position and texture
-    Cursor::getInstance()->update();
+    Cursor::getInstance()->update(frameTime);
 
     m_pRootContainer->update(frameTime);
     //Keep running
@@ -356,22 +365,21 @@ void GameState::updateControls(const float frameTime)
      */
 
     // reload def-files on fly
+    // reload config files on the fly
     if(KeyboardState::keyReleased[32]) // key: D
     {
         DefManager::getInstance()->loadConfigurations();
+        loadConfigurations();
     }
 
-    // reload config files on the fly
-    /**
-     * Figure out key for this
+    // cursor tooltip test
     if(KeyboardState::keyReleased[0x25]) // key: K
     {
-        loadConfiguration();
+        Cursor::getInstance()->setTooltip(_T("tooltip with key!"), 5);
     }
-    */
 
     // change the components, testing stuff
-    if(KeyboardState::keyReleased[0x25]) // key: K
+    if(KeyboardState::keyReleased[0x3D]) // key: F3
     {
         //m_pRootContainer->setTransparent(!m_pRootContainer->isTransparent());
     }
@@ -452,7 +460,7 @@ void GameState::updateControls(const float frameTime)
 
 }
 
-void GameState::loadConfiguration()
+void GameState::loadConfigurations()
 {
     /*
      * If you want some confingurations (other than def:s) to be reloaded
@@ -466,6 +474,10 @@ void GameState::loadConfiguration()
     c.setFilename("../data/controls.ini");
     c.readFile();
 
+    // optional local override -file (not in source control)
+    c.setFilename("../data/local.ini");
+    c.readFile();
+
     c.updateInt("key generate new terrain",         m_KeyGenerateNewTerrain);
     c.updateInt("key generate passability terrain", m_KeyGeneratePassability);
     c.updateInt("key toggle wireframe",             m_KeyToggleWireframe);
@@ -476,7 +488,7 @@ void GameState::loadConfiguration()
     ListNode<IUIController*>* node = m_UIControllers.headNode();
     while(node)
     {
-        node->item->loadConfiguration(true);
+        node->item->loadConfigurations();
         node = node->next;
     }
 }

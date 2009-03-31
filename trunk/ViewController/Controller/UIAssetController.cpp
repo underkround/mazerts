@@ -52,14 +52,10 @@ UIAssetController::~UIAssetController()
 }
 
 
-void UIAssetController::loadConfiguration(const bool confFileLoaded)
+void UIAssetController::loadConfigurations()
 {
+    // we trust that config files have been loaded when this is called
     Config & c = * Config::getInstance();
-    if(!confFileLoaded)
-    {
-        c.setFilename("../data/controls.ini");
-        c.readFile();
-    }
     // mouse buttons
     c.updateInt("mouse action button",                  m_KeyMouseActionButton);
     c.updateInt("mouse pick button",                    m_KeyMousePickButton);

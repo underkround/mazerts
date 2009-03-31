@@ -1,6 +1,8 @@
 #include "Cursor.h"
 #include "../Input/MouseState.h"
 
+#include "../App/ID3DApplication.h" // for text drawing
+
 const float Cursor::TEXOFFSET = 1.0 / CURS_AMOUNT;
 
 HRESULT Cursor::create(LPDIRECT3DDEVICE9 pDevice)
@@ -26,8 +28,18 @@ HRESULT Cursor::create(LPDIRECT3DDEVICE9 pDevice)
     return S_OK;
 }
 
-HRESULT Cursor::update()
+HRESULT Cursor::update(const float frameTime)
 {
+    // tooltip-autoremove
+    if(m_pTooltip && m_TooltipDowncounter >= 0)
+    {
+        // decrease tooltip counter
+        m_TooltipDowncounter -= frameTime;
+        // check for timeout
+        if(m_TooltipDowncounter <= 0)
+            clearTooltip();
+    }
+
     TRANSLITVERTEX* pVertices = NULL;
 
     HRESULT hres = m_pVB->Lock(0, 0, (void**)&pVertices, D3DLOCK_DISCARD);
@@ -109,3 +121,4 @@ void Cursor::release()
     }
 
 }
+

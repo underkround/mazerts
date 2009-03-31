@@ -54,7 +54,7 @@ public:
     /**
      * @see IUIController
      */
-    virtual void loadConfiguration(const bool confFileLoaded=false);
+    virtual void loadConfigurations();
 
     /**
      * Clear all units under selection
