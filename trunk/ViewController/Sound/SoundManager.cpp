@@ -218,7 +218,7 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const i
     pWave->Play(false, duplicate);
 }
 
-void SoundManager::playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos)
+void SoundManager::playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos, const bool fadeWithDistance)
 {
     SoundManager* pInstance = getInstance();
     if (!pInstance->m_SoundsEnabled) return;
@@ -242,6 +242,7 @@ void SoundManager::playSound(const SoundTypes type, const float distort, const D
     sn->pWave = pWave;
     sn->position = soundPos;
     sn->duplicate = duplicate;
+    sn->fadeWithDistance = fadeWithDistance;
     if (fixPanVol(sn))
     {
         pWave->Play(false, duplicate);
@@ -262,27 +263,32 @@ bool SoundManager::fixPanVol(SoundNode* sn)
     // calculate distance
     D3DXVECTOR3 distvect;
     D3DXVec3Subtract(&distvect, &sn->position, &pCamera->getCameraPosition());//(D3DXVECTOR3*)(&pCamera->getMatrix()._41));
-    float dist = D3DXVec3Length(&distvect);
-    if (dist > HEARING_DISTANCE) {
-        // sound is too far away
-        return false;
+    CSoundWave* pWave = sn->pWave;
+
+    // set volume
+    if (sn->fadeWithDistance)
+    {
+        float dist = D3DXVec3Length(&distvect);
+        if (dist > HEARING_DISTANCE) {
+            // sound is too far away
+            return false;
+        }
+        int volume = 0;
+        int third = (int)(0.33f * HEARING_DISTANCE);
+        if (dist > third)
+            volume = -(int)((dist - third) / (HEARING_DISTANCE >> 1) * 3000);
+        pWave->SetVolume(volume, sn->duplicate);
     }
 
     // calculate angle
     D3DXVECTOR2 normpos(distvect.x, distvect.y);
     D3DXVec2Normalize(&normpos, &normpos);
     D3DXVECTOR2 right(pCamera->getMatrix()._11, -pCamera->getMatrix()._12); // second parameter is inversed because of hitler, seems like _21 would work too
+
     float dot = D3DXVec2Dot(&normpos, &right);
-
     int pan = (int)(2000 * dot);
-    int volume = 0;
-    int third = (int)(0.33f * HEARING_DISTANCE);
-    if (dist > third)
-        volume = -(int)((dist - third) / (HEARING_DISTANCE >> 1) * 3000);
-
-    CSoundWave* pWave = sn->pWave;
     pWave->SetPan(pan, sn->duplicate);
-    pWave->SetVolume(volume, sn->duplicate);
+
     return true;
 }
 

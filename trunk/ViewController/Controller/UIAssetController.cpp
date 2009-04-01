@@ -165,7 +165,6 @@ void UIAssetController::onPickRelease(const float frameTime)
             Selector::SELECTION* selection = m_pSelector->buttonUp();
             if(!selection->assets.empty())
             {
-                SoundManager::playSound(SoundTypes::SOUND_YES, 0.1f);
                 // check if selection is buildings or units
                 DoubleLinkedList<UIAsset*> templist;
 
@@ -190,6 +189,7 @@ void UIAssetController::onPickRelease(const float frameTime)
 
                 // add the selection to units under control
                 pNode = templist.headNode();
+                SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pNode->item->GetMatrix()._41, false);
                 while(pNode)
                 {
                     UIAsset* pAsset = pNode->item;
@@ -240,6 +240,7 @@ void UIAssetController::onPickButton(const float frameTime)
             if(pUIAsset && !pUIAsset->isSelected())
             {
                 pUIAsset->setSelected(true);
+                SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pUIAsset->GetMatrix()._41, false);
                 if (pUIAsset->getAsset()->getAssetType() == IAsset::UNIT)
                 {
                     m_pUnitCommandDispatcher->addUnit((Unit*)pUIAsset->getAsset());
@@ -360,7 +361,7 @@ void UIAssetController::onActionRelease(const float frameTime)
             // asset as target
             m_pUnitCommandDispatcher->getTarget()->setTarget(pUIAsset->getAsset());
             m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
-            SoundManager::playSound(SOUND_ATTACK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
+            SoundManager::playSound(SOUND_ATTACK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()), false);
         }
 
         // secondly check if the click hits to terrain as target
@@ -373,7 +374,7 @@ void UIAssetController::onActionRelease(const float frameTime)
                 unsigned short targetY = (unsigned short)hitSquare->y;
                 m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
                 m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
-                SoundManager::playSound(SOUND_AKNOWLEDGEMENT, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
+                SoundManager::playSound(SOUND_AKNOWLEDGEMENT, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()), false);
                 delete hitSquare;
             }
         }

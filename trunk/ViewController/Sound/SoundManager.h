@@ -66,6 +66,7 @@ public:
         CSoundWave*     pWave;
         D3DXVECTOR3     position;
         DWORD           duplicate;
+        bool            fadeWithDistance;
     };
 
 
@@ -122,11 +123,12 @@ public:
     /**
      * Plays sound with default camera, if any. Calculates panning and volume
      * according to camera & target.
-     * @param type      which sound to play
-     * @param distort   how much sound is to be distorted (in percents)
-     * @param pSoundPos where in world the sound is coming from
+     * @param type          which sound to play
+     * @param distort       how much sound is to be distorted (in percents)
+     * @param pSoundPos     where in world the sound is coming from
+     * @param fadeWithDistance whether to fade sound if it's far
      */
-    static void playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos);
+    static void playSound(const SoundTypes type, const float distort, const D3DXVECTOR3 soundPos, const bool fadeWithDistance);
 
     /**
      * Stops all currently playing sound effects.

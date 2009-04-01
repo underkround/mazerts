@@ -49,6 +49,6 @@ void UIWeapon::callBack()
         *pDir *= -20.0f;
         ParticleFactory::createFlame(*pPos, *pDir, 0.1f);
 
-        SoundManager::playSound(SoundTypes::SOUND_SHOOT, 0.1f, *((D3DXVECTOR3*)&GetMatrix()._41));
+        SoundManager::playSound(SOUND_SHOOT, 0.1f, *((D3DXVECTOR3*)&GetMatrix()._41), true);
     }
 }
