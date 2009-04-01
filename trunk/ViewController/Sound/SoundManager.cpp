@@ -21,15 +21,23 @@ HRESULT SoundManager::create(IApplication* pApp)
     // MOVE ELSEWHERE PLZ
     static const Sound soundsList[] = 
     {
-        {_T("..//data//sounds//explosion.wav"), SOUND_DEBUG},
-        {_T("..//data//sounds//ready.wav"), SOUND_READY},
+        {_T("..//data//sounds//aknowledge1.wav"), SOUND_AKNOWLEDGEMENT},
+        {_T("..//data//sounds//aknowledge2.wav"), SOUND_AKNOWLEDGEMENT},
+        {_T("..//data//sounds//aknowledge3.wav"), SOUND_AKNOWLEDGEMENT},
+        {_T("..//data//sounds//attack1.wav"), SOUND_ATTACK},
+        {_T("..//data//sounds//attack2.wav"), SOUND_ATTACK},
+        {_T("..//data//sounds//complete1.wav"), SOUND_CONSTRUCTION_COMPLETE},
+        {_T("..//data//sounds//complete2.wav"), SOUND_CONSTRUCTION_COMPLETE},
+        {_T("..//data//sounds//explosion1.wav"), SOUND_EXPLOSION},
+        {_T("..//data//sounds//ready1.wav"), SOUND_READY},
+        {_T("..//data//sounds//ready2.wav"), SOUND_READY},
         {_T("..//data//sounds//shoot1.wav"), SOUND_SHOOT},
         {_T("..//data//sounds//shoot2.wav"), SOUND_SHOOT},
         {_T("..//data//sounds//shoot3.wav"), SOUND_SHOOT},
         {_T("..//data//sounds//shoot4.wav"), SOUND_SHOOT},
-        {_T("..//data//sounds//ok1.wav"), SOUND_OK},
-        {_T("..//data//sounds//ok2.wav"), SOUND_OK},
-        {_T("..//data//sounds//no1.wav"), SOUND_NO}
+        {_T("..//data//sounds//yes1.wav"), SOUND_YES},
+        {_T("..//data//sounds//yes2.wav"), SOUND_YES},
+        {_T("..//data//sounds//yes3.wav"), SOUND_YES}
     };
 
     pInstance->m_MusicMap[MUSIC_BACKGROUND] = _T("..//data//music//music.mp3");

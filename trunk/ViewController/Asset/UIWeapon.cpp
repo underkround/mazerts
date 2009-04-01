@@ -4,6 +4,7 @@
 #include "../App/I3DObject.h"
 #include <math.h>
 #include "ParticleFactory.h"
+#include "../Sound/SoundManager.h"
 
 bool UIWeapon::Update(float fFrameTime) 
 {
@@ -47,5 +48,7 @@ void UIWeapon::callBack()
         pPos->y -= pDir->y * 2.0f;
         *pDir *= -20.0f;
         ParticleFactory::createFlame(*pPos, *pDir, 0.1f);
+
+        SoundManager::playSound(SoundTypes::SOUND_SHOOT, 0.1f, *((D3DXVECTOR3*)&GetMatrix()._41));
     }
 }

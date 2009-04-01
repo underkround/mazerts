@@ -14,11 +14,13 @@
  */
 enum SoundTypes 
 {
-    SOUND_DEBUG = 0,
-    SOUND_READY,
+    SOUND_READY = 0,
     SOUND_SHOOT,
-    SOUND_OK,
-    SOUND_NO,
+    SOUND_EXPLOSION,
+    SOUND_AKNOWLEDGEMENT,
+    SOUND_ATTACK,
+    SOUND_CONSTRUCTION_COMPLETE,
+    SOUND_YES,
     __END = 0xff
 };
 

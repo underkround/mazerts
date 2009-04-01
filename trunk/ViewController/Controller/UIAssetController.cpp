@@ -165,6 +165,7 @@ void UIAssetController::onPickRelease(const float frameTime)
             Selector::SELECTION* selection = m_pSelector->buttonUp();
             if(!selection->assets.empty())
             {
+                SoundManager::playSound(SoundTypes::SOUND_YES, 0.1f);
                 // check if selection is buildings or units
                 DoubleLinkedList<UIAsset*> templist;
 
@@ -359,7 +360,7 @@ void UIAssetController::onActionRelease(const float frameTime)
             // asset as target
             m_pUnitCommandDispatcher->getTarget()->setTarget(pUIAsset->getAsset());
             m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
-            SoundManager::playSound(SOUND_OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
+            SoundManager::playSound(SOUND_ATTACK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
         }
 
         // secondly check if the click hits to terrain as target
@@ -372,7 +373,7 @@ void UIAssetController::onActionRelease(const float frameTime)
                 unsigned short targetY = (unsigned short)hitSquare->y;
                 m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
                 m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
-                SoundManager::playSound(SOUND_OK, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
+                SoundManager::playSound(SOUND_AKNOWLEDGEMENT, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()));
                 delete hitSquare;
             }
         }
