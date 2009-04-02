@@ -46,13 +46,17 @@ void UIAsset::setSelected(bool value)
     */
 
     m_Selected = value;
-    if (value)
+
+    if(m_pHealthBlock)
     {
-        // set health block visible
-        m_pHealthBlock->SetVisible(true);
-    }
-    else
-    {
-        m_pHealthBlock->SetVisible(false);
+        if (value)
+        {
+            // set health block visible
+            m_pHealthBlock->SetVisible(true);
+        }
+        else
+        {
+            m_pHealthBlock->SetVisible(false);
+        }
     }
 }

@@ -9,7 +9,7 @@ bool Projectile::update(const float deltaT)
     switch(m_ConcreteType)
     {
         case BULLET:
-            pExplosion = new Explosion(m_TargetX, m_TargetY, 1);
+            pExplosion = new Explosion(m_TargetX, m_TargetY, 1, (float)m_Damage);
             ExplosionCollection::addExplosion(pExplosion);
             return false;
             break;

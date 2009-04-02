@@ -64,7 +64,7 @@ public:
      * This gets called when the asset object is being released & destroyed.
      * This notification will also come through AssetCollection
      * to IAssetCollectionListeners, but if you only need to know
-     * weather this specific unit is being destroyed, use this.
+     * wether this specific unit is being destroyed, use this.
      * @param pAsset    Pointer to the unit that is to be released & deleted
      */
     virtual void handleAssetReleased(IAsset* pAsset)
@@ -160,6 +160,11 @@ public:
         m_pUIWeapon = pUIWeapon; 
         AddChild(m_pUIWeapon);
     }
+
+    /**
+     * Sets the alive-state of the asset
+     */ 
+    inline void setAlive(bool alive) { m_Alive = alive; }
 
 protected:
 

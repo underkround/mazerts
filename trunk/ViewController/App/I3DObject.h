@@ -33,7 +33,7 @@ public:
      * function creates combined matrix from parent&child
      * @param fFrametime application frame time
      * @return True if no action should take place, false if the
-               child removed itself from parent
+               parent should destroy the child
      */
     virtual bool Update(float fFrametime);
 

@@ -42,6 +42,7 @@ public:
         m_TargetX = targetX;
         m_TargetY = targetY;
         m_Damage = def.damage;
+        //TODO: Radius for explosion
         m_FlightTime = 0;
     }
 

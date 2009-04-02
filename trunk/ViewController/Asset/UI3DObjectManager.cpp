@@ -34,6 +34,18 @@ void UI3DObjectManager::handleCreatedAsset(IAsset* pAsset)
 
 void UI3DObjectManager::handleReleasedAsset(IAsset* pAsset)
 {
+    ListNode<UIAsset*>* pNode = m_AssetList.headNode();
+    while(pNode)
+    {
+        if(pNode->item->getAsset() == pAsset)
+        {
+            //pNode->item->Release();
+            //delete pNode->item;
+            m_AssetList.remove(pNode);
+            return;
+        }
+        pNode = pNode->next;
+    }
 }
 
 
@@ -61,7 +73,7 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
     pUIUnit->setBaseMaterial(getPlayerMaterials(pUnit->getOwner()->getIndex()));
 
     // creates healthblock (it automagically adds itself to asset)
-    HealthBlock* hb = new HealthBlock(pUIUnit, 0.5f, &m_ResourceContainer);
+    //HealthBlock* hb = new HealthBlock(pUIUnit, 0.5f, &m_ResourceContainer);
 
     //give health indicator to UI unit
     //HealthBar* hb = new HealthBar();
