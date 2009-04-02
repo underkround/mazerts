@@ -48,6 +48,49 @@ void ParticleFactory::createExplosion(Explosion* pExplosion)
     pManager->getRootObject()->AddChild(pEmitter);
 }
 
+void ParticleFactory::createExplosion(const D3DXVECTOR3& pos, int size)
+{
+    //TODO: Should textures be cached somewhere? (FindTexture iterates through the vector EVERY time a unit fires, an explosion occurs etc...)
+    LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_pTextureNames[BALLTEXTURE]); 
+
+    C3DParticleEmitter* pEmitter = new C3DParticleEmitter(1.0f);
+    pEmitter->Create(1, &pTexture, C3DParticleEmitter::ePARTICLETYPE_BILLBOARD);    
+
+    C3DParticleEmitter::EMIT_PARAMS params;
+	::memset(&params, 0, sizeof(C3DParticleEmitter::EMIT_PARAMS));
+
+	// position
+    params.vPosition.x = pos.x;
+	params.vPosition.y = pos.y;
+    params.vPosition.z = pos.z;
+    params.vPositionSpread = D3DXVECTOR3(0, 0, 0);
+
+	// direction
+	params.vDirection = D3DXVECTOR3(0.0f, 0.0f, -5.0f);
+	params.vDirectionSpread = D3DXVECTOR3(10.0f, 10.0f, 5.0f);
+
+	// color
+	params.cColor = D3DXCOLOR(0.9f, 0.75f, 0.0f, 1.0f);
+	params.cColorSpread = D3DXCOLOR(0.1f, 0.5f, 0.0f, 0.0f);
+
+	params.fLifeTime = 0.5f;
+	params.fLifeTimeSpread = 0.25f;
+
+	params.fSize = 3.0f;
+	params.fSizeSpread = 1.0f;
+
+	params.fWeight = 10.0f;
+	params.fWeightSpread = 3.0f;
+
+    params.dwCount = 20 * size;
+
+    pEmitter->SetFade(TRUE);    
+    pEmitter->SetScale(TRUE);
+    pEmitter->Emit(params);
+
+    pManager->getRootObject()->AddChild(pEmitter);
+}
+
 void ParticleFactory::createFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir, float lifeTime)
 {
     LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_pTextureNames[BALLTEXTURE]); 

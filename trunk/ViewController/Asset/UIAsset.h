@@ -15,7 +15,8 @@
 #include "../App/C3DObject.h"
 #include "../../Model/Asset/IAsset.h"
 #include "../../Model/Asset/IAssetListener.h"
-//#include "HealthBar.h"
+
+#include "ParticleFactory.h"
 #include "HealthBlock.h"
 #include "UiWeapon.h"
 
@@ -70,8 +71,9 @@ public:
     virtual void handleAssetReleased(IAsset* pAsset)
     {
         m_Alive = false;
+        ParticleFactory::createExplosion((D3DXVECTOR3&)m_mWorld._41, 5);
         m_pHealthBlock->kill();
-    };
+    }
 
     /**
      * Activate / Deactivate markers (visual + audio) for selection

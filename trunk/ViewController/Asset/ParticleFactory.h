@@ -33,6 +33,13 @@ public:
     static void createExplosion(Explosion* pExplosion);
 
     /**
+     * Create an explosion at given position with given size
+     * @param pos Reference to D3DXVECTOR3 which contains the position
+     * @param size Explosion size
+     */
+    static void createExplosion(const D3DXVECTOR3& pos, int size);
+
+    /**
      * Small directional flame for muzzle flashes etc
      * @param pos Reference to D3DXVECTOR3 which contains the position
      * @param dir Reference to D3DXVECTOR3 which contains the direction
