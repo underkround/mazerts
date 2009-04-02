@@ -71,7 +71,6 @@ bool HealthBlock::Update(float fFrametime)
 #ifdef HEALTHBLOCK_ROTATIONSPEED
         D3DXMATRIX matrix;
         D3DXMATRIX& matrix2 = GetMatrix();
-        D3DXMatrixIdentity(&matrix);
         D3DXMatrixRotationY(&matrix, fFrametime * HEALTHBLOCK_ROTATIONSPEED);
         D3DXMatrixMultiply(&matrix2, &matrix2, &matrix);
 #endif
@@ -82,7 +81,6 @@ bool HealthBlock::Update(float fFrametime)
 
 void HealthBlock::Render(LPDIRECT3DDEVICE9 pDevice)
 {
-    // might be nice to set lighting & whatnot to false
     C3DObject::Render(pDevice);
 }
 

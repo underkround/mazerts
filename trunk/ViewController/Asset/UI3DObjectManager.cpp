@@ -73,7 +73,7 @@ void UI3DObjectManager::createUnit(Unit *pUnit)
     pUIUnit->setBaseMaterial(getPlayerMaterials(pUnit->getOwner()->getIndex()));
 
     // creates healthblock (it automagically adds itself to asset)
-    //HealthBlock* hb = new HealthBlock(pUIUnit, 0.5f, &m_ResourceContainer);
+    new HealthBlock(pUIUnit, 0.5f, &m_ResourceContainer);
 
     //give health indicator to UI unit
     //HealthBar* hb = new HealthBar();
