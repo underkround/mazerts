@@ -26,7 +26,10 @@ void ExplosionCollection::update(const float deltaTime)
     while(node)
     {
         node->item->update();
-        callBack(node->item);
+        if(callBack)
+        {
+            callBack(node->item);
+        }
         delete node->item;
         node = pExplosionList->removeGetNext(node);
     }

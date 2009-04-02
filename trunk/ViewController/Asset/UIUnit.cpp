@@ -92,9 +92,11 @@ void UIUnit::updatePosition()
             //Update unit matrix
             //Get "right"-vector from crossproduct of direction (around z-axis) and normal, reuse p1 as result
             D3DXVec3Cross(&p1, &normal, dir);
+            D3DXVec3Normalize(&p1, &p1);
 
             //Find new "forward"-vector based on normal and right vector (fixes the z-value), reuse p2 as result
             D3DXVec3Cross(&p2, &normal, &p1);
+            D3DXVec3Normalize(&p2, &p2);
 
             D3DXMatrixIdentity(&m_mLocal);
 
