@@ -81,6 +81,10 @@ public:
 
     ~Target()
     {
+        if(m_TargetAsset)
+        {
+            m_TargetAsset->unregisterListener(this);
+        }
     }
 
     void release()
