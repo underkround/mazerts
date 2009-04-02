@@ -97,7 +97,7 @@ void AssetCollection::updateUnits(const float deltaT)
 {
     ListNode<Unit*>* node;
     ListNode<Unit*>* temp;
-/*    
+
     // release requested from previous frame, if any
     if(!m_UnitReleaseStack.empty())
     {
@@ -108,7 +108,7 @@ void AssetCollection::updateUnits(const float deltaT)
             delete node->item;
             node = m_UnitReleaseStack.removeGetNext(node);
         }
-    }*/
+    }
 
     // update units
     node = units.tailNode();
@@ -122,9 +122,9 @@ void AssetCollection::updateUnits(const float deltaT)
             // delete asset
             notifyAssetReleased(temp->item);
 
-            temp->item->release();
-            delete temp->item;
-            //m_UnitReleaseStack.pushHead(temp->item);
+            //temp->item->release();
+            //delete temp->item;
+            m_UnitReleaseStack.pushHead(temp->item);
 
             // delete node
             units.remove(temp);
