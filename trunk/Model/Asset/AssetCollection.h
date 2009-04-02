@@ -124,6 +124,16 @@ private:
 
     ~AssetCollection();
 
+    /**
+     * Centralized method to clear unit and building-arrays when subject is
+     * destroyed (since this is used in many places, it needs to be updated on
+     * one place only).
+     */
+    static void clearUnitArray(unsigned short posX, unsigned short posY, unsigned short width, unsigned short height);
+    static void clearBuildingArray(unsigned short posX, unsigned short posY, unsigned short width, unsigned short height);
+
+// ===== Members
+
     // these are the main lists to store the units, other datastructures
     // can be implemented to gain speed in searches etc
     static DoubleLinkedList<Unit*>      units;

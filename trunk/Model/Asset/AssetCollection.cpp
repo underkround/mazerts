@@ -61,11 +61,14 @@ void AssetCollection::updateBuildings(const float deltaT)
     // release requested from previous frame, if any
     if(!m_BuildingReleaseStack.empty())
     {
+        Building* b;
         node = m_BuildingReleaseStack.headNode();
         while(node)
         {
-            node->item->release();
-            delete node->item;
+            b = node->item;
+            clearBuildingArray((unsigned short)b->getPosition()->x, (unsigned short)b->getPosition()->y, b->getWidth(), b->getHeight());
+            b->release();
+            delete b;
             node = m_BuildingReleaseStack.removeGetNext(node);
         }
     }
@@ -93,6 +96,7 @@ void AssetCollection::updateBuildings(const float deltaT)
     }
 }
 
+
 void AssetCollection::updateUnits(const float deltaT)
 {
     ListNode<Unit*>* node;
@@ -101,11 +105,14 @@ void AssetCollection::updateUnits(const float deltaT)
     // release requested from previous frame, if any
     if(!m_UnitReleaseStack.empty())
     {
+        Unit* u;
         node = m_UnitReleaseStack.headNode();
         while(node)
         {
-            node->item->release();
-            delete node->item;
+            u = node->item;
+            clearUnitArray((unsigned short)u->getPosition()->x, (unsigned short)u->getPosition()->y, u->getWidth(), u->getHeight());
+            u->release();
+            delete u;
             node = m_UnitReleaseStack.removeGetNext(node);
         }
     }
@@ -154,13 +161,33 @@ void AssetCollection::registerBuilding(Building* b) {
 
 // ===== RELEASING
 
+void AssetCollection::clearUnitArray(unsigned short posX, unsigned short posY, unsigned short width, unsigned short height)
+{
+    for (unsigned short x = 0; x < width; x++)
+        for (unsigned short y = 0; y < height; y++)
+            m_pppUnitArray[y + posY][x + posX] = NULL;
+}
+
+
+void AssetCollection::clearBuildingArray(unsigned short posX, unsigned short posY, unsigned short width, unsigned short height)
+{
+    for (unsigned short x = 0; x < width; x++)
+        for (unsigned short y = 0; y < height; y++)
+            m_pppUnitArray[y + posY][x + posX] = NULL;
+}
+
+
 void AssetCollection::releaseUnit(Unit* u)
 {
     notifyAssetReleased(u);
     units.remove(u);
-    for (unsigned short x = 0; x < u->getWidth(); x++)
+
+    clearUnitArray((unsigned short)u->getPosition()->x, (unsigned short)u->getPosition()->y, u->getWidth(), u->getHeight());
+/*    for (unsigned short x = 0; x < u->getWidth(); x++)
         for (unsigned short y = 0; y < u->getHeight(); y++)
             m_pppUnitArray[y + (unsigned short)u->getPosition()->y][x + (unsigned short)u->getPosition()->x] = NULL;
+*/
+
     delete u;
 }
 
@@ -169,9 +196,13 @@ void AssetCollection::releaseBuilding(Building* b)
 {
     notifyAssetReleased(b);
     buildings.remove(b);
-    for (unsigned short x = 0; x < b->getWidth(); x++)
+
+    clearBuildingArray((unsigned short)b->getPosition()->x, (unsigned short)b->getPosition()->y, b->getWidth(), b->getHeight());
+/*    for (unsigned short x = 0; x < b->getWidth(); x++)
         for (unsigned short y = 0; y < b->getHeight(); y++)
             m_pppBuildingArray[y + (unsigned short)b->getPosition()->y][x + (unsigned short)b->getPosition()->x] = NULL;
+*/
+
     delete b;
 }
 
