@@ -71,6 +71,15 @@ bool HealthBlock::Update(float fFrametime)
 
         GetMeshDataArray()[0].pMaterial->Emissive = D3DXCOLOR(0xff000000 + (r << 16) + (g << 8));
 
+        //D3DXMATRIX &wm = m_pParent->GetParent()->GetWorldMatrix();
+        D3DXMATRIX &wm = GetWorldMatrix();
+        D3DXMATRIX &om = GetMatrix();
+        D3DXMATRIX m;
+        //D3DXMatrixRotationY(&m, D3DX_PI*0.5f);
+        D3DXMatrixRotationY(&m, wm._22);
+        D3DXMatrixMultiply(&om, &om, &m);
+
+/*
         // rotate
 #ifdef HEALTHBLOCK_ROTATIONSPEED
         D3DXMATRIX matrix;
@@ -78,6 +87,7 @@ bool HealthBlock::Update(float fFrametime)
         D3DXMatrixRotationY(&matrix, fFrametime * HEALTHBLOCK_ROTATIONSPEED);
         D3DXMatrixMultiply(&matrix2, &matrix2, &matrix);
 #endif
+*/
     }
 
     return true;
