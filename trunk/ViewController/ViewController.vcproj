@@ -806,6 +806,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Asset\UIBuilding.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIBuilding.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Asset\UIUnit.cpp"
 					>
 				</File>

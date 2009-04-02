@@ -26,7 +26,7 @@ public:
 
     /**
      * Constructor
-     * @param pUnit Pointer to Model-side unit this UIAsset represents
+     * @param pAsset Pointer to Model-side unit this UIAsset represents
      */
     UIAsset(IAsset* pAsset)
     {
@@ -47,7 +47,7 @@ public:
     }
 
     /**
-     * Update the unit
+     * Update the asset
      * @param fFrametime Time elapsed in frame as seconds
      * @return False, if no action should take place, true
      *         if the child should be removed by parent
@@ -91,7 +91,7 @@ public:
     inline const bool isAlive() { return m_Alive; }
 
     /**
-     * Return "halfsize" (offset) of unit
+     * Return "halfsize" (offset) of asset
      */
     inline const float getHalfSize() { return m_HalfSize; }
 

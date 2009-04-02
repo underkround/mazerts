@@ -103,6 +103,14 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     ExplosionCollection::create();
     ExplosionCollection::setCallBack(&ParticleFactory::createExplosion);
 
+    //UI-Terrain
+    m_pUITerrain = UITerrain::getInstance();
+    hres = m_pUITerrain->create(pDevice);
+    if(FAILED(hres))
+    {
+        return hres;
+    }    
+
     //Initialize particlefactory
     ParticleFactory::create(pDevice);
 
@@ -115,15 +123,11 @@ HRESULT GameState::create(ID3DApplication* pApplication)
         AssetFactory::createUnit(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 2, 40+(i * 4), 20+(i % 5) * 4);
     }
 
-    Player* p = PlayerManager::getPlayer(2);
-
-    //UI-Terrain
-    m_pUITerrain = UITerrain::getInstance();
-    hres = m_pUITerrain->create(pDevice);
-    if(FAILED(hres))
+    for(int i = 0; i < 20; i++)
     {
-        return hres;
-    }    
+        AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 51, 100+(i * 20), 100+(i / 5) * 10);
+    }
+
 
     //Selector
     hres = m_Selector.create(pDevice);
@@ -336,7 +340,7 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 {
 
     //Terrain needs normal backface-culling
-    pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+    pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
     m_pUITerrain->render(pDevice);
 
@@ -345,11 +349,11 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 
     //Antsys models need reverse backface-culling
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
-    //pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
     m_pManager->getRootObject()->Render(pDevice);
 
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+    pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     m_Selector.render(pDevice);    
 
     //Draw cursor

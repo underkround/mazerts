@@ -1,6 +1,7 @@
 #include "UI3DObjectManager.h"
 #include "../App/XFileLoader.h"
 #include "UIUnit.h"
+#include "UIBuilding.h"
 
 #include "../../Model/Asset/IAsset.h"
 
@@ -52,7 +53,24 @@ void UI3DObjectManager::handleReleasedAsset(IAsset* pAsset)
 
 void UI3DObjectManager::createBuilding(Building* pBuilding)
 {
-    //TODO: Create UIBuilding from the pBuilding-data and add to hierarchy
+    UIBuilding* pUIBuilding = new UIBuilding(pBuilding);
+
+    //Set bounding box-size, z-value defaults to 4
+    pUIBuilding->setAABBSize(D3DXVECTOR3(pBuilding->getWidth(), pBuilding->getHeight(), 4.0f));
+
+    //Get tag and find mesh-file from container
+    int tag = pBuilding->getTypeTag()-51;
+
+    CXFileLoader::Load(g_ppBuildingMeshNames[tag][0], m_ResourceContainer, pUIBuilding);
+
+    // change base mesh color to player color
+    pUIBuilding->setBaseMaterial(getPlayerMaterials(pBuilding->getOwner()->getIndex()));
+
+    // creates healthblock (it automagically adds itself to asset)
+    new HealthBlock(pUIBuilding, 0.5f, &m_ResourceContainer);
+
+    m_RootObject.AddChild(pUIBuilding);
+    m_AssetList.pushTail(pUIBuilding);
 }
 
 void UI3DObjectManager::createUnit(Unit *pUnit)
@@ -173,6 +191,14 @@ void UI3DObjectManager::loadMeshes(LPDIRECT3DDEVICE9 pDevice)
         CXFileLoader::Load(g_ppUnitMeshNames[i][1], m_ResourceContainer, NULL);
         CXFileLoader::Load(g_ppUnitMeshNames[i][2], m_ResourceContainer, NULL);
     }    
+
+    for(int i = 0; i < NUMBER_OF_BUILDINGS_WITH_MESHES; i++)
+    {
+        CXFileLoader::Load(g_ppBuildingMeshNames[i][0], m_ResourceContainer, NULL);
+        CXFileLoader::Load(g_ppBuildingMeshNames[i][1], m_ResourceContainer, NULL);
+        CXFileLoader::Load(g_ppBuildingMeshNames[i][2], m_ResourceContainer, NULL);
+    }    
+
     //Textures
     LPDIRECT3DTEXTURE9 pTexture = NULL;
 
