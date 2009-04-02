@@ -79,12 +79,6 @@ public:
      */
     virtual DoubleLinkedList<IAsset*>* getVisibleEnemyAssets() = 0;
 
-    /**
-     * Getters and setters for range
-     */
-    inline void setRange(const unsigned int range) { m_Range = range; }
-    inline const unsigned int getRange() { return m_Range; }
-
 protected:
 
     IAsset*                     m_pHost; // Asset this radar is attached to
@@ -95,9 +89,6 @@ protected:
 
     DoubleLinkedList<IAsset*>   m_VisibleAssets; // Visible assets
     DoubleLinkedList<IAsset*>   m_VisibleEnemyAssets; // visible enemy assets
-
-    // TODO: move to RadarDef
-    unsigned int                m_Range; // Range of this radar
 
 };
 

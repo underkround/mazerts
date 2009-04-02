@@ -132,6 +132,12 @@ public:
      */
     inline int getTypeTag()            { return m_Def.tag; }
 
+    /**
+     * Returns the object implementing radar interface
+     * @return Pointer to IAssetRadar
+     */
+    inline IAssetRadar* getRadar() { return m_pRadar; }
+
 // ===== Size
 
     /**
@@ -215,6 +221,9 @@ public:
     inline Vector3* getDirection()  { return &m_Direction; }
     inline short getGridX()         { return (short)m_Position.x; }
     inline short getGridY()         { return (short)m_Position.y; }
+
+    inline unsigned short getCenterGridX()   { return (unsigned short)(m_Position.x + m_Def.width * 0.5f); }
+    inline unsigned short getCenterGridY()   { return (unsigned short)(m_Position.y + m_Def.height * 0.5f); }
 
 // ===== Listeners
 

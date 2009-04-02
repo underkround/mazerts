@@ -4,6 +4,7 @@
  */
 
 #include "Weapon.h"
+#include "../Common/DoubleLinkedList.h"
 #include "../Asset/IAsset.h"
 #include "../Command/Target.h"
 
@@ -15,6 +16,52 @@ void Weapon::update(const float deltaT)
 
     //Used to control firing
     bool pointingInRightDirection = false;
+    
+    //If current target is not asset and does not contain forcing flag, delete it
+    if(m_pTarget)
+    {
+        if(!m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK) || m_pTarget->getTargetType() != Target::ASSET)
+        {
+            m_pTarget->release();
+            delete m_pTarget;
+            m_pTarget = NULL;
+        }
+    }
+
+
+    //If there is no target, ask radar component for any
+    if(!m_pTarget)
+    {
+        DoubleLinkedList<IAsset*>* list = m_pHost->getRadar()->getVisibleEnemyAssets();
+
+        ListNode<IAsset*>* pNode = list->headNode();
+        
+        int ownX = m_pHost->getGridX();
+        int ownY = m_pHost->getGridY();
+        int shortestDist = 10000;
+        IAsset* currentNearest = NULL;
+
+        while(pNode)
+        {
+            int distance = abs(pNode->item->getGridX() - ownX) + abs(pNode->item->getGridY() - ownY);
+            if(distance < shortestDist)
+            {
+                shortestDist = distance;
+
+                if(distance < m_Def.range)
+                {
+                    currentNearest = pNode->item;
+                }
+            }
+            pNode = pNode->next;
+        }
+
+        if(currentNearest != NULL)
+        {
+            m_pTarget = new Target(currentNearest);
+        }
+
+    }
 
     if(m_pTarget)
     {

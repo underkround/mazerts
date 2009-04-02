@@ -8,7 +8,7 @@
 #ifndef __RADAR_H__
 #define __RADAR_H__
 
-#define LIST_UPDATE_FREQUENCY 0.2
+#define LIST_UPDATE_FREQUENCY 0.2f
 
 #include "IAssetRadar.h"
 #include "IAsset.h"
@@ -20,6 +20,7 @@ public:
 
     Radar(RadarDef& def) : IAssetRadar(DEFAULT, def)
     {
+        m_ListsUpdateCounter = 0.0f;
     }
 
     virtual ~Radar()
@@ -51,7 +52,7 @@ private:
 
     bool    m_VisibleListNeedRefreshing;            // guess
     bool    m_VisibleEnemyListNeedRefreshing;       // guess
-    float   m_ListsLastUpdated;                     // when lists were last updated
+    float   m_ListsUpdateCounter;                   // Counter for list updating
 
 };
 
