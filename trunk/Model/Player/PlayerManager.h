@@ -31,6 +31,18 @@ public:
             Player* p = new Player(i);
             pInstance->m_arrPlayers.push_back(p);
         }
+        
+        // set everyone as enemy
+        for (int i = 0; i < playerCount + 1; i++)
+        {
+            Player* p = pInstance->m_arrPlayers[i];
+            for (int j = 0; j < playerCount + 1; j++)
+            {
+                if (j == i) continue;
+                Player* p2 = pInstance->m_arrPlayers[j];
+                p->setEnemies(p->getEnemies() | p2->getId());
+            }
+        }
     }
 
     /**
