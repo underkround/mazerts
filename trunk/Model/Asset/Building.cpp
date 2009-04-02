@@ -37,6 +37,6 @@ void Building::release()
 
 char Building::update(const float deltaT)
 {
-    std::cout << "building (iid " << m_IID << ") update\n";
+    //std::cout << "building (iid " << m_IID << ") update\n";
     return RESULT_OK;
 }

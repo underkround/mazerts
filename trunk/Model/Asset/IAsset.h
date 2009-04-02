@@ -145,8 +145,8 @@ public:
      * they are mainly left here for debugging & backwards compability
      * with old test-code etc.
      */
-    inline void setWidth(const unsigned char width)     { m_Def.width = width; }
-    inline void setHeight(const unsigned char height)   { m_Def.height = height; }
+//    inline void setWidth(const unsigned char width)     { m_Def.width = width; }
+//    inline void setHeight(const unsigned char height)   { m_Def.height = height; }
 
     /**
      * Getters for unit's size properties

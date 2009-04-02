@@ -118,14 +118,15 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     PlayerManager::create(2);
 
     //TEST
-    for(int i = 0; i < 20; i++)
+
+    for(int i = 0; i < 1; i++)
     {
         AssetFactory::createUnit(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 2, 40+(i * 4), 20+(i % 5) * 4);
     }
 
-    for(int i = 0; i < 20; i++)
+    for(int i = 0; i < 10; i++)
     {
-        AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 51, 100+(i * 20), 100+(i / 5) * 10);
+        AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 51, 20+(i * 20), 100+(i % 5) * 10);
     }
 
 
@@ -250,7 +251,8 @@ bool GameState::update(const float frameTime)
 {
     updateControls(frameTime);
 
-    //Updating the actual game logic    
+    //Updating the actual game logic
+    AssetCollection::updateBuildings(frameTime);
     AssetCollection::updateUnits(frameTime);
     ProjectileCollection::update(frameTime);
     ExplosionCollection::update(frameTime);

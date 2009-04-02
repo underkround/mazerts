@@ -131,7 +131,6 @@ void IAsset::unregisterListener(IAssetListener* listener)
 
 void IAsset::notifyStateChanged()
 {
-    /*
     if(m_pListeners)
     {
         ListNode<IAssetListener*>* node = m_pListeners.headNode();
@@ -141,7 +140,6 @@ void IAsset::notifyStateChanged()
             node = node->next;
         }
     }
-    */
 }
 
 void IAsset::notifyDestroyed()
