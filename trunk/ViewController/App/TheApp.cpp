@@ -361,6 +361,7 @@ void CTheApp::handleConfig()
     c.setFilename("../data/controls.ini");
     c.readFile();
 
+    //NOTE! values used here are loaded in program Main() method
     bool sounds = c.getValueAsBool("sound enabled", true);
     bool music  = c.getValueAsBool("music enabled", true);
     int svol    = c.getValueAsInt("master volume",  0);

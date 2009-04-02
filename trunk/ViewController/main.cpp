@@ -15,9 +15,6 @@ int APIENTRY WinMain(   HINSTANCE hInstance,
                         LPSTR strCmdLine,
                         int iShowCmd)
 {
-    HRESULT hres;
-    CTheApp    theApp;
-
     // Load basic config
     Config& c = *Config::getInstance();
     c.setFilename("../data/config.ini");
@@ -26,6 +23,9 @@ int APIENTRY WinMain(   HINSTANCE hInstance,
     int resh    = c.getValueAsInt("screen height",   768);
     int bpp     = c.getValueAsInt("screen bpp",  32);
     bool windowed = c.getValueAsBool("screen windowed",   true);
+
+    HRESULT hres;
+    CTheApp    theApp;
 
     // create application
     hres = theApp.Create(   resw,
