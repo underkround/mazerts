@@ -61,7 +61,7 @@ struct RadarDef //: public BaseDef
     int tag; // id for definition
     int concreteType; // concrete type for the class to implement this
 
-    float losRange;
+    float range;
 };
 
 

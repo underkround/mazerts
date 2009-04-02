@@ -80,8 +80,6 @@ void DefManager::loadConfigurations()
     c->readFile();
     c->setFilename("../data/defs/resourcers.ini");
     c->readFile();
-    c->setFilename("../data/defs/radars.ini");
-    c->readFile();
 
     // Load all declared asset definitions
     Config::ValueNode* node = c->getNode("def declarations", "declared assets");
@@ -136,7 +134,9 @@ bool DefManager::loadAssetDef(int tag)
     // load component definitions for asset
     int t;
 
-    t = c->getValueAsInt(tags, "asset radar tag");
+//    t = c->getValueAsInt(tags, "asset radar tag");
+    // radar goes in same section with asset -> same id 
+    t = c->getValueAsInt(tags, d->tag);
     if(t && loadRadarDef(t))
         d->pDefRadar = getRadarDef(t);
     else
@@ -363,7 +363,7 @@ bool DefManager::loadRadarDef(int tag)
     d->concreteType = type;
 
     // load values
-    // TODO
+    d->range        = c->getValueAsFloat(   tags, "radar range", 10.0f);
 
     // store if new
     if(isNew)
