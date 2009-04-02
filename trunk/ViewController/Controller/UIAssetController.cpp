@@ -16,6 +16,8 @@
 
 #include "../Camera/UnitCamera.h"
 
+#include "../../Model/Asset/AssetCollection.h"
+
 UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* pSelector)
 {
     m_pUnitCommandDispatcher = new UnitCommandDispatcher(NULL); // TODO: use actual player-object
@@ -42,6 +44,8 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_SelectedAssetType = NONE;
 
     m_KeyFirstPersonCamera = 46;
+
+    AssetCollection::registerListener(this);
 }
 
 
@@ -76,6 +80,7 @@ void UIAssetController::loadConfigurations()
 
 void UIAssetController::release()
 {
+    AssetCollection::unregisterListener(this);
     if(m_pUnitCarryingCamera)
         Camera::popTop();
     m_UnitCamera.detach();
@@ -380,4 +385,23 @@ void UIAssetController::onActionRelease(const float frameTime)
         }
     }
     m_ActionState = IDLE;
+}
+
+
+
+void UIAssetController::handleReleasedAsset(IAsset* instance)
+{
+    // check if we have asset selected that is to be released
+    ListNode<UIAsset*>* node = m_SelectedUIAssets.headNode();
+    while(node)
+    {
+        if(node->item->getAsset() == instance)
+        {
+            // found it
+            m_pUnitCommandDispatcher->removeAsset(node->item->getAsset());
+            m_SelectedUIAssets.remove(node);
+            return;
+        }
+        node = node->next;
+    }
 }

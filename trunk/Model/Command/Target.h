@@ -235,7 +235,6 @@ public:
         m_TargetY = m_TargetAsset->getGridY();
         m_TargetAsset = NULL;
         m_TargetType = COORDINATE;
-        int i = 5 + 5; // FOR DEBUG BREAKPOINT
     }
 
     /** 

@@ -38,6 +38,11 @@ public:
 // ===== Subject control - subject is asset currently under control
 
     /**
+     * Remove asset from selection
+     */
+    void removeAsset(IAsset* asset);
+
+    /**
      * Add asset that is meant to handle the command.
      * Used when player adds asset to control, or selects
      * multiple assets (call clearSubjects() first for new selection).

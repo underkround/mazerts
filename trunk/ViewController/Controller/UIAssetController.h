@@ -12,6 +12,7 @@
 #include "IUIController.h"
 #include "../Asset/Selector.h"
 #include "../../Model/Command/UnitCommandDispatcher.h"
+#include "../../Model/Asset/IAssetCollectionListener.h" // for listenin of destroyed assets that might be selected
 #include "../Camera/Camera.h"
 #include "../Camera/UnitCamera.h"
 #include "../../Model/Common/Config.h"
@@ -19,7 +20,7 @@
 #include "d3d9.h"
 
 
-class UIAssetController : public IUIController
+class UIAssetController : public IUIController, public IAssetCollectionListener
 {
 public:
 
@@ -60,6 +61,18 @@ public:
      * Clear all units under selection
      */
     void clearSelection();
+
+// ===== AssetCollectionListener methods
+
+    virtual void handleCreatedAsset(IAsset* instance)
+    {
+        // not needed
+    }
+
+    /**
+     * Check if we have released asset selected
+     */
+    virtual void handleReleasedAsset(IAsset* instance);
 
 private:
 

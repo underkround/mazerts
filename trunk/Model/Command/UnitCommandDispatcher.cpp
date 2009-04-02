@@ -29,6 +29,19 @@ Target* UnitCommandDispatcher::getTarget() {
 */
 }
 
+void UnitCommandDispatcher::removeAsset(IAsset* asset)
+{
+    switch(asset->getAssetType())
+    {
+    case IAsset::UNIT:
+        m_Units.remove((Unit*)asset);
+        break;
+    case IAsset::BUILDING:
+        // m_Buildings.remove((Building*)asset); // TODO
+        break;
+    }
+}
+
 
 void UnitCommandDispatcher::addUnit(Unit* unit)
 {
