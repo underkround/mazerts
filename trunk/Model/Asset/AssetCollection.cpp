@@ -16,6 +16,9 @@
 DoubleLinkedList<Unit*>     AssetCollection::units      = DoubleLinkedList<Unit*>();
 DoubleLinkedList<Building*> AssetCollection::buildings  = DoubleLinkedList<Building*>();
 
+DoubleLinkedList<Unit*>     AssetCollection::m_UnitReleaseStack     = DoubleLinkedList<Unit*>();
+DoubleLinkedList<Building*> AssetCollection::m_BuildingReleaseStack = DoubleLinkedList<Building*>();
+
 DoubleLinkedList<IAssetCollectionListener*> AssetCollection::listeners = DoubleLinkedList<IAssetCollectionListener*>();
 
 Unit***         AssetCollection::m_pppUnitArray         = NULL;
@@ -52,8 +55,23 @@ void AssetCollection::create(const unsigned int mapSize)
 
 void AssetCollection::updateBuildings(const float deltaT)
 {
-    ListNode<Building*>* node = buildings.tailNode();
+    ListNode<Building*>* node;
     ListNode<Building*>* temp;
+
+    // release requested from previous frame, if any
+    if(!m_BuildingReleaseStack.empty())
+    {
+        node = m_BuildingReleaseStack.headNode();
+        while(node)
+        {
+            node->item->release();
+            delete node->item;
+            node = m_BuildingReleaseStack.removeGetNext(node);
+        }
+    }
+
+    // update buildings
+    node = buildings.tailNode();
     while(node)
     {
         if(node->item->update(deltaT) == IAsset::RESULT_DELETEME)
@@ -63,9 +81,11 @@ void AssetCollection::updateBuildings(const float deltaT)
             node = node->prev;
             // delete asset
             notifyAssetReleased(temp->item);
-            temp->item->release();
-            delete temp->item;
-            // delete node
+
+            //temp->item->release();
+            //delete temp->item;
+            m_BuildingReleaseStack.pushHead(temp->item);
+
             buildings.remove(temp);
         }
         else
@@ -75,8 +95,23 @@ void AssetCollection::updateBuildings(const float deltaT)
 
 void AssetCollection::updateUnits(const float deltaT)
 {
-    ListNode<Unit*>* node = units.tailNode();
+    ListNode<Unit*>* node;
     ListNode<Unit*>* temp;
+    
+    // release requested from previous frame, if any
+    if(!m_UnitReleaseStack.empty())
+    {
+        node = m_UnitReleaseStack.headNode();
+        while(node)
+        {
+            node->item->release();
+            delete node->item;
+            node = m_UnitReleaseStack.removeGetNext(node);
+        }
+    }
+
+    // update units
+    node = units.tailNode();
     while(node)
     {
         if(node->item->update(deltaT) == IAsset::RESULT_DELETEME)
@@ -86,8 +121,11 @@ void AssetCollection::updateUnits(const float deltaT)
             node = node->prev;
             // delete asset
             notifyAssetReleased(temp->item);
-            temp->item->release();
-            delete temp->item;
+
+            //temp->item->release();
+            //delete temp->item;
+            m_UnitReleaseStack.pushHead(temp->item);
+
             // delete node
             units.remove(temp);
         }

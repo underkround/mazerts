@@ -135,6 +135,11 @@ private:
     static Building***                  m_pppBuildingArray;
     static unsigned short               m_MapSize; // used to delete arrays
 
+    // assets to be released, waiting here for one frame
+    // to avoid broken pointers with compicated update-chain-hell
+    static DoubleLinkedList<Unit*>      m_UnitReleaseStack;
+    static DoubleLinkedList<Building*>  m_BuildingReleaseStack;
+
 // ===== OBSERVER FUNCTIONALITY
 
     // list of registered listeners

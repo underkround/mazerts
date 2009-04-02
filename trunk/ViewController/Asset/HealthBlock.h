@@ -33,6 +33,11 @@ public:
     virtual void Release();
 
     /**
+     * Quick-fix to kill this thing from parent UIAsset
+     */
+    inline void kill() { m_Alive = false; }
+
+    /**
      * Updates the health block (calculates new color, if visible)
      * @param fFrametime Time elapsed in frame as seconds
      * @return true all the time :P
@@ -52,4 +57,7 @@ public:
 
 private:
     IAsset*         m_pAsset; // what's being monitored
+
+    bool            m_Alive; // alive flag
+
 };

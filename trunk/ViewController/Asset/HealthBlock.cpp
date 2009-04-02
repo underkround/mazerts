@@ -11,6 +11,7 @@ HealthBlock::HealthBlock(UIAsset* pAsset, float yOffset, C3DResourceContainer* p
     SetVisible(false);
     GetMatrix()._42 += yOffset;
     Create(getHealthBlockMesh(pContainer, pAsset->getHalfSize()));
+    m_Alive = true;
 }
 
 HealthBlock::~HealthBlock(void)
@@ -56,6 +57,9 @@ void HealthBlock::Release()
 bool HealthBlock::Update(float fFrametime)
 {
     I3DObject::Update(fFrametime);
+    if(!m_Alive)
+        return false; // död
+
     if (IsVisible())
     {
         // count new material color

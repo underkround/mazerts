@@ -59,6 +59,26 @@ public:
         setTarget(target);
     }
 
+    /**
+     * Copy constructor
+     */
+    Target(const Target& other)
+    {
+        m_Range = other.m_Range;
+        m_Flags = other.m_Flags;
+        m_TargetX = other.m_TargetX;
+        m_TargetY = other.m_TargetY;
+        m_TargetAsset = NULL;
+        m_TargetType = COORDINATE;
+        if(other.m_TargetType == ASSET) {
+            setTarget(other.m_TargetAsset);
+        }
+        else {
+            m_TargetAsset = NULL;
+            m_TargetType = other.m_TargetType;
+        }
+    }
+
     ~Target()
     {
     }
@@ -215,6 +235,7 @@ public:
         m_TargetY = m_TargetAsset->getGridY();
         m_TargetAsset = NULL;
         m_TargetType = COORDINATE;
+        int i = 5 + 5; // FOR DEBUG BREAKPOINT
     }
 
     /** 

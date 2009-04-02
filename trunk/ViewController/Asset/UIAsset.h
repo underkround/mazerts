@@ -70,6 +70,7 @@ public:
     virtual void handleAssetReleased(IAsset* pAsset)
     {
         m_Alive = false;
+        m_pHealthBlock->kill();
     };
 
     /**
@@ -81,6 +82,11 @@ public:
      * Return selection state of this uiunit
      */
     inline const bool isSelected() { return m_Selected; }
+
+    /**
+     * Return alive-state of the UIAsset (represents the state of the model Asset)
+     */
+    inline const bool isAlive() { return m_Alive; }
 
     /**
      * Return "halfsize" (offset) of unit
