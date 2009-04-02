@@ -21,9 +21,14 @@ void IWeapon::fire()
         pProjectile = new Projectile(m_Def, m_pTarget->getTargetX() + (m_pTarget->getTargetAsset()->getWidth() >> 1),
                                m_pTarget->getTargetY() + (m_pTarget->getTargetAsset()->getHeight() >> 1), this);
     }
-    else
+    else if(m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
     {
         pProjectile = new Projectile(m_Def, m_pTarget->getTargetX(), m_pTarget->getTargetY(), this);
+    }
+    else
+    {
+        delete m_pTarget;
+        m_pTarget = NULL;
     }
     
     ProjectileCollection::addProjectile(pProjectile);
