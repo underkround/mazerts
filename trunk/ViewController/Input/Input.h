@@ -36,7 +36,7 @@ public:
     /**
      * Updates mouse and keyboard state data
      */
-    static void update();
+    static void update(const float frameTime);
 
     /**
      * Releases input devices, associated data and InputEngine

@@ -15,6 +15,10 @@
 #include "../App/ID3DApplication.h" // for tooltip text drawing
 #include "../Input/MouseState.h" // for tooltip position
 
+#include <TCHAR.h>
+
+#define CURSOR_TOOLTIP_SIZE 64
+
 class Cursor
 {
 public:
@@ -79,12 +83,21 @@ public:
      * value to keep the tooltip until clear is called, or another
      * tooltip is set.
      */
-    void setTooltip(LPCTSTR tooltipStr, float lifeTime)
+    void setTooltip(LPCTSTR tooltipStr, const float lifeTime)
     {
         clearTooltip();
-        m_pTooltip = tooltipStr;
+//        m_pTooltip = tooltipStr;
         m_TooltipDowncounter = (lifeTime <= 0) ? -1 : lifeTime;
     }
+
+    void setTooltip2(const char* tipChar, const float lifeTime)
+    {
+        clearTooltip();
+        MultiByteToWideChar(CP_ACP, 0, tipChar, -1, m_pTooltip, 64);
+        m_TooltipDowncounter = (lifeTime <= 0) ? -1 : lifeTime;
+    }
+
+    inline const bool hasTooltip() { return (m_pTooltip) ? true : false; }
 
     /**
      * Clear tooltip, if any
@@ -92,11 +105,14 @@ public:
     void clearTooltip()
     {
         m_TooltipDowncounter = -1;
+        /*
         if(m_pTooltip)
         {
-//            delete m_pTooltip;
+            //delete m_pTooltip;
             m_pTooltip = NULL;
         }
+        */
+        m_pTooltip[0] = '\0'; // = _T("");
     }
 
     /**
@@ -121,11 +137,11 @@ private:
         m_pVB = NULL;
         m_pTexture = NULL;
         m_Type = CURS_NORMAL;
-        m_pTooltip = NULL;
         m_TooltipDowncounter = -1;
         m_TooltipOffsetX = CURSORSIZE + 10;
         m_TooltipOffsetY = CURSORSIZE;
         m_TooltipColor = 0xFFCCFF00;
+        m_pTooltip[0] = '\0'; //_T("");
     }
 
     virtual ~Cursor() 
@@ -134,7 +150,8 @@ private:
     }
 
     // Tooltip text
-    LPCTSTR     m_pTooltip;
+    //LPCTSTR     m_pTooltip;
+    wchar_t     m_pTooltip[CURSOR_TOOLTIP_SIZE];
     float       m_TooltipDowncounter;
     int         m_TooltipOffsetX;
     int         m_TooltipOffsetY;

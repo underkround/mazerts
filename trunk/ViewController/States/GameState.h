@@ -20,8 +20,9 @@
 
 #include "../Controller/Cursor.h"
 
-#include "../UIComponent/DummyComponent.h"
-#include "../UIComponent/UIContainer.h"
+//#include "../UIComponent/DummyComponent.h"
+//#include "../UIComponent/UIContainer.h"
+#include "../UIComponent/RootContainer.h"
 
 class GameState : public IState
 {
@@ -65,8 +66,10 @@ public:
      */
     virtual void onDeviceLost()
     {
-        m_pUITerrain->onLostDevice();
+        if(m_pUITerrain)
+            m_pUITerrain->onLostDevice();
         m_Selector.onDeviceLost();
+        m_pRootContainer->onDeviceLost();
     }
 
     /**
@@ -87,7 +90,13 @@ public:
         {
             return hres;
         }
-        
+
+        hres = m_pRootContainer->onRestore(m_pDevice);
+        if(FAILED(hres))
+        {
+            return hres;
+        }
+
         return S_OK;
     }
 
@@ -144,9 +153,8 @@ private:
     int m_KeyTerrainDetailUp;
     int m_KeyTerrainDetailDown;
 
-    UIComponent*    m_pDummy;
-
-    UIContainer*    m_pRootContainer;
+    // Root container covering the whole screen and managing components
+    RootContainer*      m_pRootContainer;
 
 };
 

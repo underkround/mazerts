@@ -268,9 +268,9 @@ wstring Config::getValueAsWString(const string in_name) {
     return wstrname;
 }
 
-wstring Config::getValueAsWString(string in_section, string in_name) {
+wstring Config::getValueAsWString(string in_section, string in_name, const string defaultValue) {
     ValueNode* node = getNode(in_section, in_name);
-    string tmpname = (node) ? node->getString() : "";
+    string tmpname = (node) ? node->getString() : defaultValue;
     std::wstring wstrname;
     wstrname.assign(tmpname.begin(), tmpname.end());
     return wstrname;

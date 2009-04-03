@@ -29,7 +29,7 @@ public:
     /**
      * Updates the keystates
      */
-    static void update();
+    static void update(const float frameTime);
 
     inline static void release()
     {

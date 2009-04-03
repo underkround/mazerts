@@ -32,7 +32,7 @@ public:
 
     virtual void update(const float frameTime);
 
-    virtual bool updateControls(const float frameTime);
+//    virtual bool updateControls(const float frameTime);
 
     void setupTestButton(ID3DApplication* app)
     {

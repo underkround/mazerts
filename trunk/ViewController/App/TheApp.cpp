@@ -127,7 +127,7 @@ void CTheApp::OnFlip(void)
 
     //Input updates
     if(!m_CatchInput) {
-        Input::update();
+        Input::update(frameTime);
     }
 
     //Sound updates

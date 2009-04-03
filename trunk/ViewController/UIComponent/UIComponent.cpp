@@ -18,13 +18,10 @@ UIComponent::UIComponent()
     m_Size(20, 20);
 
     m_pParent = NULL;
-    m_pController = NULL;
 
     m_Changed = true;
     m_Visible = true; // render the component?
     m_Clipped = false; // use viewport clipping with component?
-    m_Focused = false;
-    m_StealedMouseButtons = 0;
 
     // Background drawing stuff - from BasicComponent
     m_BackgroundARGB.x = 0xAAAAAAAA;
@@ -34,18 +31,16 @@ UIComponent::UIComponent()
     m_pBackgroundTexture = NULL;
     m_pBackgroundVB = NULL;
 
-
-    // by defaul we catch the mouse button that is defined in the config
-    // to be the select -button (if it's not defined, we'll be registering
-    // button 0 which is the left button - good default)
-    // be sure to load the config files before creating components
-    //stealMouseButton(Config::getInstance()->getValueAsInt("mouse component select button"));
-    // just a reminder for components that have dual action:
-    //stealMouseButton(Config::getInstance()->getValueAsInt("mouse component alt button"));
-
-    // ...ok, that was somewhat stupid? let's use this for now ok :D
-    stealMouseButton(0);
+    m_StealFlags = STEAL_MOUSE;
+    m_ProcessFlags = CPROCESS_MOUSE_BUTTONS;
 }
+
+
+int UIComponent::processEvent(int eventFlag, TCHAR arg)
+{
+    return m_StealFlags;
+}
+
 
 // ===== Getters
 
@@ -67,11 +62,6 @@ const int UIComponent::getPosY() const
 
 void UIComponent::release()
 {
-    if(m_pController)
-    {
-        // we do not own the controller and hence do not delete it
-        m_pController = NULL;
-    }
     if(m_pParent)
     {
         m_pParent->removeComponent(this);
@@ -132,6 +122,7 @@ void UIComponent::render(LPDIRECT3DDEVICE9 pDevice)
  * eats defined mouse clicks and updates controller, if any set.
  * other inputs fall through
  */
+/*
 bool UIComponent::updateControls(const float frameTime)
 {
     // hidden components do not handle controls
@@ -182,7 +173,7 @@ bool UIComponent::updateControls(const float frameTime)
     //return C_EVENT_NONE;
     return false;
 }
-
+*/
 
 
 

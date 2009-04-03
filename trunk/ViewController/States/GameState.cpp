@@ -34,9 +34,9 @@
 //DEBUG
 #include "../3DDebug/UI3DDebug.h"
 
-
-#include "../UIComponent/GridPanel.h"
-
+// Components
+//#include "../UIComponent/GridPanel.h"
+#include "../UIComponent/RootContainer.h"
 
 #define KEYBOARD_CAMSPEED 60.0f
 #define MOUSE_CAMSPEED 0.01f
@@ -93,8 +93,6 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     if(!Config::getInstance()->getValueAsBool("debug skip terrain generating", false))
         pTerrain->initialize(pGenerator);
 
-//    pTerrain->setWaterLevel(50); // TODO: imho this is for the terrain generator to decide! move it there?
-
     // initialize asset collection
     AssetCollection::create(pTerrain->getSize());
     //Initialize projectile collection
@@ -114,21 +112,24 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     //Initialize particlefactory
     ParticleFactory::create(pDevice);
 
+    // UIComponents
+    m_pRootContainer = RootContainer::getInstance();
+    m_pRootContainer->create(pDevice, m_pApp);
+
     // Initialize player manager
-    PlayerManager::create(2);
+    PlayerManager::create(4);
 
     //TEST
 
-    for(int i = 0; i < 50; i++)
-    {
-        if(i < 25)
-        {
+    for(int i = 0; i < 40; i++)    {
+        if(i < 10)
             AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 40+(i * 4), 20+(i % 5) * 4);
-        }
-        else
-        {
+        else if(i < 20)
             AssetFactory::createUnit(PlayerManager::getPlayer(2), 2, 40+(i * 4), 20+(i % 5) * 4);
-        }
+        else if(i < 30)
+            AssetFactory::createUnit(PlayerManager::getPlayer(3), 2, 40+(i * 4), 20+(i % 5) * 4);
+        else
+            AssetFactory::createUnit(PlayerManager::getPlayer(4), 2, 40+(i * 4), 20+(i % 5) * 4);
     }
 
     for(int i = 0; i < 10; i++)
@@ -150,7 +151,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
         return hres;
     }
 
-    //Get the pathfinder running
+    // Get the pathfinder running
     PathFinderMaster::getInstance()->start();
 
     // Camera
@@ -170,40 +171,6 @@ HRESULT GameState::create(ID3DApplication* pApplication)
         node->item->loadConfigurations();
         node = node->next;
     }
-
-    // create standalone component (without container). This will not happen in real situation
-    // (there will be root container for every component) - AND IT "#¤!%! TOOK ME HOURS :D :D
-    // TODO: REMOVEME
-    m_pDummy = new DummyComponent(10, 600, 80, 80);
-
-    // Create the transparent root component
-//    m_pRootContainer = new GridPanel();
-    m_pRootContainer = new UIContainer();
-    m_pRootContainer->setTransparent(true);
-    m_pRootContainer->setPosition(624, 0);
-    m_pRootContainer->setSize(400, 400);
-    m_pRootContainer->setBackgroundStyle(FILLSTYLE_GRADIENT_H);
-    m_pRootContainer->setBackground(0xAACCFF00, 0xAA00CCFF);
-
-    // create few test-components, by no means these are not intented to use this
-    // way later..
-    DummyComponent* dc;
-
-    dc = new DummyComponent(10,10,40,40);
-    dc->setupBouncer();
-    m_pRootContainer->addComponent(dc);
-
-    dc = new DummyComponent(300, 300, 80, 80);
-    dc->setupBouncer();
-    dc->unstealMouseButton(0);
-    dc->stealMouseButton(1);
-    m_pRootContainer->addComponent(dc);
-
-    dc = new DummyComponent(100, 0, 50, 30);
-    dc->setBackground(0xAA151515, 0xFF3F3F3F);
-    dc->setForeground(0xFFF0DFAF);
-    dc->setupTestButton(m_pApp);
-    m_pRootContainer->addComponent(dc);
 
     m_Created = true;
 
@@ -229,11 +196,9 @@ void GameState::release()
         node = m_UIControllers.removeGetNext(node);
     }
 
-    if(m_pDummy) { m_pDummy->release(); delete m_pDummy; } // TODO: REMOVEME
     if(m_pRootContainer)
     {
         m_pRootContainer->release();
-        delete m_pRootContainer;
     }
 
     // Clear the camera-stack
@@ -293,7 +258,9 @@ bool GameState::update(const float frameTime)
     //Update cursor position and texture
     Cursor::getInstance()->update(frameTime);
 
+    // Update UIComponents
     m_pRootContainer->update(frameTime);
+
     //Keep running
     return true;
 }
@@ -353,9 +320,6 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
     m_pUITerrain->render(pDevice);
 
-    m_pRootContainer->render(pDevice);
-    m_pDummy->render(pDevice); // REMOVEME
-
     //Antsys models need reverse backface-culling
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
@@ -365,6 +329,8 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
     pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     m_Selector.render(pDevice);    
 
+    m_pRootContainer->render(pDevice);
+
     //Draw cursor
     Cursor::getInstance()->render(pDevice);
 }
@@ -373,8 +339,8 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 void GameState::updateControls(const float frameTime)
 {
     /*
-     * Controls that should always be accessed (cannot be stealed)
-     * should go here.
+     * Controls that should always be accessed (should not be stealed by
+     * components) should go here.
      */
 
     // reload def-files on fly
@@ -404,8 +370,9 @@ void GameState::updateControls(const float frameTime)
      * Update components. Components can steal the input (at least the mouse etc)
      * so if one of they do, we'll exit here
      */
-    if(m_pDummy->updateControls(frameTime)) return; // TODO: REMOVEME
-    if(m_pRootContainer->updateControls(frameTime))
+    int stealFlags = m_pRootContainer->updateControls(frameTime);
+
+    if(stealFlags)
         return;
 
     // Update normal controllers
@@ -496,6 +463,8 @@ void GameState::loadConfigurations()
     c.updateInt("key toggle wireframe",             m_KeyToggleWireframe);
     c.updateInt("key terrain detail up",            m_KeyTerrainDetailUp);
     c.updateInt("key terrain detail down",          m_KeyTerrainDetailDown);
+
+    m_pRootContainer->loadConfigurations();
 
     // update configurations of the controllers
     ListNode<IUIController*>* node = m_UIControllers.headNode();

@@ -380,7 +380,7 @@ public:
      * @return              value, if any found
      */
     wstring getValueAsWString(const string in_name);
-    wstring getValueAsWString(const string in_section, const string in_name);
+    wstring getValueAsWString(const string in_section, const string in_name, const string defaultValue);
 
 private:
 

@@ -96,8 +96,8 @@ void DummyComponent::update(const float frameTime)
 }
 
 
+/*
 #include "UIContainer.h"
-
 bool DummyComponent::updateControls(const float frameTime)
 {
     if(!UIComponent::updateControls(frameTime))
@@ -128,3 +128,4 @@ bool DummyComponent::updateControls(const float frameTime)
     }
     return true;
 }
+*/

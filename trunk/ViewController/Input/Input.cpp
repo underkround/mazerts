@@ -44,10 +44,10 @@ HRESULT Input::create(IApplication* pApplication)
     return S_OK;
 } 
 
-void Input::update()
+void Input::update(const float frameTime)
 {
-    MouseState::update();
-    KeyboardState::update();
+    MouseState::update(frameTime);
+    KeyboardState::update(frameTime);
 }
 
 void Input::release()

@@ -8,6 +8,20 @@
 #include "../Input/MouseState.h"
 #include "../Controller/IUIController.h"
 
+
+UIContainer::UIContainer() : UIComponent()
+{
+    m_Transparent = false;
+    m_StealFlags = STEAL_MOUSE;
+    m_ProcessFlags = CPROCESS_MOUSE_BUTTONS;
+}
+
+
+int UIContainer::processEvent(int eventFlag, TCHAR arg)
+{
+    return (m_Transparent) ? STEAL_NONE : m_StealFlags;
+}
+
 bool UIContainer::addComponent(UIComponent* child)
 {
     if(child == this)
@@ -20,33 +34,26 @@ bool UIContainer::addComponent(UIComponent* child)
     // add as my child
     child->m_pParent = this;
     m_Children.pushHead(child);
-    // get the buttons that the child steals so we can transfer the focus it wants
-    m_StealedMouseButtonsForChildren |= child->getStealedMouseButtons();
     return true;
 }
 
 
 bool UIContainer::removeComponent(UIComponent* child)
 {
+    //if(child == m_pFocused)
+    //    m_pFocused = NULL;
     if(child->m_pParent != this)
         return false; // not my child!
     m_Children.remove(child); // remove from my childs
     child->m_pParent = NULL; // clear the parent from the child
-    // reload the actions that the children catch
-    m_StealedMouseButtonsForChildren = 0;
-    if(!m_Children.empty()) {
-        ListNode<UIComponent*>* node = m_Children.headNode();
-        while(node) {
-            m_StealedMouseButtonsForChildren |= node->item->getStealedMouseButtons();
-            node = node->next;
-        }
-    }
     return true; // removed
 }
 
 
 bool UIContainer::releaseComponent(UIComponent* child)
 {
+    //if(child == m_pFocused)
+    //    m_pFocused = NULL;
     // first remove the child from my children
     if(removeComponent(child))
     {
@@ -70,10 +77,9 @@ void UIContainer::release()
     {
         node->item->m_pParent = NULL;
         node->item->release();
-        delete node->item; // TODO! why is this failing?
+        delete node->item;
         node = m_Children.removeGetNext(node);
     }
-    m_StealedMouseButtonsForChildren = 0;
     UIComponent::release();
 }
 
@@ -104,14 +110,11 @@ void UIContainer::update(const float frameTime)
     if(!m_Visible)
         return;
     // update children
-    if(!m_Children.empty())
+    ListNode<UIComponent*>* node = m_Children.headNode();
+    while(node)
     {
-        ListNode<UIComponent*>* node = m_Children.headNode();
-        while(node)
-        {
-            node->item->update(frameTime);
-            node = node->next;
-        }
+        node->item->update(frameTime);
+        node = node->next;
     }
 }
 
@@ -123,21 +126,128 @@ const bool UIContainer::setSize(const int width, const int height)
 }
 
 
+UIComponent* UIContainer::getFocus()
+{
+    if(!m_Children.empty())
+    {
+        int relMouseX = MouseState::mouseX - getPosX();
+        int relMouseY = MouseState::mouseY - getPosY();
+        UIComponent* comp;
+        ListNode<UIComponent*>* node = m_Children.headNode();
+        while(node)
+        {
+            comp = node->item;
+            node = node->next;
+            // check intersection
+            // we can use mouseX and mouseY straight for child since we are the root at 0:0
+            if(
+                relMouseX >= comp->m_Pos.x &&
+                relMouseY >= comp->m_Pos.y &&
+                relMouseX <= comp->m_Pos.x + comp->m_Size.x &&
+                relMouseY <= comp->m_Pos.y + comp->m_Size.y
+            )
+            {
+                // found child for focus
+                return comp->getFocus();
+            }
+        }
+    }
+    return this;
+}
+
+/*
 bool UIContainer::updateControls(const float frameTime)
 {
     // if we are hidden, no control functionality
     if(!m_Visible)
         return false;
 
-    // if we do not have parent (in which case the update call should have
-    // come from it and we trust it), we should check if the click even hit us
-    /*
-    if(!m_pParent)
-    {
-        if(!insersects(MouseState::mouseX, MouseState::mouseY))
-            return false; // out of our area
-    }*/
+    int result = STEAL_NONE;
 
+    // pressed-event
+    // focus transfers with pressed, or with idle
+    if(MouseState::mouseButtonPressedBits)
+    {
+        // always get new focus
+        m_pFocused = getFocus();
+        if(m_pFocused)
+        {
+            result = m_pFocused->updateControls(frameTime);
+        }
+        if(!result)
+        {
+            // our actions, if we are not transparent and mouse intersects us, we have the focus
+            if(!m_Transparent && mouseIntersects())
+            {
+                return STEAL_MOUSE;
+            }
+        }
+        return result;
+    }
+
+    // button down
+    if(MouseState::mouseButtonBits)
+    {
+        // focus stays, update if inside focused
+        if(m_pFocused)
+        {
+            // check if the event happens inside focused
+            if(m_pFocused->mouseIntersects())
+                return m_pFocused->updateControls(frameTime);
+            // check if the focused handles outside events
+            if(m_pFocused->getStealFlags() & STEAL_MOUSE_OUTSIDE)
+                return m_pFocused->updateControls(frameTime);
+            // we still steal the down-action if there is focused
+            return STEAL_MOUSE;
+        }
+        // we don't have focus so pass the event
+        return STEAL_NONE;
+    }
+
+    // button released - loose focused if any
+    if(MouseState::mouseButtonReleasedBits)
+    {
+        if(m_pFocused)
+        {
+            // check if the event happens inside focused
+            if(m_pFocused->mouseIntersects())
+                return m_pFocused->updateControls(frameTime);
+            // if outside, we unfocus in any case. We steal the mouse anyway if we have focus
+            int result = STEAL_MOUSE;
+            // check if the focused handles outside events
+            if(m_pFocused->m_StealFlags & STEAL_MOUSE_OUTSIDE)
+                result = m_pFocused->updateControls(frameTime);
+            // unfocus
+            m_pFocused = NULL;
+            return result;
+        }
+        // we don't have focus so pass the event
+        return STEAL_NONE;
+    }
+
+    // idle-event?
+    if(!MouseState::mouseMoved && MouseState::mouseIdle > m_MouseIdleTreshold)
+    {
+        // always get the focus for idle event
+        UIComponent* comp = getFocus();
+        if(comp)
+        {
+            return m_pFocused->updateControls(frameTime);
+        }
+        return STEAL_NONE;
+    }
+
+    // TODO: keyboard events?
+    // implement charbuffer to KeyboardEvents ?
+
+    // the root container passes every event no dispatched to child
+    return STEAL_NONE;
+
+
+
+
+
+/*
     // if we have focused child
     if(m_pFocused)
     {
@@ -235,15 +345,6 @@ bool UIContainer::updateControls(const float frameTime)
             UIComponent::updateControls(frameTime) &&
             mouseIntersects())
             ? true : false;
-}
+*/
 
-
-void UIContainer::focusLost()
-{
-    m_Focused = false;
-    if(m_pFocused)
-    {
-        m_pFocused->focusLost();
-        m_pFocused = NULL;
-    }
-}
+//}

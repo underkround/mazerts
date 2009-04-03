@@ -5,7 +5,7 @@ bool* KeyboardState::keyDown = NULL;
 bool* KeyboardState::keyOld = NULL;
 bool* KeyboardState::keyReleased = NULL;
 
-void KeyboardState::update()
+void KeyboardState::update(const float frameTime)
 {
     if(SUCCEEDED(Input::keyboard.Update()))
     {

@@ -23,6 +23,8 @@
 #define __UICOMPONENT_H__
 
 #include <d3dx9.h>
+#include <TCHAR.h>
+
 #include "ComponentCommon.h"
 
 #include "../App/Vertices.h" // for TRANSLITVERTEX
@@ -43,15 +45,52 @@ public:
     {
     }
 
+    enum StealFlags
+    {
+        STEAL_NONE      = 0,        // empty value to return, or just 0
+        STEAL_MOUSE     = 1 << 0,   // steal mouse
+        STEAL_KEYBOARD  = 1 << 1,   // steal all keys
+        STEAL_TEXT      = 1 << 2,   // steal just text keys
+        STEAL_MOUSE_OUTSIDE = 1 << 5 // internal component specifig hint
+    };
+
+    enum ProcessFlags
+    {
+        CPROCESS_MOUSE_BUTTONS  = 1 << 0,
+        CPROCESS_MOUSE_MOTION   = 1 << 1,
+        CPROCESS_MOUSE_WHEEL    = 1 << 2,
+        CPROCESS_TEXT           = 1 << 2,   // process text keys
+        CPROCESS_KEYBOARD       = 1 << 3    // process all keys
+    };
+
     enum EventFlags
     {
-        C_EVENT_NONE            = 0, // do not steal the input
-        C_EVENT_MOUSE_DOWN      = 1 << 0, // mouse button is down
-        C_EVENT_MOUSE_PRESSED   = 1 << 1, // mouse button is just being pressed
-        C_EVENT_MOUSE_RELEASED  = 1 << 2, // mouse button is just being released
-        C_EVENT_OUTSIDE         = 1 << 3  // event happened outside the component
-        // keyboard-events?
+        CEVENT_NONE             = 0,
+        CEVENT_OUTSIDE          = 1 << 0,   // action happened outside
+        // mouse button events
+        CEVENT_MOUSE_PRESSED    = 1 << 1,
+        CEVENT_MOUSE_RELEASED   = 1 << 2,
+        CEVENT_MOUSE_DRAGGED    = 1 << 3,
+        CEVENT_MOUSE_IDLE       = 1 << 4,
+        // mouse motion events
+        CEVENT_MOUSE_ENTERED    = 1 << 5,
+        CEVENT_MOUSE_EXITED     = 1 << 6,
+        // mouse wheel events
+        CEVENT_MOUSE_WHEEL      = 1 << 7,
+        // text events
+        CEVENT_CHAR_TYPED       = 1 << 8,   // typed char event
+        // keypress events
+        CEVENT_KEY_PRESSED      = 1 << 9,   // general keypress event
+        CEVENT_KEY_RELEASED     = 1 << 10   // general keyrelease event
     };
+
+    /**
+     * Process event that the RootContainer (or other central dispatcher)
+     * has casted on us.
+     * We need to return STEAL-flags to inform what input we steal from
+     * others in the control-update chain.
+     */
+    virtual int processEvent(int eventFlag, TCHAR arg);
 
 // =====
 // ===== BEGIN OF METHODS YOU SHOULD IMPLEMENT
@@ -135,7 +174,7 @@ public:
      *                  handling should not be passed to others -> input stealing
      *                  False means the controls will be passed on on upper levels.
      */
-    virtual bool updateControls(const float frameTime);
+//    virtual bool updateControls(const float frameTime);
 
     /**
      * Release resources.
@@ -303,34 +342,7 @@ public:
         return false;
     }
 
-
-// ===== Controller support
-
-
-    /**
-     * Set the controller which receives updateControls -calls when the
-     * component is active.
-     *
-     * NOTE: the ownership of the controller is not transferred, so you
-     * need to delete the controller elsewhere, this won't do it.
-     */
-    virtual void setController(IUIController* controller)
-    {
-        // TODO?
-        m_pController = controller;
-    }
-
-    /**
-     * Get the attached controller, or NULL if none
-     */
-    inline IUIController* getController()
-    {
-        return m_pController;
-    }
-
-
 // ===== Parent
-
 
     /**
      * @return the parent component, or NULL if there is no parent
@@ -456,66 +468,6 @@ public:
         return changed;
     }
 
-
-// ===== Input control
-
-
-    /**
-     * Set this container to steal given mouse button.
-     * @param buttonId  id for mouse button to steal
-     */
-    inline void stealMouseButton(int buttonId)
-    {
-        m_StealedMouseButtons |= (1 << buttonId);
-    }
-
-    /**
-     * Unset this container to not to steal previously registered mouse button.
-     * @param buttonId  id for mouse button to take stealing away from
-     */
-    inline void unstealMouseButton(int buttonId)
-    {
-        m_StealedMouseButtons &= ~(1 << buttonId);
-    }
-
-    /**
-     * Return which mouse buttons are currently stealed.
-     * The return value is int containing bits for buttons that
-     * are catched/stealed. For example bit 1 in index 2 means
-     * that mouse button 2 is stealed by this component when
-     * it's focused.
-     */
-    inline const int getStealedMouseButtons() const
-    {
-        return m_StealedMouseButtons;
-    }
-
-    /**
-     * Return registered status for mouse button
-     */
-    inline const bool isMouseButtonStealed(int buttonId) const
-    {
-        return (m_StealedMouseButtons & (1 << buttonId)) ? true : false;
-    }
-
-    /**
-     * Return the input events that are on that this component catches.
-     * The return contains event-flags from Events enum.
-     * @return Events-flags that are on and this component catches
-     */
-    virtual const int stealableEvents() const
-    {
-        // check if there is stealable mouse buttons pressed or released
-        int flags = C_EVENT_NONE;
-        if(MouseState::mouseButtonBits & m_StealedMouseButtons)
-            flags |= C_EVENT_MOUSE_DOWN;
-        if(MouseState::mouseButtonPressedBits & m_StealedMouseButtons)
-            flags |= C_EVENT_MOUSE_PRESSED;
-        if(MouseState::mouseButtonReleasedBits & m_StealedMouseButtons)
-            flags |= C_EVENT_MOUSE_RELEASED;
-        return flags;
-    }
-
     /**
      * Helper method to determine if given screen coordinates are inside us.
      * @return      true, if given (absolute) screen coordinates are inside us
@@ -563,30 +515,28 @@ public:
         m_Visible = visible;
     }
 
+    /**
+     * Get focused component by mouse coordinates.
+     * In this defaul implementation we trust to be inside container
+     * which has already testet that we are under the coordinates, so
+     * we don't do intersection test to save resources.
+     * @return pointer to this component (no intersection test done)
+     */
+    virtual UIComponent* getFocus()
+    {
+        return this;
+    }
+
+    inline const int getProcessFlags() { return m_ProcessFlags; }
+    inline const int getStealFlags() { return m_StealFlags; }
+
 protected:
 
-    /**
-     * Notification of gained and lost focuses, mainly only for use
-     * of the basic-components (IUIComponent and IUIContainer) to
-     * dispatch the lost focus by many levels in cases where
-     * some nesting component is focused, and it's parent loses it's
-     * focus. When the parent get's it's focus back, it's child would
-     * be automaticly focused again and there could be problems - click
-     * on another child would not be passed.
-     *
-     * These methods are in Component rather than Container since the
-     * Container handles components (which can actually be containers).
-     */
-    virtual void focusLost() { m_Focused = false; }
-    virtual void focusGain() { m_Focused = true; }
 
 // ===== Members
 
     // the parent of this component, or NULL
     UIComponent*        m_pParent;
-
-    // the input controller associated with this component, or NULL
-    IUIController*      m_pController;
 
     // the minimum bounds of the component
     Point2              m_MinSize;
@@ -602,12 +552,10 @@ protected:
     bool                m_Visible;
     bool                m_Clipped;
 
-    // flag for own focus control
-    bool                m_Focused;
-
     // bits for stealed mouse buttons
-    int                 m_StealedMouseButtons;
-
+    int                 m_StealFlags;
+    // bits for events to process
+    int                 m_ProcessFlags;
 
 // Members for default background rendering
 

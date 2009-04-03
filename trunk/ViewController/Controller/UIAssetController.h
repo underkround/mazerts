@@ -98,6 +98,10 @@ private:
     bool m_KeyActionWhileDragging;
     int m_KeyFirstPersonCamera;
 
+    float m_TooltipTreshold;
+    float m_TooltipLifetime;
+    bool m_TooltipShown;
+
     // current state of the selection
     PointerState                m_SelectionState;
     PointerState                m_ActionState;

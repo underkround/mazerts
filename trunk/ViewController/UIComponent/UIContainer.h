@@ -23,18 +23,13 @@ public:
     /**
      * The ctor, Get Born Again \m/
      */
-    UIContainer() : UIComponent()
-    {
-        m_Transparent = false;
-        m_pFocused  = NULL;
-        m_StealedMouseButtonsForChildren = 0;
-    }
+    UIContainer();
 
     virtual ~UIContainer()
     {
     }
 
-// ===== Container functionality
+// ===== Public container methods
 
     /**
      * Add child component inside this component.
@@ -93,7 +88,7 @@ public:
         return m_Transparent;
     }
 
-// ===== Component functionality - overridden from IUIComponent
+// ===== Public component methods
 
     /**
      * Render self..
@@ -127,31 +122,22 @@ public:
     virtual const bool setSize(const int width, const int height);
 
     /**
-     * Update call for focused component to act on input
-     * Receive input-time and handle input.
-     *
-     * The container dispatches the control to focused child if any
-     * The return value is used for determing if the component steals the
-     * control. If true is returned, it means that the component has exclusive
-     * control and others should not handle the input (if return is failed,
-     * the component is "transparent" in sense of controls.
-     *
-     * @see IUIComponent::updateControls
-     * @param frameTime seconds passed since last frame (possibly NOT the last
-     *                  call to this method)
-     * @return          true, if the component handled the input and the
-     *                  handling should not be passed to others
-     */
-    virtual bool updateControls(const float frameTime);
-
-    /**
      * Release resources and children.
      * instead of this. Only containers should override this.
      * @see IUIComponent::release
      */
     virtual void release();
 
+    /**
+     * Return component from mouse coordinates, either this or child
+     */
+    virtual UIComponent* getFocus();
+
+    virtual int processEvent(int eventFlag, TCHAR arg);
+
 protected:
+
+// ===== Protected component methods
 
     /**
      * This gets called when one of these happen:
@@ -167,26 +153,15 @@ protected:
         // TODO: layout-stuff ?
     }
 
-    /**
-     * Notification from upper level of the focus transfer.
-     * If we have focused child, we should dispatch the unfocus to it.
-     * @see IUIComponent::focusLost
-     */
-    virtual void focusLost();
+// ===== Protected container methods
 
 // ===== Members
 
-    DoubleLinkedList<UIComponent*> m_Children;
-
-    // Possible focused child. Focus is transferred with (right) mouse button
-    UIComponent*    m_pFocused;
+    DoubleLinkedList<UIComponent*>  m_Children;
 
     // transparent component does not render itself nor handle the controls
     bool            m_Transparent;
 
-    // mouse buttons handled by our children, these are the
-    // buttons that we check with focus transition
-    int             m_StealedMouseButtonsForChildren;
 };
 
 #endif // __UICONTAINER_H__

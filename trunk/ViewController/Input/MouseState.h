@@ -49,7 +49,7 @@ public:
     /**
      * Updates mouse data and prevents mouse cursor from leaving screen/window
      */
-    static void update();
+    static void update(const float frameTime);
 
     /**
      * Sets the mouse sensitivity factor, x- and y-speed are multiplied by this
@@ -87,6 +87,10 @@ public:
     static int mouseButtonBits;
     static int mouseButtonReleasedBits;
 
+    // boolean set to true if the mouse has moved since last frame
+    static bool mouseMoved;
+    static float mouseIdle; // mouse idling time
+
     /** 
      * Project 2d-mouse position as a ray into 3d-space
      * @param matView View-matrix
@@ -97,8 +101,11 @@ public:
     static void transformTo3D(D3DXMATRIX& matView, D3DXMATRIX& matProj, D3DXVECTOR3& rayOrigin, D3DXVECTOR3& rayDir, const int mX=mouseX, const int mY=mouseY);
 
 private:
-    
+
     MouseState() {}
+
+    static int lastPosX;
+    static int lastPosY;
 
     /**
      * Mouse sensitivity factor

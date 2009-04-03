@@ -24,6 +24,11 @@ int MouseState::mouseButtonReleasedBits = 0;
 
 bool* MouseState::mouseButtonOld = NULL;
 
+bool MouseState::mouseMoved = false;
+float MouseState::mouseIdle = 0.0f;
+int MouseState::lastPosX = 0;
+int MouseState::lastPosY = 0;
+
 IApplication* MouseState::pApp = NULL;
 
 void MouseState::create(IApplication* pApplication)
@@ -62,7 +67,7 @@ void MouseState::create(IApplication* pApplication)
 }
 
 
-void MouseState::update()
+void MouseState::update(const float frameTime)
 {
     if(SUCCEEDED(Input::mouse.Update()))
     {
@@ -150,6 +155,21 @@ void MouseState::update()
 
             mouseButtonOld[i] = mouseButton[i];
         }
+
+        // detect movement
+        if(mouseX != lastPosX || mouseY != lastPosY)
+        {
+            lastPosX = mouseX;
+            lastPosY = mouseY;
+            mouseMoved = true;
+            mouseIdle = 0;
+        }
+        else
+        {
+            mouseMoved = false;
+            mouseIdle += frameTime;
+        }
+
     }
 }
 

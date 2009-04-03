@@ -18,6 +18,9 @@
 
 #include "../../Model/Asset/AssetCollection.h"
 
+#include "Cursor.h" // for tooltip
+#include <TCHAR.h>  // for tooltip
+
 UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* pSelector)
 {
     m_pUnitCommandDispatcher = new UnitCommandDispatcher(NULL); // TODO: use actual player-object
@@ -40,6 +43,10 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_KeyPickModifier = 0;
     m_KeyActionModifier = 0;
     m_KeyActionWhileDragging = false;
+
+    m_TooltipTreshold = 0.5f;
+    m_TooltipLifetime = 2.0f;
+    m_TooltipShown = false;
 
     m_SelectedAssetType = NONE;
 
@@ -75,6 +82,9 @@ void UIAssetController::loadConfigurations()
     c.updateBool("mouse action enabled when dragging",  m_KeyActionWhileDragging);
     // key for first person camera
     c.updateInt("key first person camera",              m_KeyFirstPersonCamera);
+    // time for showing the tooltip
+    c.updateFloat("tooltip treshold",                   m_TooltipTreshold);
+    c.updateFloat("tooltip lifetime",                   m_TooltipLifetime);
 }
 
 
@@ -127,6 +137,32 @@ void UIAssetController::updateControls(const float frameTime)
             Camera::pushTop(&m_UnitCamera);
         }
     }
+
+    // if mouse idles over asset, display tooltip showing it's name
+    if(!MouseState::mouseMoved && (MouseState::mouseIdle > m_TooltipTreshold))
+    {
+        if(!m_TooltipShown)
+        {
+            D3DXMATRIX matProj, matView;
+            D3DXVECTOR3 rayOrigin, rayDir;
+            m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
+            m_pDevice->GetTransform(D3DTS_VIEW, &matView);
+            MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir);
+            UIAsset* pUIAsset = UI3DObjectManager::pickAsset(rayOrigin, rayDir);
+            if(pUIAsset)
+            {
+                string assetName = pUIAsset->getAsset()->getDef()->name;
+                Cursor::getInstance()->setTooltip2(assetName.c_str(), m_TooltipLifetime);
+                m_TooltipShown = true;
+            }
+        }
+    }
+    else if(m_TooltipShown)
+    {
+        m_TooltipShown = false;
+        Cursor::getInstance()->clearTooltip();
+    }
+
 }
 
 
