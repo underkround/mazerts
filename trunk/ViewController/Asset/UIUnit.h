@@ -15,8 +15,6 @@
 #include "UIAsset.h"
 #include "../../Model/Asset/Unit.h"
 #include "UIWeapon.h"
-//#include "HealthBar.h"
-#include "HealthBlock.h"
 
 // TODO: remove when implementing real marker object
 #include "../3DDebug/C3DObjectDebug.h"

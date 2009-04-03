@@ -8,35 +8,83 @@
 
 #include "Building.h"
 
-#include <iostream>
-
 Building::Building(AssetDef& def) : IAsset(BUILDING, def)
 {
-//    m_BuildingType = buildingType;
-//    std::cout << "building (iid " << m_IID << ", type " << m_BuildingType << ") constructor called\n";
+    m_Created = false;
 }
 
 Building::~Building()
 {
-//    std::cout << "building (iid " << m_IID << ", type " << m_BuildingType << ") destructor called\n";
-    release();
+    if(m_Created)
+        release();
 }
 
 // =====
 
 void Building::create()
 {
+    if(m_Created)
+        return;
     AssetCollection::registerBuilding(this);
+    m_Created = true;
 }
 
 void Building::release()
 {
+    IAsset::release();
+    m_Created = false;
 }
 
 // =====
 
 char Building::update(const float deltaT)
 {
-    //std::cout << "building (iid " << m_IID << ") update\n";
-    return RESULT_OK;
+    switch(m_State)
+    {
+
+    /*
+     * State while being build
+     */
+    case STATE_BEING_BUILT:
+        // TODO: for now since there is no builder-stuff implemented,
+        // we just enter to the active-state. Later it will happen
+        // by growing the hitpoints until they reach max
+        //modifyHitpoints((float)m_Def.maxHitpoints);
+        {
+            float hpMod = (float)m_Def.maxHitpoints;
+            hpMod /= 20;
+            modifyHitpoints(hpMod*deltaT);
+        }
+        break;
+
+    case STATE_PARALYZED:
+        changeState(STATE_ACTIVE);
+        break;
+
+    /*
+     * Active -state, normal state
+     */
+    default:
+    case STATE_ACTIVE:
+        // update our radar
+        if(m_pRadar)
+            m_pRadar->update(deltaT);
+
+        // update our weapon
+        if(m_pWeapon)
+            m_pWeapon->update(deltaT);
+
+        updatePositionInAssetCollection();
+        break;
+
+    /*
+     * Destroyed -state
+     */
+    case STATE_DESTROYED:
+        return RESULT_DELETEME; // unit will be deleted when returning this value
+        break;
+
+    } // switch
+
+    return RESULT_OK; // normal return value
 }

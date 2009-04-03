@@ -130,7 +130,7 @@ public:
     /**
      * @return    Type id of this asset from defines
      */
-    inline int getTypeTag()            { return m_Def.tag; }
+    inline int getTypeTag()         { return m_Def.tag; }
 
     /**
      * Returns the object implementing radar interface
@@ -139,14 +139,6 @@ public:
     inline IAssetRadar* getRadar() { return m_pRadar; }
 
 // ===== Size
-
-    /**
-     * These setters are not meant to be used in real game situation..
-     * they are mainly left here for debugging & backwards compability
-     * with old test-code etc.
-     */
-//    inline void setWidth(const unsigned char width)     { m_Def.width = width; }
-//    inline void setHeight(const unsigned char height)   { m_Def.height = height; }
 
     /**
      * Getters for unit's size properties
@@ -202,12 +194,20 @@ public:
 
 // ===== Position & direction
 
+    /**
+     * Used only to place the asset on the map when created.
+     * Works only in BEING_BUILT state (just in case and to spot
+     * misuse).
+     */
     virtual void forcePosition(short x, short y)
     {
-        m_Position.x = (float)x;
-        m_Position.y = (float)y;
-        updatePositionInAssetCollection();
-        // @TODO: z from terrain
+        if(m_State == STATE_BEING_BUILT)
+        {
+            m_Position.x = (float)x;
+            m_Position.y = (float)y;
+            updatePositionInAssetCollection();
+            // @TODO: z from terrain
+        }
     }
 
     virtual void forceDirection(float x, float y, float z)
@@ -256,6 +256,7 @@ public:
 private:
     // prevent copying
     IAsset(const IAsset& a);
+    IAsset& operator=(IAsset const&);
 
     static int      m_InstanceCounter; // counter for asset instances created
     static int      m_InstanceDestructionCounter; // counter for asset instances deleted

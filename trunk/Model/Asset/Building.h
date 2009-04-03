@@ -29,7 +29,7 @@ public:
 
 private:
 
-//    int         m_BuildingType;
+    bool        m_Created;
 
 };
 
