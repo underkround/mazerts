@@ -9,7 +9,7 @@
 
 #include <tchar.h>
 
-static const int NUMBER_OF_UNITS_WITH_MESHES = 2;
+static const int NUMBER_OF_UNITS_WITH_MESHES = 3;
 
 /**
  * Contains filenames for different meshes, 3 for every unit (leave unused parts as _T("") )
@@ -20,6 +20,11 @@ static const TCHAR g_ppUnitMeshNames[NUMBER_OF_UNITS_WITH_MESHES][3][256] =
     _T("../data/mesh/car_gun.x"),
     _T(""),                                     //DO NOT USE NULL for empty parts (they won't be included 
                                                 //in the array at all, and the indices will be fucked up)
+
+    _T("../data/mesh/basictank_base.x"),        //Basictank base
+    _T("../data/mesh/basictank_turret.x"),      //turret
+    _T(""),
+
 
     _T("../data/mesh/supertank_base.x"),        //Supertank base
     _T("../data/mesh/supertank_turret.x"),      //turret
@@ -33,12 +38,24 @@ static const TCHAR g_ppUnitMeshNames[NUMBER_OF_UNITS_WITH_MESHES][3][256] =
 static const float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
 {
     0, 0, 0,                //Car base
-    0, 1.0f, 1.0f,          //Car gun
+    0, 0.75f, 0.5f,          //Car gun
     0, 0, 0,                //Car barrel (not used)
+
+    0, 0, 0,         //Basictank
+    0, 0.5f, 0.35f,
+    0, 0, 0,
 
     0, 0, 0,         //Supertank
     0, 1.0f, 0.65f,
     0, 0.3f, -0.5f
+};
+
+//For firing effects
+static const float g_pUnitBarrelLength[NUMBER_OF_UNITS_WITH_MESHES] =
+{
+    0.5f,   //Car
+    1.0f,   //Basic tank
+    2.0f    //Supertank
 };
 
 

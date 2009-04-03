@@ -131,6 +131,11 @@ public:
      */
     void setFiringCallback(IUICallback* pObject) { m_pFiringCallBack = pObject; }
 
+    /**
+     * Gets the host asset owning this weapon
+     */
+    virtual IAsset* getHost() const { return m_pHost; }
+
 protected:
 
     /**

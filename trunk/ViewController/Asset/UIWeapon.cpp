@@ -5,6 +5,7 @@
 #include <math.h>
 #include "ParticleFactory.h"
 #include "../Sound/SoundManager.h"
+#include "MeshFileNames.h"
 
 bool UIWeapon::Update(float fFrameTime) 
 {
@@ -40,12 +41,10 @@ void UIWeapon::callBack()
     if(m_pBarrel)
     {
         D3DXVECTOR3* pPos = (D3DXVECTOR3*)(&m_pBarrel->GetWorldMatrix()._41);
-        D3DXVECTOR3* pDir = (D3DXVECTOR3*)(&m_pBarrel->GetWorldMatrix()._31);
-
-        //TODO: Where to get barrel-length? (The factor here)
-        pPos->x -= pDir->x * 2.0f;
-        pPos->z += pDir->z * 2.0f;
-        pPos->y -= pDir->y * 2.0f;
+        D3DXVECTOR3* pDir = (D3DXVECTOR3*)(&m_pBarrel->GetWorldMatrix()._31);        
+        pPos->x -= pDir->x * g_pUnitBarrelLength[m_Tag];
+        pPos->z += pDir->z * g_pUnitBarrelLength[m_Tag];
+        pPos->y -= pDir->y * g_pUnitBarrelLength[m_Tag];
         *pDir *= -20.0f;
         ParticleFactory::createFlame(*pPos, *pDir, 0.1f);
 

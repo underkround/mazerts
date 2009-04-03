@@ -14,6 +14,7 @@
 #include <d3dx9.h>
 #include "../App/C3DObject.h"
 #include "../../Model/Weapon/IWeapon.h"
+#include "../../Model/Asset/IAsset.h"
 #include "../../Model/Common/IUICallback.h"
 
 class UIWeapon : public C3DObject, IUICallback
@@ -29,6 +30,7 @@ public:
         m_pWeapon = pWeapon;
         m_pBarrel = NULL;
         m_Alive = true;
+        m_Tag = pWeapon->getHost()->getTypeTag();
     }
 
     /**
@@ -90,6 +92,11 @@ protected:
      * Pointer to object acting as weapon barrel
      */
     C3DObject* m_pBarrel;
+
+    /**
+     * Tag of the unit to get the correct barrel length for firing effect
+     */
+    int m_Tag;
 };
 
 #endif //__UIWEAPON_H__
