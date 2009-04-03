@@ -20,6 +20,15 @@ C3DParticleEmitter::C3DParticleEmitter(float lifeTime)
 	::memset(&m_ObjectMaterial, 0, sizeof(D3DMATERIAL9));
 
     m_LifeTime = lifeTime;
+
+    if(lifeTime > 0)
+    {
+        m_NeverDies = false;
+    }
+    else
+    {
+        m_NeverDies = true;
+    }
 }
 
 
@@ -146,11 +155,13 @@ bool C3DParticleEmitter::Update(float fFrametime)
 	// update children
 	I3DObject::Update(fFrametime);
 
-
-    m_LifeTime -= fFrametime;
-    if(m_LifeTime < 0)
+    if(!m_NeverDies)
     {
-        return false;
+        m_LifeTime -= fFrametime;
+        if(m_LifeTime < 0)
+        {
+            return false;
+        }
     }
 
     return true;

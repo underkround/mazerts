@@ -13,9 +13,12 @@
 
 #include <d3dx9.h>
 #include "../App/C3DObject.h"
+#include "../App/C3DParticleEmitter.h"
 #include "../../Model/Weapon/IWeapon.h"
 #include "../../Model/Asset/IAsset.h"
 #include "../../Model/Common/IUICallback.h"
+#include "UI3DObjectManager.h"
+#include "MeshFileNames.h"
 
 class UIWeapon : public C3DObject, IUICallback
 {
@@ -25,13 +28,7 @@ public:
      * Constructor
      * @param pWeapon Pointer to IWeapon this object represents
      */
-    UIWeapon(IWeapon* pWeapon)
-    {
-        m_pWeapon = pWeapon;
-        m_pBarrel = NULL;
-        m_Alive = true;
-        m_Tag = pWeapon->getHost()->getTypeTag();
-    }
+    UIWeapon(IWeapon* pWeapon);
 
     /**
      * Destructor
@@ -62,6 +59,7 @@ public:
     {
         m_pBarrel = pBarrel;
         AddChild(pBarrel);
+        pBarrel->AddChild(m_pFireEmitter);
     }
 
     /**
@@ -94,9 +92,11 @@ protected:
     C3DObject* m_pBarrel;
 
     /**
-     * Tag of the unit to get the correct barrel length for firing effect
+     * Particle emitter for muzzle-flares
      */
-    int m_Tag;
+    C3DParticleEmitter* m_pFireEmitter;
+    C3DParticleEmitter::EMIT_PARAMS m_EmitParams;
+
 };
 
 #endif //__UIWEAPON_H__

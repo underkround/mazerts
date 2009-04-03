@@ -77,7 +77,7 @@ public:
 
     /**
      * Constructor
-     * @param lifeTime Lifetime of emitter as seconds
+     * @param lifeTime Lifetime of emitter as seconds, set to 0 for never-dying emitter 
      */
 	C3DParticleEmitter(float lifeTime);
 
@@ -253,8 +253,12 @@ private:
 	float						m_fRotationDelta[NUM_ROTATIONMATRICES][3];
 
 
+    //Controls if emitter is destroyed after lifetime runs out
+    bool m_NeverDies;
+    
     //Lifetime of emitter
     float m_LifeTime;
+
 };
 
 #endif	// __3DPARTICLEEMITTER_H__

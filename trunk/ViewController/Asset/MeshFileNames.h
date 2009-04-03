@@ -53,9 +53,9 @@ static const float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
 //For firing effects
 static const float g_pUnitBarrelLength[NUMBER_OF_UNITS_WITH_MESHES] =
 {
-    0.5f,   //Car
-    1.0f,   //Basic tank
-    2.0f    //Supertank
+    0.6f,   //Car
+    1.3f,   //Basic tank
+    2.4f    //Supertank
 };
 
 
