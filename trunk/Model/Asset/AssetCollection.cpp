@@ -143,6 +143,21 @@ void AssetCollection::updateUnits(const float deltaT)
 
 // ===== REGISTERING
 
+void AssetCollection::registerAsset(IAsset* a)
+{
+    switch(a->getAssetType())
+    {
+    case IAsset::UNIT:
+        registerUnit( (Unit*)a );
+        break;
+    case IAsset::BUILDING:
+        registerBuilding( (Building*)a );
+        break;
+    default:
+        break;
+    }
+}
+
 void AssetCollection::registerUnit(Unit* u) {
     units.pushHead(u);
     notifyAssetCreated(u);

@@ -28,16 +28,15 @@ public:
         TESTMODE_TRANSPARENT_TOGGLER
     };
 
+    virtual int processEvent(int eventFlag, TCHAR arg);
+
     virtual void onRender(LPDIRECT3DDEVICE9 pDevice);
 
     virtual void update(const float frameTime);
 
-//    virtual bool updateControls(const float frameTime);
-
-    void setupTestButton(ID3DApplication* app)
+    void setupTransparencyToggler()
     {
         m_Mode = TESTMODE_TRANSPARENT_TOGGLER;
-        m_App = app;
     }
 
     void setupBouncer()

@@ -33,8 +33,9 @@ void Unit::create()
     // if already registered, return
     if(m_Created)
         return;
-    // transfer the ownership to the collection
-    AssetCollection::registerUnit(this);
+    // IAsset's create registers & transfers the ownership to the collection
+    IAsset::create();
+
     // set "old" position (current)
     m_OldPosX = (unsigned short)getPosition()->x;
     m_OldPosY = (unsigned short)getPosition()->y;

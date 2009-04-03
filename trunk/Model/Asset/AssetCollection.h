@@ -42,6 +42,13 @@ public:
 // ===== MANAGEMENT
 
     /**
+     * Register asset
+     * This can safely be called instead of the specifig register-method,
+     * it does the same
+     */
+    static void registerAsset(IAsset* a);
+
+    /**
      * Register new unit to collection
      */
     static void registerUnit(Unit* u);

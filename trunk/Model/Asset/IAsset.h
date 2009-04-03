@@ -88,7 +88,7 @@ public:
      * Adds the asset to the game, and transfers the ownershp to the
      * collection.
      */
-    virtual void create() = 0;
+    virtual void create();
 
     /**
      * Set weapon to this asset (old weapon will be deleted, if any).
@@ -205,7 +205,8 @@ public:
         {
             m_Position.x = (float)x;
             m_Position.y = (float)y;
-            updatePositionInAssetCollection();
+            if(m_Created)
+                updatePositionInAssetCollection();
             // @TODO: z from terrain
         }
     }
@@ -305,6 +306,9 @@ protected:
     const int       m_IID;          // unique instance id among all assets
     const Type      m_ConcreteType; // the concrete class of this asset
     AssetDef&       m_Def;          // definition struct for this asset
+
+    bool            m_Created;      // true, if asset is registered to the collection
+                                    // this should be taken account when dealing with the collection!
 
     State           m_State;        // the current state of the asset
 

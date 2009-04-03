@@ -29,8 +29,6 @@ public:
 
 private:
 
-    bool        m_Created;
-
 };
 
 #endif // __BUILDING_H__

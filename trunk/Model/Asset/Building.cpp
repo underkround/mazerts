@@ -25,7 +25,9 @@ void Building::create()
 {
     if(m_Created)
         return;
-    AssetCollection::registerBuilding(this);
+    // IAsset's create registers & transfers the ownership to the collection
+    IAsset::create();
+
     m_Created = true;
 }
 

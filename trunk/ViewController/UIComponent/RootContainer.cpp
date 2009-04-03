@@ -133,12 +133,12 @@ int RootContainer::updateControls(const float frameTime)
         // mouse drag
         if(MouseState::mouseButtonBits && MouseState::mouseMoved)
         {
-            m_pFocused->processEvent(CEVENT_MOUSE_DRAGGED, MouseState::mouseButtonBits);
+            result = m_pFocused->processEvent(CEVENT_MOUSE_DRAGGED, MouseState::mouseButtonBits);
         }
 
         // mouse release
         if(MouseState::mouseButtonReleasedBits) {
-            m_pFocused->processEvent(CEVENT_MOUSE_RELEASED, MouseState::mouseButtonReleasedBits);
+            result = m_pFocused->processEvent(CEVENT_MOUSE_RELEASED, MouseState::mouseButtonReleasedBits);
         }
 
         // mouse idle

@@ -45,6 +45,15 @@ IAsset::~IAsset()
 
 // ===== Initialization
 
+void IAsset::create()
+{
+    if(m_Created)
+        return;
+    m_Created = true;
+    AssetCollection::registerAsset(this);
+    //updatePositionInAssetCollection();
+}
+
 void IAsset::setWeapon(IWeapon* weapon)
 {
     // if old logic exists, release it first
@@ -100,6 +109,8 @@ void IAsset::releaseRadar()
 
 void IAsset::updatePositionInAssetCollection()
 {
+    if(!m_Created)
+        return;
     // check if coordinate changed
     if (m_OldPosX != (unsigned short)getPosition()->x || m_OldPosY != (unsigned short)getPosition()->y)
     {

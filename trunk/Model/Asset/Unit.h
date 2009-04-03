@@ -86,10 +86,6 @@ private:
 
     // the weapon & radar are in the IAsset
 
-    // flag for weather this unit is created to prevent registration
-    // to the collection multiple times
-    bool                        m_Created;
-
     // Targets queued for this unit
     DoubleLinkedList<Target*>   m_TargetQueue;
 

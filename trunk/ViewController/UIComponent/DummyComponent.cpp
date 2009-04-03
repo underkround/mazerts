@@ -28,8 +28,6 @@ void DummyComponent::onRender(LPDIRECT3DDEVICE9 pDevice)
     // parent rendering
     UIComponent::onRender(pDevice);
     // own additional rendering
-    if(m_App)
-        m_App->DrawTextW(getPosX(), getPosY(), _T("HELP!"), m_ForegroundARGB);
 
     /*
     // test label rendering, will this be slow or something?
@@ -95,37 +93,39 @@ void DummyComponent::update(const float frameTime)
     m_Changed = true;
 }
 
-
-/*
-#include "UIContainer.h"
-bool DummyComponent::updateControls(const float frameTime)
+int DummyComponent::processEvent(int eventFlag, TCHAR arg)
 {
-    if(!UIComponent::updateControls(frameTime))
-        return false;
-    // good buttons act only on release?
-    if(stealableEvents() == C_EVENT_MOUSE_RELEASED)
-//    if(MouseState::mouseButtonReleased[MOUSE_FOCUS_BUTTON])
+//        setBackground(IApplication::RandInt(0xAA000000, 0xFF000000) + IApplication::RandInt(0x000000, 0xFFFFFF));
+    if(eventFlag & CEVENT_MOUSE_PRESSED)
     {
-        switch(m_Mode)
-        {
-
-        case TESTMODE_TRANSPARENT_TOGGLER:
-            if(m_pParent)
-            {
-                UIContainer* parent = (UIContainer*)m_pParent;
-                parent->setTransparent(!parent->isTransparent());
-            }
-            break;
-
-        case TESTMODE_BOUNCER:
-            m_Bouncing = !m_Bouncing;
-            break;
-
-        default: break;
-        } // switch
-
-        setBackground(IApplication::RandInt(0xAA000000, 0xFF000000) + IApplication::RandInt(0x000000, 0xFFFFFF));
+        setBackground(0xAAFF0000);
     }
-    return true;
-}
+    if(eventFlag & CEVENT_MOUSE_DRAGGED)
+    {
+        setBackground(0xAA00FF00);
+    }
+    if(eventFlag & CEVENT_MOUSE_RELEASED)
+    {
+        setBackground(0xAA0000FF);
+    }
+/*
+    switch(m_Mode)
+    {
+
+    case TESTMODE_TRANSPARENT_TOGGLER:
+        if(m_pParent)
+        {
+            UIContainer* parent = (UIContainer*)m_pParent;
+            parent->setTransparent(!parent->isTransparent());
+        }
+        break;
+
+    case TESTMODE_BOUNCER:
+        m_Bouncing = !m_Bouncing;
+        break;
+
+    default: break;
+    } // switch
 */
+    return STEAL_MOUSE;
+}
