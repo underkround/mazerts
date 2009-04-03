@@ -269,6 +269,29 @@ void GroundMovingLogic::followPath()
     }
     else
     {
+        //If the target has range set, check if close enough to target
+        if(m_pTarget)
+        {
+            float rangeSq = m_pTarget->getRange();
+            if(rangeSq > 0)
+            {
+                rangeSq *= rangeSq;
+                
+                int xdist = m_pTarget->getTargetX() - m_pUnit->getCenterGridX();
+                xdist *= xdist;
+                int ydist = m_pTarget->getTargetY() - m_pUnit->getCenterGridY();
+                ydist *= ydist;
+                
+                //If within range from actual target, stop
+                if(xdist + ydist <= (int)rangeSq)
+                {
+                    clearCurrentTarget();
+                    m_State = IDLE;
+                    return;
+                }
+            }
+        }
+
 #ifdef PATH_UI_DEBUG
         float halfX = m_pUnit->getWidth() * 0.5f;
         float halfY = m_pUnit->getHeight() * 0.5f;

@@ -119,9 +119,16 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     //TEST
 
-    for(int i = 0; i < 1; i++)
+    for(int i = 0; i < 50; i++)
     {
-        AssetFactory::createUnit(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 2, 40+(i * 4), 20+(i % 5) * 4);
+        if(i < 25)
+        {
+            AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 40+(i * 4), 20+(i % 5) * 4);
+        }
+        else
+        {
+            AssetFactory::createUnit(PlayerManager::getPlayer(2), 2, 40+(i * 4), 20+(i % 5) * 4);
+        }
     }
 
     for(int i = 0; i < 10; i++)

@@ -57,6 +57,7 @@ public:
         m_TargetX = m_TargetY = 0;
         m_Range = 0.0f;
         setTarget(target);
+        m_Flags = 0;
     }
 
     /**
@@ -81,10 +82,7 @@ public:
 
     ~Target()
     {
-        if(m_TargetAsset)
-        {
-            m_TargetAsset->unregisterListener(this);
-        }
+        release();
     }
 
     void release()

@@ -55,7 +55,7 @@ public:
         
         m_Ammo = def.clipSize;
         m_ReloadTimer = 0.0f;
-        m_ROFTimer = 0.0f;
+        m_ROFTimer = 0.0f;        
     }
 
     virtual ~IWeapon()

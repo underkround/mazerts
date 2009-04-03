@@ -9,14 +9,15 @@ void IWeapon::setTarget(Target* pTarget)
         delete m_pTarget;
         m_pTarget = NULL;
     }
+
     if(pTarget->getTargetType() == Target::ASSET || pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
     {
         m_pTarget = pTarget;
     }
     else
     {
-        pTarget->release();
         delete pTarget;
+        pTarget = NULL;
     }
 }
 
@@ -36,7 +37,6 @@ void IWeapon::fire()
     }
     else
     {
-        m_pTarget->release();
         delete m_pTarget;
         m_pTarget = NULL;
     }

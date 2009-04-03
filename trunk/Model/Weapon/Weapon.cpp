@@ -6,6 +6,7 @@
 #include "Weapon.h"
 #include "../Common/DoubleLinkedList.h"
 #include "../Asset/IAsset.h"
+#include "../Asset/Unit.h"
 #include "../Command/Target.h"
 
 void Weapon::update(const float deltaT)
@@ -20,9 +21,8 @@ void Weapon::update(const float deltaT)
     //If current target is not asset and does not contain forcing flag, delete it
     if(m_pTarget)
     {
-        if(!m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK) || m_pTarget->getTargetType() != Target::ASSET)
+        if((m_pTarget->getTargetType() != Target::ASSET) && (!m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK)))
         {
-            m_pTarget->release();
             delete m_pTarget;
             m_pTarget = NULL;
         }
@@ -40,6 +40,7 @@ void Weapon::update(const float deltaT)
         int ownY = m_pHost->getGridY();
         int shortestDist = 10000;
         IAsset* currentNearest = NULL;
+        bool outOfRange = true;
 
         while(pNode)
         {
@@ -47,10 +48,11 @@ void Weapon::update(const float deltaT)
             if(distance < shortestDist)
             {
                 shortestDist = distance;
+                currentNearest = pNode->item;
 
                 if(distance < m_Def.range)
                 {
-                    currentNearest = pNode->item;
+                    outOfRange = false;
                 }
             }
             pNode = pNode->next;
@@ -59,8 +61,20 @@ void Weapon::update(const float deltaT)
         if(currentNearest != NULL)
         {
             m_pTarget = new Target(currentNearest);
-        }
 
+            //If target is out of range, and there is no active moving
+            //command, move closer to target (if m_pHost is an unit)
+            if(outOfRange && m_pHost->getAssetType() == IAsset::UNIT)
+            {
+                Unit* pUnit = (Unit*)m_pHost;
+                if(pUnit->getMovingLogic()->getTarget() == NULL)
+                {
+                    Target* pTarget = new Target(currentNearest);
+                    pTarget->setRange(m_Def.range - 2.0f);
+                    pUnit->getMovingLogic()->addTarget(pTarget);
+                }
+            }
+        }
     }
 
     if(m_pTarget)
@@ -147,6 +161,12 @@ void Weapon::update(const float deltaT)
                     {
                         fire();
                     }
+                }
+                else
+                {
+                    //Ditch the target so new one can be picked
+                    delete m_pTarget;
+                    m_pTarget = NULL;
                 }
             }
         }
