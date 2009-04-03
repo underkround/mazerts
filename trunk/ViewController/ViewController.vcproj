@@ -814,6 +814,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Asset\UIProjectile.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Asset\UIUnit.cpp"
 					>
 				</File>

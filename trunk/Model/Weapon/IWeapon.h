@@ -19,7 +19,6 @@
 #include "../Common/Vector3.h"
 //#include "../Asset/IAsset.h"
 #include "../Defs/Defs.h"
-#include "ProjectileCollection.h"
 #include "../Common/IUICallback.h"
 
 class Target;

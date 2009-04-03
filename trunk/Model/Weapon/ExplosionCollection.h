@@ -22,7 +22,6 @@ public:
      * Function-pointer to send information to UI about the explosion
      */
     typedef void (*UICallBack)(Explosion* pExplosion);
-    static UICallBack callBack;
 
     /**
      * Creates the collection
@@ -56,6 +55,11 @@ private:
      * List of explosions within collection
      */
     static DoubleLinkedList<Explosion*>* pExplosionList;
+
+    /**
+     * Callback to ui
+     */
+    static UICallBack callBack;
 };
 
 #endif //__EXPLOSIONCOLLECTION_H__

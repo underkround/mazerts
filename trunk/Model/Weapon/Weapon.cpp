@@ -11,6 +11,29 @@
 
 void Weapon::update(const float deltaT)
 {
+
+    //Reloading if necessary
+    if(m_Ammo == 0)
+    {
+        m_ReloadTimer += deltaT;
+        if(m_ReloadTimer > m_Def.reloadTime)
+        {
+            m_Ammo = m_Def.clipSize;
+            m_ReloadTimer = 0;
+        }
+    }
+
+    //Rate of fire
+    if(m_ROFTimer > 0)
+    {
+        m_ROFTimer -= deltaT;
+        if(m_ROFTimer < 0)
+        {
+            m_ROFTimer = 0;
+        }
+    }
+
+
     //NOTE: Target direction is in relation to the UNIT, not world, and 0 radians = straight forwards
     //      increases counterclockwise, value is between -PI...PI
     Vector3* dir = m_pHost->getDirection();
@@ -122,27 +145,6 @@ void Weapon::update(const float deltaT)
         else
         {
             pointingInRightDirection = true;
-        }
-
-        //Reloading if necessary
-        if(m_Ammo == 0)
-        {
-            m_ReloadTimer += deltaT;
-            if(m_ReloadTimer > m_Def.reloadTime)
-            {
-                m_Ammo = m_Def.clipSize;
-                m_ReloadTimer = 0;
-            }
-        }
-
-        //Rate of fire
-        if(m_ROFTimer > 0)
-        {
-            m_ROFTimer -= deltaT;
-            if(m_ROFTimer < 0)
-            {
-                m_ROFTimer = 0;
-            }
         }
 
         //Shooting only enemy assets or forced targets

@@ -97,6 +97,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     AssetCollection::create(pTerrain->getSize());
     //Initialize projectile collection
     ProjectileCollection::create();
+    ProjectileCollection::setCreationCallback(&UI3DObjectManager::createProjectile);
     //Initialize explosion collection and set callback-method
     ExplosionCollection::create();
     ExplosionCollection::setCallBack(&ParticleFactory::createExplosion);

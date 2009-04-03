@@ -20,7 +20,7 @@ void ParticleFactory::createExplosion(Explosion* pExplosion)
     params.vPosition.x = pExplosion->getX();
 	params.vPosition.y = pExplosion->getY();
     params.vPosition.z = UITerrain::getInstance()->calculateTriangleHeightAt(pExplosion->getX(), pExplosion->getY()) - 1.0f;
-    params.vPositionSpread = D3DXVECTOR3((FLOAT)pExplosion->getRadius() - 1, (FLOAT)pExplosion->getRadius() - 1, 0);
+    params.vPositionSpread = D3DXVECTOR3((FLOAT)pExplosion->getRadius(), (FLOAT)pExplosion->getRadius(), 0);
 
 	// direction
 	params.vDirection = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
@@ -39,7 +39,7 @@ void ParticleFactory::createExplosion(Explosion* pExplosion)
 	params.fWeight = 10.0f;
 	params.fWeightSpread = 3.0f;
 
-    params.dwCount = 50 * pExplosion->getRadius();
+    params.dwCount = 50 * (pExplosion->getRadius() + 1);
 
     pEmitter->SetFade(TRUE);    
     pEmitter->SetScale(TRUE);

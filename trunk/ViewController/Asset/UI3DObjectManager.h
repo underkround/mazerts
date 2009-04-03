@@ -21,6 +21,8 @@
 
 //FORWARD DECLARATIONS
 class UIAsset;
+class Projectile;
+class UIProjectile;
 
 class UI3DObjectManager : public IAssetCollectionListener
 {
@@ -83,6 +85,12 @@ public:
      * @Return UIAsset-pointer to picked asset or NULL if no asset was hit
      */
     static UIAsset* pickAsset(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir);
+
+    /**
+     * Creates a new UIProjectile based on given projectile
+     * @param pProjectile Pointer to projectile to create the ui-counterpart for
+     */
+    static void createProjectile(Projectile* pProjectile);
 
 //IAssetCollectionListener
     /**

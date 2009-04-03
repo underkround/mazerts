@@ -2,6 +2,7 @@
 #include "../App/XFileLoader.h"
 #include "UIUnit.h"
 #include "UIBuilding.h"
+#include "UIProjectile.h"
 
 #include "../../Model/Asset/IAsset.h"
 
@@ -226,4 +227,31 @@ void UI3DObjectManager::createPlayerMaterials()
 D3DMATERIAL9* UI3DObjectManager::getPlayerMaterials(const unsigned int playerIndex)
 {
     return m_ResourceContainer.FindMaterial(g_ppPlayerMaterialNames[playerIndex]);
+}
+
+
+void UI3DObjectManager::createProjectile(Projectile* pProjectile)
+{
+    UIProjectile* pUIProj = new UIProjectile(pProjectile);
+    
+    //TODO: This probably leaks memory as meshes don't get released, should use something from resourcecontainer
+    LPD3DXMESH pMesh = NULL;
+    D3DXCreateBox(getInstance()->getResourceContainer()->GetDevice(),
+            1.0f, 1.0f, 1.0f,
+            &pMesh,
+            NULL);
+
+    pUIProj->Create(pMesh);
+
+    C3DObject::MESHDATA meshdata;
+    meshdata.pTexture = NULL;
+    //TODO: Create material for projectiles, this leaks memory
+    meshdata.pMaterial = new D3DMATERIAL9;
+    memset(meshdata.pMaterial, 0, sizeof(D3DMATERIAL9));
+    meshdata.pMaterial->Ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
+    meshdata.pMaterial->Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+
+    pUIProj->AddMeshData(meshdata);
+
+    getInstance()->getRootObject()->AddChild(pUIProj);
 }

@@ -1,6 +1,7 @@
 #include "ProjectileCollection.h"
 
 DoubleLinkedList<Projectile*>* ProjectileCollection::pProjectileList = NULL;
+ProjectileCollection::UICallBack ProjectileCollection::pCreationCallback = NULL;
 
 void ProjectileCollection::create()
 {

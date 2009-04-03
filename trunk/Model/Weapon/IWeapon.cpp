@@ -1,6 +1,7 @@
 #include "IWeapon.h"
 #include "../Command/Target.h"
 #include "Projectile.h"
+#include "ProjectileCollection.h"
 
 void IWeapon::setTarget(Target* pTarget)
 {
