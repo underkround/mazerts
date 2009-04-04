@@ -27,7 +27,16 @@ public:
     {
         m_pBuilding = pBuilding;
 
-        D3DXMatrixRotationX(&m_mLocal, D3DX_PI * -0.5f);
+        D3DXMatrixRotationX(&m_mLocal, D3DX_PI * 0.5f);
+        m_mLocal._11 = -m_mLocal._11;    
+        m_mLocal._12 = -m_mLocal._12;
+        m_mLocal._13 = -m_mLocal._13;
+        m_mLocal._21 = -m_mLocal._21;
+        m_mLocal._22 = -m_mLocal._22;
+        m_mLocal._23 = -m_mLocal._23;
+        m_mLocal._31 = -m_mLocal._31;
+        m_mLocal._32 = -m_mLocal._32;
+        m_mLocal._33 = -m_mLocal._33;
 
         //Update position
         m_mLocal._41 = pBuilding->getGridX() + (pBuilding->getWidth() / 2.0f);

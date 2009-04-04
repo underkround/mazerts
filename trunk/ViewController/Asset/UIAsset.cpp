@@ -10,7 +10,28 @@
 
 bool UIAsset::Update(float fFrameTime) 
 {
-    I3DObject::Update(fFrameTime);
+    if(m_Alive)
+    {
+        I3DObject::Update(fFrameTime);
+
+        switch(m_pAsset->getState())
+        {
+            case IAsset::STATE_ACTIVE:
+                break;
+            
+            case IAsset::STATE_BEING_BUILT:
+                //Building progress
+                m_mLocal._23 = -(m_pAsset->getHitpoints() / (float)m_pAsset->getHitpointsMax());
+                break;
+            
+            case IAsset::STATE_DESTROYED:
+                break;
+            
+            case IAsset::STATE_PARALYZED:
+                break;
+        }
+    }
+
     return m_Alive;
 }
 

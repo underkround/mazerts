@@ -200,12 +200,6 @@ void Weapon::update(const float deltaT)
                         fire();
                     }
                 }
-                else
-                {
-                    //Ditch the target so new one can be picked
-                    delete m_pTarget;
-                    m_pTarget = NULL;
-                }
             }
         }
 
