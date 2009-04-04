@@ -92,6 +92,11 @@ protected:
     C3DObject* m_pBarrel;
 
     /**
+     * Old pitch for barrel, used to check if matrix update is necessary
+     */
+    float m_OldPitch;
+
+    /**
      * Particle emitter for muzzle-flares
      */
     C3DParticleEmitter* m_pFireEmitter;

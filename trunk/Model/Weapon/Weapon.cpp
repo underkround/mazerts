@@ -4,6 +4,7 @@
  */
 
 #include "Weapon.h"
+#include "Projectile.h"
 #include "../Common/DoubleLinkedList.h"
 #include "../Asset/IAsset.h"
 #include "../Asset/Unit.h"
@@ -147,6 +148,24 @@ void Weapon::update(const float deltaT)
             pointingInRightDirection = true;
         }
 
+        //If the weapon fires SHELLS, turn the barrel
+        if(m_Def.projectileConcreteType == Projectile::SHELL)
+        {
+            m_BarrelPitch = 1.0f - (targetDistSq / (m_Def.range * m_Def.range));
+            if(m_BarrelPitch > 0.9f)
+            {
+                m_BarrelPitch = ((3.141592653589793238462f / 2.0f) * 0.9f);
+            }
+            else if(m_BarrelPitch < 0)
+            {
+                m_BarrelPitch = 0;
+            }
+            else
+            {
+                m_BarrelPitch *= (3.141592653589793238462f / 2.0f);
+            }
+        }
+
         //Shooting only enemy assets or forced targets
         if((m_pTarget->getTargetType() == Target::ASSET && m_pTarget->getTargetAsset()->getOwner() != m_pHost->getOwner()) 
             || m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
@@ -154,9 +173,9 @@ void Weapon::update(const float deltaT)
             //Ready to fire?
             if(m_Ammo > 0 && m_ROFTimer == 0)
             {
-                float targetDist = sqrt(targetDistSq);
+                //float targetDist = sqrt(targetDistSq);
                 //If target is in range
-                if(targetDist < m_Def.range)
+                if(targetDistSq < (m_Def.range * m_Def.range))
                 {
                     //...and turret points in right direction, fire
                     if(pointingInRightDirection)

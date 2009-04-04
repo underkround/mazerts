@@ -1,6 +1,7 @@
 #include "ParticleFactory.h"
 #include "MeshFileNames.h"
 #include "../Terrain/UITerrain.h"
+#include "../App/IApplication.h"
 
 LPDIRECT3DDEVICE9 ParticleFactory::pDevice = NULL;
 UI3DObjectManager* ParticleFactory::pManager = NULL;
@@ -17,14 +18,14 @@ void ParticleFactory::createExplosion(Explosion* pExplosion)
 	::memset(&params, 0, sizeof(C3DParticleEmitter::EMIT_PARAMS));
 
 	// position
-    params.vPosition.x = pExplosion->getX();
-	params.vPosition.y = pExplosion->getY();
+    params.vPosition.x = pExplosion->getX() + IApplication::RandFloat(-1.0f, 1.0f);
+	params.vPosition.y = pExplosion->getY() + IApplication::RandFloat(-1.0f, 1.0f);
     params.vPosition.z = UITerrain::getInstance()->calculateTriangleHeightAt(pExplosion->getX(), pExplosion->getY()) - 1.0f;
     params.vPositionSpread = D3DXVECTOR3((FLOAT)pExplosion->getRadius(), (FLOAT)pExplosion->getRadius(), 0);
 
 	// direction
-	params.vDirection = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-	params.vDirectionSpread = D3DXVECTOR3(2.0f, 2.0f, 1.0f);
+	params.vDirection = D3DXVECTOR3(0.0f, 0.0f, -3.0f);
+	params.vDirectionSpread = D3DXVECTOR3(4.0f, 4.0f, 1.0f);
 
 	// color
 	params.cColor = D3DXCOLOR(0.75f, 0.5f, 0.0f, 1.0f);

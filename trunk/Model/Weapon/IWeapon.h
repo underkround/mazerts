@@ -38,8 +38,8 @@ public:
      */
     enum Type
     {
-        DEFAULT     = 1 << 1,   // the default weapon (Weapon.h)
-        TYPE_END    = 1 << 2    // remember to advance the shift when adding new concrete type
+        DEFAULT     = 1 << 0,   // the default weapon (Weapon.h)
+        TYPE_END    = 1 << 1    // remember to advance the shift when adding new concrete type
     };
 
     IWeapon(Type concreteType, WeaponDef& def) : m_ConcreteType(concreteType), m_Def(def)
@@ -54,7 +54,8 @@ public:
         
         m_Ammo = def.clipSize;
         m_ReloadTimer = 0.0f;
-        m_ROFTimer = 0.0f;        
+        m_ROFTimer = 0.0f;
+        m_BarrelPitch = 0;
     }
 
     virtual ~IWeapon()
@@ -135,6 +136,11 @@ public:
      */
     virtual IAsset* getHost() const { return m_pHost; }
 
+    /**
+     * Returns the barrel pitch (for shell-firing weapons)
+     */
+    inline const float getBarrelPitch() const { return m_BarrelPitch; }
+
 protected:
 
     /**
@@ -156,6 +162,8 @@ protected:
     float m_ReloadTimer;        //Reload-timer
     float m_ROFTimer;           //Rate of fire-timer    
     int m_Ammo;                 //"Clip", after each reload this is filled to m_Def.clipSize
+    
+    float m_BarrelPitch;        //Pitch of barrel
 
     /**
      * Pointer to ui-side -object, used to tell UI-weapon that weapon was fired (particle-effects for turrets)

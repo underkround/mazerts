@@ -30,6 +30,7 @@ public:
         m_Target.y = (float)pProjectile->getTargetY() - m_Origin.y;
         m_Target.z = UITerrain::getInstance()->calculateTriangleHeightAt((float)pProjectile->getTargetX(), (float)pProjectile->getTargetY()) - m_Origin.z;
 
+        m_FlyHeight = pProjectile->getFlyHeight();
     }
 
     virtual ~UIProjectile()
@@ -46,18 +47,27 @@ public:
             
         m_mWorld._41 = m_Origin.x + m_Target.x * t;
         m_mWorld._42 = m_Origin.y + m_Target.y * t;
-        m_mWorld._43 = m_Origin.z + m_Target.z * t;
+        m_mWorld._43 = m_Origin.z + m_Target.z * t - sin(t * D3DX_PI) * m_FlyHeight;
         
         return m_pProjectile->isAlive();
     }
     
 private:
 
-    //Target vector from start to target
+    /**
+     * Target vector from start to target
+     */
     D3DXVECTOR3 m_Target;
 
-    //Start coordinate
+    /**
+     * Start coordinate
+     */
     D3DXVECTOR3 m_Origin;
+
+    /**
+     * Fly-arc highest point
+     */
+    float m_FlyHeight;
 
     /**
      * Pointer to model-side projectile this object represents

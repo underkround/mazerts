@@ -5,7 +5,7 @@
 #include <math.h>
 #include "ParticleFactory.h"
 #include "../Sound/SoundManager.h"
-
+#include "../../Model/Weapon/Projectile.h"
 
 UIWeapon::UIWeapon(IWeapon* pWeapon)
 {
@@ -72,7 +72,7 @@ UIWeapon::UIWeapon(IWeapon* pWeapon)
 
 
 bool UIWeapon::Update(float fFrameTime) 
-{
+{   
     I3DObject::Update(fFrameTime);
 
     D3DXVECTOR3* pDir = (D3DXVECTOR3*)m_pWeapon->getDirection();
@@ -97,6 +97,25 @@ bool UIWeapon::Update(float fFrameTime)
         m_mLocal._43 = z;
     }
 
+    float pitch = m_pWeapon->getBarrelPitch();
+
+    //Pitch barrel
+    if(m_OldPitch != pitch)
+    {
+        m_OldPitch = pitch;
+        
+        D3DXMATRIX& matr = m_pBarrel->GetMatrix();
+
+        //Rotation zeroes location
+        float x = matr._41;
+        float y = matr._42;
+        float z = matr._43;        
+        D3DXMatrixRotationX(&matr, pitch);
+        matr._41 = x;
+        matr._42 = y;
+        matr._43 = z;
+    }
+
     return m_Alive;
 }
 
@@ -104,13 +123,6 @@ void UIWeapon::callBack()
 {
     if(m_pBarrel)
     {
-        /*D3DXVECTOR3* pPos = (D3DXVECTOR3*)(&m_pBarrel->GetWorldMatrix()._41);
-        D3DXVECTOR3* pDir = (D3DXVECTOR3*)(&m_pBarrel->GetWorldMatrix()._31);        
-        pPos->x -= pDir->x * g_pUnitBarrelLength[m_Tag];
-        pPos->z += pDir->z * g_pUnitBarrelLength[m_Tag];
-        pPos->y -= pDir->y * g_pUnitBarrelLength[m_Tag];
-        *pDir *= -20.0f;
-        ParticleFactory::createFlame(*pPos, *pDir, 0.1f);*/
         m_pFireEmitter->Emit(m_EmitParams);
 
         SoundManager::playSound(SOUND_SHOOT, 0.1f, *((D3DXVECTOR3*)&GetMatrix()._41), true);

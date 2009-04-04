@@ -29,8 +29,8 @@ void IWeapon::fire()
     //Fix offsets for ASSET-targets
     if(m_pTarget->getTargetType() == Target::ASSET)
     {
-        pProjectile = new Projectile(m_Def, m_pTarget->getTargetX() + (m_pTarget->getTargetAsset()->getWidth() >> 1),
-                               m_pTarget->getTargetY() + (m_pTarget->getTargetAsset()->getHeight() >> 1), this);
+        pProjectile = new Projectile(m_Def, m_pTarget->getTargetAsset()->getCenterGridX(),
+                               m_pTarget->getTargetAsset()->getCenterGridY(), this);
     }
     else if(m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
     {

@@ -20,6 +20,8 @@ class Projectile
 {
 public:
 
+    static const int FLYHEIGHT_FACTOR = 200;
+
     /**
      * Concrete class types are declared here.
      * When adding new concrete implementing class, define enum for it here.
@@ -59,7 +61,9 @@ public:
             float dy = (float)(m_pHost->getHost()->getCenterGridY() - targetY);
             dy *= dy;
             float dist = sqrt(dx + dy);
-            m_TargetTime = dist / SHELL_SPEED;            
+            m_TargetTime = dist / SHELL_SPEED;
+
+            m_FlyHeight = ((float)FLYHEIGHT_FACTOR) / dist;
         }
     }
 
@@ -101,6 +105,11 @@ public:
      */
     inline const Type getConcreteType() const { return m_ConcreteType; }
 
+    /** 
+     * Get the highest altitude of flight path
+     */
+    inline const float getFlyHeight() const { return m_FlyHeight; }
+
 protected:
 
     IWeapon*        m_pHost; // the weapon from which this projectile was launched
@@ -125,6 +134,11 @@ protected:
      * Time in seconds after which the Shell hits the target
      */
     float m_TargetTime;
+
+    /**
+     * Highest altitude the shell will gain in its flight
+     */
+    float m_FlyHeight;
 
     /**
      * Used to signal the ui-side object to destroy itself, set to false one frame before
