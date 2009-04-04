@@ -8,6 +8,8 @@
 
 #include "Building.h"
 
+#include "../Terrain/Terrain.h"
+
 Building::Building(AssetDef& def) : IAsset(BUILDING, def)
 {
     m_Created = false;
@@ -28,12 +30,32 @@ void Building::create()
     // IAsset's create registers & transfers the ownership to the collection
     IAsset::create();
 
+    //Mark position as unpassable in map
+    //TODO: For factories, it is necessary to leave passable area where the units come out
+    for(int i = 0; i < m_Def.height; i++)
+    {
+        for(int j = 0; j < m_Def.width; j++)
+        {
+            Terrain::getInstance()->setPassability((unsigned short)(m_Position.x + j), (unsigned short)(m_Position.y + i), false);
+        }
+    }    
+
     m_Created = true;
 }
 
 void Building::release()
 {
     IAsset::release();
+
+    //Set ground again as passable
+    for(int i = 0; i < m_Def.height; i++)
+    {
+        for(int j = 0; j < m_Def.width; j++)
+        {
+            Terrain::getInstance()->setPassability((unsigned short)(m_Position.x + j), (unsigned short)(m_Position.y + i), true);
+        }
+    }
+
     m_Created = false;
 }
 

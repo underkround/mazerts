@@ -290,6 +290,16 @@ public:
         // @TODO: initialize with new generator?
     }
 
+    inline void setPassability(const unsigned short x, const unsigned short y, bool passable)
+    {
+        if(x < 0 || x > m_Size-1 || y < 0 || y > m_Size-1)
+        {
+            return;
+        }
+
+        m_ppPassableTile[y][x] = passable;
+    }
+
 // MISC
 
     /**
