@@ -15,8 +15,15 @@ class Weapon : public IWeapon
 {
 public:
 
+    /**
+     * If target stays out of range this many seconds, the unit will delete the target
+     * and check the radar for nearer targets
+     */
+    static const float TARGET_REJECTIONTIME;
+
     Weapon(WeaponDef& def) : IWeapon(DEFAULT, def)
     {
+        m_TargetRejectionTimer = 0.0f;
     }
 
     virtual ~Weapon()
@@ -43,10 +50,11 @@ public:
 private:
     
     /**
-     * Used to prevent unnecessary turning calculations (no turning needed)
+     * Timer used to reject targets that stay out of range for longer than
+     * TARGET_REJECTIONTIME seconds
      */
-    Vector3 m_OldUnnormalizedTargetDirection;
-    
+    float m_TargetRejectionTimer;
+
 };
 
 #endif // __WEAPON_H__

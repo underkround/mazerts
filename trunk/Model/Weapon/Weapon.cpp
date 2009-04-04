@@ -10,6 +10,9 @@
 #include "../Asset/Unit.h"
 #include "../Command/Target.h"
 
+
+const float Weapon::TARGET_REJECTIONTIME = 4.0f;
+
 void Weapon::update(const float deltaT)
 {
 
@@ -45,7 +48,8 @@ void Weapon::update(const float deltaT)
     //If current target is not asset and does not contain forcing flag, delete it
     if(m_pTarget)
     {
-        if((m_pTarget->getTargetType() != Target::ASSET) && (!m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK)))
+        if((m_pTarget->getTargetType() != Target::ASSET) && (!m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
+            || m_TargetRejectionTimer > TARGET_REJECTIONTIME)
         {
             delete m_pTarget;
             m_pTarget = NULL;
@@ -85,6 +89,7 @@ void Weapon::update(const float deltaT)
         if(currentNearest != NULL)
         {
             m_pTarget = new Target(currentNearest);
+            m_TargetRejectionTimer = 0;
 
             //If target is out of range, and there is no active moving
             //command, move closer to target (if m_pHost is an unit)
@@ -97,7 +102,7 @@ void Weapon::update(const float deltaT)
                     pTarget->setRange(m_Def.range - 2.0f);
                     pUnit->getMovingLogic()->addTarget(pTarget);
                 }
-            }
+            }            
         }
     }
 
@@ -199,6 +204,10 @@ void Weapon::update(const float deltaT)
                     {
                         fire();
                     }
+                }
+                else
+                {
+                    m_TargetRejectionTimer += deltaT;
                 }
             }
         }
