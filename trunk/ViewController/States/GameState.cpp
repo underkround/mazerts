@@ -31,6 +31,11 @@
 // Definition things
 #include "../../Model/Defs/DefManager.h"
 
+#include "../UIComponent/UIContainer.h"
+#include "../UIComponent/UIComponent.h"
+#include "../UIComponent/DummyComponent.h"
+
+
 //DEBUG
 #include "../3DDebug/UI3DDebug.h"
 
@@ -117,11 +122,16 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     m_pRootContainer = RootContainer::getInstance();
     m_pRootContainer->create(pDevice, m_pApp);
 
+    // REMOVE - TESTING !!!!!!!!!!!!!!!!!!!!!!
+    DummyComponent* dc = new DummyComponent(10, 10, 60, 60);
+    dc->setupBouncer();
+    m_pRootContainer->addComponent(dc);
+
     // Initialize player manager
     PlayerManager::create(4);
 
     //TEST
-
+/*
     for(int i = 0; i < 50; i++)    
     {
         if(i < 13)
@@ -138,7 +148,15 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     {
         AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 51, 20+(i * 20), 100+(i % 5) * 10);
     }
+*/
 
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 100, 100);
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 100, 110);
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 100, 120);
+    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 110, 110);
+    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 110, 150);
+    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 110, 190);
+    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 110, 220);
 
     //Selector
     hres = m_Selector.create(pDevice);

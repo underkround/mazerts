@@ -6,6 +6,7 @@
 #include <tchar.h>
 
 #include "../App/IApplication.h" // for random
+#include "UIContainer.h"
 
 DummyComponent::DummyComponent(int x, int y, int w, int h) : UIComponent()
 {
@@ -108,24 +109,28 @@ int DummyComponent::processEvent(int eventFlag, TCHAR arg)
     {
         setBackground(0xAA0000FF);
     }
-/*
-    switch(m_Mode)
+
+    // actual action
+    if(eventFlag & CEVENT_MOUSE_RELEASED && mouseIntersects())
     {
-
-    case TESTMODE_TRANSPARENT_TOGGLER:
-        if(m_pParent)
+        switch(m_Mode)
         {
-            UIContainer* parent = (UIContainer*)m_pParent;
-            parent->setTransparent(!parent->isTransparent());
-        }
-        break;
 
-    case TESTMODE_BOUNCER:
-        m_Bouncing = !m_Bouncing;
-        break;
+        case TESTMODE_TRANSPARENT_TOGGLER:
+            if(m_pParent)
+            {
+                UIContainer* parent = (UIContainer*)m_pParent;
+                parent->setTransparent(!parent->isTransparent());
+            }
+            break;
 
-    default: break;
-    } // switch
-*/
+        case TESTMODE_BOUNCER:
+            m_Bouncing = !m_Bouncing;
+            break;
+
+        default: break;
+        } // switch
+    }
+
     return STEAL_MOUSE;
 }

@@ -124,36 +124,55 @@ int RootContainer::updateControls(const float frameTime)
     {
         m_pFocused = getFocus(); //(PROCESS_MOUSE_BUTTONS);
         if(m_pFocused)
+        {
             result = m_pFocused->processEvent(CEVENT_MOUSE_PRESSED, MouseState::mouseButtonPressedBits);
+        }
     }
 
     // other mouse events, if focused and if it handles mouse
-    if(m_pFocused && (m_pFocused->getProcessFlags() & CPROCESS_MOUSE_BUTTONS))
+    else if(m_pFocused && (m_pFocused->getProcessFlags() & CPROCESS_MOUSE_BUTTONS))
     {
-        // mouse drag
-        if(MouseState::mouseButtonBits && MouseState::mouseMoved)
+        if(MouseState::mouseButtonBits)
         {
-            result = m_pFocused->processEvent(CEVENT_MOUSE_DRAGGED, MouseState::mouseButtonBits);
+            if(MouseState::mouseMoved)
+            {
+                // mouse drag
+                result = m_pFocused->processEvent(CEVENT_MOUSE_DRAGGED, MouseState::mouseButtonBits);
+            }
+            else
+            {
+                // do not report ordinary mouse down, useless
+                // still capture so it doesn't fall through
+                result |= m_pFocused->getStealFlags();
+            }
         }
 
         // mouse release
-        if(MouseState::mouseButtonReleasedBits) {
+        if(MouseState::mouseButtonReleasedBits)
+        {
             result = m_pFocused->processEvent(CEVENT_MOUSE_RELEASED, MouseState::mouseButtonReleasedBits);
         }
 
         // mouse idle
         if(!MouseState::mouseMoved && MouseState::mouseIdle >= m_MouseIdleTreshold)
         {
-            // send to focused (if any)
             result = m_pFocused->processEvent(CEVENT_MOUSE_IDLE, 0);
         }
     }
 
+    // mouse wheel
+    /*
+    if(m_pFocused && (m_pFocused->getProcessFlags() & CPROCESS_MOUSE_WHEEL))
+    {
+    }
+    */
+
     // chars in charbuffer
-    if(m_CharBufferCount)
+    if(m_pFocused && m_CharBufferCount && (m_pFocused->getProcessFlags() & CPROCESS_TEXT))
     {
         // send to focused (if any) if it processes text
-        if(m_pFocused->getProcessFlags() & CPROCESS_TEXT) {
+        if(m_pFocused->getProcessFlags() & CPROCESS_TEXT)
+        {
             for(int i=m_CharBufferCount; i>=0; --i)
                 result = m_pFocused->processEvent(CEVENT_CHAR_TYPED, m_CharBuffer[i]);
             m_CharBufferCount = 0;

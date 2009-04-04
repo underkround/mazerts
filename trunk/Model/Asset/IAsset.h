@@ -203,6 +203,8 @@ public:
     {
         if(m_State == STATE_BEING_BUILT)
         {
+            m_OldPosX = x;
+            m_OldPosY = y;
             m_Position.x = (float)x;
             m_Position.y = (float)y;
             if(m_Created)

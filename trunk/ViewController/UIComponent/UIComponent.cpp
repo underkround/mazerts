@@ -9,12 +9,11 @@
 #include "../Controller/IUIController.h"
 
 #include "../Input/MouseState.h"
-//#include "../../Model/Common/Config.h" // for default mouse button
 
 UIComponent::UIComponent()
 {
     m_Pos(0, 0);
-    m_MinSize(10, 10);
+    m_PreferredSize(10, 10);
     m_Size(20, 20);
 
     m_pParent = NULL;
@@ -35,14 +34,14 @@ UIComponent::UIComponent()
     m_ProcessFlags = CPROCESS_MOUSE_BUTTONS;
 }
 
-
+// implement when deriving
+// this default action only steals (mouse)
 int UIComponent::processEvent(int eventFlag, TCHAR arg)
 {
     return m_StealFlags;
 }
 
-
-// ===== Getters
+// ===== Size & position
 
 const int UIComponent::getPosX() const
 {
@@ -51,7 +50,6 @@ const int UIComponent::getPosX() const
     return m_Pos.x;
 }
 
-
 const int UIComponent::getPosY() const
 {
     if(m_pParent)
@@ -59,6 +57,23 @@ const int UIComponent::getPosY() const
     return m_Pos.y;
 }
 
+const bool UIComponent::setSize(const int width, const int height)
+{
+    bool changed = false;
+    if(width >= m_PreferredSize.x) {
+        m_Size.x = width;
+        changed = true;
+    }
+    if(height >= m_PreferredSize.y) {
+        m_Size.y = height;
+        changed = true;
+    }
+    if(changed)
+        m_Changed = true;
+    return changed;
+}
+
+// =====
 
 void UIComponent::release()
 {
@@ -117,65 +132,6 @@ void UIComponent::render(LPDIRECT3DDEVICE9 pDevice)
     }
 }
 
-/*
- * Default input handling,
- * eats defined mouse clicks and updates controller, if any set.
- * other inputs fall through
- */
-/*
-bool UIComponent::updateControls(const float frameTime)
-{
-    // hidden components do not handle controls
-    if(!m_Visible)
-        return false;
-
-//    return (stealableEvents()) ? true : false;
-
-    if(m_pParent)
-        return true;
-
-    int eventFlags = stealableEvents();
-
-    if(m_Focused)
-    {
-        //if(!mouseIntersects())
-        //    eventFlags |= C_EVENT_OUTSIDE;
-        // if release-event happened outside us, we still steal it but lose our focus
-        if((eventFlags & C_EVENT_MOUSE_RELEASED))
-        //if(MouseState::mouseButtonReleasedBits)
-        {
-            // if the release happened outside us, we still steal it but do not act
-            if(!mouseIntersects())
-            {
-                //return (eventFlags | C_EVENT_OUTSIDE);
-                focusLost();
-            }
-            // if the release happened inside us, update the controller
-            else if(m_pController)
-                m_pController->updateControls(frameTime);
-            return true;
-        }
-        else if((eventFlags & C_EVENT_MOUSE_PRESSED) || (eventFlags & C_EVENT_MOUSE_DOWN))
-            return true;
-        return false;
-        //return eventFlags;
-    }
-    else if(eventFlags & C_EVENT_MOUSE_PRESSED)
-    {
-        // if(m_pParent) return true; // TODO: would this be optimization?
-        if(mouseIntersects())
-        {
-            focusGain();
-            return true;
-        }
-    }
-    // nothing to pass, no constrol stealing
-    //return C_EVENT_NONE;
-    return false;
-}
-*/
-
-
 
 
 /**
@@ -233,7 +189,6 @@ HRESULT UIComponent::onRestore(LPDIRECT3DDEVICE9 pDevice)
     return S_OK;
 }
 
-
 HRESULT UIComponent::onCreate(LPDIRECT3DDEVICE9 pDevice)
 {
     // create default background vertexbuffer
@@ -245,12 +200,13 @@ HRESULT UIComponent::onCreate(LPDIRECT3DDEVICE9 pDevice)
     return S_OK;
 }
 
-
 void UIComponent::onRender(LPDIRECT3DDEVICE9 pDevice)
 {
     // set texture if set
     if(m_BackgroundStyle == FILLSTYLE_TEXTURE && m_pBackgroundTexture)
         pDevice->SetTexture(0, m_pBackgroundTexture);
+    else
+        pDevice->SetTexture(0, NULL);
 
     // render the default background
     if(m_pBackgroundVB)
@@ -265,7 +221,6 @@ void UIComponent::onRender(LPDIRECT3DDEVICE9 pDevice)
         pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     }
 }
-
 
 void UIComponent::onChange(LPDIRECT3DDEVICE9 pDevice)
 {

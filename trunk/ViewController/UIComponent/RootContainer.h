@@ -24,7 +24,7 @@
 #include "../App/IApplication.h"
 
 
-#define CHARBUFFER_SIZE 30
+#define ROOTCONTAINER_CHARBUFFER_SIZE 30
 
 class RootContainer : public UIContainer
 {
@@ -65,7 +65,7 @@ public:
      */
     void inputChar(TCHAR c)
     {
-        if(m_CharBufferCount < CHARBUFFER_SIZE)
+        if(m_CharBufferCount < ROOTCONTAINER_CHARBUFFER_SIZE)
         {
             m_CharBuffer[m_CharBufferCount] = c;
             ++m_CharBufferCount;
@@ -149,7 +149,7 @@ protected:
 
     // charbuffer
     int             m_CharBufferCount;
-    TCHAR           m_CharBuffer[CHARBUFFER_SIZE];
+    TCHAR           m_CharBuffer[ROOTCONTAINER_CHARBUFFER_SIZE];
 
 };
 

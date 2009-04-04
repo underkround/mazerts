@@ -188,7 +188,7 @@ void AssetCollection::clearBuildingArray(unsigned short posX, unsigned short pos
 {
     for (unsigned short x = 0; x < width; x++)
         for (unsigned short y = 0; y < height; y++)
-            m_pppUnitArray[y + posY][x + posX] = NULL;
+            m_pppBuildingArray[y + posY][x + posX] = NULL;
 }
 
 

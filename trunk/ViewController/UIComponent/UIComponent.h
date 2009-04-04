@@ -118,63 +118,7 @@ public:
      * Update call with deltaTime, override if you need one
      * @param frameTime seconds passed since last update call
      */
-    virtual void update(const float frameTime)
-    {
-    }
-
-    /**
-     * Update call for focused component to act on input.
-     *
-     * Receive input-time and handle input if focused by upper level component.
-     *
-     * The return value is used for determing if the component steals the
-     * control. If true is returned, it means that the component has exclusive
-     * control and others should not handle the input (if return is false,
-     * the component is "transparent" in sense of controls and the input handling
-     * chain should continue.
-     *
-     * This default implementation steals the control (returns true) for
-     * mouse buttons defined for this component (default or overridden).
-     * with actions: pressed, down or released. It's not checked wether the
-     * action happens in- or outside this component, do it in your own
-     * implementation with:
-     *
-     * if(intersects(MouseState::mouseX, MouseState::mouseY))
-     *     ; // action is inside us
-     *
-     * Mouse movement with buttons up (or buttons down that we are not set to
-     * handle) will fall through this (returns false).
-     *
-     * You can use this from deriving class to quick check for mouse down/released
-     * inside the component, and then possibly determine the actual action to be
-     * performed.
-     *
-     * example:
-     *
-     * class SomeButton : public UIComponent {
-     *     SomeButton() : UIComponent() {
-     *         registerMouseButton(1); // listen to mouse button 1
-     *     }
-     *     virtual bool updateControls(const float frameTime) {
-     *         if(!UIComponent::updateControls(frameTime)) {
-     *             return false; // no mouse down event that was setinside us
-     *         }
-     *         if(!mouseIntersects()) {
-     *             return true; // no action but we still steal the input
-     *         }
-     *         // mouse down event with button 0
-     *         // determine which action (pressed, released..)
-     *         // and what you intented to happen
-     *     }
-     * }
-     *
-     * @param frameTime Seconds passed since last frame (possibly NOT the last
-     *                  call to this method). Use the update()-method for that.
-     * @return          True, if the component handled the input and the
-     *                  handling should not be passed to others -> input stealing
-     *                  False means the controls will be passed on on upper levels.
-     */
-//    virtual bool updateControls(const float frameTime);
+    virtual void update(const float frameTime) { }
 
     /**
      * Release resources.
@@ -339,6 +283,7 @@ public:
      */
     virtual bool removeComponent(UIComponent* child)
     {
+        // basic component does not have children, so no action
         return false;
     }
 
@@ -379,30 +324,13 @@ public:
     }
 
     /**
-     * @return the relative position X of the component (in parent space)
-     */
-    inline const int getRelativePosX() const
-    {
-        return m_Pos.x;
-    }
-
-    /**
-     * @return the relative position Y of the component (in parent space)
-     */
-    inline const int getRelativePosY() const
-    {
-        return m_Pos.y;
-    }
-
-    /**
      * One-line-method version of the position getter.
      * @return  struct containing the relative position of the component (in
      *          parent space)
      */
-    virtual Point2 getRelativePosition() const
-    {
-        return Point2(m_Pos.x, m_Pos.y);
-    }
+    virtual Point2 getRelativePosition() const  { return Point2(m_Pos.x, m_Pos.y); }
+    inline const int getRelativePosX() const    { return m_Pos.x; }
+    inline const int getRelativePosY() const    { return m_Pos.y; }
 
     /**
      * Set the position of the component (relative to parent) in pixels (from
@@ -417,56 +345,31 @@ public:
         return true;
     }
 
-
 // ===== Size
 
-
     /**
-     * @return the width of the component
+     * @return the preferred size of the component (by default this is the
+     *          minimum size that the component allows to be set).
      */
-    inline const int getWidth() const
-    {
-        return m_Size.x;
-    }
-
-    /**
-     * @return the height of the component
-     */
-    inline const int getHeight() const
-    {
-        return m_Size.y;
-    }
+    inline const int getPreferredWidth() const  { return m_PreferredSize.x; }
+    inline const int getPreferredHeight() const { return m_PreferredSize.y; }
+    inline const Point2 getPreferredSize() const { return Point2(m_PreferredSize.x, m_PreferredSize.y);  }
 
     /**
      * One-line-method version of the size getter.
      * @param width     set the width of the component to this
      * @param height    set the height of the component to this
      */
-    inline const Point2 getSize() const
-    {
-        return Point2(m_Size.x, m_Size.y);
-    }
+    inline const Point2 getSize() const { return Point2(m_Size.x, m_Size.y); }
+    inline const int getWidth() const   { return m_Size.x; }
+    inline const int getHeight() const  { return m_Size.y; }
 
     /**
      * Set the size of the component (in pixels)
      * @param width
      * @param height
      */
-    virtual const bool setSize(const int width, const int height)
-    {
-        bool changed = false;
-        if(width >= m_MinSize.x) {
-            m_Size.x = width;
-            changed = true;
-        }
-        if(height >= m_MinSize.y) {
-            m_Size.y = height;
-            changed = true;
-        }
-        if(changed)
-            m_Changed = true;
-        return changed;
-    }
+    virtual const bool setSize(const int width, const int height);
 
     /**
      * Helper method to determine if given screen coordinates are inside us.
@@ -532,14 +435,13 @@ public:
 
 protected:
 
-
 // ===== Members
 
     // the parent of this component, or NULL
     UIComponent*        m_pParent;
 
     // the minimum bounds of the component
-    Point2              m_MinSize;
+    Point2              m_PreferredSize;
 
     // the component's size properties
     Point2              m_Size;
