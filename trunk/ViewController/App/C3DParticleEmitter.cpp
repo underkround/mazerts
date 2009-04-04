@@ -1,12 +1,11 @@
 #include "C3DParticleEmitter.h"
 #include "IApplication.h"	// only for RandFloat function
-
+#include "C3DObject.h"
 
 // bitmasks for the emitter effects
 #define EMITTERFLAGS_SCALE				1
 #define EMITTERFLAGS_FADE				2
 #define EMITTERFLAGS_ROTATE				4
-
 
 
 C3DParticleEmitter::C3DParticleEmitter(float lifeTime)
@@ -76,9 +75,10 @@ void C3DParticleEmitter::Release(void)
         {
             delete node->item;
             node = node->next;
-        }
-        m_pParticleList->release();
-    }	
+        }        
+        delete m_pParticleList;
+        m_pParticleList = NULL;
+    }
 
 	// release texture pointer array
 	if (m_ppTextures)
@@ -107,20 +107,21 @@ bool C3DParticleEmitter::Update(float fFrametime)
         while(node)
         {
             
-			PARTICLE& particle = *node->item;
+			PARTICLE* particle = node->item;
 
 			// move the particle
-			particle.vPosition.x += particle.vDirection.x * fFrametime;
-			particle.vPosition.y += particle.vDirection.y * fFrametime;
-			particle.vPosition.z += particle.vDirection.z * fFrametime;
+			particle->vPosition.x += particle->vDirection.x * fFrametime;
+			particle->vPosition.y += particle->vDirection.y * fFrametime;
+			particle->vPosition.z += particle->vDirection.z * fFrametime;
 
 			// decrease the lifetime
-			particle.fLifeTime -= fFrametime;
+			particle->fLifeTime -= fFrametime;
 
 			// check if particle is dead
-			if (particle.fLifeTime < 0.0f)
+			if (particle->fLifeTime < 0.0f)
 			{
 				// particle is dead, remove it
+                delete particle;
                 node = m_pParticleList->removeGetNext(node);
 			}
             else
@@ -205,9 +206,10 @@ void C3DParticleEmitter::Render(LPDIRECT3DDEVICE9 pDevice)
 		pDevice->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
 
 		// if we have only one texture, set it to device
-		if (m_dwNumTextures == 1)
+        if (m_dwNumTextures == 1 && m_ppTextures[0] != C3DObject::getCurrentTexture())
 		{
 			pDevice->SetTexture(0, m_ppTextures[0]);
+            C3DObject::setCurrentTexture(m_ppTextures[0]);
 		}
 
 
@@ -235,6 +237,7 @@ void C3DParticleEmitter::Render(LPDIRECT3DDEVICE9 pDevice)
 				{
 					pDevice->SetTexture(0, m_ppTextures[dwIndex]);
 					pLastTexture = m_ppTextures[dwIndex];
+                    C3DObject::setCurrentTexture(pLastTexture);
 				}
 			}
 

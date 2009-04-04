@@ -7,7 +7,7 @@ LPDIRECT3DDEVICE9 ParticleFactory::pDevice = NULL;
 UI3DObjectManager* ParticleFactory::pManager = NULL;
 
 void ParticleFactory::createExplosion(Explosion* pExplosion)
-{
+{    
     //TODO: Should textures be cached somewhere? (FindTexture iterates through the vector EVERY time a unit fires, an explosion occurs etc...)
     LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_pTextureNames[BALLTEXTURE]); 
 
@@ -40,7 +40,7 @@ void ParticleFactory::createExplosion(Explosion* pExplosion)
 	params.fWeight = 10.0f;
 	params.fWeightSpread = 3.0f;
 
-    params.dwCount = 50 * (pExplosion->getRadius() + 1);
+    params.dwCount = (int)(pExplosion->getDamage()) >> 1;
 
     pEmitter->SetFade(TRUE);    
     pEmitter->SetScale(TRUE);

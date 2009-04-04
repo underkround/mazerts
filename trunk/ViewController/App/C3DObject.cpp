@@ -8,6 +8,8 @@
 #include "C3DObject.h"
 #include "../Camera/FrustumCull.h"
 
+LPDIRECT3DTEXTURE9 C3DObject::pCurrentTexture = NULL;
+
 C3DObject::C3DObject(void)
 {
     m_pMesh = NULL;
@@ -70,8 +72,12 @@ void C3DObject::Render(LPDIRECT3DDEVICE9 pDevice)
                 {
                     MESHDATA& data = m_arrMeshData[i];
 
-                    // set the texture
-                    pDevice->SetTexture(0, data.pTexture);
+                    //Set the texture, if it is different than current
+                    if(data.pTexture != pCurrentTexture)
+                    {
+                        pDevice->SetTexture(0, data.pTexture);
+                        pCurrentTexture = data.pTexture;
+                    }
 
                     // set material
                     if (data.pMaterial)

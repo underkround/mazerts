@@ -13,8 +13,8 @@ void ExplosionCollection::create()
             delete node->item;
             node = node->next;
         }
-
         pExplosionList->release();
+        delete pExplosionList;
     }
     pExplosionList = new DoubleLinkedList<Explosion*>();
 }

@@ -21,7 +21,6 @@
 // also requires more computations.
 #define NUM_ROTATIONMATRICES		4
 
-
 class C3DParticleEmitter : public I3DObject
 {
 public:

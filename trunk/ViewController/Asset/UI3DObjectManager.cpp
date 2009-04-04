@@ -208,19 +208,31 @@ void UI3DObjectManager::loadMeshes(LPDIRECT3DDEVICE9 pDevice)
         D3DXCreateTextureFromFile(pDevice, g_pTextureNames[i], &pTexture);
         m_ResourceContainer.AddResource(g_pTextureNames[i], pTexture);
     }
+
+    //Miscellanous objects
+    LPD3DXMESH pMesh = NULL;
+    D3DXCreateSphere(getInstance()->getResourceContainer()->GetDevice(),
+            0.3f, 6, 6, &pMesh, NULL);
+    m_ResourceContainer.AddResource(_T("Shell"), pMesh);
+
+    D3DMATERIAL9 material;
+    memset(&material, 0, sizeof(D3DMATERIAL9));
+    material.Ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
+    material.Diffuse = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);    
+    m_ResourceContainer.AddResource(_T("ShellMaterial"), material);
 }
 
 void UI3DObjectManager::createPlayerMaterials()
 {
     for (int i = 0; i < MAXPLAYERCOUNT; i++)
     {
-        D3DMATERIAL9* pMaterial = new D3DMATERIAL9();
-        pMaterial->Ambient = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
-        pMaterial->Diffuse = D3DXCOLOR(PLAYERCOLORS[i]);
-        pMaterial->Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
-        pMaterial->Specular = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
-        pMaterial->Power = 0.0f;
-        m_ResourceContainer.AddResource(g_ppPlayerMaterialNames[i], *pMaterial);
+        D3DMATERIAL9 material;
+        material.Ambient = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+        material.Diffuse = D3DXCOLOR(PLAYERCOLORS[i]);
+        material.Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+        material.Specular = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+        material.Power = 0.0f;
+        m_ResourceContainer.AddResource(g_ppPlayerMaterialNames[i], material);
     }
 }
 
@@ -231,25 +243,13 @@ D3DMATERIAL9* UI3DObjectManager::getPlayerMaterials(const unsigned int playerInd
 
 
 void UI3DObjectManager::createProjectile(Projectile* pProjectile)
-{
+{    
     UIProjectile* pUIProj = new UIProjectile(pProjectile);
-    
-    //TODO: This probably leaks memory as meshes don't get released, should use something from resourcecontainer
-    LPD3DXMESH pMesh = NULL;
-    D3DXCreateBox(getInstance()->getResourceContainer()->GetDevice(),
-            1.0f, 1.0f, 1.0f,
-            &pMesh,
-            NULL);
-
-    pUIProj->Create(pMesh);
+    pUIProj->Create(getInstance()->getResourceContainer()->FindMesh(_T("Shell")));
 
     C3DObject::MESHDATA meshdata;
     meshdata.pTexture = NULL;
-    //TODO: Create material for projectiles, this leaks memory
-    meshdata.pMaterial = new D3DMATERIAL9;
-    memset(meshdata.pMaterial, 0, sizeof(D3DMATERIAL9));
-    meshdata.pMaterial->Ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
-    meshdata.pMaterial->Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+    meshdata.pMaterial = getInstance()->getResourceContainer()->FindMaterial(_T("ShellMaterial"));
 
     pUIProj->AddMeshData(meshdata);
 

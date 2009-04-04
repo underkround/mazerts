@@ -94,6 +94,17 @@ public:
         pAABBMax->z = m_AABBMax.z + m_mLocal._43;
     }
 
+    /**
+     * Sets the current texture (C3DObject::Render won't call SetTexture change the texture,
+     * if it is the same as this during scene-hierarchy rendering)
+     */
+    inline static void setCurrentTexture(LPDIRECT3DTEXTURE9 pTexture) { pCurrentTexture = pTexture; }
+
+    /**
+     * Gets the current texture
+     */
+    inline static LPDIRECT3DTEXTURE9 getCurrentTexture() { return pCurrentTexture; }
+
 protected:
     // an array of mesh data structures
     vector<MESHDATA>        m_arrMeshData;
@@ -106,6 +117,12 @@ protected:
      */
     D3DXVECTOR3 m_AABBMin;
     D3DXVECTOR3 m_AABBMax;
+
+    /**
+     * Pointer to current 0-level texture used in rendering (to prevent
+     * unnecessary texture-changes in render)
+     */
+    static LPDIRECT3DTEXTURE9 pCurrentTexture;
 };
 
 #endif    // __C3DOBJECT_H__

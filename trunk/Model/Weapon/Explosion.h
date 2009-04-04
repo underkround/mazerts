@@ -64,6 +64,9 @@ public:
     inline const unsigned short getY() const { return m_PositionY; }
     inline const unsigned short getRadius() const { return m_Radius; }
 
+    //Getter for damage
+    inline const float getDamage() const { return m_Damage; }
+
 private:
 
     unsigned short m_PositionX;

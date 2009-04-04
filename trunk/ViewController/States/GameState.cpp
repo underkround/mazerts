@@ -325,6 +325,8 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
     //Antsys models need reverse backface-culling
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+    pDevice->SetTexture(0, NULL);
+    C3DObject::setCurrentTexture(NULL);
     m_pManager->getRootObject()->Render(pDevice);
 
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
