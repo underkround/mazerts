@@ -159,7 +159,7 @@ void UIUnit::Render(LPDIRECT3DDEVICE9 pDevice)
                     MESHDATA& data = m_arrMeshData[i];
 
                     // set the texture
-                    if(data.pTexture != C3DObject::getCurrentTexture()
+                    if(data.pTexture != C3DObject::getCurrentTexture())
                     {
                         pDevice->SetTexture(0, data.pTexture);
                         C3DObject::setCurrentTexture(data.pTexture);
