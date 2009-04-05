@@ -91,8 +91,8 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     //Model-terrain
     Terrain* pTerrain = Terrain::getInstance();
-    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
-    //ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/murgo.bmp");// :P
+    //AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
+    ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/map.bmp");// :P
 
     // for zemm's slow computer's local override
     if(!Config::getInstance()->getValueAsBool("debug skip terrain generating", false))
@@ -126,6 +126,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     cont->setPosition(600, 0);
     cont->setSize(400, 300);
     cont->setBackground(0xFFCCFF00);
+    cont->setTransparent(true);
 
     UIContainer* cont2 = new UIContainer();
     m_pRootContainer->addComponent(cont2);
@@ -167,13 +168,10 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     }
 */
 
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 100, 100);
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 100, 110);
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 100, 120);
-    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 110, 110);
-    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 110, 150);
-    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 110, 190);
-    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 110, 220);
+    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 130, 450);
+    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 90, 450);
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 30, 500);
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 150, 500);
 
     //Selector
     hres = m_Selector.create(pDevice);

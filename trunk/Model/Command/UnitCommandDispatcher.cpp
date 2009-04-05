@@ -80,7 +80,7 @@ bool UnitCommandDispatcher::dispatch(bool addToQueue)
     if(!m_Target.isStatic())
     {
         m_Target.setFlag(Target::TGTFLAG_REPEATING_UNTIL_STATIC);
-        m_Target.setRange(10.0f);
+        m_Target.setRange(20.0f);
     }
 
     ListNode<Unit*>* node = m_Units.headNode();

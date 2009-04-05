@@ -17,7 +17,7 @@ UIComponent::UIComponent()
     m_Size(20, 20);
 
     m_pParent = NULL;
-    m_VertexZ = 0.0000001f;
+    m_VertexZ = 0.0001f;
 
     m_Changed = true;
     m_Visible = true; // render the component?
@@ -212,14 +212,15 @@ void UIComponent::onRender(LPDIRECT3DDEVICE9 pDevice)
     // render the default background
     if(m_pBackgroundVB)
     {
-        pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-        pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-
+        // do this only if no parent
+        if(!m_pParent)
+        {
+            pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+            pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+        }
         pDevice->SetFVF(TRANSLITVERTEX::GetFVF());        
         pDevice->SetStreamSource(0, m_pBackgroundVB, 0, sizeof(TRANSLITVERTEX));
         pDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
-
-        pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     }
 }
 

@@ -96,6 +96,18 @@ public:
         return Vector3(x - a.x, y - a.y, z - a.z);
     }
 
+    void add(const Vector3* other) {
+        x += other->x;
+        y += other->y;
+        z += other->z;
+    }
+
+    void subtract(const Vector3* other) {
+        x -= other->x;
+        y -= other->y;
+        z -= other->z;
+    }
+
     /**
      * Multiplication and division by scalar
      */
@@ -107,6 +119,14 @@ public:
     Vector3 operator /(float a) const {
         float    oneOverA = 1.0f / a; // NOTE: no check for divide by zero here
         return Vector3(x*oneOverA, y*oneOverA, z*oneOverA);
+    }
+
+    void multiply(const float a) {
+        x *= a; y *= a; z *= a;
+    }
+
+    void divide(const float a) {
+        x /= a; y /= a; z /= a;
     }
 
     /**

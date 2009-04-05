@@ -203,6 +203,7 @@ void RootContainer::render(LPDIRECT3DDEVICE9 pDevice)
 {
     // set common rendering flags settings for components here
     pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
     // we just render the children
     ListNode<UIComponent*>* node = m_Children.headNode();

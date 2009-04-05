@@ -1,6 +1,7 @@
 #include "GroundMovingLogic.h"
 #include "../Terrain/Terrain.h"
 #include "../Common/Vector3.h"
+#include "../Common/Matrix4x3.h"
 #include <math.h>
 
 #ifndef PI
@@ -8,7 +9,7 @@
 #endif
 
 #ifdef DIRECT3D_VERSION // 3d debug is possible only on dx side
-//#define PATH_UI_DEBUG   // comment this out when done testing
+#define PATH_UI_DEBUG   // comment this out when done testing
 #ifdef PATH_UI_DEBUG
 #include "../../ViewController/3DDebug/UI3DDebug.h"
 #include "../../ViewController/Terrain/UITerrain.h"
@@ -160,6 +161,7 @@ void GroundMovingLogic::askPath()
             m_CachedReachedTargetX = -1;
             m_CachedReachedTargetY = -1;
             clearCurrentTarget();
+            return;
         }
         // if the target is locked to asset, do not delete it
         else
@@ -169,6 +171,67 @@ void GroundMovingLogic::askPath()
             m_CachedReachedTargetX = m_pTarget->getTargetX();
             m_CachedReachedTargetY = m_pTarget->getTargetY();
             return;
+        }
+    }
+
+    /*
+     * If the target contains a range, get path only to range from the target
+     */
+    if(m_pTarget->getRange() > 2.0f)
+    {
+        // first take a vector from target to us
+        Vector3 fromTargetToUs((float)m_pUnit->getCenterGridX(), (float)m_pUnit->getCenterGridY(), 0);
+        Vector3 targetVector((float)m_pTarget->getTargetX(), (float)m_pTarget->getTargetY(), 0);
+        fromTargetToUs.subtract(&targetVector);
+        // normalize the vector between the target and us
+        fromTargetToUs.normalize();
+        // set the vector to be the range
+        fromTargetToUs.multiply(m_pTarget->getRange());
+        // get the passable area on the range from target
+        unsigned short tmpX = m_TargetX + (unsigned short)fromTargetToUs.x;
+        unsigned short tmpY = m_TargetY + (unsigned short)fromTargetToUs.y;
+        const unsigned char ourSize = m_pUnit->getWidth();
+        Terrain* terr = Terrain::getInstance();
+        bool foundPassable = true;
+        if(!terr->isPassable(tmpX, tmpY, ourSize))
+        {
+            foundPassable = false;
+            // not passable, rotate the range-vectro while we find a passable target
+            Matrix4x3 m;
+            float rotationAmount = 0.1f;
+            int loops = (int)(6.28319f / rotationAmount); // pi*2 / rotation radians ~~ about full circle
+            m.setupRotate(3, rotationAmount);
+            for(int i=0; i<loops; ++i)
+            {
+                // rotate the vector to be tested in new position
+                m.transform(fromTargetToUs);
+                tmpX = m_TargetX + (unsigned short)fromTargetToUs.x;
+                tmpY = m_TargetY + (unsigned short)fromTargetToUs.y;
+                if(terr->isPassable(tmpX, tmpY, ourSize))
+                {
+#ifdef PATH_UI_DEBUG
+UI3DDebug::addSphere((float)tmpX, (float)tmpY, (float)UITerrain::getInstance()->calculateTriangleHeightAt((float)tmpX, (float)tmpY), 4.0f, 2.0f);
+#endif
+                    foundPassable = true;
+                    break; // found passable point
+                }
+                else
+                {
+#ifdef PATH_UI_DEBUG
+UI3DDebug::addSphere((float)tmpX, (float)tmpY, (float)UITerrain::getInstance()->calculateTriangleHeightAt((float)tmpX, (float)tmpY), 1.0f, 2.0f);
+#endif
+                }
+            }
+        }
+
+        // found passable coordinate from range to the target, send it to pathfinder
+        if(foundPassable)
+        {
+            m_TargetX = tmpX;
+            m_TargetY = tmpY;
+#ifdef PATH_UI_DEBUG
+UI3DDebug::addSphere((float)tmpX, (float)tmpY, (float)UITerrain::getInstance()->calculateTriangleHeightAt((float)tmpX, (float)tmpY)+ 3.0f, 2.5f, 2.0f);
+#endif
         }
     }
 
