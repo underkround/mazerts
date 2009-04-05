@@ -55,9 +55,17 @@ public:
      */
     LPD3DXMESH getHealthBlockMesh(C3DResourceContainer* pContainer, const float radius);
 
+    inline void setUnitDir(D3DXVECTOR3* pDir)
+    {
+        m_UnitDir = atan2(pDir->y, pDir->x);
+    }
+
 private:
     IAsset*         m_pAsset; // what's being monitored
 
     bool            m_Alive; // alive flag
-
+    
+    float           m_Dir;      //Current rotation of the healthblock
+    float           m_UnitDir;  //Direction of the unit (to cancel the rotation of unit)
+    float           m_YOffSet;
 };

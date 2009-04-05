@@ -1,7 +1,7 @@
 #include "HealthBlock.h"
 #include "UIAsset.h"
 
-#define HEALTHBLOCK_ROTATIONSPEED 0.5f // comment this line out to disable rotation
+#define HEALTHBLOCK_ROTATIONSPEED 0.75f // comment this line out to disable rotation
 #define HEALTHBLOCK_TORUS_CORNERS 6
 
 HealthBlock::HealthBlock(UIAsset* pAsset, float yOffset, C3DResourceContainer* pContainer)
@@ -9,9 +9,13 @@ HealthBlock::HealthBlock(UIAsset* pAsset, float yOffset, C3DResourceContainer* p
     m_pAsset = pAsset->getAsset();
     pAsset->setHealthBlock(this);
     SetVisible(false);
-    GetMatrix()._42 += yOffset;
+    
     Create(getHealthBlockMesh(pContainer, pAsset->getHalfSize()));
+    
     m_Alive = true;
+    m_Dir = 0;
+    m_UnitDir = 0;
+    m_YOffSet = yOffset;
 }
 
 HealthBlock::~HealthBlock(void)
@@ -55,39 +59,34 @@ void HealthBlock::Release()
 }
 
 bool HealthBlock::Update(float fFrametime)
-{
-    I3DObject::Update(fFrametime);
+{    
     if(!m_Alive)
         return false; // död
 
     if (IsVisible())
     {
         // count new material color
-        float ratio = m_pAsset->getHitpoints() / m_pAsset->getHitpointsMax();
-        int r = (int)(512 - ratio * 512);
+        int ratio = (int)((m_pAsset->getHitpoints() / m_pAsset->getHitpointsMax()) * 512.0f);
+        int r = 512 - ratio;
         if (r > 255) r = 255;
-        int g = (int)(ratio * 512);
+        int g = ratio;
         if (g > 255) g = 255;
 
         GetMeshDataArray()[0].pMaterial->Emissive = D3DXCOLOR(0xff000000 + (r << 16) + (g << 8));
 
-        //D3DXMATRIX &wm = m_pParent->GetParent()->GetWorldMatrix();
-        D3DXMATRIX &wm = GetWorldMatrix();
-        D3DXMATRIX &om = GetMatrix();
-        D3DXMATRIX m;
-        //D3DXMatrixRotationY(&m, D3DX_PI*0.5f);
-        D3DXMatrixRotationY(&m, wm._22);
-        D3DXMatrixMultiply(&om, &om, &m);
-
-/*
         // rotate
 #ifdef HEALTHBLOCK_ROTATIONSPEED
-        D3DXMATRIX matrix;
+    
+        m_Dir += fFrametime * HEALTHBLOCK_ROTATIONSPEED;
+        
         D3DXMATRIX& matrix2 = GetMatrix();
-        D3DXMatrixRotationY(&matrix, fFrametime * HEALTHBLOCK_ROTATIONSPEED);
-        D3DXMatrixMultiply(&matrix2, &matrix2, &matrix);
+        D3DXMatrixRotationY(&matrix2, m_Dir - m_UnitDir);
+        D3DXVECTOR3 vec = (*(D3DXVECTOR3*)&matrix2._31);
+        (*(D3DXVECTOR3*)&matrix2._31) = (*(D3DXVECTOR3*)&matrix2._21);
+        (*(D3DXVECTOR3*)&matrix2._21) = vec;
+        matrix2._42 = m_YOffSet;
 #endif
-*/
+        I3DObject::Update(fFrametime);
     }
 
     return true;

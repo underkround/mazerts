@@ -24,6 +24,10 @@ void UIUnit::updatePosition()
             unitPos->y != m_OldPosition.y || unitPos->z != m_OldPosition.z ||
             dir->x != m_OldDirection.x || dir->y != m_OldDirection.y)
         {
+
+            //Inform healthblock about current direction (so it can cancel the rotation)
+            m_pHealthBlock->setUnitDir(dir);
+
             //Store old position/direction and terrain change counter
             m_UITerrain_ChangeCounter = pTerrain->getChangeCounter();
             m_OldPosition.x = unitPos->x;
