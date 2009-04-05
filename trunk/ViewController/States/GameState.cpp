@@ -120,12 +120,29 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     // UIComponents
     m_pRootContainer = RootContainer::getInstance();
-    m_pRootContainer->create(pDevice, m_pApp);
 
     // REMOVE - TESTING !!!!!!!!!!!!!!!!!!!!!!
-    DummyComponent* dc = new DummyComponent(10, 10, 60, 60);
-    dc->setupBouncer();
-    m_pRootContainer->addComponent(dc);
+    UIContainer* cont = new UIContainer();
+    cont->setPosition(600, 0);
+    cont->setSize(400, 300);
+    cont->setBackground(0xFFCCFF00);
+
+    UIContainer* cont2 = new UIContainer();
+    m_pRootContainer->addComponent(cont2);
+
+    DummyComponent* dc1 = new DummyComponent(10, 10, 60, 60);
+    dc1->setupBouncer();
+    DummyComponent* dc2 = new DummyComponent(80, 10, 60, 60);
+    dc2->setupBouncer();
+    DummyComponent* dc3 = new DummyComponent(50, 100, 60, 60);
+    dc3->setupTransparencyToggler();
+    cont->addComponent(dc1);
+    cont->addComponent(dc2);
+    cont->addComponent(dc3);
+
+    m_pRootContainer->addComponent(cont);
+
+    m_pRootContainer->create(pDevice, m_pApp);
 
     // Initialize player manager
     PlayerManager::create(4);

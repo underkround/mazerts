@@ -31,33 +31,36 @@ public:
 
     enum TargetFlags
     {
-        TGTFLAG_MAKEWAY = 1,     //When forcing units to move out of the way
-        TGTFLAG_FORCEATTACK      //For forcing weapons to attack ground
+        TGTFLAG_MAKEWAY     = 1 << 0,   //When forcing units to move out of the way
+        TGTFLAG_FORCEATTACK = 1 << 1,   //For forcing weapons to attack ground
+        TGTFLAG_REPEATING   = 1 << 2,   //Target should not be removed when reached, but instead it
+                                        //should be sent to the bottom of the queue
+        TGTFLAG_REPEATING_UNTIL_STATIC = 1 << 3 //The target should not be removed as long as it's not static
     };
 
     /**
      * Create target as coordinate target. If contextSensitive flag is set
      * to true, search for asset in the grid and lock to it if found.
      */
-    Target(const unsigned short x, const unsigned short y, const bool contextSensitive)
+    Target(const unsigned short x, const unsigned short y, const bool contextSensitive=false, const int flags=0)
     {
         m_TargetAsset = NULL;
         m_TargetX = m_TargetY = 0;
         m_Range = 0.0f;
         setTarget(x, y, contextSensitive);
-        m_Flags = 0;
+        m_Flags = flags;
     }
 
     /**
      * Create target that is locked to given asset.
      */
-    Target(IAsset* target)
+    Target(IAsset* target, const int flags=0)
     {
         m_TargetAsset = NULL;
         m_TargetX = m_TargetY = 0;
         m_Range = 0.0f;
         setTarget(target);
-        m_Flags = 0;
+        m_Flags = flags;
     }
 
     /**
@@ -176,7 +179,7 @@ public:
      */
     const bool isStatic() const 
     {
-        return (m_TargetAsset) ? false : true;
+        return (m_TargetType == ASSET) ? false : true;
     }
 
     /**
@@ -187,7 +190,7 @@ public:
     {
         if(m_TargetAsset)
             if(m_TargetType == ASSET)
-                return m_TargetAsset->getGridX();
+                return m_TargetAsset->getCenterGridX();
         return m_TargetX;
     }
 
@@ -199,7 +202,7 @@ public:
     {
         if(m_TargetAsset)
             if(m_TargetType == ASSET)
-                return m_TargetAsset->getGridY();
+                return m_TargetAsset->getCenterGridY();
         return m_TargetY;
     }
 
@@ -270,6 +273,14 @@ public:
     inline void unsetFlag(unsigned int flag)
     {
         m_Flags &= ~flag;
+    }
+
+    /**
+     * Clear all flags
+     */
+    inline void clearFlags()
+    {
+        m_Flags = 0;
     }
 
 private:

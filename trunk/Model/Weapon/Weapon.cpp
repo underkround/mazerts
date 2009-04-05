@@ -48,9 +48,15 @@ void Weapon::update(const float deltaT)
     //If current target is not asset and does not contain forcing flag, delete it
     if(m_pTarget)
     {
-        if((m_pTarget->getTargetType() != Target::ASSET) && (!m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
-            || m_TargetRejectionTimer > TARGET_REJECTIONTIME)
-        {
+        // remove the target, if:
+        if(
+            // target is not asset, and forceattack flag is not set
+               ( m_pTarget->getTargetType() != Target::ASSET && !m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK) )
+            // if target relection time exceeded
+            || ( m_TargetRejectionTimer > TARGET_REJECTIONTIME )
+            // if target is not an enemy
+            || ( m_pTarget->getTargetType() == Target::ASSET && !m_pHost->getOwner()->isEnemy(m_pTarget->getTargetAsset()->getOwner()) )
+        ) {
             delete m_pTarget;
             m_pTarget = NULL;
         }
@@ -121,7 +127,7 @@ void Weapon::update(const float deltaT)
         float targetAngle = atan2(m_TargetDirection.y, m_TargetDirection.x) - unitAngle;
         float currentAngle = atan2(m_Direction.y, m_Direction.x);
         float turn = fmod(targetAngle - currentAngle, (2.0f * 3.141592653589793238462f) );
-        
+
         //Select "shorter route"
         if(fabs(turn) > 3.141592653589793238462f)        
         {
@@ -132,7 +138,7 @@ void Weapon::update(const float deltaT)
         float turnSpeed = m_Def.turnSpeed * deltaT;
         
 #define sgn(a) ((a > 0) ? 1 : (a < 0) ? -1 : 0)
-        
+
         if(fabs(turn) > 0.01f)
         {
             float turnAmount = 0.0f;
@@ -159,7 +165,7 @@ void Weapon::update(const float deltaT)
             //Barrel pitching is just a graphical effect and has no effect on the actual firing
             //so just turn it gradually towards correct pitch
             float targetPitch = 1.0f - (targetDistSq / (m_Def.range * m_Def.range));
-                        
+
             if(targetPitch > 0.9f)
             {
                 targetPitch = ((3.141592653589793238462f / 2.0f) * 0.9f);

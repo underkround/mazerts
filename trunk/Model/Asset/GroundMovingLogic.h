@@ -154,9 +154,11 @@ private:
     void move(const float deltaTime);
 
     /** 
-     * Destroys current target
+     * Destroys current target, or puts it in the end of the queue based on it's flags.
+     * @param forceRelease  set to true if the current should be removed whatever
+     *                      the flags say
      */
-    void clearCurrentTarget();
+    void clearCurrentTarget(const bool forceRelease=false);
 
     /**
      * Unit this MovingLogic is owned by

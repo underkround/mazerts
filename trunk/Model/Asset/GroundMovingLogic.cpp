@@ -84,7 +84,7 @@ void GroundMovingLogic::update(Unit* pUnit, const float deltaT)
         {            
             Vector3* pos = m_pUnit->getPosition();
 
-            //If close enough to target, return to idle
+            //If close enough to target
             if( fabs(m_pTarget->getTargetX() - pos->x) < 1.0f && fabs(m_pTarget->getTargetY() - pos->y) < 1.0f)
             {
                 clearCurrentTarget();
@@ -536,11 +536,13 @@ void GroundMovingLogic::addTarget(Target* target)
 void GroundMovingLogic::clearTargets()
 {
     //Release current
-    if(m_pTarget) 
+    if(m_pTarget)
     {
+        // release & remove current target
         m_pTarget->release();
         delete m_pTarget;
         m_pTarget = NULL;
+
         // TODO: what? set state to idle?
         if(m_pAgent)
         {
@@ -567,11 +569,31 @@ void GroundMovingLogic::clearTargets()
     }
 }
 
-void GroundMovingLogic::clearCurrentTarget()
+void GroundMovingLogic::clearCurrentTarget(const bool forceRelease)
 {
     if(m_pTarget)
     {
-        delete m_pTarget;
+        // with force flag, we remove the current target anyway
+        bool removeCurrent = forceRelease;
+
+        // if the target is static and does not have REPEATING -flag, we remove it
+        if( m_pTarget->isStatic() && !m_pTarget->isFlag(Target::TGTFLAG_REPEATING) )
+            removeCurrent = true;
+        // if the target is dynamic and does not have REPEATING_UNTIL_STATIC -flag, we remove it
+        else if( !m_pTarget->isFlag(Target::TGTFLAG_REPEATING_UNTIL_STATIC) )
+            removeCurrent = true;
+
+        if(removeCurrent)
+        {
+            m_pTarget->release();
+            delete m_pTarget;
+        }
+        // if we don't remove the target, move it to the bottom of the queue.
+        // if the queue is empty, keep the target as current
+        else
+        {
+            m_TargetList.pushTail(m_pTarget);
+        }
         m_pTarget = NULL;
     }
     m_State = IDLE;

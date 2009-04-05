@@ -1078,15 +1078,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\UIComponent\GridPanel.cpp"
+					RelativePath=".\UIComponent\GridLayout.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\UIComponent\GridPanel.h"
+					RelativePath=".\UIComponent\GridLayout.h"
 					>
 				</File>
 				<File
 					RelativePath=".\UIComponent\IButtonListener.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\ILayoutManager.h"
 					>
 				</File>
 				<File

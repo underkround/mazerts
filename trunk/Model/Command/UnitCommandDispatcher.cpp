@@ -74,6 +74,15 @@ bool UnitCommandDispatcher::dispatch(bool addToQueue)
         return false;
     // TODO: if target is coordinate, and there are multiple units selected,
     // alter the target so the unit's wont all try to go in the same coordinate
+
+    //TODO: testing, set assets to follow if the target is not static
+    // also set some range to the flag so that the units don't prod each other so much
+    if(!m_Target.isStatic())
+    {
+        m_Target.setFlag(Target::TGTFLAG_REPEATING_UNTIL_STATIC);
+        m_Target.setRange(10.0f);
+    }
+
     ListNode<Unit*>* node = m_Units.headNode();
     while(node)
     {
@@ -81,6 +90,7 @@ bool UnitCommandDispatcher::dispatch(bool addToQueue)
         {
             node->item->getMovingLogic()->clearTargets();
         }
+
         node->item->getMovingLogic()->addTarget(new Target(m_Target));
 
         //TODO: Testing, revise: Only set weapon-target when target is asset? (or some key is down or something)
@@ -88,5 +98,8 @@ bool UnitCommandDispatcher::dispatch(bool addToQueue)
 
         node = node->next;
     }
+
+    m_Target.clearFlags();
+
     return true;
 }

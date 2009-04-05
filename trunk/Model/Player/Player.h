@@ -33,6 +33,16 @@ public:
     inline void setAllies(const int allies) { m_Allies = allies; }
     inline const int getAllies() { return m_Allies; }
 
+    /**
+     * Test if given player is our enemy
+     * @return true if enemy
+     */
+    inline const bool isEnemy(Player* p)
+    {
+        if(!p) return false; // null is not an enemy <3
+        return ( m_Enemies & p->getId() ) ? true : false;
+    }
+
 private:
     int         m_Id; // id of this player
     int         m_Index; // index of this player

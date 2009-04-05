@@ -201,6 +201,9 @@ int RootContainer::updateControls(const float frameTime)
 
 void RootContainer::render(LPDIRECT3DDEVICE9 pDevice)
 {
+    // set common rendering flags settings for components here
+    pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
     // we just render the children
     ListNode<UIComponent*>* node = m_Children.headNode();
     while(node)

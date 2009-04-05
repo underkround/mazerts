@@ -16,6 +16,8 @@
 #include "UIComponent.h"
 #include "../../Model/Common/DoubleLinkedList.h"
 
+class ILayoutManager;
+
 class UIContainer : public UIComponent
 {
 public:
@@ -88,16 +90,22 @@ public:
         return m_Transparent;
     }
 
+// ===== Layout manager methods
+
+    /**
+     * Set the layout manager to this container.
+     * The ownership of the layout manager is transferred to this container
+     * and the layout manager will be destroyed when this panel is released.
+     * If there is already a layout manager set, the old one will be destroyed.
+     * @param pLManager     the new layout manager to use with this container
+     */
+    const void setLayoutManager(ILayoutManager* pLMananager);
+
 // ===== Public component methods
 
     /**
-     * Render self..
-     * UPDATE: Changed to use the default implementation of the IUIComponent
-     */
-    //virtual void onRender(LPDIRECT3DDEVICE9 pDevice);
-
-    /**
-     * Render self (if visible and not transparent).
+     * Render self (if visible and not transparent) using default Component
+     * rendering.
      * Render children (if visible).
      * This does the clipping by the clipping-flag, or skips the whole
      * rendering in cases when the component is not visible
@@ -155,9 +163,13 @@ protected:
 
 // ===== Protected container methods
 
+    void releaseLayout();
+
 // ===== Members
 
     DoubleLinkedList<UIComponent*>  m_Children;
+
+    ILayoutManager* m_pLayoutManager;
 
     // transparent component does not render itself nor handle the controls
     bool            m_Transparent;

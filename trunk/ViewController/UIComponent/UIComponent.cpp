@@ -17,6 +17,7 @@ UIComponent::UIComponent()
     m_Size(20, 20);
 
     m_pParent = NULL;
+    m_VertexZ = 0.0000001f;
 
     m_Changed = true;
     m_Visible = true; // render the component?
@@ -234,33 +235,33 @@ void UIComponent::onChange(LPDIRECT3DDEVICE9 pDevice)
     float posX = (float)getPosX();
     float posY = (float)getPosY();
 
-    //m_pBackgroundVB->Lock(0, 0, (void**)&pBackVertices, D3DLOCK_DISCARD);
-    m_pBackgroundVB->Lock(0, sizeof(TRANSLITVERTEX)*4, (void**)&pBackVertices, D3DLOCK_DISCARD);
+    m_pBackgroundVB->Lock(0, 0, (void**)&pBackVertices, D3DLOCK_DISCARD);
+    //m_pBackgroundVB->Lock(0, sizeof(TRANSLITVERTEX)*4, (void**)&pBackVertices, D3DLOCK_DISCARD);
     {
         pBackVertices[0].x = posX;
         pBackVertices[0].y = posY;
-        pBackVertices[0].z = 0.000001f;
+        pBackVertices[0].z = m_VertexZ;
         pBackVertices[0].tu = 0.0f;
         pBackVertices[0].tv = 1.0f;
         pBackVertices[0].rhw = 0.99f;
 
         pBackVertices[1].x = posX + m_Size.x;
         pBackVertices[1].y = posY;
-        pBackVertices[1].z = 0.000001f;
+        pBackVertices[1].z = m_VertexZ;
         pBackVertices[1].tu = 1.0f;
         pBackVertices[1].tv = 1.0f;
         pBackVertices[1].rhw = 0.99f;
 
         pBackVertices[2].x = posX + m_Size.x;
         pBackVertices[2].y = posY + m_Size.y;
-        pBackVertices[2].z = 0.000001f;
+        pBackVertices[2].z = m_VertexZ;
         pBackVertices[2].tu = 1.0f;
         pBackVertices[2].tv = 0.0f;
         pBackVertices[2].rhw = 0.99f;
 
         pBackVertices[3].x = posX;
         pBackVertices[3].y = posY + m_Size.y;
-        pBackVertices[3].z = 0.000001f;
+        pBackVertices[3].z = m_VertexZ;
         pBackVertices[3].tu = 0.0f;
         pBackVertices[3].tv = 0.0f;
         pBackVertices[3].rhw = 0.99f;

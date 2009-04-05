@@ -437,6 +437,8 @@ protected:
 
 // ===== Members
 
+    float               m_VertexZ;
+
     // the parent of this component, or NULL
     UIComponent*        m_pParent;
 

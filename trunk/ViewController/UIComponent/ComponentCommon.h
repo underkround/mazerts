@@ -38,12 +38,17 @@ public:
     int bottom;
     int left;
 
-    MarginSet() : top(0), right(0), bottom(0), left(0) { }
+    MarginSet()
+        : top(0), right(0), bottom(0), left(0) { }
 
-    MarginSet(int t, int r, int b, int l) : top(t), right(r), bottom(b), left(l) { }
+    MarginSet(const int top, const int right, const int bottom, const int left)
+        : top(top), right(right), bottom(bottom), left(left) { }
 
-    MarginSet(int horizontal, int vertical) : top(vertical), bottom(vertical), left(horizontal), right(horizontal) { }
+    MarginSet(const int horizontal, const int vertical)
+        : top(vertical), bottom(vertical), left(horizontal), right(horizontal) { }
 
+    MarginSet(const int margin)
+        : top(margin), bottom(margin), left(margin), right(margin) { }
 };
 
 
@@ -59,8 +64,14 @@ public:
     int x;
     int y;
 
-    Point2() : x(0), y(0) { }
-    Point2(int px, int py) : x(px), y(py) { }
+    Point2()
+        : x(0), y(0) { }
+
+    Point2(const int xy)
+        : x(xy), y(xy) { }
+
+    Point2(const int px, const int py)
+        : x(px), y(py) { }
 
     Point2 Point2::operator()(int px, int py) {
         x = px;
