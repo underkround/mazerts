@@ -107,7 +107,7 @@ LPD3DXMESH HealthBlock::getHealthBlockMesh(C3DResourceContainer* pContainer, con
     if (!pMesh)
     {
 //        D3DXCreateBox(m_ResourceContainer.GetDevice(), HEALTHBLOCK_WIDTH, HEALTHBLOCK_HEIGHT, HEALTHBLOCK_DEPTH, &pMesh, NULL);
-        D3DXCreateTorus(pContainer->GetDevice(), 0.1f * radius, 1.1f * radius, 3, HEALTHBLOCK_TORUS_CORNERS, &pMesh, NULL);
+        D3DXCreateTorus(pContainer->GetDevice(), 0.1f * radius, 1.5f * radius, 3, HEALTHBLOCK_TORUS_CORNERS, &pMesh, NULL);
         // TODO: Catch FAILED?
         pContainer->AddResource(meshName, pMesh);
         pMesh = pContainer->FindMesh(meshName);

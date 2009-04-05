@@ -225,8 +225,8 @@ public:
     inline short getGridX()         { return (short)m_Position.x; }
     inline short getGridY()         { return (short)m_Position.y; }
 
-    inline unsigned short getCenterGridX()   { return (unsigned short)(m_Position.x + m_Def.width * 0.5f); }
-    inline unsigned short getCenterGridY()   { return (unsigned short)(m_Position.y + m_Def.height * 0.5f); }
+    inline unsigned short getCenterGridX()   { return (unsigned short)(m_Position.x + m_HalfWidth); }
+    inline unsigned short getCenterGridY()   { return (unsigned short)(m_Position.y + m_HalfHeight); }
 
 // ===== Listeners
 
@@ -332,6 +332,9 @@ protected:
     // old position, used to check if coordinate has changed
     unsigned short              m_OldPosX;
     unsigned short              m_OldPosY;
+
+    float           m_HalfWidth;        //Half of the asset width, used for center-coordinates
+    float           m_HalfHeight;       //Half of the asset height
 };
 
 #endif // __ASSET_H__

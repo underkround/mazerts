@@ -36,6 +36,9 @@ IAsset::IAsset(const Type assetType, AssetDef& def) : m_ConcreteType (assetType)
     m_pWeapon = NULL;
     m_pRadar = NULL;
     m_pArmor = new Armor(this);
+
+    m_HalfWidth = m_Def.width * 0.5f;
+    m_HalfHeight = m_Def.height * 0.5f;
 }
 
 IAsset::~IAsset()

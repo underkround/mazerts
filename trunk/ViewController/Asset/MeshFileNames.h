@@ -38,24 +38,24 @@ static const TCHAR g_ppUnitMeshNames[NUMBER_OF_UNITS_WITH_MESHES][3][256] =
 static const float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
 {
     0, 0, 0,                //Car base
-    0, 0.75f, 0.5f,          //Car gun
+    0, 1.0f, 0.65f,         //Car gun
     0, 0, 0,                //Car barrel (not used)
 
     0, 0, 0,         //Basictank
-    0, 0.5f, 0.35f,
+    0, 0.65f, 0.45f,
     0, 0, 0,
 
     0, 0, 0,         //Supertank
-    0, 1.0f, 0.65f,
-    0, 0.3f, -0.5f
+    0, 1.3f, 0.90f,
+    0, 0.4f, -0.65f
 };
 
 //For firing effects
 static const float g_pUnitBarrelLength[NUMBER_OF_UNITS_WITH_MESHES] =
 {
-    0.6f,   //Car
-    1.3f,   //Basic tank
-    2.4f    //Supertank
+    0.8f,   //Car
+    1.75f,   //Basic tank
+    3.2f    //Supertank
 };
 
 

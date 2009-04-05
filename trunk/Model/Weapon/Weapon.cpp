@@ -64,15 +64,15 @@ void Weapon::update(const float deltaT)
 
         ListNode<IAsset*>* pNode = list->headNode();
         
-        int ownX = m_pHost->getGridX();
-        int ownY = m_pHost->getGridY();
+        int ownX = m_pHost->getCenterGridX();
+        int ownY = m_pHost->getCenterGridY();
         int shortestDist = 10000;
         IAsset* currentNearest = NULL;
         bool outOfRange = true;
 
         while(pNode)
         {
-            int distance = abs(pNode->item->getGridX() - ownX) + abs(pNode->item->getGridY() - ownY);
+            int distance = abs(pNode->item->getCenterGridX() - ownX) + abs(pNode->item->getCenterGridY() - ownY);
             if(distance < shortestDist)
             {
                 shortestDist = distance;

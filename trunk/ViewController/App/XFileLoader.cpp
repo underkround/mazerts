@@ -1,7 +1,7 @@
 #include "XFileLoader.h"
 
 //GLOBAL SCALE FACTOR
-const float CXFileLoader::SCALEFACTOR = 0.075f;
+const float CXFileLoader::SCALEFACTOR = 0.1f;
 
 CXFileLoader::CXFileLoader(void)
 {
