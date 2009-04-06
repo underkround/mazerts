@@ -9,7 +9,7 @@
 
 #include <tchar.h>
 
-static const int NUMBER_OF_UNITS_WITH_MESHES = 3;
+static const int NUMBER_OF_UNITS_WITH_MESHES = 6;
 
 /**
  * Contains filenames for different meshes, 3 for every unit (leave unused parts as _T("") )
@@ -28,7 +28,19 @@ static const TCHAR g_ppUnitMeshNames[NUMBER_OF_UNITS_WITH_MESHES][3][256] =
 
     _T("../data/mesh/supertank_base.x"),        //Supertank base
     _T("../data/mesh/supertank_turret.x"),      //turret
-    _T("../data/mesh/supertank_cannon.x")       //barrels
+    _T("../data/mesh/supertank_cannon.x"),      //barrels
+
+    _T(""),                                     //Missiletank base
+    _T(""),                                     //turret
+    _T(""),                                     //barrel
+
+    _T(""),                                     //Nukecannon base
+    _T(""),                                     //turret
+    _T(""),                                     //barrel
+
+    _T("../data/mesh/truck.x"),                 //Resource truck base
+    _T(""),                                     //turret
+    _T("")                                     //barrel
 
 };
 
@@ -47,28 +59,47 @@ static const float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
 
     0, 0, 0,         //Supertank
     0, 1.3f, 0.90f,
-    0, 0.4f, -0.65f
+    0, 0.4f, -0.65f,
+
+    0, 0, 0,         //Missiletank
+    0, 0, 0,
+    0, 0, 0,
+
+    0, 0, 0,         //Nukecannon
+    0, 0, 0,
+    0, 0, 0,
+
+    0, 0, 0,         //Mining/resource truck
+    0, 0, 0,
+    0, 0, 0
 };
 
 //For firing effects
 static const float g_pUnitBarrelLength[NUMBER_OF_UNITS_WITH_MESHES] =
 {
     0.8f,   //Car
-    1.75f,   //Basic tank
-    3.2f    //Supertank
+    1.75f,  //Basic tank
+    3.2f,   //Supertank
+    0.0f,   //Missiletank
+    0.0f,   //Nukecannon
+    0.0f    //Mining truck
 };
 
 
-static const int NUMBER_OF_BUILDINGS_WITH_MESHES = 1;
+static const int NUMBER_OF_BUILDINGS_WITH_MESHES = 2;
 
 /**
- * Contains filenames for different meshes, 2 for every building (leave unused parts as _T("") )
+ * Contains filenames for different meshes, 3 for every building (leave unused parts as _T("") )
  */
 static const TCHAR g_ppBuildingMeshNames[NUMBER_OF_BUILDINGS_WITH_MESHES][3][256] = 
 {
-    _T("../data/mesh/tehdas.x"),
+    _T("../data/mesh/ore_mine.x"),
     _T(""),                                     //DO NOT USE NULL for empty parts (they won't be included 
                                                 //in the array at all, and the indices will be fucked up)
+    _T(""),
+
+    _T("../data/mesh/tehdas.x"),
+    _T(""),                                                
     _T("")
 };
 
@@ -77,8 +108,12 @@ static const TCHAR g_ppBuildingMeshNames[NUMBER_OF_BUILDINGS_WITH_MESHES][3][256
  */
 static const float g_ppBuildingMeshOffsets[NUMBER_OF_BUILDINGS_WITH_MESHES][3][3] =
 {
-    0, 0, 0,                //Factory base
+    0, 0, 0,                //Ore mine base
     0, 0, 0,                //No gun, so values won't matter, have to be here anyway for indice correctness
+    0, 0, 0,
+
+    0, 0, 0,                //Factory base
+    0, 0, 0,
     0, 0, 0
 };
 
@@ -94,7 +129,7 @@ enum Textures
     STARTEXTURE
 };
 
-static const TCHAR g_pTextureNames[NUMBER_OF_TEXTURES][256] = 
+static const TCHAR g_ppTextureNames[NUMBER_OF_TEXTURES][256] = 
 {
     _T("../data/textures/16ball.png"),
     _T("../data/textures/16star.png")

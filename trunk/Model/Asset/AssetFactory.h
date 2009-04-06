@@ -8,9 +8,13 @@
 #ifndef __ASSETFACTORY_H__
 #define __ASSETFACTORY_H__
 
-#include "IAsset.h"
-#include "Unit.h"
-#include "Building.h"
+
+//Forward declarations
+class IAsset;
+class Unit;
+class Building;
+class OreMine;
+class Player;
 
 class AssetFactory
 {
@@ -46,6 +50,13 @@ public:
                                     int buildingType,
                                     short positionX,
                                     short positionY);
+
+    /**
+     * Creates new ore mine, this is a special case building which should never be
+     * created by players, and should be only created at the beginning of the game
+     * @return pointer to new OreMine-instance
+     */
+    static OreMine* createOreMine(short positionX, short positionY);
 
 private:
 

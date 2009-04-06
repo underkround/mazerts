@@ -16,6 +16,7 @@ Unit::Unit(AssetDef& def) : IAsset(UNIT, def)
     m_pMovingLogic = NULL;
     m_pWeapon = NULL;
     m_pRadar = NULL;
+    m_pResourcer = NULL;
     m_Created = false;
     m_ParalyzeTimer = 0;
 }
@@ -48,6 +49,13 @@ void Unit::create()
 void Unit::release()
 {
     releaseMovingLogic();
+    
+    if(m_pResourcer)
+    {
+        delete m_pResourcer;
+        m_pResourcer = NULL;
+    }
+
     IAsset::release(); // release weapon & radar
     m_Created = false;
 }
@@ -107,6 +115,12 @@ char Unit::update(const float deltaT)
         // update our weapon
         if(m_pWeapon)
             m_pWeapon->update(deltaT);
+
+        //Update the resourcer component
+        if(m_pResourcer)
+        {
+            m_pResourcer->update(deltaT);
+        }
 
         // update our moving
         if(m_pMovingLogic)

@@ -378,6 +378,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Model\Asset\Resourcer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Asset\Resourcer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Model\Asset\Unit.cpp"
 					>
 				</File>

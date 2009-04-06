@@ -205,8 +205,8 @@ void UI3DObjectManager::loadMeshes(LPDIRECT3DDEVICE9 pDevice)
 
     for(int i = 0; i < NUMBER_OF_TEXTURES; i++)
     {
-        D3DXCreateTextureFromFile(pDevice, g_pTextureNames[i], &pTexture);
-        m_ResourceContainer.AddResource(g_pTextureNames[i], pTexture);
+        D3DXCreateTextureFromFile(pDevice, g_ppTextureNames[i], &pTexture);
+        m_ResourceContainer.AddResource(g_ppTextureNames[i], pTexture);
     }
 
     //Miscellanous objects

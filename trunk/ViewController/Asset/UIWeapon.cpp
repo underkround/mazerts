@@ -13,7 +13,7 @@ UIWeapon::UIWeapon(IWeapon* pWeapon)
     m_pBarrel = NULL;
     m_Alive = true;        
 
-    PDIRECT3DTEXTURE9 pTexture = UI3DObjectManager::getInstance()->getResourceContainer()->FindTexture(g_pTextureNames[BALLTEXTURE]); 
+    PDIRECT3DTEXTURE9 pTexture = UI3DObjectManager::getInstance()->getResourceContainer()->FindTexture(g_ppTextureNames[BALLTEXTURE]); 
 
     m_pFireEmitter = new C3DParticleEmitter(0);
     m_pFireEmitter->Create(1, &pTexture, C3DParticleEmitter::ePARTICLETYPE_BILLBOARD);            

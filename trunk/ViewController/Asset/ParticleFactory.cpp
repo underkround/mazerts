@@ -9,7 +9,7 @@ UI3DObjectManager* ParticleFactory::pManager = NULL;
 void ParticleFactory::createExplosion(Explosion* pExplosion)
 {    
     //TODO: Should textures be cached somewhere? (FindTexture iterates through the vector EVERY time a unit fires, an explosion occurs etc...)
-    LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_pTextureNames[BALLTEXTURE]); 
+    LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_ppTextureNames[BALLTEXTURE]); 
 
     C3DParticleEmitter* pEmitter = new C3DParticleEmitter(1.0f);
     pEmitter->Create(1, &pTexture, C3DParticleEmitter::ePARTICLETYPE_BILLBOARD);    
@@ -52,7 +52,7 @@ void ParticleFactory::createExplosion(Explosion* pExplosion)
 void ParticleFactory::createExplosion(const D3DXVECTOR3& pos, int size)
 {
     //TODO: Should textures be cached somewhere? (FindTexture iterates through the vector EVERY time a unit fires, an explosion occurs etc...)
-    LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_pTextureNames[BALLTEXTURE]); 
+    LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_ppTextureNames[BALLTEXTURE]); 
 
     C3DParticleEmitter* pEmitter = new C3DParticleEmitter(1.0f);
     pEmitter->Create(1, &pTexture, C3DParticleEmitter::ePARTICLETYPE_BILLBOARD);    
@@ -94,7 +94,7 @@ void ParticleFactory::createExplosion(const D3DXVECTOR3& pos, int size)
 
 void ParticleFactory::createFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir, float lifeTime)
 {
-    LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_pTextureNames[BALLTEXTURE]); 
+    LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_ppTextureNames[BALLTEXTURE]); 
 
     C3DParticleEmitter* pEmitter = new C3DParticleEmitter(lifeTime);
     pEmitter->Create(1, &pTexture, C3DParticleEmitter::ePARTICLETYPE_BILLBOARD);

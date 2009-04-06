@@ -11,8 +11,8 @@
 #include "../Asset/IAssetRadar.h"   // for Type-enum validation
 #include "../Asset/IMovingLogic.h"  // for Type-enum validation
 #include "../Weapon/IWeapon.h"      // for Type-enum validation
-#include "../Weapon/Projectile.h"  // for Type-enum validation
-
+#include "../Weapon/Projectile.h"   // for Type-enum validation
+#include "../Asset/Resourcer.h"     // for Type-enum validation
 
 DefManager::DefManager()
 {
@@ -122,8 +122,13 @@ bool DefManager::loadAssetDef(int tag)
     d->constructionCostEnergy = c->getValueAsInt(   tags, "asset constrcution cost energy", 0);
     d->constructionCostOre  = c->getValueAsInt(     tags, "asset constrcution cost ore", 10);
 
-    d->gridExitPointX       = c->getValueAsInt(     tags, "asset grid exit point x", 0);
-    d->gridExitPointY       = c->getValueAsInt(     tags, "asset grid exit point y", 0);
+    d->gridPassableAreaX       = c->getValueAsInt(     tags, "asset grid passable area x", 0);
+    d->gridPassableAreaY       = c->getValueAsInt(     tags, "asset grid passable area y", 0);
+    d->gridPassableAreaWidth    = c->getValueAsInt(     tags, "asset grid passable area width", 0);
+    d->gridPassableAreaHeight   = c->getValueAsInt(     tags, "asset grid passable area height", 0);
+    d->gridEntrancePointX    = c->getValueAsInt(     tags, "asset grid entrance point x", 0);
+    d->gridEntrancePointY    = c->getValueAsInt(     tags, "asset grid entrance point y", 0);
+
     d->idleEnergyConsumption = c->getValueAsInt(    tags, "asset idle energy consumption", 1);
     d->name                 = c->getValueAsString(  tags, "asset name", "unnamed");
     d->description          = c->getValueAsString(  tags, "asset description", "unset description");
@@ -160,7 +165,7 @@ bool DefManager::loadAssetDef(int tag)
     else
         d->pDefBuilder = NULL;
 
-    t = c->getValueAsInt(tags, "asset resourer tag");
+    t = c->getValueAsInt(tags, "asset resourcer tag");
     if(t && loadResourcerDef(t))
         d->pDefResourcer = getResourcerDef(t);
     else
@@ -304,8 +309,6 @@ bool DefManager::loadBuilderDef(int tag)
  */
 bool DefManager::loadResourcerDef(int tag)
 {
-    return false; // TODO: IMPLEMENT RESOURCER COMPONENT!
-
     Config* c = Config::getInstance();
     string tags = intToString(tag);
     // use old or create new
@@ -319,16 +322,15 @@ bool DefManager::loadResourcerDef(int tag)
     // values
     int type = c->getValueAsInt(tags, "resourcer concrete type");
     // validate the concrete type - it needs to be n^2 value and declared concrete type
-    /*
-    if( ((type & (type - 1)) != 0)  ||  !(type & (IResourcer::TYPE_END - 1)) ) {
+    if( ((type & (type - 1)) != 0)  ||  !(type & (Resourcer::TYPE_END - 1)) ) {
         // discard this def for invalid concrete type
         if(isNew) delete d;
         return false;
-    }*/
+    }
+    d->concreteType = type;
     d->tag = tag;
-
-    // load values
-    // TODO
+    d->oreCapacity = c->getValueAsInt(tags, "resourcer capacity", 0);
+    d->loadTime = c->getValueAsFloat(tags, "resourcer load time", 0.0f);
 
     // store if new
     if(isNew)

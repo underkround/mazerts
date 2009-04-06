@@ -445,11 +445,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Asset\OreMine.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Asset\Radar.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Asset\Radar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\Resourcer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\Resourcer.h"
 					>
 				</File>
 				<File

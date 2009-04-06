@@ -38,7 +38,20 @@ void Building::create()
         {
             Terrain::getInstance()->setPassability((unsigned short)(m_Position.x + j), (unsigned short)(m_Position.y + i), false);
         }
-    }    
+    }
+
+    //Passable area within building (for mines, factories, resource yard...)
+    if(m_Def.gridPassableAreaHeight > 0 && m_Def.gridPassableAreaWidth > 0)
+    {
+        for(int i = 0; i < m_Def.gridPassableAreaHeight; i++)
+        {
+            for(int j = 0; j < m_Def.gridPassableAreaWidth; j++)
+            {
+                Terrain::getInstance()->setPassability((unsigned short)(m_Position.x + m_Def.gridPassableAreaX + j), 
+                                                       (unsigned short)(m_Position.y + m_Def.gridPassableAreaY + i), true);
+            }        
+        }
+    }
 
     m_Created = true;
 }

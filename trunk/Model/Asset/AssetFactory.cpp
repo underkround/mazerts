@@ -7,9 +7,15 @@
  */
 
 #include "AssetFactory.h"
+#include "IAsset.h"
+#include "Unit.h"
+#include "Building.h"
+#include "OreMine.h"
 #include "GroundMovingLogic.h"
 #include "Radar.h"
 #include "../Weapon/Weapon.h"
+#include "Resourcer.h"
+#include "../Player/PlayerManager.h"
 
 #include "../Defs/DefManager.h"
 #include "../Defs/Defs.h"
@@ -79,6 +85,26 @@ IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX,
     }
 }
 
+OreMine* AssetFactory::createOreMine(short positionX, short positionY)
+{    
+    DefManager* dm = DefManager::getInstance();
+    //TODO: Hardcoded-value, any reasonable way to get from defs-file?
+    AssetDef* def = dm->getAssetDef(51);
+    if(!def)
+        return NULL; // invalid asset type
+    if(def->concreteType != 2)
+        return NULL; // type is not building
+
+    OreMine* b = new OreMine((AssetDef&)(*def));
+    b->setOwner(PlayerManager::getPlayer(0));
+    b->forcePosition(positionX, positionY);
+    
+    b->create();
+    return b;
+}
+
+
+
 // ===== Set components based on asset's definition
 
 bool AssetFactory::setRadar(IAsset* a)
@@ -112,13 +138,21 @@ bool AssetFactory::setBuilder(IAsset* a)
 bool AssetFactory::setResourcer(IAsset* a)
 {
     ResourcerDef* def = a->getDef()->pDefResourcer;
-    if(!def)
+    //Only units can have resourcers
+    if(!def || a->getAssetType() != IAsset::UNIT)
         return false; // no resourcer associated
-    // Waiting for concrete classes
-    /*
-    ResourcerDef* def = a->getDef()->pDefResourcer;
-    */
-    return false;
+   
+    Unit* pUnit = (Unit*)a;
+    
+    switch(def->concreteType)
+    {
+    case 1:
+        pUnit->setResourcer(new Resourcer(pUnit, (ResourcerDef&)(*def)));
+        break;
+    default:
+        return false;
+    }
+    return true;
 }
 
 bool AssetFactory::setWeapon(IAsset* a)
@@ -126,7 +160,7 @@ bool AssetFactory::setWeapon(IAsset* a)
     WeaponDef* def = a->getDef()->pDefWeapon;
     if(!def)
         return false; // no projectile associated
-    // Waiting for concrete classes
+
     switch(def->concreteType)
     {
     case 1:

@@ -12,8 +12,10 @@
 
 #include "IAsset.h"
 #include "IMovingLogic.h"
+#include "Resourcer.h"
 #include "../Command/Target.h"
 #include "../Defs/Defs.h"
+
 
 class Unit : public IAsset
 {
@@ -39,6 +41,25 @@ public:
      * @return the moving logic of this unit, or NULL if none attached
      */
     inline IMovingLogic* getMovingLogic() { return m_pMovingLogic; }
+
+    /**
+     * Set the resourcer for the unit
+     * @param pResourcer pointer to Resourcer or derivative
+     */
+    inline void setResourcer(Resourcer* pResourcer)
+    {
+        if(m_pResourcer)
+        {
+            delete m_pResourcer;
+            m_pResourcer = NULL;
+        }
+        m_pResourcer = pResourcer;
+    }
+
+    /**
+     * Returns the current resourcer
+     */
+    inline Resourcer* getResourcer() const { return m_pResourcer; }
 
     /**
      * When this get's called, the unit is registered to the collection
@@ -78,6 +99,9 @@ private:
     // the logic responsible of moving this unit, altering the
     // position and direction -vectors of this unit
     IMovingLogic*               m_pMovingLogic;
+
+    //Resourcer-component for resource gathering units
+    Resourcer*                  m_pResourcer;
 
     // paralyze timer is downcounter which is set to some value when the
     // unit is paralyzed, the time is in seconds and means the time to be

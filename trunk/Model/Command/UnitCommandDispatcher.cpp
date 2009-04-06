@@ -94,7 +94,10 @@ bool UnitCommandDispatcher::dispatch(bool addToQueue)
         node->item->getMovingLogic()->addTarget(new Target(m_Target));
 
         //TODO: Testing, revise: Only set weapon-target when target is asset? (or some key is down or something)
-        node->item->getWeapon()->setTarget(new Target(m_Target));
+        if(node->item->getWeapon())
+        {
+            node->item->getWeapon()->setTarget(new Target(m_Target));
+        }
 
         node = node->next;
     }

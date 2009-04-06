@@ -149,29 +149,32 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     PlayerManager::create(4);
 
     //TEST
-/*
+
     for(int i = 0; i < 50; i++)    
     {
         if(i < 13)
             AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, 40+((i / 5) * 5), 20+(i % 5) * 5);
         else if(i < 25)
-            AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, 60+((i / 5) * 5), 20+(i % 5) * 5);
+            AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, 80+((i / 5) * 5), 60+(i % 5) * 5);
         else if(i < 38)
-            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, 80+((i / 5) * 5), 20+(i % 5) * 5);
+            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, 0+((i / 5) * 5), 20+(i % 5) * 5);
         else
-            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, 100+((i / 5) * 5), 20+(i % 5) * 5);
+            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, 40+((i / 5) * 5), 60+(i % 5) * 5);
     }
 
     for(int i = 0; i < 10; i++)
     {
-        AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 51, 20+(i * 20), 100+(i % 5) * 10);
+        AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 52, 20+(i * 20), 100+(i % 5) * 10);
     }
-*/
 
-    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 130, 450);
-    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 51, 90, 450);
+
+    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 130, 450);
+    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 90, 450);
     AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 30, 500);
     AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 150, 500);
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 6, 160, 500);
+    AssetFactory::createOreMine(200, 500);
+    AssetFactory::createBuilding(PlayerManager::getPlayer(1), 52, 100, 500);
 
     //Selector
     hres = m_Selector.create(pDevice);

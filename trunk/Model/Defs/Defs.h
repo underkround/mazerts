@@ -92,23 +92,19 @@ struct BuilderDef //: public BaseDef
 
 
 /**
- * ResourcerDef is for resourcer-component, that either produces or stores
- * resources.
- * for example: mine that stores resource, vehicles that can gather and store
- * resource while transporting it, windtrap or plant to generate energy..
+ * ResourcerDef is for resourcer-component, unit with resourcer-component
+ * is capable of extracting ore from mines
  */
-struct ResourcerDef //: public BaseDef
+struct ResourcerDef
 {
     int tag; // id for definition
     int concreteType; // concrete type for the class to implement this
 
-    // self-production
-    int energStaticGain;
-    int oreStaticGain;
     // storing capacity
     int oreCapacity;
-    // initial amount stored
-    int oreInitialAmount;
+
+    //Loading time
+    float loadTime;
 };
 
 
@@ -140,8 +136,12 @@ struct AssetDef //: public BaseDef
 
     // for building-types only:
     // this is a pretty much hack, but hey, !IF! it works  ;)
-    int gridExitPointX;
-    int gridExitPointY;
+    int gridPassableAreaX;
+    int gridPassableAreaY;
+    int gridPassableAreaWidth;
+    int gridPassableAreaHeight;
+    int gridEntrancePointX;
+    int gridEntrancePointY;
 
     // TODO: damage resistance values
 

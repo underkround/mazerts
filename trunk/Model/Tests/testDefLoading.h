@@ -34,8 +34,8 @@ void testDefLoading()
         cout << "constructionCostOre: " << a->constructionCostOre << endl;
         cout << "description: " << a->description << endl;
         cout << "destructionTime: " << a->destructionTime << endl;
-        cout << "gridExitPointX: " << a->gridExitPointX << endl;
-        cout << "gridExitPointY" << a->gridExitPointY << endl;
+        cout << "gridPassableAreaX: " << a->gridPassableAreaX << endl;
+        cout << "gridPassableAreaY" << a->gridPassableAreaY << endl;
         cout << "height: " << a->height << endl;
         cout << "idleEnergyConsumption: " << a->idleEnergyConsumption << endl;
         cout << "maxHitpoints: " << a->maxHitpoints << endl;
