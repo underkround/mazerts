@@ -613,6 +613,14 @@
 				Name="Player"
 				>
 				<File
+					RelativePath=".\Player\Fog.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Player\Fog.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Player\Player.cpp"
 					>
 				</File>

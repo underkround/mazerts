@@ -9,6 +9,8 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
+#include "Fog.h"
+
 class Player
 {
 public:
@@ -40,8 +42,25 @@ public:
     inline const bool isEnemy(Player* p)
     {
         if(!p) return false; // null is not an enemy <3
-        return ( m_Enemies & p->getId() ) ? true : false;
+		return (m_Enemies & p->getId()) ? true : false;
     }
+
+	inline const bool isFriend(Player* p)
+	{
+        if(!p) return false; // null is not a friend D:
+		return !(m_Enemies & p->getId()) ? true : false;
+	}
+
+	inline const int getOre() { return m_Ore; }
+	inline void setOre(const int amount) { m_Ore = amount; }
+
+	inline const int getEnergyProduced() { return m_EnergyProduced; }
+	inline void setEnergyProduced(const int amount) { m_EnergyProduced = amount; }
+
+	inline const int getEnergyConsumed() { return m_EnergyConsumed; }
+	inline void setEnergyConsumed(const int amount) { m_EnergyConsumed = amount; }
+
+	inline Fog* getFog() { return &m_Fog; }
 
 private:
     int         m_Id; // id of this player
@@ -50,6 +69,13 @@ private:
     // these two are probably not needed, but are here anyways
     int         m_Enemies;
     int         m_Allies;
+
+	int			m_EnergyProduced; // amount of energy produced
+	int			m_EnergyConsumed; // amount of energy consumed
+
+	int			m_Ore; // amount of "money"
+
+	Fog			m_Fog; // FOG OF WAR!!
 };
 
 #endif // __PLAYER_H__
