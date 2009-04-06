@@ -203,6 +203,7 @@ void UIAssetController::onPickRelease(const float frameTime)
 
     case DRAG:
         {
+            clearSelection();
             Selector::SELECTION* selection = m_pSelector->buttonUp();
             if(!selection->assets.empty())
             {
@@ -230,18 +231,21 @@ void UIAssetController::onPickRelease(const float frameTime)
 
                 // add the selection to units under control
                 pNode = templist.headNode();
-                SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pNode->item->GetMatrix()._41, false);
-                while(pNode)
+                if(pNode)
                 {
-                    UIAsset* pAsset = pNode->item;
-                    if(!pAsset->isSelected())
+                    SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pNode->item->GetMatrix()._41, false);
+                    while(pNode)
                     {
-                        if (pAsset->getAsset()->getAssetType() == IAsset::UNIT)
-                            m_pUnitCommandDispatcher->addUnit((Unit*)pAsset->getAsset());
-                        pAsset->setSelected(true);
-                        m_SelectedUIAssets.pushHead(pAsset);
+                        UIAsset* pAsset = pNode->item;
+                        if(!pAsset->isSelected())
+                        {
+                            if (pAsset->getAsset()->getAssetType() == IAsset::UNIT)
+                                m_pUnitCommandDispatcher->addUnit((Unit*)pAsset->getAsset());
+                            pAsset->setSelected(true);
+                            m_SelectedUIAssets.pushHead(pAsset);
+                        }
+                        pNode = pNode->next;
                     }
-                    pNode = pNode->next;
                 }
             }
             delete selection;

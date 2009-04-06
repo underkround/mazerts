@@ -9,11 +9,9 @@ Selector::SELECTION* Selector::buttonUp()
 {
     SELECTION* result = new SELECTION;
     
-    
-
     int minX, minY;
     int maxX, maxY;
-    
+    //TODO: Get assets from model side (AssetCollection)
     //Get the points
     if(m_Point1.x > m_Point2.x)
     {

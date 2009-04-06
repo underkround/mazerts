@@ -178,15 +178,43 @@
 			Name="Weapon"
 			>
 			<File
-				RelativePath="..\model\weapon\Damage.h"
+				RelativePath="..\Model\Weapon\Damage.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\weapon\IWeapon.cpp"
+				RelativePath="..\Model\Weapon\Explosion.h"
 				>
 			</File>
 			<File
-				RelativePath="..\model\weapon\IWeapon.h"
+				RelativePath="..\Model\Weapon\ExplosionCollection.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Weapon\ExplosionCollection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Weapon\IWeapon.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Weapon\IWeapon.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Weapon\Projectile.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Weapon\Projectile.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Weapon\ProjectileCollection.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Weapon\ProjectileCollection.h"
 				>
 			</File>
 			<File
@@ -282,11 +310,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Model\Asset\OreMine.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Model\Asset\Radar.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\Model\Asset\Radar.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Asset\Resourcer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Asset\Resourcer.h"
 				>
 			</File>
 			<File
@@ -510,42 +550,90 @@
 				>
 			</File>
 			<Filter
-				Name="Unit"
+				Name="Asset"
 				>
 				<File
-					RelativePath=".\Unit\MeshFileNames.h"
+					RelativePath=".\Asset\HealthBar.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\Selector.cpp"
+					RelativePath=".\Asset\HealthBar.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\Selector.h"
+					RelativePath=".\Asset\HealthBlock.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UI3DObjectManager.cpp"
+					RelativePath=".\Asset\HealthBlock.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UI3DObjectManager.h"
+					RelativePath=".\Asset\MeshFileNames.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UIUnit.cpp"
+					RelativePath=".\Asset\ParticleFactory.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UIUnit.h"
+					RelativePath=".\Asset\ParticleFactory.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UIWeapon.cpp"
+					RelativePath=".\Asset\PlayerColors.h"
 					>
 				</File>
 				<File
-					RelativePath=".\Unit\UIWeapon.h"
+					RelativePath=".\Asset\Selector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\Selector.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UI3DObjectManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UI3DObjectManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIAsset.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIAsset.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIBuilding.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIBuilding.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIProjectile.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIUnit.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIUnit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIWeapon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Asset\UIWeapon.h"
 					>
 				</File>
 			</Filter>
@@ -737,6 +825,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\App\C3DParticleEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\App\C3DParticleEmitter.h"
+					>
+				</File>
+				<File
 					RelativePath=".\App\C3DResourceContainer.cpp"
 					>
 				</File>
@@ -903,6 +999,78 @@
 			</File>
 			<File
 				RelativePath="..\Model\Defs\Defs.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="UIComponents"
+			>
+			<File
+				RelativePath=".\UIComponent\BasicButton.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\BasicButton.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\ComponentCommon.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\DummyComponent.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\DummyComponent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\GridLayout.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\GridLayout.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\IButtonListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\ILayoutManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\RootContainer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\RootContainer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\TextComponent.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\TextComponent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\UIComponent.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\UIComponent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\UIContainer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UIComponent\UIContainer.h"
 				>
 			</File>
 		</Filter>
