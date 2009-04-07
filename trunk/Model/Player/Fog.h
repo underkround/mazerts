@@ -51,11 +51,14 @@ public:
     inline Player* getOwner() { return m_pOwner; }
 
     /**
-     * These two work a little stupid, if you call setFogAt(0, 0) and it returns true,
-     * it means that THERE'S NO FOG in that position
+     * Is a map coord visible?
      */
-    inline const bool getFogAt(const int x, const int y) { return m_Fog[y][x]; }
-	inline void setFogAt(const int x, const int y, const bool val) { m_Fog[y][x] = val; }
+    inline const bool isVisibleCoord(const int x, const int y) { return m_Fog[y][x]; }
+
+    /**
+     * Set map coord visibility (probably not too much use, this one)
+     */
+	inline void setVisibleCoord(const int x, const int y, const bool val) { m_Fog[y][x] = val; }
 
     /**
      * Pointer to boolean array containing true if area is visible and false if area is in fog

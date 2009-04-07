@@ -84,3 +84,68 @@ void UIAsset::setSelected(bool value)
         }
     }
 }
+
+void UIAsset::Render(LPDIRECT3DDEVICE9 pDevice)
+{
+    // same as in c3dobject, but doesn't call child objects if they're not visible
+    if (IsVisible() && m_pMesh)
+    {
+        //Frustum culling
+        D3DXVECTOR3 AABBMin(m_AABBMin.x + m_mWorld._41,
+                            m_AABBMin.y + m_mWorld._42,
+                            m_AABBMin.z + m_mWorld._43);
+
+        D3DXVECTOR3 AABBMax(m_AABBMax.x + m_mWorld._41,
+                            m_AABBMax.y + m_mWorld._42,
+                            m_AABBMax.z + m_mWorld._43);
+        
+        if(FrustumCull::cullAABB(AABBMin, AABBMax))
+        {
+            // first set the world matrix to device
+            pDevice->SetTransform(D3DTS_WORLD, &m_mWorld);
+
+            // render the mesh subsets
+            const DWORD numsubsets = m_arrMeshData.size();
+
+            if (numsubsets)
+            {
+                // loop thru materials and render the subsets
+                DWORD i;
+                for (i=0; i<numsubsets; i++)
+                {
+                    MESHDATA& data = m_arrMeshData[i];
+
+                    //Set the texture, if it is different than current
+                    if(data.pTexture != pCurrentTexture)
+                    {
+                        pDevice->SetTexture(0, data.pTexture);
+                        pCurrentTexture = data.pTexture;
+                    }
+
+                    // set material
+                    if (data.pMaterial)
+                    {
+                        pDevice->SetMaterial(data.pMaterial);
+                    }
+
+                    // render the mesh
+                    m_pMesh->DrawSubset(i);
+                }
+            }
+            else
+            {
+                // render the mesh anyways
+                m_pMesh->DrawSubset(0);
+            }
+        }
+
+        // render the children
+        ListNode<I3DObject*>* node = m_arrChildren.headNode();    
+        
+        while(node)
+        {
+            node->item->Render(pDevice);
+            node = node->next;
+        }
+    }
+}

@@ -104,6 +104,11 @@ public:
     }
 
     /**
+     * Pretty basic, except if this is not visible -> doesn't draw children
+     */
+    void Render(LPDIRECT3DDEVICE9 pDevice);
+
+    /**
      * Gets the health indicator of the UIUnit
      * @return Pointer to HealthBar
      */

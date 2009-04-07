@@ -185,14 +185,14 @@ void UIUnit::Render(LPDIRECT3DDEVICE9 pDevice)
                 m_pMesh->DrawSubset(0);
             }
         }
-    }
 
-    // render the children
-    ListNode<I3DObject*>* node = m_arrChildren.headNode();
+        // render the children
+        ListNode<I3DObject*>* node = m_arrChildren.headNode();
 
-    while(node)
-    {
-        node->item->Render(pDevice);
-        node = node->next;
+        while(node)
+        {
+            node->item->Render(pDevice);
+            node = node->next;
+        }
     }
 }

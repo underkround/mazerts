@@ -100,31 +100,31 @@ void Fog::update(float deltaT)
                 const unsigned short centery = pAsset->getCenterGridY();
 
                 FOGMASK* fm = getFogMask(radius);
-                if (centerx - radius > 0 && centerx + radius < len &&
-                    centery - radius > 0 && centery + radius < len)
+                if (centerx - radius >= 0 && centerx + radius < len)
                 {
-                    // totally inside map
-                    unsigned short y = centery - radius;
+                    // totally inside map (horizontally)
+                    short y = centery - radius;
+                    unsigned short yoffset = 0;
+                    unsigned short ycutoff = 0;
+                    if (centery - radius < 0) yoffset = abs(centery - radius);
+                    if (centery + radius >= len) ycutoff = abs(len - (centery + radius));
+
                     ListNode<Fog::FOGROW*>* row = fm->data.headNode();
                     while (row)
                     {
-                        memset(&m_Fog[y][centerx - radius + row->item->offset], true, row->item->amount);
+                        if (y >= centery - radius + yoffset)
+                            memset(&m_Fog[y][centerx - radius + row->item->offset], true, row->item->amount);
                         ++y;
+                        if (y >= centery + radius - ycutoff) break;
                         row = row->next;
                     }
                 }
                 else
                 {
-                    // partially over edge
+                    // partially over edge (horizontally)
                     unsigned short yoffset = 0;
                     unsigned short ycutoff = 0;
-/*
-                    unsigned short xoffset = 0;
-                    unsigned short xcutoff = 0;
 
-                    if (centerx - radius < 0) xoffset = abs(centerx - radius);
-                    if (centerx + radius >= len) xcutoff = abs(len - (centerx + radius));
-*/
                     if (centery - radius < 0) yoffset = abs(centery - radius);
                     if (centery + radius >= len) ycutoff = abs(len - (centery + radius));
 
@@ -134,7 +134,6 @@ void Fog::update(float deltaT)
                     {
                         if (y >= centery - radius + yoffset) {
                             for (int x = max(row->item->offset + centerx - radius, 0); x < min(len, (unsigned short)(centerx - radius + row->item->offset + row->item->amount)); x++) {
-//                            for (int x = row->item->offset + xoffset + centerx - radius; x < (2 * row->item->offset) + row->item->amount + centerx - radius - xcutoff; x++)
                                 m_Fog[y][x] = true;
                             }
                         }
@@ -245,7 +244,7 @@ const bool Fog::isAssetVisible(IAsset* pAsset)
 {
     const short x = pAsset->getGridX();
     const short y = pAsset->getGridY();
-    const unsigned short w = pAsset->getWidth();
-    const unsigned short h = pAsset->getHeight();
+    const unsigned short w = pAsset->getWidth() - 1;
+    const unsigned short h = pAsset->getHeight() - 1;
     return m_Fog[y][x] || m_Fog[y + h][x] || m_Fog[y][x + w] || m_Fog[y + h][x + w];
 }
