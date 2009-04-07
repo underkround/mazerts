@@ -6,15 +6,15 @@
  */
 
 #include "UIComponent.h"
-#include "../Controller/IUIController.h"
 
 #include "../Input/MouseState.h"
+#include "../Controller/Cursor.h" // for mouse tooltip
 
-UIComponent::UIComponent()
+UIComponent::UIComponent(const int posX, const int posY, const unsigned int width, const unsigned int height)
 {
-    m_Pos(0, 0);
-    m_PreferredSize(10, 10);
-    m_Size(20, 20);
+    m_Pos(posX, posY);
+    m_PreferredSize(width, height);
+    m_Size(width, height);
 
     m_pParent = NULL;
     m_VertexZ = 0.0001f;
@@ -23,22 +23,35 @@ UIComponent::UIComponent()
     m_Visible = true; // render the component?
     m_Clipped = false; // use viewport clipping with component?
 
+//    m_pTooltip = NULL;
+
     // Background drawing stuff - from BasicComponent
-    m_BackgroundARGB.x = 0xAAAAAAAA;
+    m_BackgroundARGB.x = 0xFFFFFFFF;
     m_BackgroundARGB.y = 0xFFFFFFFF;
-    m_ForegroundARGB = 0xFF222222;
+    m_ForegroundARGB = 0xFF555555;
     m_BackgroundStyle = FILLSTYLE_GRADIENT_V;
     m_pBackgroundTexture = NULL;
     m_pBackgroundVB = NULL;
 
     m_StealFlags = STEAL_MOUSE;
+
     m_ProcessFlags = CPROCESS_MOUSE_BUTTONS;
+    m_ProcessFlags |= CPROCESS_MOUSE_IDLE; // for tooltips
+
+    m_LayoutFlags = LAYOUT_HINT_ASPECTRATIO;
 }
 
 // implement when deriving
 // this default action only steals (mouse)
 int UIComponent::processEvent(int eventFlag, TCHAR arg)
 {
+    // only default action currently is to show a possible tooltip on mouse idle
+    if(eventFlag == CEVENT_MOUSE_IDLE && m_Tooltip.GetLength() > 0)
+        Cursor::getInstance()->setTooltip(m_Tooltip.GetBuffer(), 5.0f);
+/*
+    if(eventFlag == CEVENT_MOUSE_IDLE && m_pTooltip)
+        Cursor::getInstance()->setTooltip(m_pTooltip, 5.0f);
+*/
     return m_StealFlags;
 }
 
@@ -56,22 +69,6 @@ const int UIComponent::getPosY() const
     if(m_pParent)
         return m_pParent->getPosY() + m_Pos.y;
     return m_Pos.y;
-}
-
-const bool UIComponent::setSize(const int width, const int height)
-{
-    bool changed = false;
-    if(width >= m_PreferredSize.x) {
-        m_Size.x = width;
-        changed = true;
-    }
-    if(height >= m_PreferredSize.y) {
-        m_Size.y = height;
-        changed = true;
-    }
-    if(changed)
-        m_Changed = true;
-    return changed;
 }
 
 // =====
@@ -243,28 +240,28 @@ void UIComponent::onChange(LPDIRECT3DDEVICE9 pDevice)
         pBackVertices[0].y = posY;
         pBackVertices[0].z = m_VertexZ;
         pBackVertices[0].tu = 0.0f;
-        pBackVertices[0].tv = 1.0f;
+        pBackVertices[0].tv = 0.0f;
         pBackVertices[0].rhw = 0.99f;
 
         pBackVertices[1].x = posX + m_Size.x;
         pBackVertices[1].y = posY;
         pBackVertices[1].z = m_VertexZ;
         pBackVertices[1].tu = 1.0f;
-        pBackVertices[1].tv = 1.0f;
+        pBackVertices[1].tv = 0.0f;
         pBackVertices[1].rhw = 0.99f;
 
         pBackVertices[2].x = posX + m_Size.x;
         pBackVertices[2].y = posY + m_Size.y;
         pBackVertices[2].z = m_VertexZ;
         pBackVertices[2].tu = 1.0f;
-        pBackVertices[2].tv = 0.0f;
+        pBackVertices[2].tv = 1.0f;
         pBackVertices[2].rhw = 0.99f;
 
         pBackVertices[3].x = posX;
         pBackVertices[3].y = posY + m_Size.y;
         pBackVertices[3].z = m_VertexZ;
         pBackVertices[3].tu = 0.0f;
-        pBackVertices[3].tv = 0.0f;
+        pBackVertices[3].tv = 1.0f;
         pBackVertices[3].rhw = 0.99f;
 
         switch(m_BackgroundStyle)

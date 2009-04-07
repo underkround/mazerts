@@ -29,6 +29,7 @@
 
 #include "../App/Vertices.h" // for TRANSLITVERTEX
 #include "../Input/MouseState.h"
+#include "../../Model/Common/JString.h"
 
 class IUIController;
 
@@ -39,50 +40,12 @@ class UIComponent
 
 public:
 
-    UIComponent();
+    UIComponent(const int posX=10, const int posY=10, const unsigned int width=20, const unsigned int height=20);
 
     virtual ~UIComponent()
     {
     }
 
-    enum StealFlags
-    {
-        STEAL_NONE      = 0,        // empty value to return, or just 0
-        STEAL_MOUSE     = 1 << 0,   // steal mouse
-        STEAL_KEYBOARD  = 1 << 1,   // steal all keys
-        STEAL_TEXT      = 1 << 2,   // steal just text keys
-        STEAL_MOUSE_OUTSIDE = 1 << 5 // internal component specifig hint
-    };
-
-    enum ProcessFlags
-    {
-        CPROCESS_MOUSE_BUTTONS  = 1 << 0,
-        CPROCESS_MOUSE_MOTION   = 1 << 1,
-        CPROCESS_MOUSE_WHEEL    = 1 << 2,
-        CPROCESS_TEXT           = 1 << 2,   // process text keys
-        CPROCESS_KEYBOARD       = 1 << 3    // process all keys
-    };
-
-    enum EventFlags
-    {
-        CEVENT_NONE             = 0,
-        CEVENT_OUTSIDE          = 1 << 0,   // action happened outside
-        // mouse button events
-        CEVENT_MOUSE_PRESSED    = 1 << 1,
-        CEVENT_MOUSE_RELEASED   = 1 << 2,
-        CEVENT_MOUSE_DRAGGED    = 1 << 3,
-        CEVENT_MOUSE_IDLE       = 1 << 4,
-        // mouse motion events
-        CEVENT_MOUSE_ENTERED    = 1 << 5,
-        CEVENT_MOUSE_EXITED     = 1 << 6,
-        // mouse wheel events
-        CEVENT_MOUSE_WHEEL      = 1 << 7,
-        // text events
-        CEVENT_CHAR_TYPED       = 1 << 8,   // typed char event
-        // keypress events
-        CEVENT_KEY_PRESSED      = 1 << 9,   // general keypress event
-        CEVENT_KEY_RELEASED     = 1 << 10   // general keyrelease event
-    };
 
     /**
      * Process event that the RootContainer (or other central dispatcher)
@@ -170,7 +133,6 @@ public:
     {
         m_BackgroundARGB.x = (argb & 0xFFFFFFFF);
         m_BackgroundARGB.y = (argb & 0xFFFFFFFF);
-        m_BackgroundStyle = FILLSTYLE_SOLID;
         m_Changed = true;
     }
 
@@ -198,9 +160,14 @@ public:
     {
         m_pBackgroundTexture = pTexture;
         if(pTexture)
+        {
             m_BackgroundStyle = FILLSTYLE_TEXTURE;
-        else if(m_BackgroundStyle = FILLSTYLE_TEXTURE)
+            m_BackgroundARGB.x = 0xFFFFFFFF;
+            m_BackgroundARGB.y = 0xFFFFFFFF;
+        }
+        else
             m_BackgroundStyle = FILLSTYLE_GRADIENT_V;
+        m_Changed = true;
     }
 
     /**
@@ -369,7 +336,24 @@ public:
      * @param width
      * @param height
      */
-    virtual const bool setSize(const int width, const int height);
+    virtual const bool setSize(const unsigned int width, const unsigned int height)
+    {
+        m_Size.x = width;
+        m_Size.y = height;
+        m_Changed = true;
+        return m_Changed;
+    }
+
+    /**
+     * This should be used by the creator to set the size of the component.
+     * This is the real size that is maintained whenever possible.
+     * @param width     the horizontal size to try to maintain
+     * @param height    the vertical size to try to maintain
+     */
+    inline const void setPreferredSize(const unsigned int width, const unsigned int height)
+    {
+        m_PreferredSize(width, height);
+    }
 
     /**
      * Helper method to determine if given screen coordinates are inside us.
@@ -395,8 +379,7 @@ public:
     }
 
 
-// ===== Flags
-
+// ===== Flags & Misc
 
     /**
      * Return the visibility-state of the component
@@ -425,13 +408,37 @@ public:
      * we don't do intersection test to save resources.
      * @return pointer to this component (no intersection test done)
      */
-    virtual UIComponent* getFocus()
+    virtual UIComponent* getFocus(ProcessFlags processEvent)
     {
-        return this;
+        // if we process the requested event, we can have the focus
+        return (m_ProcessFlags & processEvent) ? this : NULL;
     }
 
     inline const int getProcessFlags() { return m_ProcessFlags; }
     inline const int getStealFlags() { return m_StealFlags; }
+    inline const int getLayoutFlags() { return m_LayoutFlags; }
+
+    /**
+     * Set flags for how the layout should handle this component
+     */
+    inline void setLayoutFlag(unsigned int flag) { m_LayoutFlags |= flag; }
+    inline void unsetLayoutFlag(unsigned int flag) { m_LayoutFlags &= ~flag; }
+
+    /**
+     * Set a tooltip for this component, that is displayed when the
+     * mouse idles over the component.
+     * Set NULL / 0 to clear the tooltip.
+     * @param tooltipStr    char-array to use as tooltip
+     */
+    void setTooltip(char* tooltipStr)
+    {
+        m_Tooltip.Set(tooltipStr);
+        /*
+        if(m_pTooltip)
+            delete [] m_pTooltip;
+        m_pTooltip = tooltipStr;
+        */
+    }
 
 protected:
 
@@ -442,7 +449,7 @@ protected:
     // the parent of this component, or NULL
     UIComponent*        m_pParent;
 
-    // the minimum bounds of the component
+    // the size that the component prefers to have
     Point2              m_PreferredSize;
 
     // the component's size properties
@@ -456,10 +463,16 @@ protected:
     bool                m_Visible;
     bool                m_Clipped;
 
+    // tooltip - sorry for using non-unicode, but I HATE THOSE FUCKING T"#¤)("#/¤ CHARS
+//    char*               m_pTooltip;
+    JString             m_Tooltip;
+
     // bits for stealed mouse buttons
     int                 m_StealFlags;
     // bits for events to process
     int                 m_ProcessFlags;
+    // bits for how layout should handle us
+    int                 m_LayoutFlags;
 
 // Members for default background rendering
 

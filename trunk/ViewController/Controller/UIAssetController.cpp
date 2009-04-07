@@ -152,7 +152,7 @@ void UIAssetController::updateControls(const float frameTime)
             if(pUIAsset)
             {
                 string assetName = pUIAsset->getAsset()->getDef()->name;
-                Cursor::getInstance()->setTooltip2(assetName.c_str(), m_TooltipLifetime);
+                Cursor::getInstance()->setTooltip(assetName.c_str(), m_TooltipLifetime);
                 m_TooltipShown = true;
             }
         }

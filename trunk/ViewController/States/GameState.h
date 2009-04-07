@@ -156,6 +156,8 @@ private:
     // Root container covering the whole screen and managing components
     RootContainer*      m_pRootContainer;
 
+    UIContainer*        m_pCont1;
+    UIContainer*        m_pCont2;
 };
 
 #endif //__GAMESTATE_H__

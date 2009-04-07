@@ -20,12 +20,13 @@ class ILayoutManager;
 
 class UIContainer : public UIComponent
 {
+
 public:
 
     /**
      * The ctor, Get Born Again \m/
      */
-    UIContainer();
+    UIContainer(const int posX, const int posY, const unsigned int width, const unsigned int height);
 
     virtual ~UIContainer()
     {
@@ -90,6 +91,14 @@ public:
         return m_Transparent;
     }
 
+    /**
+     * Get the list of the child components.
+     */
+    DoubleLinkedList<UIComponent*>* getChildren()
+    {
+        return &m_Children;
+    }
+
 // ===== Layout manager methods
 
     /**
@@ -139,7 +148,7 @@ public:
     /**
      * Return component from mouse coordinates, either this or child
      */
-    virtual UIComponent* getFocus();
+    virtual UIComponent* getFocus(ProcessFlags processEvent);
 
     virtual int processEvent(int eventFlag, TCHAR arg);
 

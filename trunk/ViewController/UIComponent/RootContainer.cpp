@@ -2,12 +2,15 @@
 
 #include "../../Model/Common/Config.h"
 
-
-RootContainer::RootContainer() : UIContainer()
+RootContainer::RootContainer() : UIContainer(0,0,0,0)
 {
-    m_Created = false;
     m_pApp = NULL;
-    m_MouseIdleTreshold = 2.0f;
+    m_Created = false;
+    m_pDevice = NULL;
+    m_pFocused = NULL;
+    m_pIdleFocus = NULL;
+    m_MouseIdleTreshold = 1.0f;
+    m_CharBufferCount = 0;
 }
 
 
@@ -27,8 +30,13 @@ HRESULT RootContainer::create(LPDIRECT3DDEVICE9 pDevice, IApplication* pApp)
 
     if(!m_Created)
     {
+        m_pDevice = pDevice;
+
         // store the application pointer
         m_pApp = pApp;
+
+        // create our resource container
+        m_ResourceContainer.Create(pDevice);
 
         // set our size to match the window
         RECT win = pApp->GetWindowRect();
@@ -63,8 +71,9 @@ HRESULT RootContainer::create(LPDIRECT3DDEVICE9 pDevice, IApplication* pApp)
  */
 
 
-UIComponent* RootContainer::getFocus()
+UIComponent* RootContainer::getFocus(ProcessFlags processEvent)
 {
+    UIComponent* result = NULL;
     // first check currently focused, if any
     if(m_pFocused)
     {
@@ -79,7 +88,11 @@ UIComponent* RootContainer::getFocus()
             MouseState::mouseY <= cAbsPosY + m_pFocused->getHeight()    //m_Size.y
         )
         {
-            m_pFocused = m_pFocused->getFocus();
+            //m_pFocused = m_pFocused->getFocus(processEvent);
+            result = m_pFocused->getFocus(processEvent);
+            // check that focused processes the event
+            //if(!(m_pFocused->getProcessFlags() & processEvent))
+            //    m_pFocused = NULL;
         }
         else
         {
@@ -105,13 +118,18 @@ UIComponent* RootContainer::getFocus()
                 MouseState::mouseY <= comp->getRelativePosY() + comp->getHeight()     //comp->m_Size.y
             )
             {
-                // found children for focus
-                m_pFocused = comp->getFocus();
-                node = NULL; // break from the loop
+                result = comp->getFocus(processEvent);
+                // found children for focus, check if it processes the event
+                if(result)
+                {
+                    //m_pFocused = comp->getFocus(processEvent);
+                    node = NULL; // break from the loop
+                }
             }
         }
     }
-    return m_pFocused;
+//    return m_pFocused;
+    return result;
 }
 
 
@@ -122,7 +140,7 @@ int RootContainer::updateControls(const float frameTime)
     // mouse press
     if(MouseState::mouseButtonPressedBits)
     {
-        m_pFocused = getFocus(); //(PROCESS_MOUSE_BUTTONS);
+        m_pFocused = getFocus(CPROCESS_MOUSE_BUTTONS); //(PROCESS_MOUSE_BUTTONS);
         if(m_pFocused)
         {
             result = m_pFocused->processEvent(CEVENT_MOUSE_PRESSED, MouseState::mouseButtonPressedBits);
@@ -141,8 +159,8 @@ int RootContainer::updateControls(const float frameTime)
             }
             else
             {
-                // do not report ordinary mouse down, useless
-                // still capture so it doesn't fall through
+                // Do not report idle mouse down, no need for it
+                // But still capture the mouse so controls don't fall through
                 result |= m_pFocused->getStealFlags();
             }
         }
@@ -160,7 +178,26 @@ int RootContainer::updateControls(const float frameTime)
         }
     }
 
-    // mouse wheel
+
+    // MOUSE IDLE
+    // if mouse idling, check for idle event over component
+    if(!MouseState::mouseMoved && MouseState::mouseIdle >= m_MouseIdleTreshold)
+    {
+        if(!m_pIdleFocus)
+        {
+            m_pIdleFocus = getFocus(CPROCESS_MOUSE_IDLE);
+            if(m_pIdleFocus)
+                m_pIdleFocus->processEvent(CEVENT_MOUSE_IDLE, 0);
+        }
+    }
+    // not idling, loose idle focus if any
+    else if(m_pIdleFocus)
+    {
+        m_pIdleFocus = NULL;
+    }
+
+
+    // MOUSE WHEEL
     /*
     if(m_pFocused && (m_pFocused->getProcessFlags() & CPROCESS_MOUSE_WHEEL))
     {
@@ -203,7 +240,7 @@ void RootContainer::render(LPDIRECT3DDEVICE9 pDevice)
 {
     // set common rendering flags settings for components here
     pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 
     // we just render the children
     ListNode<UIComponent*>* node = m_Children.headNode();
@@ -217,6 +254,7 @@ void RootContainer::render(LPDIRECT3DDEVICE9 pDevice)
 
 HRESULT RootContainer::onDeviceLost()
 {
+    m_pDevice = NULL;
     HRESULT res = S_OK;
     ListNode<UIComponent*>* node = m_Children.headNode();
     while(node)
@@ -235,6 +273,7 @@ HRESULT RootContainer::onDeviceLost()
 HRESULT RootContainer::onRestore(LPDIRECT3DDEVICE9 pDevice)
 {
     HRESULT res = S_OK;
+    m_pDevice = pDevice;
     if(m_pApp)
     {
         RECT win = m_pApp->GetWindowRect();
@@ -252,4 +291,36 @@ HRESULT RootContainer::onRestore(LPDIRECT3DDEVICE9 pDevice)
         node = node->next;
     }
     return res;
+}
+
+
+/**
+ * Resource management
+ */
+
+
+LPDIRECT3DTEXTURE9 RootContainer::getIconTexture(int id)
+{
+    TCHAR tmp[10];
+    _stprintf_s(tmp, _T("%d"), id); // yeah, i suck with these T_¤!"#!% convertions
+    return getIconTexture(tmp);
+}
+
+
+LPDIRECT3DTEXTURE9 RootContainer::getIconTexture(TCHAR id[])
+{
+    LPDIRECT3DTEXTURE9 pTexture;
+    TCHAR filename[100];
+    _stprintf_s(filename, _T("../data/icons/icon_%s.png"), id);
+    pTexture = m_ResourceContainer.FindTexture(filename);
+    if(!pTexture)
+    {
+        D3DXCreateTextureFromFile(m_pDevice, filename, &pTexture);
+        if(pTexture)
+        {
+            m_ResourceContainer.AddResource(filename, pTexture);
+            pTexture = m_ResourceContainer.FindTexture(filename);
+        }
+    }
+    return pTexture;
 }

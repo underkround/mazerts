@@ -8,9 +8,78 @@
 #ifndef __COMPONENTCOMMON_H__
 #define __COMPONENTCOMMON_H__
 
+#include <TCHAR.h>
 
-// button used to transfer the focus
-//#define MOUSE_FOCUS_BUTTON 0
+
+/**
+ * Flags for the layout, what it should and should not resize/relocate.
+ */
+enum ComponentLayoutFlag
+{
+    LAYOUT_HINT_PACK        = 1 << 0,   // swing-inspired name, resize parent by children (even if smaller than preferred size)
+                                        // if the resize is allowed and PACK is NOT set, the parent will be set to it's preferred size
+
+    LAYOUT_HINT_NORESIZE    = 1 << 1,   // no resizing allowed for component
+    LAYOUT_HINT_NOREPOS     = 1 << 2,   // no repositioning allowed for component
+    LAYOUT_HINT_ALIGN_TOP   = 1 << 3,
+    LAYOUT_HINT_ALIGN_RIGHT = 1 << 4,
+    LAYOUT_HINT_ALIGN_BOTTOM= 1 << 5,
+    LAYOUT_HINT_ALIGN_LEFT  = 1 << 6,
+    LAYOUT_HINT_ASPECTRATIO = 1 << 7    // maintain the component's aspect ratio
+};
+
+
+/**
+ * Result flags for component's event process method, flags indicate
+ * whan the component stole, and what should not be dispatched to
+ * others.
+ */
+enum StealFlags
+{
+    STEAL_NONE      = 0,        // empty value to return, or just 0
+    STEAL_MOUSE     = 1 << 0,   // steal mouse
+    STEAL_KEYBOARD  = 1 << 1,   // steal all keys
+    STEAL_TEXT      = 1 << 2,   // steal just text keys
+    STEAL_MOUSE_OUTSIDE = 1 << 5 // internal component specifig hint
+};
+
+
+/**
+ * Flags for what events does the components process
+ */
+enum ProcessFlags
+{
+    CPROCESS_MOUSE_BUTTONS  = 1 << 0,
+    CPROCESS_MOUSE_IDLE     = 1 << 1,
+    CPROCESS_MOUSE_WHEEL    = 1 << 2,
+    CPROCESS_TEXT           = 1 << 2,   // process text keys
+    CPROCESS_KEYBOARD       = 1 << 3    // process all keys
+};
+
+
+/**
+ * Id's for events that are sent to the focused component to process
+ */
+enum EventFlags
+{
+    CEVENT_NONE             = 0,
+    CEVENT_OUTSIDE          = 1 << 0,   // action happened outside
+    // mouse button events
+    CEVENT_MOUSE_PRESSED    = 1 << 1,
+    CEVENT_MOUSE_RELEASED   = 1 << 2,
+    CEVENT_MOUSE_DRAGGED    = 1 << 3,
+    CEVENT_MOUSE_IDLE       = 1 << 4,
+    // mouse motion events
+    CEVENT_MOUSE_ENTERED    = 1 << 5,
+    CEVENT_MOUSE_EXITED     = 1 << 6,
+    // mouse wheel events
+    CEVENT_MOUSE_WHEEL      = 1 << 7,
+    // text events
+    CEVENT_CHAR_TYPED       = 1 << 8,   // typed char event
+    // keypress events
+    CEVENT_KEY_PRESSED      = 1 << 9,   // general keypress event
+    CEVENT_KEY_RELEASED     = 1 << 10   // general keyrelease event
+};
 
 
 /**

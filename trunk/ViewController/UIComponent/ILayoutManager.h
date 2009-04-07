@@ -28,7 +28,7 @@ public:
 
     ILayoutManager() : m_pParent(0) { }
 
-    virtual ~ILayoutManager();
+    virtual ~ILayoutManager() { }
 
     /**
      * Redo the layout

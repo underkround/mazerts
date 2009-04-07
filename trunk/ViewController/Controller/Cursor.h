@@ -18,6 +18,7 @@
 #include <TCHAR.h>
 
 #define CURSOR_TOOLTIP_SIZE 64
+#define CURSOR_TOOLTIP_DEFAULT_LIFETIME 2.0f
 
 class Cursor
 {
@@ -83,19 +84,8 @@ public:
      * value to keep the tooltip until clear is called, or another
      * tooltip is set.
      */
-    void setTooltip(LPCTSTR tooltipStr, const float lifeTime)
-    {
-        clearTooltip();
-//        m_pTooltip = tooltipStr;
-        m_TooltipDowncounter = (lifeTime <= 0) ? -1 : lifeTime;
-    }
-
-    void setTooltip2(const char* tipChar, const float lifeTime)
-    {
-        clearTooltip();
-        MultiByteToWideChar(CP_ACP, 0, tipChar, -1, m_pTooltip, 64);
-        m_TooltipDowncounter = (lifeTime <= 0) ? -1 : lifeTime;
-    }
+    void setTooltip(LPCTSTR tooltipStr, const float lifeTime=CURSOR_TOOLTIP_DEFAULT_LIFETIME, const bool clearOnMouseMove=true);
+    void setTooltip(const char* pTooltipChars, const float lifeTime=CURSOR_TOOLTIP_DEFAULT_LIFETIME, const bool clearOnMouseMove=true);
 
     inline const bool hasTooltip() { return (m_pTooltip) ? true : false; }
 
@@ -105,13 +95,6 @@ public:
     void clearTooltip()
     {
         m_TooltipDowncounter = -1;
-        /*
-        if(m_pTooltip)
-        {
-            //delete m_pTooltip;
-            m_pTooltip = NULL;
-        }
-        */
         m_pTooltip[0] = '\0'; // = _T("");
     }
 
@@ -142,6 +125,7 @@ private:
         m_TooltipOffsetY = CURSORSIZE;
         m_TooltipColor = 0xFFCCFF00;
         m_pTooltip[0] = '\0'; //_T("");
+        m_ClearOnMouseMove = false;
     }
 
     virtual ~Cursor() 
@@ -156,6 +140,8 @@ private:
     int         m_TooltipOffsetX;
     int         m_TooltipOffsetY;
     int         m_TooltipColor;
+
+    bool m_ClearOnMouseMove;
 
     /**
      * Current cursortype

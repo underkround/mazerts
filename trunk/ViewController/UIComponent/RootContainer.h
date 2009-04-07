@@ -22,7 +22,8 @@
 #include "UIComponent.h"
 #include "UIContainer.h"
 #include "../App/IApplication.h"
-
+#include "../App/C3DResourceContainer.h"
+#include <d3dx9.h>
 
 #define ROOTCONTAINER_CHARBUFFER_SIZE 30
 
@@ -38,6 +39,22 @@ public:
         static RootContainer instance;
         return &instance;
     }
+
+    /**
+     * Gets the resource container for the uicomponents
+     * @return  pointer to C3DResourceContainer used by components
+     */
+    inline C3DResourceContainer* getResourceContainer()
+    {
+        return &m_ResourceContainer;
+    }
+
+    /**
+     * Load icon by id, searches the default location, fills the filename and
+     * uses the resource container.
+     */
+    LPDIRECT3DTEXTURE9 getIconTexture(TCHAR id[]);
+    LPDIRECT3DTEXTURE9 getIconTexture(int id);
 
     /**
      * Create by setting the application from which to get the screensize
@@ -101,7 +118,7 @@ public:
      */
     virtual int updateControls(const float frameTime);
 
-    virtual UIComponent* getFocus();
+    virtual UIComponent* getFocus(ProcessFlags processEvent);
 
 protected:
 
@@ -131,7 +148,7 @@ protected:
     /**
      * Prevent copying
      */
-    RootContainer(const RootContainer& rc) { }
+    RootContainer(const RootContainer& rc);
     RootContainer& operator =(const RootContainer& orc) { }
 
 // ===== Members
@@ -141,8 +158,14 @@ protected:
 
     bool            m_Created;
 
+    LPDIRECT3DDEVICE9 m_pDevice;
+
+    // Resource container
+    C3DResourceContainer m_ResourceContainer;
+
     // focused component, or null
     UIComponent*    m_pFocused;
+    UIComponent*    m_pIdleFocus;
 
     // treshold for mouse idle event
     float           m_MouseIdleTreshold;

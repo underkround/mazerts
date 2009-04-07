@@ -112,7 +112,7 @@ public:
      * Returns the count of items in list
      * @return Number of items
      */
-    inline int count() { return m_Count; }
+    const int count() const { return m_Count; }
 
     /**
      * @TODO:
@@ -126,7 +126,7 @@ public:
     /**
      * Self explanary
      */
-    bool empty() const { return (!head && !tail); }
+    const bool empty() const { return (!head && !tail); }
 
     /**
      * Usage:

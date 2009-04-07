@@ -15,7 +15,7 @@ class DummyComponent : public UIComponent
 {
 public:
 
-    DummyComponent(int x=0, int y=0, int w=20, int h=20);
+    DummyComponent(const int posX, const int posY, const unsigned int w, const unsigned int h);
 
     virtual ~DummyComponent()
     {

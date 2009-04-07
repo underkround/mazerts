@@ -40,8 +40,12 @@
 #include "../3DDebug/UI3DDebug.h"
 
 // Components
-//#include "../UIComponent/GridPanel.h"
 #include "../UIComponent/RootContainer.h"
+
+
+// TODO - for testing, remove
+#include "../UIComponent/GridLayout.h"
+
 
 #define KEYBOARD_CAMSPEED 60.0f
 #define MOUSE_CAMSPEED 0.01f
@@ -91,8 +95,8 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     //Model-terrain
     Terrain* pTerrain = Terrain::getInstance();
-    //AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
-    ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/map.bmp");// :P
+    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
+    //ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/map.bmp");// :P
 
     // for zemm's slow computer's local override
     if(!Config::getInstance()->getValueAsBool("debug skip terrain generating", false))
@@ -120,30 +124,26 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     // UIComponents
     m_pRootContainer = RootContainer::getInstance();
+    m_pRootContainer->create(pDevice, m_pApp);
 
     // REMOVE - TESTING !!!!!!!!!!!!!!!!!!!!!!
-    UIContainer* cont = new UIContainer();
-    cont->setPosition(600, 0);
-    cont->setSize(400, 300);
-    cont->setBackground(0xFFCCFF00);
-    cont->setTransparent(true);
 
-    UIContainer* cont2 = new UIContainer();
-    m_pRootContainer->addComponent(cont2);
+    // create panel that does not resize
+    m_pCont1 = new UIContainer(920, 0, 100, 300);
+    m_pCont1->setBackground(0x99555555);
+    m_pCont1->setLayoutFlag(LAYOUT_HINT_NORESIZE);
+    m_pCont1->setLayoutManager(new GridLayout(0, 2));
+    m_pCont1->setTooltip("static panel");
 
-    DummyComponent* dc1 = new DummyComponent(10, 10, 60, 60);
-    dc1->setupBouncer();
-    DummyComponent* dc2 = new DummyComponent(80, 10, 60, 60);
-    dc2->setupBouncer();
-    DummyComponent* dc3 = new DummyComponent(50, 100, 60, 60);
-    dc3->setupTransparencyToggler();
-    cont->addComponent(dc1);
-    cont->addComponent(dc2);
-    cont->addComponent(dc3);
+    // create panel that packs
+    m_pCont2 = new UIContainer(500, 0, 100, 300);
+    m_pCont2->setBackground(0x995500aa);
+    m_pCont2->setLayoutFlag(LAYOUT_HINT_PACK);
+    m_pCont2->setLayoutManager(new GridLayout(0, 2));
+    m_pCont1->setTooltip("packing panel");
 
-    m_pRootContainer->addComponent(cont);
-
-    m_pRootContainer->create(pDevice, m_pApp);
+    m_pRootContainer->addComponent(m_pCont1);
+    m_pRootContainer->addComponent(m_pCont2);
 
     // Initialize player manager
     PlayerManager::create(4);
@@ -161,21 +161,18 @@ HRESULT GameState::create(ID3DApplication* pApplication)
         else
             AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, 40+((i / 5) * 5), 60+(i % 5) * 5);
     }
-
     for(int i = 0; i < 10; i++)
     {
         AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 52, 20+(i * 20), 100+(i % 5) * 10);
     }
 
-
+/*
     AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 130, 450);
     AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 90, 450);
     AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 30, 500);
     AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 150, 500);
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 6, 160, 500);
-    AssetFactory::createOreMine(200, 500);
-    AssetFactory::createBuilding(PlayerManager::getPlayer(1), 52, 100, 500);
-
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 6, 160, 500);    AssetFactory::createOreMine(200, 500);    AssetFactory::createBuilding(PlayerManager::getPlayer(1), 52, 100, 500);
+*/
     //Selector
     hres = m_Selector.create(pDevice);
     if(FAILED(hres))
@@ -277,12 +274,12 @@ bool GameState::update(const float frameTime)
     if(MouseState::mouseButton[0])
     {
         Cursor::getInstance()->setType(Cursor::CURS_ATTACK);
-        Cursor::getInstance()->setTooltip(_T("0"), 2);
+        Cursor::getInstance()->setTooltip(_T("0"), 2, false);
     }
     else if(MouseState::mouseButton[1])    
     {
         Cursor::getInstance()->setType(Cursor::CURS_SELECT);
-        Cursor::getInstance()->setTooltip(_T("1"), 2);
+        Cursor::getInstance()->setTooltip(_T("1"), 2, false);
     }
     else
     {
@@ -401,6 +398,27 @@ void GameState::updateControls(const float frameTime)
     if(KeyboardState::keyReleased[0x3D]) // key: F3
     {
         //m_pRootContainer->setTransparent(!m_pRootContainer->isTransparent());
+    }
+
+    if(KeyboardState::keyReleased[0x4E]) // numpad +
+    {
+        int iconSize = IApplication::RandInt(32,128);
+        int iconTag = IApplication::RandInt(1,6);
+        DummyComponent* dc1 = new DummyComponent(10, 10, iconSize, iconSize);
+        dc1->setBackground(m_pRootContainer->getIconTexture(iconTag));
+        DummyComponent* dc2 = new DummyComponent(10, 10, iconSize, iconSize);
+        dc2->setBackground(m_pRootContainer->getIconTexture(iconTag));
+        dc1->setTooltip("butt 1");
+        dc2->setTooltip("butt 2");
+        dc1->setTooltip("butt 1b");
+        dc2->setTooltip("butt 2b");
+        m_pCont1->addComponent(dc1);
+        m_pCont2->addComponent(dc2);
+    }
+    if(KeyboardState::keyReleased[0x4A]) // numpad -
+    {
+        m_pCont1->releaseComponent(m_pCont1->getChildren()->peekTail());
+        m_pCont2->releaseComponent(m_pCont2->getChildren()->peekTail());
     }
 
     /*

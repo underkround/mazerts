@@ -8,24 +8,28 @@
 #include "../Input/MouseState.h"
 #include "ILayoutManager.h"
 
-UIContainer::UIContainer() : UIComponent()
+UIContainer::UIContainer(const int posX, const int posY, const unsigned int width, const unsigned int height)
+    : UIComponent(posX, posY, width, height)
 {
     m_Transparent = false;
     m_StealFlags = STEAL_MOUSE;
-    m_ProcessFlags = CPROCESS_MOUSE_BUTTONS;
+    m_ProcessFlags |= CPROCESS_MOUSE_BUTTONS;
     m_pLayoutManager = NULL;
     m_VertexZ = 0.001f;
+
+    unsetLayoutFlag(LAYOUT_HINT_NORESIZE);
+    unsetLayoutFlag(LAYOUT_HINT_NOREPOS);
 }
 
 
 int UIContainer::processEvent(int eventFlag, TCHAR arg)
 {
-    return (m_Transparent) ? STEAL_NONE : m_StealFlags;
+    return (m_Transparent) ? STEAL_NONE : UIComponent::processEvent(eventFlag, arg);
 }
 
 bool UIContainer::addComponent(UIComponent* child)
 {
-    if(child == this)
+    if(!child || child == this)
         return false;
     // remove from old parent if any
     if(child->m_pParent && child->m_pParent != this)
@@ -34,7 +38,7 @@ bool UIContainer::addComponent(UIComponent* child)
     }
     // add as my child
     child->m_pParent = this;
-    m_Children.pushHead(child);
+    m_Children.pushTail(child);
     // redo the layout
     if(m_pLayoutManager)
         m_pLayoutManager->reLayout();
@@ -44,9 +48,7 @@ bool UIContainer::addComponent(UIComponent* child)
 
 bool UIContainer::removeComponent(UIComponent* child)
 {
-    //if(child == m_pFocused)
-    //    m_pFocused = NULL;
-    if(child->m_pParent != this)
+    if(!child || child->m_pParent != this)
         return false; // not my child!
     m_Children.remove(child); // remove from my childs
     child->m_pParent = NULL; // clear the parent from the child
@@ -59,9 +61,8 @@ bool UIContainer::removeComponent(UIComponent* child)
 
 bool UIContainer::releaseComponent(UIComponent* child)
 {
-    //if(child == m_pFocused)
-    //    m_pFocused = NULL;
-    // first remove the child from my children
+    if(!child)
+        return false; // sanity check
     if(removeComponent(child))
     {
         // found, now release and delete
@@ -85,8 +86,11 @@ const void UIContainer::setLayoutManager(ILayoutManager* pLManager)
 {
     releaseLayout();
     m_pLayoutManager = pLManager;
-    m_pLayoutManager->m_pParent = this;
-    m_pLayoutManager->reLayout();
+    if(pLManager)
+    {
+        m_pLayoutManager->m_pParent = this;
+        m_pLayoutManager->reLayout();
+    }
 }
 
 
@@ -151,7 +155,7 @@ const bool UIContainer::setSize(const int width, const int height)
 }
 
 
-UIComponent* UIContainer::getFocus()
+UIComponent* UIContainer::getFocus(ProcessFlags processEvent)
 {
     if(!m_Children.empty())
     {
@@ -173,9 +177,12 @@ UIComponent* UIContainer::getFocus()
             )
             {
                 // found child for focus
-                return comp->getFocus();
+                comp = comp->getFocus(processEvent);
+                if(comp)
+                    return comp;
             }
         }
     }
-    return this;
+//    return this;
+    return (!m_Transparent && (m_ProcessFlags & processEvent)) ? this : NULL;
 }

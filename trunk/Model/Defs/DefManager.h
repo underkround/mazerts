@@ -34,6 +34,16 @@ public:
     void loadConfigurations();
 
     /**
+     * Get loaded defs
+     */
+    DoubleLinkedList<AssetDef*>* getAssetDefs() { return &m_AssetDefs; }
+    DoubleLinkedList<MovingDef*>* getMovingDefs() { return &m_MovingDefs; }
+    DoubleLinkedList<WeaponDef*>* getWeaponDefs() { return &m_WeaponDefs; }
+    DoubleLinkedList<BuilderDef*>* getBuilderDefs() { return &m_BuilderDefs; }
+    DoubleLinkedList<ResourcerDef*>* getResourcerDefs() { return &m_ResourcerDefs; }
+    DoubleLinkedList<RadarDef*>* getRadarDefs() { return &m_RadarDefs; }
+
+    /**
      *
      */
     AssetDef* getAssetDef(int tag);

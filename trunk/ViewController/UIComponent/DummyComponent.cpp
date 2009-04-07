@@ -8,10 +8,9 @@
 #include "../App/IApplication.h" // for random
 #include "UIContainer.h"
 
-DummyComponent::DummyComponent(int x, int y, int w, int h) : UIComponent()
+DummyComponent::DummyComponent(const int posX, const int posY, const unsigned int width, const unsigned int height)
+    : UIComponent(posX, posY, width, height)
 {
-    m_Pos(x, y);
-    m_Size(w, h);
     downcounter = 0.0f;
     downcounterStep = 0.01f;
 
@@ -96,21 +95,27 @@ void DummyComponent::update(const float frameTime)
 
 int DummyComponent::processEvent(int eventFlag, TCHAR arg)
 {
+    UIComponent::processEvent(eventFlag, arg);
 //        setBackground(IApplication::RandInt(0xAA000000, 0xFF000000) + IApplication::RandInt(0x000000, 0xFFFFFF));
     if(eventFlag & CEVENT_MOUSE_PRESSED)
     {
-        setBackground(0xAAFF0000);
+        if(arg & 1)
+            setBackground(0xFFFF0000);
+        else if(arg & 2)
+            setBackground(0xFF0000FF);
+        else
+            setBackground(0xFF000000);
     }
     if(eventFlag & CEVENT_MOUSE_DRAGGED)
     {
-        setBackground(0xAA00FF00);
+        setBackground(0xFF00FF00);
     }
     if(eventFlag & CEVENT_MOUSE_RELEASED)
     {
-        setBackground(0xAA0000FF);
+        setBackground(0xFFFFFFFF);
     }
 
-    // actual action
+    // test action states
     if(eventFlag & CEVENT_MOUSE_RELEASED && mouseIntersects())
     {
         switch(m_Mode)

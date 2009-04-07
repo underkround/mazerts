@@ -28,6 +28,25 @@ HRESULT Cursor::create(LPDIRECT3DDEVICE9 pDevice)
     return S_OK;
 }
 
+
+void Cursor::setTooltip(LPCTSTR tooltipStr, const float lifeTime, const bool clearOnMouseMove)
+{
+    clearTooltip();
+    _stprintf_s(m_pTooltip, _T("%s"), tooltipStr);
+    m_TooltipDowncounter = (lifeTime <= 0) ? -1 : lifeTime;
+    m_ClearOnMouseMove = clearOnMouseMove;
+}
+
+
+void Cursor::setTooltip(const char* pTooltipChars, const float lifeTime, const bool clearOnMouseMove)
+{
+    clearTooltip();
+    MultiByteToWideChar(CP_ACP, 0, pTooltipChars, -1, m_pTooltip, CURSOR_TOOLTIP_SIZE);
+    m_TooltipDowncounter = (lifeTime <= 0) ? -1 : lifeTime;
+    m_ClearOnMouseMove = clearOnMouseMove;
+}
+
+
 HRESULT Cursor::update(const float frameTime)
 {
     // tooltip-autoremove
@@ -39,6 +58,9 @@ HRESULT Cursor::update(const float frameTime)
         if(m_TooltipDowncounter <= 0)
             clearTooltip();
     }
+
+    if(m_ClearOnMouseMove && !MouseState::mouseIdle)
+        clearTooltip();
 
     TRANSLITVERTEX* pVertices = NULL;
 
