@@ -100,6 +100,15 @@ public:
         return S_OK;
     }
 
+    /**
+     * Returns player who's in charge
+     */
+    inline Player* getCurrentPlayer() { return m_pCurrentPlayer; }
+
+    /**
+     * Sets current player
+     */
+    inline void setCurrentPlayer(Player* pPlayer) { m_pCurrentPlayer = pPlayer; }
 
 private:
 
@@ -158,6 +167,9 @@ private:
 
     UIContainer*        m_pCont1;
     UIContainer*        m_pCont2;
+
+    // Player who is currently playing
+    Player*             m_pCurrentPlayer;
 };
 
 #endif //__GAMESTATE_H__

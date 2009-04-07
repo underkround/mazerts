@@ -14,7 +14,6 @@
 class Player
 {
 public:
-
     Player(const int index);
     ~Player();
 
@@ -60,7 +59,7 @@ public:
 	inline const int getEnergyConsumed() { return m_EnergyConsumed; }
 	inline void setEnergyConsumed(const int amount) { m_EnergyConsumed = amount; }
 
-	inline Fog* getFog() { return &m_Fog; }
+	inline Fog* getFog() { return m_pFog; }
 
 private:
     int         m_Id; // id of this player
@@ -75,7 +74,7 @@ private:
 
 	int			m_Ore; // amount of "money"
 
-	Fog			m_Fog; // FOG OF WAR!!
+    Fog*		m_pFog; // FOG OF WAR!! This is a pointer because of initialization order.
 };
 
 #endif // __PLAYER_H__

@@ -16,8 +16,16 @@ Player::Player(const int index)
 
     m_Enemies = 0;
     m_Allies = 0;
+    
+    m_pFog = new Fog();
+    m_pFog->setOwner(this);
 }
 
 Player::~Player()
 {
+    if (m_pFog)
+    {
+        delete m_pFog;
+        m_pFog = NULL;
+    }
 }

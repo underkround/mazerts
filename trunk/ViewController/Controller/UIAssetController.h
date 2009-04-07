@@ -36,10 +36,11 @@ public:
     {
         NONE = 0,
         UNIT,
-        BUILDING
+        BUILDING,
+        ENEMY // enemy / enemies are selected, so you cannot move them
     };
 
-    UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* pSelector);
+    UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* pSelector, Player* pCurrentPlayer);
     ~UIAssetController();
 
     /**
@@ -130,6 +131,8 @@ private:
     UnitCamera                  m_UnitCamera;
     UIUnit*                     m_pUnitCarryingCamera;
 
+    // who's being controlled
+    Player*                     m_pCurrentPlayer;
 };
 
 #endif // __UIASSETCONTROLLER_H__

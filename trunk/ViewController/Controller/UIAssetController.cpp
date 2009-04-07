@@ -21,7 +21,7 @@
 #include "Cursor.h" // for tooltip
 #include <TCHAR.h>  // for tooltip
 
-UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* pSelector)
+UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* pSelector, Player* pCurrentPlayer)
 {
     m_pUnitCommandDispatcher = new UnitCommandDispatcher(NULL); // TODO: use actual player-object
     m_pDevice = pDevice;
@@ -53,6 +53,8 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_KeyFirstPersonCamera = 46;
 
     AssetCollection::registerListener(this);
+
+    m_pCurrentPlayer = pCurrentPlayer;
 }
 
 
@@ -214,16 +216,23 @@ void UIAssetController::onPickRelease(const float frameTime)
                 while(pNode)
                 {
                    UIAsset* pAsset = pNode->item;
-                   if (pAsset->getAsset()->getAssetType() == IAsset::UNIT)
+                   if (pAsset->getAsset()->getAssetType() == IAsset::UNIT && m_pCurrentPlayer == pAsset->getAsset()->getOwner())
                    {
-                        if (m_SelectedAssetType == BUILDING)
+                        if (m_SelectedAssetType != UNIT)
                             templist.release();
                         m_SelectedAssetType = UNIT;
                         templist.pushHead(pAsset);
                    }
-                   else if (m_SelectedAssetType == NONE && pAsset->getAsset()->getAssetType() == IAsset::BUILDING)
+                   else if ((m_SelectedAssetType == NONE || m_SelectedAssetType == ENEMY) && m_pCurrentPlayer == pAsset->getAsset()->getOwner() && pAsset->getAsset()->getAssetType() == IAsset::BUILDING)
                    {
-                       m_SelectedAssetType = BUILDING;
+                        if (m_SelectedAssetType != BUILDING)
+                            templist.release();
+                        m_SelectedAssetType = BUILDING;
+                        templist.pushHead(pAsset);
+                   }
+                   else if (m_SelectedAssetType == NONE && m_pCurrentPlayer != pAsset->getAsset()->getOwner())
+                   {
+                       m_SelectedAssetType = ENEMY;
                        templist.pushHead(pAsset);
                    }
                    pNode = pNode->next;
@@ -233,13 +242,14 @@ void UIAssetController::onPickRelease(const float frameTime)
                 pNode = templist.headNode();
                 if(pNode)
                 {
-                    SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pNode->item->GetMatrix()._41, false);
+                    if (m_SelectedAssetType != ENEMY)
+                        SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pNode->item->GetMatrix()._41, false);
                     while(pNode)
                     {
                         UIAsset* pAsset = pNode->item;
                         if(!pAsset->isSelected())
                         {
-                            if (pAsset->getAsset()->getAssetType() == IAsset::UNIT)
+                            if (pAsset->getAsset()->getAssetType() == IAsset::UNIT && m_SelectedAssetType != ENEMY) // if you comment out the enemy check, you can move enemies
                                 m_pUnitCommandDispatcher->addUnit((Unit*)pAsset->getAsset());
                             pAsset->setSelected(true);
                             m_SelectedUIAssets.pushHead(pAsset);
@@ -285,17 +295,22 @@ void UIAssetController::onPickButton(const float frameTime)
             if(pUIAsset && !pUIAsset->isSelected())
             {
                 pUIAsset->setSelected(true);
-                SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pUIAsset->GetMatrix()._41, false);
-                if (pUIAsset->getAsset()->getAssetType() == IAsset::UNIT)
+                if (pUIAsset->getAsset()->getAssetType() == IAsset::UNIT && pUIAsset->getAsset()->getOwner() == m_pCurrentPlayer)
                 {
                     m_pUnitCommandDispatcher->addUnit((Unit*)pUIAsset->getAsset());
                     m_SelectedAssetType = UNIT;
                 }
-                else if (pUIAsset->getAsset()->getAssetType() == IAsset::BUILDING)
+                else if (pUIAsset->getAsset()->getAssetType() == IAsset::BUILDING && pUIAsset->getAsset()->getOwner() == m_pCurrentPlayer)
                 {
                     // TODO: Buildingdispatcher
                     m_SelectedAssetType = BUILDING;
                 }
+                else
+                {
+                    m_SelectedAssetType = ENEMY;
+                }
+                if (m_SelectedAssetType != ENEMY)
+                    SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pUIAsset->GetMatrix()._41, false);
                 m_SelectedUIAssets.pushHead(pUIAsset);
             }
             m_SelectionState = CLICK;

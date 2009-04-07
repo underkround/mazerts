@@ -15,6 +15,7 @@
 
 // player manager
 #include "../../Model/Player/PlayerManager.h"
+#include "../../Model/Player/Fog.h"
 
 // Camera related
 #include "../Camera/SphereCamera.h"
@@ -111,9 +112,13 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     ExplosionCollection::create();
     ExplosionCollection::setCallBack(&ParticleFactory::createExplosion);
 
+    // Initialize player manager
+    PlayerManager::create(4);
+    setCurrentPlayer(PlayerManager::getPlayer(1));
+
     //UI-Terrain
     m_pUITerrain = UITerrain::getInstance();
-    hres = m_pUITerrain->create(pDevice);
+    hres = m_pUITerrain->create(pDevice, getCurrentPlayer());
     if(FAILED(hres))
     {
         return hres;
@@ -145,21 +150,24 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     m_pRootContainer->addComponent(m_pCont1);
     m_pRootContainer->addComponent(m_pCont2);
 
-    // Initialize player manager
-    PlayerManager::create(4);
-
     //TEST
 
     for(int i = 0; i < 50; i++)    
     {
+        int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
+        int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
         if(i < 13)
-            AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, 40+((i / 5) * 5), 20+(i % 5) * 5);
+//            AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, 40+((i / 5) * 5), 20+(i % 5) * 5);
+            AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, posx, posy);
         else if(i < 25)
-            AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, 80+((i / 5) * 5), 60+(i % 5) * 5);
+//            AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, 80+((i / 5) * 5), 60+(i % 5) * 5);
+            AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, posx, posy);
         else if(i < 38)
-            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, 0+((i / 5) * 5), 20+(i % 5) * 5);
+//            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, 0+((i / 5) * 5), 20+(i % 5) * 5);
+            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, posx, posy);
         else
-            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, 40+((i / 5) * 5), 60+(i % 5) * 5);
+//            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, 40+((i / 5) * 5), 60+(i % 5) * 5);
+            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, posx, posy);
     }
     for(int i = 0; i < 10; i++)
     {
@@ -195,7 +203,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     Camera::getCurrent()->setPosition(127.0f, 127.0f, 0.0f);
 
     // Controllers
-    m_UIControllers.pushHead(new UIAssetController(pDevice, &m_Selector));
+    m_UIControllers.pushHead(new UIAssetController(pDevice, &m_Selector, getCurrentPlayer()));
     m_UIControllers.pushHead(new SoundController());
     m_UIControllers.pushHead(new CameraController());
 
@@ -247,6 +255,9 @@ void GameState::release()
     //Release anything else left (effect-objects, debug-objects...)
     m_pManager->release();
 
+    // release fog
+    Fog::release();
+
     // release player manager
     PlayerManager::release();
     
@@ -295,6 +306,10 @@ bool GameState::update(const float frameTime)
 
     // Update UIComponents
     m_pRootContainer->update(frameTime);
+
+    // update fog
+    m_pCurrentPlayer->getFog()->update(frameTime);
+    UITerrain::getInstance()->updateFog(m_pDevice);
 
     //Keep running
     return true;
@@ -451,7 +466,7 @@ void GameState::updateControls(const float frameTime)
         pMaster->wait();
 
         Terrain::getInstance()->initialize();
-        UITerrain::getInstance()->create(m_pDevice);
+        UITerrain::getInstance()->create(m_pDevice, getCurrentPlayer());
         m_pUITerrain = UITerrain::getInstance();
 
         pMaster->start();

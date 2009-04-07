@@ -76,6 +76,16 @@ public:
 // ===== SEARCHING
 
     /**
+     * List of all units in game
+     */
+    inline static DoubleLinkedList<Unit*>* getAllUnits() { return &units; }
+
+    /**
+     * List of all buildings in game
+     */
+    inline static DoubleLinkedList<Building*>* getAllBuildings() { return &buildings; }
+
+    /**
      * Return asset at coordinate, if any
      */
     static IAsset* getAssetAt(const unsigned short x, const unsigned short y);

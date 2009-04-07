@@ -230,7 +230,7 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
     m_MiniMap.render(pDevice, m_pPixelTexture);
 }
 
-HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice)
+HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer)
 {
     UITerrain* pInstance = getInstance();
 
@@ -239,6 +239,8 @@ HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice)
     {
         pInstance->release();
     }    
+
+    pInstance->m_pCurrentPlayer = pCurrentPlayer;
 
     m_ChangeCounter++;
 
@@ -284,7 +286,10 @@ HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice)
     }
 
     //Create colormap
-    hres = pInstance->createColorMapTexture(pDevice);
+    bool** fog = NULL;
+    if (m_pCurrentPlayer)
+        fog = m_pCurrentPlayer->getFog()->getFogArray();
+    hres = pInstance->createColorMapTexture(pDevice, fog);
 
     if(FAILED(hres))
     {
@@ -605,7 +610,7 @@ HRESULT UITerrain::createPassabilityTexture(LPDIRECT3DDEVICE9 pDevice)
 
 }
 
-HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice)
+HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice, bool** fogArray)
 {
     HRESULT hres;
 
@@ -641,22 +646,25 @@ HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice)
             {
                 int i = y * (lockedRect.Pitch / 4) + x;
                 
+                float colorAmount = 1.0f;
+                if (!fogArray || !fogArray[y][x]) colorAmount = 0.2f;
+
                 //Create colordata based on the heightdata
                 if(ppVData[y][x] < pTerrain->getWaterLevel())
                 {
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 7) + (ppVData[y][x]);
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + ((unsigned char)(colorAmount * ppVData[y][x]) << 7) + ((unsigned char)(colorAmount * ppVData[y][x]));
                 }
                 else if(ppVData[y][x] > 192)
                 {
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 16) + (ppVData[y][x] << 8) + ppVData[y][x];
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + ((unsigned char)(colorAmount * ppVData[y][x]) << 16) + ((unsigned char)(colorAmount * ppVData[y][x]) << 8) + (unsigned char)(colorAmount * ppVData[y][x]);
                 }
                 else if(ppVData[y][x] > 128)
                 {    
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8) + (ppVData[y][x] >> 1);// + (ppVData[y][x] >> 1);
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + ((unsigned char)(colorAmount * ppVData[y][x]) << 8) + ((unsigned char)(colorAmount * ppVData[y][x]) >> 1);// + (ppVData[y][x] >> 1);
                 }
                 else
                 {    
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8);// + (ppVData[y][x] >> 1);
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + ((unsigned char)(colorAmount * ppVData[y][x]) << 8);// + (ppVData[y][x] >> 1);
                 }
             }
         }
@@ -1182,4 +1190,15 @@ float UITerrain::calculateAverageHeightForVertex(unsigned short x, unsigned shor
 
     return result * HEIGHTFACTOR;
 
+}
+
+void UITerrain::updateFog(LPDIRECT3DDEVICE9 pDevice)
+{
+    if (m_FogChangeCounter != m_pCurrentPlayer->getFog()->getChangeCounter())
+    {
+        m_FogChangeCounter = m_pCurrentPlayer->getFog()->getChangeCounter();
+
+        bool** fogArray = m_pCurrentPlayer->getFog()->getFogArray();
+        createColorMapTexture(pDevice, fogArray);
+    }
 }

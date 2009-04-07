@@ -342,9 +342,9 @@ void MiniMap::updateAssets(DoubleLinkedList<UIAsset*>* pAssetList, float deltaTi
         m_pAssetVB->Lock(0, m_AssetPrimitiveCount * 3 * sizeof(TRANSLITVERTEX), (void**)&pAssetVertices, D3DLOCK_DISCARD);
 
         while(pNode)
-        {        
-            //TODO: Visibility check (do not mark units that don't show on radar)
-            //if(PIIPPOLANVAARILLAOLITALO)
+        {
+            // is unit hidden in fog
+            if(UITerrain::getInstance()->getCurrentPlayer()->getFog()->isAssetVisible(pNode->item->getAsset()))
             {
                 D3DXVECTOR2* pos = (D3DXVECTOR2*)pNode->item->getAsset()->getPosition();
 

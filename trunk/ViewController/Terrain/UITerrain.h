@@ -15,6 +15,7 @@
 
 #include <d3dx9.h>
 #include "MiniMap.h"
+#include "../../Model/Player/PlayerManager.h"
 
 class UITerrain
 {
@@ -58,7 +59,7 @@ public:
      * @param pDevice LPDIRECT3DDEVICE9 to use for creation
      * @return HRESULT, S_OK if successfull, otherwise error code
      */
-    HRESULT create(LPDIRECT3DDEVICE9 pDevice);
+    HRESULT create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer);
 
     /**
      * Releases resources held by this instance
@@ -94,8 +95,9 @@ public:
     /**
      * Creates a red/green texture based on passability values of map tiles
      * @param pDevice LPDIRECT3DDEVICE9 to use for texture creation
+     * @param fogArray array of fog, null can be passed
      */
-    HRESULT createColorMapTexture(LPDIRECT3DDEVICE9 pDevice);
+    HRESULT createColorMapTexture(LPDIRECT3DDEVICE9 pDevice, bool** fogArray);
 
     /**
      * Gets the colormap texture of the terrain
@@ -188,7 +190,11 @@ public:
             m_pPixelTexture = NULL;
         }
         
-        HRESULT hres = createColorMapTexture(pDevice);        
+        bool** fog = NULL;
+        if (m_pCurrentPlayer)
+            fog = m_pCurrentPlayer->getFog()->getFogArray();
+
+        HRESULT hres = createColorMapTexture(pDevice, fog);        
         if(FAILED(hres))
         {
             return hres;
@@ -202,6 +208,13 @@ public:
 
         return hres; 
     }
+
+    /**
+     * updates fog
+     */
+    void updateFog(LPDIRECT3DDEVICE9 pDevice);
+
+    inline Player* getCurrentPlayer() { return m_pCurrentPlayer; }
 
 private:
     
@@ -356,6 +369,12 @@ private:
      * to react on said changes
      */
     unsigned short m_ChangeCounter;
+
+    // used to check if fog has changed
+    unsigned short m_FogChangeCounter;
+
+    // player whose fog is showing
+    Player* m_pCurrentPlayer;
 };
 
 #endif // __UITERRAIN_H__

@@ -91,6 +91,7 @@ private:
 
     int                 m_PlayerCount; // player count
     vector<Player*>     m_arrPlayers; // pointers to players
+
 };
 
 #endif

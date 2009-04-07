@@ -8,13 +8,119 @@
 #ifndef __FOG_H__
 #define __FOG_H__
 
+#include "../Common/DoubleLinkedList.h"
+
+// forward declaration
+class Player;
+class IAsset;
+
 class Fog
 {
 public:
-	inline const bool getFogAt(const int x, const int y) { return false; }
-	inline void setFogAt(const int x, const int y, const bool val) { }
+    Fog();
+    ~Fog();
+
+    // this struct represents one row in fog range "bitmasks"
+    struct FOGROW
+    {
+        int offset;
+        int amount;
+    };
+
+    // this struct represents one fog range "bitmask"
+    struct FOGMASK
+    {
+        int radius;
+        DoubleLinkedList<FOGROW*> data;
+    };
+
+    /**
+     * Doesn't do anything (yet?)
+     */
+    static void create();
+
+    /**
+     * Releases static fogmasks
+     */
+    static void release();
+
+    /**
+     * Owner of this fog
+     */
+    inline void setOwner(Player* player) { m_pOwner = player; }
+    inline Player* getOwner() { return m_pOwner; }
+
+    /**
+     * These two work a little stupid, if you call setFogAt(0, 0) and it returns true,
+     * it means that THERE'S NO FOG in that position
+     */
+    inline const bool getFogAt(const int x, const int y) { return m_Fog[y][x]; }
+	inline void setFogAt(const int x, const int y, const bool val) { m_Fog[y][x] = val; }
+
+    /**
+     * Pointer to boolean array containing true if area is visible and false if area is in fog
+     */
+    inline bool** getFogArray() { return m_Fog; }
+
+    /**
+     * If enough time has passed, calculates new fog
+     */
+    void update(float deltaT);
+
+    /**
+     * This returns a FOGMASK-type mask for specified range (radius)
+     * @param range / radius of the mask
+     */
+    static FOGMASK* getFogMask(int range);
+
+    /**
+     * Set the update interval (in seconds) between fog updates
+     * @param interval Interval in seconds
+     */
+    inline void setUpdateInterval(const float interval) { m_UpdateInterval = interval; }
+
+    /**
+     * Returns the value of the changecounter, used by outside objects to
+     * check if the countervalue has changed from what they have stored, so
+     * they know to update themselves (on things related to fog)
+     * @return Countervalue, wraps from 65535 to 0
+     */
+    inline const unsigned short getChangeCounter() const { return m_ChangeCounter; }
+
+    /**
+     * Is this asset visible or hidden in the fog
+     * @param asset to check
+     */
+    const bool isAssetVisible(IAsset* pAsset);
 
 private:
+    static FOGMASK* calculateFogMask(const int radius);
+    static void addValues(bool** tempArray, const int x, const int y, const int radius);
+
+    bool**  m_Fog;
+
+    Player*  m_pOwner;
+
+    /**
+     * List containing fogmasks
+     */
+    static DoubleLinkedList<FOGMASK*> m_FogMasks;
+
+    /**
+     * Time in seconds between which the fog is updated
+     */
+    float m_UpdateInterval;
+
+    /**
+     * Update counter for interval measuring
+     */
+    float m_UpdateCounter;
+
+    /**
+     * Changecounter, used by outside classes to check if the fog has been changed and
+     * to react on said changes
+     */
+    unsigned short m_ChangeCounter;
 };
 
 #endif // __PLAYER_H__
