@@ -151,7 +151,6 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     m_pRootContainer->addComponent(m_pCont2);
 
     //TEST
-
     for(int i = 0; i < 50; i++)    
     {
         int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
@@ -173,6 +172,11 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     {
         AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 52, 20+(i * 20), 100+(i % 5) * 10);
     }
+
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 5, 5);
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 200, 5);
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 200, 200);
+    AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 5, 200);
 
 /*
     AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 130, 450);

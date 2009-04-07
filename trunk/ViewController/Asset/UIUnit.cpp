@@ -128,7 +128,7 @@ void UIUnit::updatePosition()
 //otherwise same as in C3DObject
 void UIUnit::Render(LPDIRECT3DDEVICE9 pDevice)
 {
-    if (IsVisible() && m_pMesh && UITerrain::getInstance()->getCurrentPlayer()->getFog()->isAssetVisible(getAsset()))
+    if (IsVisible() && m_pMesh)
     {
         //Position is updated here so frustum culling won't bug
         m_mLocal._41 = m_pUnit->getPosition()->x + m_HalfSize;

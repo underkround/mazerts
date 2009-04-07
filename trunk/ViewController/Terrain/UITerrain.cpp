@@ -646,25 +646,33 @@ HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice, bool** fogAr
             {
                 int i = y * (lockedRect.Pitch / 4) + x;
                 
-                float colorAmount = 1.0f;
-                if (!fogArray || !fogArray[y][x]) colorAmount = 0.2f;
-
                 //Create colordata based on the heightdata
                 if(ppVData[y][x] < pTerrain->getWaterLevel())
                 {
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + ((unsigned char)(colorAmount * ppVData[y][x]) << 7) + ((unsigned char)(colorAmount * ppVData[y][x]));
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 7) + (ppVData[y][x]);
                 }
                 else if(ppVData[y][x] > 192)
                 {
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + ((unsigned char)(colorAmount * ppVData[y][x]) << 16) + ((unsigned char)(colorAmount * ppVData[y][x]) << 8) + (unsigned char)(colorAmount * ppVData[y][x]);
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 16) + (ppVData[y][x] << 8) + (ppVData[y][x]);
                 }
                 else if(ppVData[y][x] > 128)
                 {    
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + ((unsigned char)(colorAmount * ppVData[y][x]) << 8) + ((unsigned char)(colorAmount * ppVData[y][x]) >> 1);// + (ppVData[y][x] >> 1);
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8) + (ppVData[y][x] >> 1);// + (ppVData[y][x] >> 1);
                 }
                 else
                 {    
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + ((unsigned char)(colorAmount * ppVData[y][x]) << 8);// + (ppVData[y][x] >> 1);
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8);// + (ppVData[y][x] >> 1);
+                }
+
+                if (!fogArray || !fogArray[y][x]) {
+                    // tile is hidden
+                    unsigned int r = (((unsigned int*)lockedRect.pBits)[i] >> 16) & 0xff;
+                    unsigned int g = (((unsigned int*)lockedRect.pBits)[i] >> 8) & 0xff;
+                    unsigned int b = (((unsigned int*)lockedRect.pBits)[i]) & 0xff;
+                    r = r >> 2;
+                    g = g >> 2;
+                    b = b >> 2;
+                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (r << 16) + (g << 8) + b;
                 }
             }
         }

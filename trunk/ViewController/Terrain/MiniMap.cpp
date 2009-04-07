@@ -232,13 +232,14 @@ void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
         {
             float posX = m_Position.x + (lowerLeft.x * m_SizeFactor);
             float posY = m_Position.y + m_Size - (lowerLeft.y * m_SizeFactor);
+            const DWORD color = 0x33FFFFFF;
 
             pVertices[0].x = posX;
             pVertices[0].y = posY;
             pVertices[0].z = 0.0f;
             pVertices[0].tu = 0.0f;
             pVertices[0].tv = 1.0f;
-            pVertices[0].dwColor = 0xAAFFFFFF;
+            pVertices[0].dwColor = color;
             pVertices[0].rhw = 0.99f;
 
             if(upperLeft)
@@ -270,7 +271,7 @@ void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
             pVertices[1].z = 0.0f;
             pVertices[1].tu = 0.0f;
             pVertices[1].tv = 1.0f;
-            pVertices[1].dwColor = 0xAAFFFFFF;
+            pVertices[1].dwColor = color;
             pVertices[1].rhw = 0.99f;
 
             if(upperRight)
@@ -302,7 +303,7 @@ void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
             pVertices[2].z = 0.0f;
             pVertices[2].tu = 0.0f;
             pVertices[2].tv = 1.0f;
-            pVertices[2].dwColor = 0xAAFFFFFF;
+            pVertices[2].dwColor = color;
             pVertices[2].rhw = 0.99f;
 
             posX = m_Position.x + (lowerRight.x * m_SizeFactor);
@@ -313,7 +314,7 @@ void MiniMap::updateCamera(LPDIRECT3DDEVICE9 pDevice)
             pVertices[3].z = 0.0f;
             pVertices[3].tu = 0.0f;
             pVertices[3].tv = 1.0f;
-            pVertices[3].dwColor = 0xAAFFFFFF;
+            pVertices[3].dwColor = color;
             pVertices[3].rhw = 0.99f;
         }
         m_pCameraVB->Unlock();
@@ -344,7 +345,8 @@ void MiniMap::updateAssets(DoubleLinkedList<UIAsset*>* pAssetList, float deltaTi
         while(pNode)
         {
             // is unit hidden in fog
-            if(UITerrain::getInstance()->getCurrentPlayer()->getFog()->isAssetVisible(pNode->item->getAsset()))
+            //if(UITerrain::getInstance()->getCurrentPlayer()->getFog()->isAssetVisible(pNode->item->getAsset()))
+            if (pNode->item->IsVisible())
             {
                 D3DXVECTOR2* pos = (D3DXVECTOR2*)pNode->item->getAsset()->getPosition();
 

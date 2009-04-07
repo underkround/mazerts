@@ -24,7 +24,7 @@ Fog::Fog()
 
     m_ChangeCounter = 0;
     m_UpdateCounter = 100.0f;
-    setUpdateInterval(1.0f);
+    setUpdateInterval(0.5f);
 }
 
 Fog::~Fog()
@@ -117,14 +117,15 @@ void Fog::update(float deltaT)
                 {
                     // partially over edge
                     unsigned short yoffset = 0;
-                    unsigned short xoffset = 0;
                     unsigned short ycutoff = 0;
+/*
+                    unsigned short xoffset = 0;
                     unsigned short xcutoff = 0;
 
                     if (centerx - radius < 0) xoffset = abs(centerx - radius);
-                    if (centery - radius < 0) yoffset = abs(centery - radius);
-
                     if (centerx + radius >= len) xcutoff = abs(len - (centerx + radius));
+*/
+                    if (centery - radius < 0) yoffset = abs(centery - radius);
                     if (centery + radius >= len) ycutoff = abs(len - (centery + radius));
 
                     short y = centery - radius;
@@ -132,8 +133,10 @@ void Fog::update(float deltaT)
                     while (row)
                     {
                         if (y >= centery - radius + yoffset) {
-                            for (int x = row->item->offset + xoffset + centerx - radius; x < row->item->offset + row->item->amount + centerx - radius - xcutoff; x++)
+                            for (int x = max(row->item->offset + centerx - radius, 0); x < min(len, (unsigned short)(centerx - radius + row->item->offset + row->item->amount)); x++) {
+//                            for (int x = row->item->offset + xoffset + centerx - radius; x < (2 * row->item->offset) + row->item->amount + centerx - radius - xcutoff; x++)
                                 m_Fog[y][x] = true;
+                            }
                         }
                         ++y;
                         if (y >= centery + radius - ycutoff) break;

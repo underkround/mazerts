@@ -3,6 +3,7 @@
 #include "../App/I3DObject.h"
 #include "../Camera/FrustumCull.h"
 #include "../../Model/Common/Vector3.h"
+#include "../Terrain/UITerrain.h"
 
 #include "../Sound/SoundManager.h"
 
@@ -30,6 +31,8 @@ bool UIAsset::Update(float fFrameTime)
             case IAsset::STATE_PARALYZED:
                 break;
         }
+
+        SetVisible(UITerrain::getInstance()->getCurrentPlayer()->getFog()->isAssetVisible(getAsset()));
     }
 
     return m_Alive;
