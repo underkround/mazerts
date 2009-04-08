@@ -42,7 +42,9 @@ public:
      * @param fFrametime Time passed since last call in seconds
      */
     inline bool Update(float fFrametime)
-    {         
+    {
+        SetVisible(UITerrain::getInstance()->getCurrentPlayer()->getFog()->isVisibleCoord((int)m_mWorld._41, (int)m_mWorld._42));
+
         float t = m_pProjectile->getFlightT();
             
         m_mWorld._41 = m_Origin.x + m_Target.x * t;

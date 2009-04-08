@@ -45,6 +45,24 @@ public:
         m_mLocal._43 = UITerrain::getInstance()->calculateTriangleHeightAt(m_mLocal._41, m_mLocal._42);
     }
 
+    /**
+     * Set base material
+     * Used for player colors
+     */
+    inline void setBaseMaterial(D3DMATERIAL9* pMaterial)
+    {
+        switch (m_pBuilding->getTypeTag())
+        {
+        case 51: // ore mine, do not show player color
+            break;
+        case 52: // war factory
+            GetMeshDataArray()[3].pMaterial = pMaterial;
+            break;
+        default:
+            GetMeshDataArray()[0].pMaterial = pMaterial;
+        }
+    }
+
     virtual ~UIBuilding() {}
 
 private:

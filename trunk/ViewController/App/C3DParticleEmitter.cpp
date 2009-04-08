@@ -1,7 +1,6 @@
 #include "C3DParticleEmitter.h"
 #include "IApplication.h"	// only for RandFloat function
 #include "C3DObject.h"
-#include "../Terrain/UiTerrain.h" // for currentplayer :P
 
 // bitmasks for the emitter effects
 #define EMITTERFLAGS_SCALE				1
@@ -97,8 +96,6 @@ bool C3DParticleEmitter::Update(float fFrametime)
 {
 	if (IsActive())
 	{
-        SetVisible(UITerrain::getInstance()->getCurrentPlayer()->getFog()->isVisibleCoord(GetMatrix()._41, GetMatrix()._42));
-
         // update particle 3d object
 		if (m_pObject)
 		{
