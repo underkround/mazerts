@@ -125,6 +125,6 @@ void UIWeapon::callBack()
     {
         m_pFireEmitter->Emit(m_EmitParams);
 
-        SoundManager::playSound(SOUND_SHOOT, 0.1f, *((D3DXVECTOR3*)&GetMatrix()._41), true);
+        SoundManager::playSound(SOUND_SHOOT, 0.1f, *((D3DXVECTOR3*)&GetWorldMatrix()._41), true);
     }
 }

@@ -19,6 +19,11 @@ HRESULT SoundManager::create(IApplication* pApp)
 
     // HERE BE ALL SOUNDS FOR NOW
     // MOVE ELSEWHERE PLZ
+
+    // TODO: sounds:
+    // Unit complete
+    // Machine gun fire
+    // (Tank fire)
     static const Sound soundsList[] = 
     {
         {_T("..//data//sounds//aknowledge1.wav"), SOUND_AKNOWLEDGEMENT},
