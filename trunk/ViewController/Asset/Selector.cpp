@@ -59,20 +59,7 @@ Selector::SELECTION* Selector::buttonUp()
         
         pNode = pNode->next;
     }
-
-    //Model-side units
-    /*for(unsigned short y = minY; y < maxY; y++)
-    {
-        for(unsigned short x = minX; x < maxX; x++)
-        {
-            Unit* pUnit = AssetCollection::getUnitAt(x, y);
-            if(pUnit)
-            {
-                result->units.pushTail(pUnit);
-            }
-        }
-    }*/
-
+    delete modelAssetList;
 
     m_Render = false;
     m_FirstSet = false;

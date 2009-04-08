@@ -48,22 +48,30 @@ DoubleLinkedList<IAsset*>* Radar::getVisibleEnemyAssets()
 
     if (m_VisibleEnemyListNeedRefreshing)
     {
-        const unsigned short halfrange = (unsigned short)(0.5f * m_Def.range);
+        //const unsigned short halfrange = (unsigned short)(0.5f * m_Def.range);
         
-        signed short x = (signed short)(m_pHost->getCenterGridX() - halfrange);
-        signed short y = (signed short)(m_pHost->getCenterGridY() - halfrange);
-        unsigned short w = (unsigned short)m_Def.range;
-        unsigned short h = (unsigned short)m_Def.range;
+        signed short x = (signed short)(m_pHost->getCenterGridX() - (signed short)m_Def.range);
+        signed short y = (signed short)(m_pHost->getCenterGridY() - (signed short)m_Def.range);
+        unsigned short w = (unsigned short)(m_Def.range) << 1;
+        unsigned short h = (unsigned short)(m_Def.range) << 1;
         unsigned short size = Terrain::getInstance()->getSize();
         
-        //TODO: w & h should also be recalculated, if bounding occurs (otherwise the radar
+        //w & h are recalculated, if bounding occurs (otherwise the radar
         //sees m_Def.range squares from the side, no matter how close to the side the unit is)
-        if (x < 0) x = 0;
-        if (y < 0) y = 0;
+        if (x < 0)
+        {
+            w += x;
+            x = 0;            
+        }
+        if (y < 0)
+        {
+            h += y;
+            y = 0;
+        }
         if (x + w >= size) w = size - x;
         if (y + h >= size) h = size - y;
 
-        AssetCollection::getAssetsAt(&m_VisibleEnemyAssets, (unsigned short)x, (unsigned short)y, (unsigned int)m_Def.range, (unsigned int)m_Def.range);
+        AssetCollection::getAssetsAt(&m_VisibleEnemyAssets, (unsigned short)x, (unsigned short)y, w, h);
         // TODO: pick units at range & check for mountains etc blocks
         ListNode<IAsset*>* ln = m_VisibleEnemyAssets.headNode();
         while (ln)
