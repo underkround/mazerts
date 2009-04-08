@@ -9,32 +9,36 @@ Selector::SELECTION* Selector::buttonUp()
 {
     SELECTION* result = new SELECTION;
     
-    int minX, minY;
-    int maxX, maxY;
-    //TODO: Get assets from model side (AssetCollection)
+    int x, y;
+    int width, height;
+
     //Get the points
     if(m_Point1.x > m_Point2.x)
-    {
-        maxX = (int)(m_Point1.x + 2.5f);  //Magic constansts
-        minX = (int)(m_Point2.x - 1.5f);
+    {        
+        x = (int)m_Point2.x;
+        width = (int)m_Point1.x - (int)m_Point2.x;
     }
     else
-    {
-        maxX = (int)(m_Point2.x + 2.5f);
-        minX = (int)(m_Point1.x - 1.5f);
+    {        
+        x = (int)m_Point1.x;
+        width = (int)m_Point2.x - (int)m_Point1.x;
     }
 
     if(m_Point1.y > m_Point2.y)
-    {
-        maxY = (int)(m_Point1.y + 2.5f);
-        minY = (int)(m_Point2.y - 1.5f);
+    {        
+        y = (int)m_Point2.y;
+        height = (int)m_Point1.y - (int)m_Point2.y;
     }
     else
-    {
-        maxY = (int)(m_Point2.y + 2.5f);
-        minY = (int)(m_Point1.y - 1.5f);
+    {        
+        y = (int)m_Point1.y;
+        height = (int)m_Point2.y - (int)m_Point1.y;
     }    
    
+    //Model-side units
+    DoubleLinkedList<IAsset*>* modelAssetList = new DoubleLinkedList<IAsset*>;
+    AssetCollection::getAssetsAt(modelAssetList, x, y, width, height);
+
     //UI-side units
     DoubleLinkedList<UIAsset*>* assetList = UI3DObjectManager::getInstance()->getAssetList();
 
@@ -42,14 +46,17 @@ Selector::SELECTION* Selector::buttonUp()
 
     while(pNode)
     {
-        D3DXVECTOR2* pPos = (D3DXVECTOR2*)pNode->item->getAsset()->getPosition();
-        int x = (int)(pPos->x + pNode->item->getHalfSize());
-        int y = (int)(pPos->y + pNode->item->getHalfSize());
-        if(x > minX && x < maxX && y > minY && y < maxY)
+        ListNode<IAsset*>* modelNode = modelAssetList->headNode();
+        while(modelNode)
         {
-            result->assets.pushTail(pNode->item);
-        }
+            if(modelNode->item == pNode->item->getAsset())
+            {
+                result->assets.pushTail(pNode->item);
+            }
 
+            modelNode = modelNode->next;
+        }
+        
         pNode = pNode->next;
     }
 

@@ -93,11 +93,16 @@ public:
     HRESULT createPassabilityTexture(LPDIRECT3DDEVICE9 pDevice);
 
     /**
-     * Creates a red/green texture based on passability values of map tiles
-     * @param pDevice LPDIRECT3DDEVICE9 to use for texture creation
+     * Creates a colormapped texture based on height values of map tiles
+     * @param pDevice LPDIRECT3DDEVICE9 to use for texture creation     
+     */
+    HRESULT createColorMapTexture(LPDIRECT3DDEVICE9 pDevice);
+
+    /**
+     * Updates a colormapped texture based on height values of map tiles and given fog
      * @param fogArray array of fog, null can be passed
      */
-    HRESULT createColorMapTexture(LPDIRECT3DDEVICE9 pDevice, bool** fogArray);
+    HRESULT updateColorMapTexture(bool** fogArray);    
 
     /**
      * Gets the colormap texture of the terrain
@@ -194,7 +199,12 @@ public:
         if (m_pCurrentPlayer)
             fog = m_pCurrentPlayer->getFog()->getFogArray();
 
-        HRESULT hres = createColorMapTexture(pDevice, fog);        
+        HRESULT hres = createColorMapTexture(pDevice);        
+        if(FAILED(hres))
+        {
+            return hres;
+        }
+        hres = updateColorMapTexture(fog);
         if(FAILED(hres))
         {
             return hres;

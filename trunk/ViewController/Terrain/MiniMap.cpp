@@ -330,7 +330,8 @@ void MiniMap::updateAssets(DoubleLinkedList<UIAsset*>* pAssetList, float deltaTi
     {
         m_UpdateCounter = 0.0f;
 
-        m_AssetPrimitiveCount = pAssetList->count();
+        //m_AssetPrimitiveCount = pAssetList->count();
+        m_AssetPrimitiveCount = 0;
         
         TRANSLITVERTEX* pAssetVertices;
 
@@ -377,7 +378,8 @@ void MiniMap::updateAssets(DoubleLinkedList<UIAsset*>* pAssetList, float deltaTi
                 pAssetVertices[index].tv = 1.0f;
                 pAssetVertices[index].rhw = 0.999f;
                 pAssetVertices[index++].dwColor = PLAYERCOLORS[pNode->item->getAsset()->getOwner()->getIndex()];
-
+                
+                m_AssetPrimitiveCount++;
             }
             pNode = pNode->next;
         }

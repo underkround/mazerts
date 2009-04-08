@@ -289,8 +289,12 @@ HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer)
     bool** fog = NULL;
     if (m_pCurrentPlayer)
         fog = m_pCurrentPlayer->getFog()->getFogArray();
-    hres = pInstance->createColorMapTexture(pDevice, fog);
-
+    hres = pInstance->createColorMapTexture(pDevice);
+    if(FAILED(hres))
+    {
+        return hres;
+    }
+    hres = pInstance->updateColorMapTexture(fog);
     if(FAILED(hres))
     {
         return hres;
@@ -610,7 +614,7 @@ HRESULT UITerrain::createPassabilityTexture(LPDIRECT3DDEVICE9 pDevice)
 
 }
 
-HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice, bool** fogArray)
+HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice)
 {
     HRESULT hres;
 
@@ -619,9 +623,8 @@ HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice, bool** fogAr
         m_pPixelTexture->Release();
         m_pPixelTexture = NULL;
     }
-
-    Terrain* pTerrain = Terrain::getInstance();    
-    unsigned short terraSize = pTerrain->getSize();
+     
+    unsigned short terraSize = Terrain::getInstance()->getSize();
 
     //Default-pool, needs to be released on devicelost and recreated after restoring
     hres = D3DXCreateTexture(pDevice, terraSize, terraSize, 1, D3DUSAGE_DYNAMIC, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &m_pPixelTexture);
@@ -631,11 +634,19 @@ HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice, bool** fogAr
         return hres;
     }
 
+    return updateColorMapTexture(NULL);
+
+}
+
+HRESULT UITerrain::updateColorMapTexture(bool** fogArray)
+{
+    Terrain* pTerrain = Terrain::getInstance();
     unsigned const char* const* ppVData = pTerrain->getTerrainVertexHeightData();
+    unsigned short terraSize = pTerrain->getSize();
 
     D3DLOCKED_RECT lockedRect;  
   
-    hres = m_pPixelTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_DISCARD);
+    HRESULT hres = m_pPixelTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_DISCARD);
     
     //Write colordata
     if(!FAILED(hres))
@@ -677,6 +688,10 @@ HRESULT UITerrain::createColorMapTexture(LPDIRECT3DDEVICE9 pDevice, bool** fogAr
             }
         }
         
+    }
+    else
+    {
+        return hres;
     }
     m_pPixelTexture->UnlockRect(0);
 
@@ -1207,6 +1222,6 @@ void UITerrain::updateFog(LPDIRECT3DDEVICE9 pDevice)
         m_FogChangeCounter = m_pCurrentPlayer->getFog()->getChangeCounter();
 
         bool** fogArray = m_pCurrentPlayer->getFog()->getFogArray();
-        createColorMapTexture(pDevice, fogArray);
+        updateColorMapTexture(fogArray);
     }
 }
