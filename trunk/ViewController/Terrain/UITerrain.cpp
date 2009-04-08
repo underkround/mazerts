@@ -655,21 +655,46 @@ HRESULT UITerrain::updateColorMapTexture(bool** fogArray)
             {
                 int i = y * (lockedRect.Pitch >> 2) + x;
 
-                if (!fogArray || !fogArray[y][x]) {
-                    // tile is hidden
-                    //Create colordata based on the heightdata
-                    if(ppVData[y][x] < pTerrain->getWaterLevel())
-                    {                         
-                        ((unsigned int*)lockedRect.pBits)[i] = (256 << 24) + (ppVData[y][x]);                        
+                if(fogArray)
+                {
+                    if (!fogArray[y][x]) {
+                        // tile is hidden
+                        //Create gray colordata based on the heightdata
+                        if(ppVData[y][x] < pTerrain->getWaterLevel())
+                        {                         
+                            ((unsigned int*)lockedRect.pBits)[i] = (256 << 24) + (ppVData[y][x]);                        
+                        }
+                        else
+                        {
+                            int shadeFactor = ppVData[y][x] >> 1;
+                            ((unsigned int*)lockedRect.pBits)[i] = (256 << 24) + (shadeFactor << 16) + (shadeFactor << 8) + (shadeFactor);
+                        }
                     }
                     else
                     {
-                        int shadeFactor = ppVData[y][x] >> 1;
-                        ((unsigned int*)lockedRect.pBits)[i] = (256 << 24) + (shadeFactor << 16) + (shadeFactor << 8) + (shadeFactor);
+                        // tile is visible
+                        //Create colordata based on the heightdata
+                        if(ppVData[y][x] < pTerrain->getWaterLevel())
+                        {
+                            ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 7) + (ppVData[y][x]);
+                        }
+                        else if(ppVData[y][x] > 192)
+                        {
+                            ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 16) + (ppVData[y][x] << 8) + (ppVData[y][x]);
+                        }
+                        else if(ppVData[y][x] > 128)
+                        {    
+                            ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8) + (ppVData[y][x] >> 1);// + (ppVData[y][x] >> 1);
+                        }
+                        else
+                        {    
+                            ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8);// + (ppVData[y][x] >> 1);
+                        }
                     }
                 }
                 else
                 {
+                    //fog array is null
                     //Create colordata based on the heightdata
                     if(ppVData[y][x] < pTerrain->getWaterLevel())
                     {

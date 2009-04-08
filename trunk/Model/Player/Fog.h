@@ -61,9 +61,9 @@ public:
 	inline void setVisibleCoord(const int x, const int y, const bool val) { m_Fog[y][x] = val; }
 
     /**
-     * Pointer to boolean array containing true if area is visible and false if area is in fog
+     * @return Pointer to boolean array containing true if area is visible and false if area is in fog or NULL if fogging is disabled
      */
-    inline bool** getFogArray() { return m_Fog; }
+    inline bool** getFogArray() { return (m_Enabled) ? m_Fog : NULL; }
 
     /**
      * If enough time has passed, calculates new fog
@@ -90,6 +90,9 @@ public:
      */
     inline const unsigned short getChangeCounter() const { return m_ChangeCounter; }
 
+    inline bool isEnabled() { return m_Enabled; }
+    inline void setEnabled(bool toggle) { m_Enabled = toggle; }
+
     /**
      * Is this asset visible or hidden in the fog
      * @param asset to check
@@ -103,6 +106,8 @@ private:
     bool**  m_Fog;
 
     Player*  m_pOwner;
+
+    bool m_Enabled;
 
     /**
      * List containing fogmasks

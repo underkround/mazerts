@@ -22,6 +22,7 @@ Fog::Fog()
         memset(m_Fog[i], false, len * sizeof(bool));
     }
 
+    m_Enabled = true;
     m_ChangeCounter = 0;
     m_UpdateCounter = 100.0f;
     setUpdateInterval(0.5f);
@@ -242,6 +243,8 @@ void Fog::addValues(bool** tempArray, const int x, const int y, const int radius
 
 const bool Fog::isAssetVisible(IAsset* pAsset)
 {
+    if(!m_Enabled) return true;
+
     const short x = pAsset->getGridX();
     const short y = pAsset->getGridY();
     const unsigned short w = pAsset->getWidth() - 1;

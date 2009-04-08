@@ -46,6 +46,7 @@
 
 // TODO - for testing, remove
 #include "../UIComponent/GridLayout.h"
+#include "../App/GameConsole.h"
 
 
 #define KEYBOARD_CAMSPEED 60.0f
@@ -514,6 +515,14 @@ void GameState::updateControls(const float frameTime)
             m_pUITerrain->setDetailLevel(detail);
         }
     }
+
+#ifdef _DEBUG
+    //HACK: this is a cheat key to enable/disable fog
+    if(KeyboardState::keyReleased[33])
+    {
+        m_pCurrentPlayer->getFog()->setEnabled(!m_pCurrentPlayer->getFog()->isEnabled());
+    }
+#endif
 
 }
 

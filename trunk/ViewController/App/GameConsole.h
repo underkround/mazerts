@@ -17,6 +17,7 @@
 
 #include <tchar.h>
 #include "ID3DApplication.h"
+#include "../States/GameState.h"
 
 #define CONSOLE_BUFFERLENGTH 10
 

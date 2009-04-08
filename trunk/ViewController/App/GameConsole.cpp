@@ -59,4 +59,8 @@ void GameConsole::parse(void)
     {
         ::MessageBox(NULL, _T("testi"), _T("testi"), NULL);
     }
+    if(!_tcscmp(m_arrMessage, _T("fog")))
+    {
+        //pGamestate->getCurrentPlayer()->getFog()->setEnabled(false);
+    }
 }
