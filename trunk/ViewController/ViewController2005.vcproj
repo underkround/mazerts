@@ -534,11 +534,27 @@
 			Name="Player"
 			>
 			<File
+				RelativePath="..\Model\Player\Fog.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Player\Fog.h"
+				>
+			</File>
+			<File
 				RelativePath="..\model\player\Player.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\model\player\Player.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Player\PlayerManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Player\PlayerManager.h"
 				>
 			</File>
 		</Filter>
@@ -1005,14 +1021,6 @@
 		<Filter
 			Name="UIComponents"
 			>
-			<File
-				RelativePath=".\UIComponent\BasicButton.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UIComponent\BasicButton.h"
-				>
-			</File>
 			<File
 				RelativePath=".\UIComponent\ComponentCommon.h"
 				>

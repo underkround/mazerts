@@ -172,9 +172,7 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
         //Color map on second coordinates
         pDevice->SetTexture(1, m_pPixelTexture);
         pDevice->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1);
-        pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE2X);
-        pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_CURRENT);
-        pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+        pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE4X);
     }
 
     pDevice->SetMaterial(&m_Mat);
@@ -655,35 +653,40 @@ HRESULT UITerrain::updateColorMapTexture(bool** fogArray)
         {
             for(int x = 0; x < terraSize; x++)
             {
-                int i = y * (lockedRect.Pitch / 4) + x;
-                
-                //Create colordata based on the heightdata
-                if(ppVData[y][x] < pTerrain->getWaterLevel())
-                {
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 7) + (ppVData[y][x]);
-                }
-                else if(ppVData[y][x] > 192)
-                {
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 16) + (ppVData[y][x] << 8) + (ppVData[y][x]);
-                }
-                else if(ppVData[y][x] > 128)
-                {    
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8) + (ppVData[y][x] >> 1);// + (ppVData[y][x] >> 1);
-                }
-                else
-                {    
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8);// + (ppVData[y][x] >> 1);
-                }
+                int i = y * (lockedRect.Pitch >> 2) + x;
 
                 if (!fogArray || !fogArray[y][x]) {
                     // tile is hidden
-                    unsigned int r = (((unsigned int*)lockedRect.pBits)[i] >> 16) & 0xff;
-                    unsigned int g = (((unsigned int*)lockedRect.pBits)[i] >> 8) & 0xff;
-                    unsigned int b = (((unsigned int*)lockedRect.pBits)[i]) & 0xff;
-                    r = r >> 2;
-                    g = g >> 2;
-                    b = b >> 2;
-                    ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (r << 16) + (g << 8) + b;
+                    //Create colordata based on the heightdata
+                    if(ppVData[y][x] < pTerrain->getWaterLevel())
+                    {                         
+                        ((unsigned int*)lockedRect.pBits)[i] = (256 << 24) + (ppVData[y][x]);                        
+                    }
+                    else
+                    {
+                        int shadeFactor = ppVData[y][x] >> 1;
+                        ((unsigned int*)lockedRect.pBits)[i] = (256 << 24) + (shadeFactor << 16) + (shadeFactor << 8) + (shadeFactor);
+                    }
+                }
+                else
+                {
+                    //Create colordata based on the heightdata
+                    if(ppVData[y][x] < pTerrain->getWaterLevel())
+                    {
+                        ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 7) + (ppVData[y][x]);
+                    }
+                    else if(ppVData[y][x] > 192)
+                    {
+                        ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 16) + (ppVData[y][x] << 8) + (ppVData[y][x]);
+                    }
+                    else if(ppVData[y][x] > 128)
+                    {    
+                        ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8) + (ppVData[y][x] >> 1);// + (ppVData[y][x] >> 1);
+                    }
+                    else
+                    {    
+                        ((unsigned int*)lockedRect.pBits)[i] = (255 << 24) + (ppVData[y][x] << 8);// + (ppVData[y][x] >> 1);
+                    }
                 }
             }
         }
