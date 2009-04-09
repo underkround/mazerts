@@ -20,13 +20,19 @@ void ParticleFactory::createExplosion(Explosion* pExplosion)
     C3DParticleEmitter* pEmitter = new C3DParticleEmitter(1.0f);
     pEmitter->Create(1, &pTexture, C3DParticleEmitter::ePARTICLETYPE_BILLBOARD);    
 
+    D3DXMATRIX& mat = pEmitter->GetWorldMatrix();
+    mat._41 = pExplosion->getX();
+    mat._42 = pExplosion->getY();
+    mat._43 = UITerrain::getInstance()->calculateTriangleHeightAt(pExplosion->getX(), pExplosion->getY());
+    ::memcpy(&pEmitter->GetMatrix()._41, &mat._41, 3 * sizeof(float));
+
     C3DParticleEmitter::EMIT_PARAMS params;
 	::memset(&params, 0, sizeof(C3DParticleEmitter::EMIT_PARAMS));
 
 	// position
-    params.vPosition.x = pExplosion->getX() + IApplication::RandFloat(-1.0f, 1.0f);
-	params.vPosition.y = pExplosion->getY() + IApplication::RandFloat(-1.0f, 1.0f);
-    params.vPosition.z = UITerrain::getInstance()->calculateTriangleHeightAt(pExplosion->getX(), pExplosion->getY()) - 1.0f;
+    params.vPosition.x = IApplication::RandFloat(-1.0f, 1.0f);
+	params.vPosition.y = IApplication::RandFloat(-1.0f, 1.0f);
+    params.vPosition.z = -1.0f;
     params.vPositionSpread = D3DXVECTOR3((FLOAT)pExplosion->getRadius(), (FLOAT)pExplosion->getRadius(), 0);
 
 	// direction
@@ -69,14 +75,14 @@ void ParticleFactory::createExplosion(const D3DXVECTOR3& pos, int size)
     C3DParticleEmitter* pEmitter = new C3DParticleEmitter(1.0f);
     pEmitter->Create(1, &pTexture, C3DParticleEmitter::ePARTICLETYPE_BILLBOARD);    
 
+    D3DXMATRIX& mat = pEmitter->GetWorldMatrix();
+    mat._41 = pos.x;
+    mat._42 = pos.y;
+    mat._43 = pos.z;
+    ::memcpy(&pEmitter->GetMatrix()._41, &mat._41, 3 * sizeof(float));
+
     C3DParticleEmitter::EMIT_PARAMS params;
 	::memset(&params, 0, sizeof(C3DParticleEmitter::EMIT_PARAMS));
-
-	// position
-    params.vPosition.x = pos.x;
-	params.vPosition.y = pos.y;
-    params.vPosition.z = pos.z;
-    params.vPositionSpread = D3DXVECTOR3(0, 0, 0);
 
 	// direction
 	params.vDirection = D3DXVECTOR3(0.0f, 0.0f, -5.0f);
@@ -117,14 +123,14 @@ void ParticleFactory::createFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir
     C3DParticleEmitter* pEmitter = new C3DParticleEmitter(lifeTime);
     pEmitter->Create(1, &pTexture, C3DParticleEmitter::ePARTICLETYPE_BILLBOARD);
 
+    D3DXMATRIX& mat = pEmitter->GetWorldMatrix();
+    mat._41 = pos.x;
+    mat._42 = pos.y;
+    mat._43 = pos.z;
+    ::memcpy(&pEmitter->GetMatrix()._41, &mat._41, 3 * sizeof(float));
+
     C3DParticleEmitter::EMIT_PARAMS params;
 	::memset(&params, 0, sizeof(C3DParticleEmitter::EMIT_PARAMS));
-
-	// position
-    params.vPosition.x = pos.x;
-	params.vPosition.y = pos.y;
-    params.vPosition.z = pos.z;
-    params.vPositionSpread = D3DXVECTOR3(0, 0, 0);
 
 	// direction
 	params.vDirection = dir;    

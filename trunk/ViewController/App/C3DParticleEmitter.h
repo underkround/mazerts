@@ -70,7 +70,7 @@ public:
 	enum ePARTICLETYPE
 	{
 		ePARTICLETYPE_BILLBOARD = 0,
-		ePARTICLETYPE_OBJECT,
+		//ePARTICLETYPE_OBJECT,
 		ePARTICLETYPE_FORCEDWORD = 0xFFFFFFFF
 	};
 
@@ -138,7 +138,7 @@ public:
 	 * SetRotate
 	 * @param bRotate if TRUE object particles are rotated randomly
 	 */
-	void SetRotate(BOOL bRotate);
+	//void SetRotate(BOOL bRotate);
 
 
 	/**
@@ -152,13 +152,13 @@ public:
 	 * set the 3d object that is used as a particle
 	 * @param pObject object to set
 	 */
-	inline void SetObject(I3DObject* pObject) { m_pObject = pObject; }
+	//inline void SetObject(I3DObject* pObject) { m_pObject = pObject; }
 
 	/**
 	 * GetObject
 	 * @return pointer to current particle 3d object, or NULL if not used
 	 */
-	inline I3DObject* GetObject() { return m_pObject; }
+	//inline I3DObject* GetObject() { return m_pObject; }
 
 
 
@@ -219,7 +219,7 @@ private:
 	 * InitMatrices
 	 * initialise random rotation matrices
 	 */
-	void InitMatrices(void);
+	//void InitMatrices(void);
 
 
 	// point sprite vertex type for billboards
@@ -236,8 +236,8 @@ private:
 	DoubleLinkedList<PARTICLE*>* m_pParticleList;
 
 	// object particle members
-	I3DObject*					m_pObject;
-	D3DMATERIAL9				m_ObjectMaterial;
+/*	I3DObject*					m_pObject;
+	D3DMATERIAL9				m_ObjectMaterial;*/
 
 	// texture members
 	LPDIRECT3DTEXTURE9*			m_ppTextures;
@@ -247,9 +247,9 @@ private:
 	DWORD						m_dwFlags;
 
 	// object rotation members
-	D3DXMATRIX					m_RotationMatrix[NUM_ROTATIONMATRICES];
+	/*D3DXMATRIX					m_RotationMatrix[NUM_ROTATIONMATRICES];
 	float						m_fRotationAngle[NUM_ROTATIONMATRICES][3];
-	float						m_fRotationDelta[NUM_ROTATIONMATRICES][3];
+	float						m_fRotationDelta[NUM_ROTATIONMATRICES][3];*/
 
 
     //Controls if emitter is destroyed after lifetime runs out
@@ -257,6 +257,10 @@ private:
     
     //Lifetime of emitter
     float m_LifeTime;
+
+    //Static bounding box sizes
+    static D3DXVECTOR3 partAABBMin;
+    static D3DXVECTOR3 partAABBMax;
 
 };
 

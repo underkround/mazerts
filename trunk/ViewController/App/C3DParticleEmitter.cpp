@@ -1,12 +1,16 @@
 #include "C3DParticleEmitter.h"
 #include "IApplication.h"	// only for RandFloat function
 #include "C3DObject.h"
+#include "../Camera/FrustumCull.h"
 
 // bitmasks for the emitter effects
 #define EMITTERFLAGS_SCALE				1
 #define EMITTERFLAGS_FADE				2
 #define EMITTERFLAGS_ROTATE				4
 
+
+D3DXVECTOR3 C3DParticleEmitter::partAABBMin(-1.0f, -1.0f, -1.0f);
+D3DXVECTOR3 C3DParticleEmitter::partAABBMax(1.0f, 1.0f, 1.0f);
 
 C3DParticleEmitter::C3DParticleEmitter(float lifeTime)
 {
@@ -15,8 +19,8 @@ C3DParticleEmitter::C3DParticleEmitter(float lifeTime)
 	m_ppTextures = NULL;
 	m_dwFlags = 0;
     m_pParticleList = NULL;
-	m_pObject = NULL;
-	::memset(&m_ObjectMaterial, 0, sizeof(D3DMATERIAL9));
+	//m_pObject = NULL;
+	//::memset(&m_ObjectMaterial, 0, sizeof(D3DMATERIAL9));
 
     m_LifeTime = lifeTime;
 
@@ -60,7 +64,7 @@ HRESULT C3DParticleEmitter::Create(	DWORD dwNumTextures,
 	m_dwNumTextures = dwNumTextures;
 	m_eType = eType;
 
-	InitMatrices();
+	//InitMatrices();
 	return S_OK;
 }
 
@@ -97,10 +101,10 @@ bool C3DParticleEmitter::Update(float fFrametime)
 	if (IsActive())
 	{
         // update particle 3d object
-		if (m_pObject)
+		/*if (m_pObject)
 		{
 			m_pObject->Update(fFrametime);
-		}
+		}*/
 
 		// update particle positions
         ListNode<PARTICLE*>* node = m_pParticleList->headNode();
@@ -131,7 +135,7 @@ bool C3DParticleEmitter::Update(float fFrametime)
 		}
 
 		// update rotation matrices
-		if ((m_dwFlags & EMITTERFLAGS_ROTATE) &&
+/*		if ((m_dwFlags & EMITTERFLAGS_ROTATE) &&
 			m_eType == ePARTICLETYPE_OBJECT)
 		{
 			DWORD i, j;
@@ -150,7 +154,7 @@ bool C3DParticleEmitter::Update(float fFrametime)
 												m_fRotationAngle[i][1],
 												m_fRotationAngle[i][2]);
 			}
-		}
+		}*/
 	}
 
 	// update children
@@ -171,208 +175,219 @@ bool C3DParticleEmitter::Update(float fFrametime)
 
 void C3DParticleEmitter::Render(LPDIRECT3DDEVICE9 pDevice)
 {
-	// set identity matrix as a world transformation
-	D3DXMATRIX m;
-	D3DXMATRIX mScale;
-	D3DXMatrixIdentity(&m);
-	pDevice->SetTransform(D3DTS_WORLD, &m);
 
-
-	float fPhase = 0.0f;
-	float fTemp = 0.0f;
-	LPDIRECT3DTEXTURE9 pLastTexture = NULL;
-	POINTSPRITEVERTEX sprite;
-	D3DXCOLOR color;
-
-	if (m_eType == ePARTICLETYPE_BILLBOARD && IsVisible())
-	{
-		// set the 3d device for the point sprite rendering
-		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
-		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-		pDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
-		pDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
-
-		pDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *((DWORD*)&fTemp));
-		pDevice->SetRenderState(D3DRS_POINTSCALE_A, *((DWORD*)&fTemp));
-		pDevice->SetRenderState(D3DRS_POINTSCALE_B, *((DWORD*)&fTemp));
-		fTemp = 1.0f;
-		pDevice->SetRenderState(D3DRS_POINTSCALE_C, *((DWORD*)&fTemp));
-
-		// set FVF flags
-		pDevice->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
-
-		// if we have only one texture, set it to device
-        if (m_dwNumTextures == 1 && m_ppTextures[0] != C3DObject::getCurrentTexture())
-		{
-			pDevice->SetTexture(0, m_ppTextures[0]);
-            C3DObject::setCurrentTexture(m_ppTextures[0]);
-		}
-
-
-
-		// render the particles
-        ListNode<PARTICLE*>* node = m_pParticleList->headNode();
-        while(node)
-        {
-            
-			PARTICLE& particle = *node->item;
-
-			// compute particle life time phase
-			// 0.0 at the beginning of life
-			// 1.0 at the end
-			fPhase = particle.fLifeTime / particle.fMaxLifeTime;
-
-			if (m_dwNumTextures > 1)
-			{
-				// compute right texture index
-				DWORD dwIndex = (DWORD)( (1.0f - fPhase) * (float)(m_dwNumTextures - 1));
-
-				// set the texture into the device, but only
-				// if this is really a different from current one
-				if (m_ppTextures[dwIndex] != pLastTexture)
-				{
-					pDevice->SetTexture(0, m_ppTextures[dwIndex]);
-					pLastTexture = m_ppTextures[dwIndex];
-                    C3DObject::setCurrentTexture(pLastTexture);
-				}
-			}
-
-			// build point sprite vertex
-			sprite.vPosition = particle.vPosition;
-			color = particle.cColor;
-
-			// apply fade
-			if ((m_dwFlags & EMITTERFLAGS_FADE))
-			{
-				color.r *= fPhase;
-				color.g *= fPhase;
-				color.b *= fPhase;
-				color.a *= fPhase;
-			}
-			sprite.dwColor = color;
-
-			// set particle size
-			fTemp = particle.fSize;
-			if ((m_dwFlags & EMITTERFLAGS_SCALE))
-			{
-				fTemp *= fPhase;
-			}
-			pDevice->SetRenderState(D3DRS_POINTSIZE, *((DWORD*)&fTemp));
-
-			pDevice->DrawPrimitiveUP(	D3DPT_POINTLIST,
-										1,
-										&sprite,
-										16);
-
-            node = node->next;
-		}
-
-		// restore some basic settings to 3d device
-		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-		pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-		pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
-		pDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
-	}
-	else if (m_eType == ePARTICLETYPE_OBJECT && IsVisible())
-	{
-		// render object particles
-		pDevice->SetTexture(0, NULL);
-
-		if ((m_dwFlags & EMITTERFLAGS_SCALE))
-		{
-			// enable automatic vertex normal normalization
-			// since scaling matrix will also scale normals and
-			// distord the lighting
-			pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
-		}
-
-        ListNode<PARTICLE*>* node = m_pParticleList->headNode();
-        while(node)
-        {
-            
-			PARTICLE& particle = *node->item;
-
-			// compute particle phase
-			fPhase = particle.fLifeTime / particle.fMaxLifeTime;
-
-			// build particle matrix
-			if ((m_dwFlags & EMITTERFLAGS_ROTATE))
-			{
-				::memcpy(	&m,
-							&m_RotationMatrix[particle.dwMatrixIndex],
-							sizeof(D3DXMATRIX));
-			}
-			else
-			{
-				D3DXMatrixIdentity(&m);
-			}
-
-			if ((m_dwFlags & EMITTERFLAGS_SCALE))
-			{
-				if ((m_dwFlags & EMITTERFLAGS_ROTATE))
-				{
-					// if we have both, scaling and rotates on,
-					// we need to create scaling matrix and
-					// multiply it with rotations to create correct
-					// transformation
-					D3DXMatrixScaling(&mScale, fPhase, fPhase, fPhase);
-					D3DXMatrixMultiply(&m, &m, &mScale);
-				}
-				else
-				{
-					// no rotations, we can apply scaling just
-					// by multiplying the diagonal of the matrix
-					m._11 *= fPhase;
-					m._22 *= fPhase;
-					m._33 *= fPhase;
-				}
-			}
-
-			// set particle position into the matrix
-			m._41 = particle.vPosition.x;
-			m._42 = particle.vPosition.y;
-			m._43 = particle.vPosition.z;
-
-			// set particle color
-			m_ObjectMaterial.Diffuse = particle.cColor;
-
-			// apply fade
-			if ((m_dwFlags & EMITTERFLAGS_FADE))
-			{
-				m_ObjectMaterial.Diffuse.r *= fPhase;
-				m_ObjectMaterial.Diffuse.g *= fPhase;
-				m_ObjectMaterial.Diffuse.b *= fPhase;
-				m_ObjectMaterial.Diffuse.a *= fPhase;
-			}
-
-			pDevice->SetMaterial(&m_ObjectMaterial);
-
-			// copy temporary matrix into the objects world matrix
-			// and render the object
-			::memcpy(&m_pObject->GetWorldMatrix(), &m, sizeof(D3DXMATRIX));
-			m_pObject->Render(pDevice);
-
-            node = node->next;
-		}
-
-		if ((m_dwFlags & EMITTERFLAGS_SCALE))
-		{
-			// disable vertex normal normalization
-			pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
-		}
-	}
-
-    // render the children
-    ListNode<I3DObject*>* node = m_arrChildren.headNode();    
-    
-    while(node)
+    D3DXVECTOR3 minAABB(m_mWorld._41 + partAABBMin.x,
+                        m_mWorld._42 + partAABBMin.y,
+                        m_mWorld._43 + partAABBMin.z);
+    D3DXVECTOR3 maxAABB(m_mWorld._41 + partAABBMax.x,
+                        m_mWorld._42 + partAABBMax.y,
+                        m_mWorld._43 + partAABBMax.z);
+        
+    if(FrustumCull::cullAABB(minAABB, maxAABB))
     {
-        node->item->Render(pDevice);
-        node = node->next;
+	    // set identity matrix as a world transformation
+	    D3DXMATRIX m;
+	    D3DXMATRIX mScale;
+	    D3DXMatrixIdentity(&m);
+	    pDevice->SetTransform(D3DTS_WORLD, &m);
+
+
+	    float fPhase = 0.0f;
+	    float fTemp = 0.0f;
+	    LPDIRECT3DTEXTURE9 pLastTexture = NULL;
+	    POINTSPRITEVERTEX sprite;
+	    D3DXCOLOR color;
+
+	    if (m_eType == ePARTICLETYPE_BILLBOARD && IsVisible())
+	    {
+		    // set the 3d device for the point sprite rendering
+		    pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+		    pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+		    pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		    pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+		    pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+		    pDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
+		    pDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
+
+		    pDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *((DWORD*)&fTemp));
+		    pDevice->SetRenderState(D3DRS_POINTSCALE_A, *((DWORD*)&fTemp));
+		    pDevice->SetRenderState(D3DRS_POINTSCALE_B, *((DWORD*)&fTemp));
+		    fTemp = 1.0f;
+		    pDevice->SetRenderState(D3DRS_POINTSCALE_C, *((DWORD*)&fTemp));
+
+		    // set FVF flags
+		    pDevice->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
+
+		    // if we have only one texture, set it to device
+            if (m_dwNumTextures == 1 && m_ppTextures[0] != C3DObject::getCurrentTexture())
+		    {
+			    pDevice->SetTexture(0, m_ppTextures[0]);
+                C3DObject::setCurrentTexture(m_ppTextures[0]);
+		    }
+
+
+
+		    // render the particles
+            ListNode<PARTICLE*>* node = m_pParticleList->headNode();
+            while(node)
+            {
+                
+			    PARTICLE& particle = *node->item;
+
+			    // compute particle life time phase
+			    // 0.0 at the beginning of life
+			    // 1.0 at the end
+			    fPhase = particle.fLifeTime / particle.fMaxLifeTime;
+
+			    if (m_dwNumTextures > 1)
+			    {
+				    // compute right texture index
+				    DWORD dwIndex = (DWORD)( (1.0f - fPhase) * (float)(m_dwNumTextures - 1));
+
+				    // set the texture into the device, but only
+				    // if this is really a different from current one
+				    if (m_ppTextures[dwIndex] != pLastTexture)
+				    {
+					    pDevice->SetTexture(0, m_ppTextures[dwIndex]);
+					    pLastTexture = m_ppTextures[dwIndex];
+                        C3DObject::setCurrentTexture(pLastTexture);
+				    }
+			    }
+
+			    // build point sprite vertex
+			    sprite.vPosition = particle.vPosition;
+			    color = particle.cColor;
+
+			    // apply fade
+			    if ((m_dwFlags & EMITTERFLAGS_FADE))
+			    {
+				    color.r *= fPhase;
+				    color.g *= fPhase;
+				    color.b *= fPhase;
+				    color.a *= fPhase;
+			    }
+			    sprite.dwColor = color;
+
+			    // set particle size
+			    fTemp = particle.fSize;
+			    if ((m_dwFlags & EMITTERFLAGS_SCALE))
+			    {
+				    fTemp *= fPhase;
+			    }
+			    pDevice->SetRenderState(D3DRS_POINTSIZE, *((DWORD*)&fTemp));
+
+			    pDevice->DrawPrimitiveUP(	D3DPT_POINTLIST,
+										    1,
+										    &sprite,
+										    16);
+
+                node = node->next;
+		    }
+
+		    // restore some basic settings to 3d device
+		    pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+		    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+		    pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+		    pDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
+	    }
+	    /*else if (m_eType == ePARTICLETYPE_OBJECT && IsVisible())
+	    {
+		    // render object particles
+		    pDevice->SetTexture(0, NULL);
+
+		    if ((m_dwFlags & EMITTERFLAGS_SCALE))
+		    {
+			    // enable automatic vertex normal normalization
+			    // since scaling matrix will also scale normals and
+			    // distord the lighting
+			    pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+		    }
+
+            ListNode<PARTICLE*>* node = m_pParticleList->headNode();
+            while(node)
+            {
+                
+			    PARTICLE& particle = *node->item;
+
+			    // compute particle phase
+			    fPhase = particle.fLifeTime / particle.fMaxLifeTime;
+
+			    // build particle matrix
+			    if ((m_dwFlags & EMITTERFLAGS_ROTATE))
+			    {
+				    ::memcpy(	&m,
+							    &m_RotationMatrix[particle.dwMatrixIndex],
+							    sizeof(D3DXMATRIX));
+			    }
+			    else
+			    {
+				    D3DXMatrixIdentity(&m);
+			    }
+
+			    if ((m_dwFlags & EMITTERFLAGS_SCALE))
+			    {
+				    if ((m_dwFlags & EMITTERFLAGS_ROTATE))
+				    {
+					    // if we have both, scaling and rotates on,
+					    // we need to create scaling matrix and
+					    // multiply it with rotations to create correct
+					    // transformation
+					    D3DXMatrixScaling(&mScale, fPhase, fPhase, fPhase);
+					    D3DXMatrixMultiply(&m, &m, &mScale);
+				    }
+				    else
+				    {
+					    // no rotations, we can apply scaling just
+					    // by multiplying the diagonal of the matrix
+					    m._11 *= fPhase;
+					    m._22 *= fPhase;
+					    m._33 *= fPhase;
+				    }
+			    }
+
+			    // set particle position into the matrix
+			    m._41 = particle.vPosition.x;
+			    m._42 = particle.vPosition.y;
+			    m._43 = particle.vPosition.z;
+
+			    // set particle color
+			    m_ObjectMaterial.Diffuse = particle.cColor;
+
+			    // apply fade
+			    if ((m_dwFlags & EMITTERFLAGS_FADE))
+			    {
+				    m_ObjectMaterial.Diffuse.r *= fPhase;
+				    m_ObjectMaterial.Diffuse.g *= fPhase;
+				    m_ObjectMaterial.Diffuse.b *= fPhase;
+				    m_ObjectMaterial.Diffuse.a *= fPhase;
+			    }
+
+			    pDevice->SetMaterial(&m_ObjectMaterial);
+
+			    // copy temporary matrix into the objects world matrix
+			    // and render the object
+			    ::memcpy(&m_pObject->GetWorldMatrix(), &m, sizeof(D3DXMATRIX));
+			    m_pObject->Render(pDevice);
+
+                node = node->next;
+		    }
+
+		    if ((m_dwFlags & EMITTERFLAGS_SCALE))
+		    {
+			    // disable vertex normal normalization
+			    pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
+		    }
+	    }*/
+
+        // render the children
+        ListNode<I3DObject*>* node = m_arrChildren.headNode();    
+        
+        while(node)
+        {
+            node->item->Render(pDevice);
+            node = node->next;
+        }
     }
 }
 
@@ -411,8 +426,8 @@ void C3DParticleEmitter::Emit(const EMIT_PARAMS& params)
 		particle->vDirection.z +=
 			IApplication::RandFloat(-params.vDirectionSpread.z, params.vDirectionSpread.z);
 
-		// transform particle starting position with emitter
-		// world matrix to get starting position relative to emitter
+		// transform particle starting direction with emitter
+		// world matrix to get starting direction relative to emitter
 		D3DXVec3TransformNormal(	&particle->vDirection,
 									&particle->vDirection,
 									&m_mWorld);
@@ -487,7 +502,7 @@ void C3DParticleEmitter::SetFade(BOOL bFade)
 }
 
 
-void C3DParticleEmitter::SetRotate(BOOL bRotate)
+/*void C3DParticleEmitter::SetRotate(BOOL bRotate)
 {
 	if (bRotate)
 	{
@@ -499,10 +514,10 @@ void C3DParticleEmitter::SetRotate(BOOL bRotate)
 		// disable object rotating
 		m_dwFlags &= ~(EMITTERFLAGS_ROTATE);
 	}
-}
+}*/
 
 
-void C3DParticleEmitter::InitMatrices(void)
+/*void C3DParticleEmitter::InitMatrices(void)
 {
 	DWORD i, j;
 	for (i=0; i<NUM_ROTATIONMATRICES; i++)
@@ -516,7 +531,7 @@ void C3DParticleEmitter::InitMatrices(void)
 
 		D3DXMatrixIdentity(&m_RotationMatrix[i]);
 	}
-}
+}*/
 
 
 
