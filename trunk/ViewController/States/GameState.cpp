@@ -152,40 +152,48 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     m_pRootContainer->addComponent(m_pCont2);
 
     //TEST
-    for(int i = 0; i < 50; i++)    
+    if(!Config::getInstance()->getValueAsBool("debug skip starting units", false))
     {
-        int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
-        int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
-        if(i < 13)
-//            AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, 40+((i / 5) * 5), 20+(i % 5) * 5);
-            AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, posx, posy);
-        else if(i < 25)
-//            AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, 80+((i / 5) * 5), 60+(i % 5) * 5);
-            AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, posx, posy);
-        else if(i < 38)
-//            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, 0+((i / 5) * 5), 20+(i % 5) * 5);
-            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, posx, posy);
-        else
-//            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, 40+((i / 5) * 5), 60+(i % 5) * 5);
-            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, posx, posy);
+        for(int i = 0; i < 50; i++)
+        {
+            int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
+            int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
+            if(i < 13)
+    //            AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, 40+((i / 5) * 5), 20+(i % 5) * 5);
+                AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, posx, posy);
+            else if(i < 25)
+    //            AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, 80+((i / 5) * 5), 60+(i % 5) * 5);
+                AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, posx, posy);
+            else if(i < 38)
+    //            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, 0+((i / 5) * 5), 20+(i % 5) * 5);
+                AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, posx, posy);
+            else
+    //            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, 40+((i / 5) * 5), 60+(i % 5) * 5);
+                AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, posx, posy);
+        }
+        for(int i = 0; i < 10; i++)
+        {
+            AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 52, 20+(i * 20), 100+(i % 5) * 10);
+        }
+
+        AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 5, 5);
+        AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 200, 5);
+        AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 200, 200);
+        AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 5, 200);
+
+        /*
+        AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 130, 450);
+        AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 90, 450);
+        AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 30, 500);
+        AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 150, 500);
+        AssetFactory::createUnit(PlayerManager::getPlayer(1), 6, 160, 500);    AssetFactory::createOreMine(200, 500);    AssetFactory::createBuilding(PlayerManager::getPlayer(1), 52, 100, 500);
+        */
     }
-    for(int i = 0; i < 10; i++)
-    {
-        AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 52, 20+(i * 20), 100+(i % 5) * 10);
+    else {
+        getCurrentPlayer()->getFog()->setEnabled(false);
     }
 
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 5, 5);
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 200, 5);
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 200, 200);
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 5, 200);
 
-/*
-    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 130, 450);
-    AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 90, 450);
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 30, 500);
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 150, 500);
-    AssetFactory::createUnit(PlayerManager::getPlayer(1), 6, 160, 500);    AssetFactory::createOreMine(200, 500);    AssetFactory::createBuilding(PlayerManager::getPlayer(1), 52, 100, 500);
-*/
     //Selector
     hres = m_Selector.create(pDevice);
     if(FAILED(hres))
