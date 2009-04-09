@@ -38,15 +38,15 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
     faultLines(ppVertexHeightData, terrainSize, 1000, 2);
 
     //"sweet spots"
-    for(int i=0;i<10;++i)
+    for(int i=0;i<50;++i)
     {
         flattenArea(    ppVertexHeightData,
                         terrainSize,
-                        calculateAverageHeight(ppVertexHeightData, terrainSize, 50, 100, 20),
+                        100 + rand() % 100,
                         -1,
                         -1,
-                        10,
-                        40);
+                        20,
+                        45);
     }
 
     //"starting area"
@@ -171,6 +171,7 @@ void AntinTerrainGenerator::flattenArea(    unsigned char **ppVertexHeightData,
                                             int innerRadius,
                                             int outerRadius)
 {
+    if(height < 0) height = rand() % 255;
     if(xCenter < 0) xCenter = rand() % terrainSize;
     if(yCenter < 0) yCenter = rand() % terrainSize;
     int innerCir2 = innerRadius*innerRadius;
