@@ -119,8 +119,8 @@ bool DefManager::loadAssetDef(int tag)
     d->tag = tag;
 
     // load values
-    d->constructionCostEnergy = c->getValueAsInt(   tags, "asset constrcution cost energy", 0);
-    d->constructionCostOre  = c->getValueAsInt(     tags, "asset constrcution cost ore", 10);
+    d->constructionCostEnergy = c->getValueAsInt(   tags, "asset construction cost energy", 0);
+    d->constructionCostOre  = c->getValueAsInt(     tags, "asset construction cost ore", 10);
 
     d->gridPassableAreaX       = c->getValueAsInt(     tags, "asset grid passable area x", 0);
     d->gridPassableAreaY       = c->getValueAsInt(     tags, "asset grid passable area y", 0);

@@ -34,13 +34,13 @@ static const TCHAR g_ppUnitMeshNames[NUMBER_OF_UNITS_WITH_MESHES][3][256] =
     _T(""),                                     //turret
     _T(""),                                     //barrel
 
-    _T(""),                                     //Nukecannon base
-    _T(""),                                     //turret
-    _T(""),                                     //barrel
+    _T("../data/mesh/nuker_base.x"),            //Nukecannon base
+    _T("../data/mesh/nuker_turret.x"),          //turret
+    _T("../data/mesh/nuker_cannon.x"),          //barrel
 
     _T("../data/mesh/truck.x"),                 //Resource truck base
     _T(""),                                     //turret
-    _T("")                                     //barrel
+    _T("")                                      //barrel
 
 };
 
@@ -58,7 +58,7 @@ static const float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
     0, 0, 0,
 
     0, 0, 0,         //Supertank
-    0, 1.3f, 0.90f,
+    0, 1.4f, 0.90f,
     0, 0.4f, -0.65f,
 
     0, 0, 0,         //Missiletank
@@ -66,8 +66,8 @@ static const float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
     0, 0, 0,
 
     0, 0, 0,         //Nukecannon
-    0, 0, 0,
-    0, 0, 0,
+    0, 0.8f, -0.4f,
+    0, 1.2f, -1.6f,
 
     0, 0, 0,         //Mining/resource truck
     0, 0, 0,
@@ -81,7 +81,7 @@ static const float g_pUnitBarrelLength[NUMBER_OF_UNITS_WITH_MESHES] =
     1.75f,  //Basic tank
     3.2f,   //Supertank
     0.0f,   //Missiletank
-    0.0f,   //Nukecannon
+    4.0f,   //Nukecannon
     0.0f    //Mining truck
 };
 

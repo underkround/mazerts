@@ -160,16 +160,16 @@ HRESULT GameState::create(ID3DApplication* pApplication)
             int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
             if(i < 13)
     //            AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, 40+((i / 5) * 5), 20+(i % 5) * 5);
-                AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, posx, posy);
+                AssetFactory::createUnit(PlayerManager::getPlayer(1), 5, posx, posy);
             else if(i < 25)
     //            AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, 80+((i / 5) * 5), 60+(i % 5) * 5);
-                AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, posx, posy);
+                AssetFactory::createUnit(PlayerManager::getPlayer(2), 5, posx, posy);
             else if(i < 38)
     //            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, 0+((i / 5) * 5), 20+(i % 5) * 5);
-                AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, posx, posy);
+                AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, posx, posy);
             else
     //            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, 40+((i / 5) * 5), 60+(i % 5) * 5);
-                AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, posx, posy);
+                AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, posx, posy);
         }
         for(int i = 0; i < 10; i++)
         {
