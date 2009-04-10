@@ -530,6 +530,7 @@ void GroundMovingLogic::move(float deltaTime)
                 unsigned short targetX;
                 unsigned short targetY;
 
+                //If no direction is knonw, pick at random (which "side-normal")
                 if(whichWay == 0)
                 {
                     if(rand() > (RAND_MAX / 2))
@@ -541,17 +542,18 @@ void GroundMovingLogic::move(float deltaTime)
                         whichWay = 2;
                     }
                 }
-
-                //Pick direction on random (which "side-normal")
+                
                 if(whichWay == 2)
-                {                    
-                    targetX = (unsigned short)(pos->x - (dirY * m_pUnit->getHeight()));
-                    targetY = (unsigned short)(pos->y + (dirX * m_pUnit->getWidth()));
+                {
+                    //Using constant 5 instead of getHeight/Widht * 2 (so the unit can go past biggest other units,
+                    //small units wouldn't move far enough with big enemy units, and never actually got past them)
+                    targetX = (unsigned short)(pos->x - (dirY * 5));
+                    targetY = (unsigned short)(pos->y + (dirX * 5));
                 }
                 else
                 {
-                    targetX = (unsigned short)(pos->x + (dirY * m_pUnit->getHeight()));
-                    targetY = (unsigned short)(pos->y - (dirX * m_pUnit->getWidth()));
+                    targetX = (unsigned short)(pos->x + (dirY * 5));
+                    targetY = (unsigned short)(pos->y - (dirX * 5));
                 }                
                 //Bounds and passability check
                 if(targetX < Terrain::getInstance()->getSize() && targetY < Terrain::getInstance()->getSize() 
