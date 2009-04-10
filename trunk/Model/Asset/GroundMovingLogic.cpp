@@ -152,7 +152,7 @@ void GroundMovingLogic::askPath()
     unsigned short m_TargetY = m_pTarget->getTargetY();
 
     // is the target reached? (Can differ by 1 square)
-    if( abs(m_pUnit->getGridX() - m_TargetX) < 2 && abs(m_pUnit->getGridY() == m_TargetY) < 2)
+    if( abs(m_pUnit->getGridX() - m_TargetX) < 2 && abs(m_pUnit->getGridY() - m_TargetY) < 2)
     {
         // if the target was static coordinates - not tracking asset,
         // we can remove it when it's reached
@@ -406,8 +406,8 @@ void GroundMovingLogic::move(float deltaTime)
         if(m_State == FOLLOWPATH || m_State == JUSTMOVE)
         {
              //Current moving directions
-            signed char dirX = (char)floor(dir->x + 0.5f);
-            signed char dirY = (char)floor(dir->y + 0.5f);            
+            signed short dirX = (signed short)floor(dir->x + 0.5f);
+            signed short dirY = (signed short)floor(dir->y + 0.5f);            
 
             //Check the squares for availability
             bool squaresAvailable = true;
@@ -415,7 +415,9 @@ void GroundMovingLogic::move(float deltaTime)
             char whichWay = 0;  //Used to tell the blocking unit to move the other way than the unit trying to get past
 
             //Ask for units in the way
-            if(AssetCollection::getUnitsAt(&unitsAtSquares, (unsigned short)(floor(pos->x + 0.5f) + dirX), (unsigned short)(floor(pos->y  + 0.5f) + dirY), m_pUnit->getWidth(), m_pUnit->getHeight()) != 0)
+            if(AssetCollection::getUnitsAt(&unitsAtSquares, (unsigned short)(((signed short)floor(pos->x + 0.5f)) + dirX), 
+                                                            (unsigned short)(((signed short)floor(pos->y + 0.5f)) + dirY), 
+                                                            m_pUnit->getWidth(), m_pUnit->getHeight())      != 0)
             {
                 //Check found units
                 ListNode<Unit*>* pNode = unitsAtSquares.headNode();
@@ -441,8 +443,10 @@ void GroundMovingLogic::move(float deltaTime)
                                 int targetX = 0;
                                 int targetY = 0;
 
-                                //Take vector from unit position towards target moving out of way, select normal from either side randomly
-                                if(rand() > (RAND_MAX / 2))
+                                //Take normal vector from unit direction and selected avoidance target moving direction
+                                //based on which side of the current path the unit is
+                                Vector3 right(dir->y, -dir->x, 0);                                
+                                if(posDiff * right < 0)
                                 {
                                     whichWay = 1;
                                 }
@@ -521,8 +525,8 @@ void GroundMovingLogic::move(float deltaTime)
             if(!squaresAvailable && (m_pTarget->getFlags() & Target::TGTFLAG_MAKEWAY) == 0)
             {
                 //Try to get around
-                signed short dirX = (signed short)(dir->x * m_pUnit->getWidth() * 2.0f);
-                signed short dirY = (signed short)(dir->y * m_pUnit->getHeight() * 2.0f);             
+                //signed short dirX = (signed short)(dir->x * m_pUnit->getWidth() * 2.0f);
+                //signed short dirY = (signed short)(dir->y * m_pUnit->getHeight() * 2.0f);             
                 unsigned short targetX;
                 unsigned short targetY;
 
@@ -541,13 +545,13 @@ void GroundMovingLogic::move(float deltaTime)
                 //Pick direction on random (which "side-normal")
                 if(whichWay == 2)
                 {                    
-                    targetX = (unsigned short)(pos->x - dirY);
-                    targetY = (unsigned short)(pos->y + dirX);
+                    targetX = (unsigned short)(pos->x - (dirY * m_pUnit->getHeight()));
+                    targetY = (unsigned short)(pos->y + (dirX * m_pUnit->getWidth()));
                 }
                 else
                 {
-                    targetX = (unsigned short)(pos->x + dirY);
-                    targetY = (unsigned short)(pos->y - dirX);
+                    targetX = (unsigned short)(pos->x + (dirY * m_pUnit->getHeight()));
+                    targetY = (unsigned short)(pos->y - (dirX * m_pUnit->getWidth()));
                 }                
                 //Bounds and passability check
                 if(targetX < Terrain::getInstance()->getSize() && targetY < Terrain::getInstance()->getSize() 
@@ -566,7 +570,8 @@ void GroundMovingLogic::move(float deltaTime)
 
                 //Heading (pretty much) toward correct direction and the road is clear, hit the pedal to the metal    
                 //Offsets (m_HalfSize) are needed because the speed is calculated from "center" of unit
-                float factor = Terrain::getInstance()->getUnitMoveSpeed( (short)(pos->x + m_HalfSize), (short)(pos->y + m_HalfSize), dirX, dirY);            
+                float factor = Terrain::getInstance()->getUnitMoveSpeed( (short)(pos->x + m_HalfSize), (short)(pos->y + m_HalfSize), 
+                                                                         (const signed char)dirX, (const signed char)dirY);            
                 m_CurrentSpeed = factor * m_Def.maxSpeed;
             }
             else

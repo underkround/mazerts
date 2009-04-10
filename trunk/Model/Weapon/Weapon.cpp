@@ -162,6 +162,7 @@ void Weapon::update(const float deltaT)
         //If the weapon fires SHELLS, turn the barrel
         if(m_Def.projectileConcreteType == Projectile::SHELL)
         {
+            //TODO: Use vectors?
             //Barrel pitching is just a graphical effect and has no effect on the actual firing
             //so just turn it gradually towards correct pitch
             float targetPitch = 1.0f - (targetDistSq / (m_Def.range * m_Def.range));
@@ -186,6 +187,11 @@ void Weapon::update(const float deltaT)
             else
             {
                 m_BarrelPitch -= 3.0f * deltaT;
+            }
+            
+            if(m_BarrelPitch < 0)
+            {
+                m_BarrelPitch = 0;
             }
 
             if(fabs(m_BarrelPitch - targetPitch) < 0.2f)
