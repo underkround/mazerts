@@ -66,8 +66,8 @@ static const float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
     0, 0, 0,
 
     0, 0, 0,         //Nukecannon
-    0, 0.8f, -0.4f,
-    0, 1.2f, -1.6f,
+    0, 0.8f, 0.4f,
+    0, 1.2f, 1.6f,
 
     0, 0, 0,         //Mining/resource truck
     0, 0, 0,
