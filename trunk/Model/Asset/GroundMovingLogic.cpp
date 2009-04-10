@@ -412,7 +412,8 @@ void GroundMovingLogic::move(float deltaTime)
             //Check the squares for availability
             bool squaresAvailable = true;
             static DoubleLinkedList<Unit*> unitsAtSquares;  //Reusing same list all the time
-    
+            char whichWay = 0;  //Used to tell the blocking unit to move the other way than the unit trying to get past
+
             //Ask for units in the way
             if(AssetCollection::getUnitsAt(&unitsAtSquares, (unsigned short)(floor(pos->x + 0.5f) + dirX), (unsigned short)(floor(pos->y  + 0.5f) + dirY), m_pUnit->getWidth(), m_pUnit->getHeight()) != 0)
             {
@@ -443,6 +444,15 @@ void GroundMovingLogic::move(float deltaTime)
                                 //Take vector from unit position towards target moving out of way, select normal from either side randomly
                                 if(rand() > (RAND_MAX / 2))
                                 {
+                                    whichWay = 1;
+                                }
+                                else
+                                {
+                                    whichWay = 2;
+                                }
+                                
+                                if(whichWay == 1)
+                                {
                                     targetX = (int)(pNode->item->getPosition()->x - posDiff.y * minDist);
                                     targetY = (int)(pNode->item->getPosition()->y + posDiff.x * minDist);                                    
                                 }
@@ -471,13 +481,16 @@ void GroundMovingLogic::move(float deltaTime)
                                 {
                                     targetY = mapSize;
                                 }
+                                
+                                //Check that the target is passable
+                                if(Terrain::getInstance()->isPassable(targetX, targetY, pNode->item->getWidth()))
+                                {
+                                    makeWayTarget = new Target((unsigned short)targetX, (unsigned short)targetY, false);
 
-                                makeWayTarget = new Target((unsigned short)targetX, (unsigned short)targetY, false);
+                                    makeWayTarget->setFlag(Target::TGTFLAG_MAKEWAY);
 
-                                makeWayTarget->setFlag(Target::TGTFLAG_MAKEWAY);
-
-                                pNode->item->getMovingLogic()->priorityTarget(makeWayTarget);
-
+                                    pNode->item->getMovingLogic()->priorityTarget(makeWayTarget);                                                                        
+                                
 //show line for where the unit is told to move
 #ifdef PATH_UI_DEBUG
         float halfX = m_pUnit->getWidth() * 0.5f;
@@ -490,8 +503,8 @@ void GroundMovingLogic::move(float deltaTime)
         float y2 = (float)makeWayTarget->getTargetY();
         UI3DDebug::addLine( x1, y1, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x1, y1) - 0.5f,
                             x2, y2, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x2, y2) - 0.5f, 0.5f, 5.0f);
-#endif
-                                
+#endif                       
+                                }
                             }
                         }                        
 
@@ -500,10 +513,53 @@ void GroundMovingLogic::move(float deltaTime)
                     
                     pNode = pNode->next;
                 }
+                //Clear the list
+                unitsAtSquares.release();
             }
 
-            //Clear the list
-            unitsAtSquares.release();
+            //If the square's not available, and this unit isn't making way, try to get around            
+            if(!squaresAvailable && (m_pTarget->getFlags() & Target::TGTFLAG_MAKEWAY) == 0)
+            {
+                //Try to get around
+                signed short dirX = (signed short)(dir->x * m_pUnit->getWidth() * 2.0f);
+                signed short dirY = (signed short)(dir->y * m_pUnit->getHeight() * 2.0f);             
+                unsigned short targetX;
+                unsigned short targetY;
+
+                if(whichWay == 0)
+                {
+                    if(rand() > (RAND_MAX / 2))
+                    {
+                        whichWay = 1;
+                    }
+                    else
+                    {
+                        whichWay = 2;
+                    }
+                }
+
+                //Pick direction on random (which "side-normal")
+                if(whichWay == 2)
+                {                    
+                    targetX = (unsigned short)(pos->x - dirY);
+                    targetY = (unsigned short)(pos->y + dirX);
+                }
+                else
+                {
+                    targetX = (unsigned short)(pos->x + dirY);
+                    targetY = (unsigned short)(pos->y - dirX);
+                }                
+                //Bounds and passability check
+                if(targetX < Terrain::getInstance()->getSize() && targetY < Terrain::getInstance()->getSize() 
+                    && Terrain::getInstance()->isPassable(targetX, targetY, m_pUnit->getWidth()))
+                {
+                    //Useless to move on top of another unit/building
+                    if(AssetCollection::getAssetsAt(NULL, targetX, targetY, m_pUnit->getWidth(), m_pUnit->getHeight()) == 0)
+                    {
+                        priorityTarget(new Target(targetX, targetY, false, Target::TGTFLAG_MAKEWAY));
+                    }                    
+                }
+            }
 
             if(squaresAvailable)
             {
@@ -516,7 +572,7 @@ void GroundMovingLogic::move(float deltaTime)
             else
             {
                 //Slow down to halt
-                m_CurrentSpeed *= (0.90f - (0.90f * deltaTime));
+                m_CurrentSpeed *= (0.80f - (0.80f * deltaTime));
 
                 //Used to clear "stuck" MAKEWAY-flags (häröpallo)
                 if(m_pTarget && m_pTarget->isFlag(Target::TGTFLAG_MAKEWAY))
