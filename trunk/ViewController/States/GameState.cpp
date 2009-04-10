@@ -176,6 +176,8 @@ HRESULT GameState::create(ID3DApplication* pApplication)
             AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 52, 20+(i * 20), 100+(i % 5) * 10);
         }
 
+        AssetFactory::createUnit(PlayerManager::getPlayer(1), 6, 100, 100);
+
         AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 5, 5);
         AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 200, 5);
         AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 200, 200);

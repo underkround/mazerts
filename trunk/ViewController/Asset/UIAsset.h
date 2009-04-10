@@ -130,7 +130,7 @@ public:
      * Set base material
      * Used for player colors
      */
-    inline void setBaseMaterial(D3DMATERIAL9* pMaterial)
+    virtual inline void setBaseMaterial(D3DMATERIAL9* pMaterial)
     {
         GetMeshDataArray()[0].pMaterial = pMaterial;
     }
