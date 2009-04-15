@@ -15,9 +15,8 @@ void Resourcer::release()
         m_pTargetList = NULL;
     }
     if(m_pTarget)
-    {
-        //TODO: How is the resourcer informed if GroundMovingLogic destroyed the target?
-        //delete m_pTarget;
+    {        
+        delete m_pTarget;
         m_pTarget = NULL;
     }
     if(m_pAgent)
@@ -90,11 +89,16 @@ void Resourcer::update(const float deltaT)
         }
     case RES_WAITCANPATH:
         {   
-            //TODO: Do targets leak memory?
-
             //Check for targets if no pathfinding is underway
             if(!m_pAgent)
             {
+                //Get rid of old target (if there is one)
+                if(m_pTarget)
+                {
+                    delete m_pTarget;
+                    m_pTarget = NULL;
+                }
+
                 if(!m_pTargetList->IsEmpty())
                 {
                     Building* pBuilding = NULL;
@@ -119,7 +123,7 @@ void Resourcer::update(const float deltaT)
                 case IPathFinder::FOUND:
                     {
                         //Give target to moving logic
-                        m_pUnit->getMovingLogic()->addTarget(m_pTarget);
+                        m_pUnit->getMovingLogic()->addTarget(new Target(*m_pTarget));
                         m_State = RES_MOVING;
                         delete m_pAgent;
                         m_pAgent = NULL;
@@ -130,6 +134,8 @@ void Resourcer::update(const float deltaT)
                     {
                         delete m_pAgent;
                         m_pAgent = NULL;
+                        delete m_pTarget;
+                        m_pTarget = NULL;
                         break;
                     }
 
@@ -140,20 +146,27 @@ void Resourcer::update(const float deltaT)
         }
 
     case RES_MOVING:
-        //TODO: NEEDS better system to keep track of reaching target (nonreachable/target might get destroyed => crash)
-        if((abs(m_pTarget->getTargetX() - m_pUnit->getCenterGridX()) + abs(m_pTarget->getTargetY() - m_pUnit->getCenterGridY())) < 2)
         {
-            if(m_Ore == 0)
-            {
-                m_State = RES_LOADING;
+            if(m_pTarget->getTargetType() == Target::ASSET)
+            {            
+                if((abs(m_pTarget->getTargetX() - m_pUnit->getCenterGridX()) + abs(m_pTarget->getTargetY() - m_pUnit->getCenterGridY())) < 4)        
+                {
+                    if(m_Ore == 0)
+                    {
+                        m_State = RES_LOADING;
+                    }
+                    else
+                    {
+                        m_State = RES_UNLOADING;
+                    }
+                }
             }
             else
             {
-                m_State = RES_UNLOADING;
+                m_State = RES_IDLE;
             }
+            break;
         }
-        break;
-
 
     case RES_LOADING:
         

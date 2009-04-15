@@ -164,12 +164,12 @@ HRESULT GameState::create(ID3DApplication* pApplication)
             else if(i < 25)
                 AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, 80+((i / 5) * 5), 60+(i % 5) * 5);
     //            AssetFactory::createUnit(PlayerManager::getPlayer(2), 5, posx, posy);
-            else if(i < 38)
+/*            else if(i < 38)
     //            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, 0+((i / 5) * 5), 20+(i % 5) * 5);
-                AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, posx, posy);
+  //              AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, posx, posy);
             else
     //            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, 40+((i / 5) * 5), 60+(i % 5) * 5);
-                AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, posx, posy);
+//                AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, posx, posy);*/
         }
         for(int i = 0; i < 10; i++)
         {
@@ -188,10 +188,13 @@ HRESULT GameState::create(ID3DApplication* pApplication)
         AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 90, 450);
         AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 30, 500);
         AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 150, 500);*/
-        AssetFactory::createUnit(PlayerManager::getPlayer(1), 6, 160, 500);    
+
+        //ORE TESTS
+        AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 100, 400);    
+        AssetFactory::createUnit(PlayerManager::getPlayer(2), 6, 160, 500);    
         AssetFactory::createOreMine(200, 500);    
         AssetFactory::createOreMine(50, 500);    
-        AssetFactory::createBuilding(PlayerManager::getPlayer(1), 53, 100, 490);
+        AssetFactory::createBuilding(PlayerManager::getPlayer(2), 53, 100, 490);
         
     }
     else {
