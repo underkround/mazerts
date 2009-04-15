@@ -35,7 +35,8 @@ public:
         TGTFLAG_FORCEATTACK = 1 << 1,   //For forcing weapons to attack ground
         TGTFLAG_REPEATING   = 1 << 2,   //Target should not be removed when reached, but instead it
                                         //should be sent to the bottom of the queue
-        TGTFLAG_REPEATING_UNTIL_STATIC = 1 << 3 //The target should not be removed as long as it's not static
+        TGTFLAG_REPEATING_UNTIL_STATIC = 1 << 3, //The target should not be removed as long as it's not static
+        TGTFLAG_INSIDE_BUILDING = 1 << 4    //The target position is inside building, check "asset grid passable *" & "asset grid entrance *" -values in defs
     };
 
     /**
@@ -189,8 +190,19 @@ public:
     const unsigned short getTargetX() const 
     {
         if(m_TargetAsset)
+        {
             if(m_TargetType == ASSET)
-                return m_TargetAsset->getCenterGridX();
+            {
+                if(m_TargetAsset->getAssetType() == IAsset::BUILDING && isFlag(TGTFLAG_INSIDE_BUILDING))
+                {
+                    return m_TargetAsset->getGridX() + m_TargetAsset->getDef()->gridEntrancePointX;
+                }
+                else
+                {
+                    return m_TargetAsset->getCenterGridX();
+                }
+            }
+        }
         return m_TargetX;
     }
 
@@ -201,8 +213,19 @@ public:
     const unsigned short getTargetY() const 
     {
         if(m_TargetAsset)
+        {
             if(m_TargetType == ASSET)
-                return m_TargetAsset->getCenterGridY();
+            {
+                if(m_TargetAsset->getAssetType() == IAsset::BUILDING && isFlag(TGTFLAG_INSIDE_BUILDING))
+                {
+                    return m_TargetAsset->getGridY() + m_TargetAsset->getDef()->gridEntrancePointY;
+                }
+                else
+                {
+                    return m_TargetAsset->getCenterGridY();
+                }
+            }
+        }
         return m_TargetY;
     }
 
@@ -250,7 +273,7 @@ public:
     /**
      * Check if a flag is set
      */ 
-    inline bool isFlag(unsigned int flag) 
+    inline const bool isFlag(unsigned int flag) const
     { 
         if(m_Flags & flag)
         {
@@ -260,7 +283,7 @@ public:
     }
 
     /**
-     * Set a flag
+     * Set a flag, see the TargetFlags -enumeration
      */
     inline void setFlag(unsigned int flag)
     {

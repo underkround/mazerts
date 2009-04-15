@@ -3,8 +3,30 @@
 #include "Building.h"
 #include "AssetCollection.h"
 #include "../Command/Target.h"
-#include "../Common/DoubleLinkedList.h"
 #include "../Terrain/Terrain.h"
+#include "../PathFinding/PathFinderMaster.h"
+#include "../PathFinding/PathAgent.h"
+
+void Resourcer::release()
+{
+    if(m_pTargetList)
+    {
+        delete m_pTargetList;
+        m_pTargetList = NULL;
+    }
+    if(m_pTarget)
+    {
+        //TODO: How is the resourcer informed if GroundMovingLogic destroyed the target?
+        //delete m_pTarget;
+        m_pTarget = NULL;
+    }
+    if(m_pAgent)
+    {
+        delete m_pAgent;
+        m_pAgent = NULL;
+    }
+}
+
 
 void Resourcer::update(const float deltaT)
 {
@@ -16,19 +38,22 @@ void Resourcer::update(const float deltaT)
     {
     case RES_IDLE:
         {
+            //Clear the target list
+            m_pTargetList->RemoveAll();
+
             int tagToLookFor = 0;
             int playerToLookFor = 0;
 
             //Look for target
             if(m_Ore == 0)
             {
-                //TODO: hardcoded value for ore mine, better way to distinguish?
+                //TODO: hardcoded tag for ore mine, better way to distinguish?
                 tagToLookFor = 51;
             }
             else
             {
-                //TODO: Tag for resource yard? For testing using war factory
-                tagToLookFor = 52;
+                //TODO: Hard coded tag for resource yard, better way to distinguish
+                tagToLookFor = 53;
                 playerToLookFor = m_pUnit->getOwner()->getIndex();
             }
 
@@ -37,8 +62,6 @@ void Resourcer::update(const float deltaT)
             AssetCollection::getPlayerBuildingsAt(&list, playerToLookFor, 0, 0, size, size);
 
             ListNode<Building*>* pNode = list.headNode();
-            int shortestDistSq = 100000000;
-            Building* pMine = NULL;
 
             //Look up ore mines/resource yards
             while(pNode)
@@ -46,38 +69,76 @@ void Resourcer::update(const float deltaT)
                 Building* pBuilding = pNode->item;            
                 if(pBuilding->getDef()->tag == tagToLookFor)
                 {
-                    //Ore mine, check distance
+                    //Calculate squared distance
                     int distXSq = abs(m_pUnit->getGridX() - pBuilding->getGridX());
                     distXSq *= distXSq;
                     int distYSq = abs(m_pUnit->getGridY() - pBuilding->getGridY());
                     distYSq *= distYSq;
 
-                    if(distXSq + distYSq < shortestDistSq)
-                    {
-                        pMine = pNode->item;
-                        shortestDistSq = distXSq + distYSq;
-                    }
+                    //Push to viable targets tree
+                    m_pTargetList->Insert(pBuilding, distXSq + distYSq);
+
+                    //On the next update, the resourcer starts to look for paths
+                    m_State = RES_WAITCANPATH;
                 }
 
                 pNode = pNode->next;
             }
-          
-            //Did we find a mine/resource yard?
-            if(pMine)
-            {
-                //Get entrance location
-                unsigned short x = pMine->getGridX() + pMine->getDef()->gridEntrancePointX;
-                unsigned short y = pMine->getGridY() + pMine->getDef()->gridEntrancePointY;
-                
-                //Create target and give to moving logic
-                m_pTarget = new Target(x, y, false);
-                m_pUnit->getMovingLogic()->addTarget(m_pTarget);
-                m_State = RES_MOVING;
-            }
-
+            
                 
             break;
         }
+    case RES_WAITCANPATH:
+        {   
+            //TODO: Do targets leak memory?
+
+            //Check for targets if no pathfinding is underway
+            if(!m_pAgent)
+            {
+                if(!m_pTargetList->IsEmpty())
+                {
+                    Building* pBuilding = NULL;
+                    m_pTargetList->GetTopID(&pBuilding);
+                    m_pTarget = new Target(pBuilding, Target::TGTFLAG_INSIDE_BUILDING);
+                    m_pTargetList->RemoveTop();
+                    //TODO: No "canPath"-checks in pathfinding yet, using real pathfinding-logic
+                    m_pAgent = PathFinderMaster::findPath(m_pUnit->getCenterGridX(), m_pUnit->getCenterGridY(), m_pTarget->getTargetX(), m_pTarget->getTargetY(), m_pUnit->getWidth());
+                }
+                else
+                {
+                    //All viable targets have been gone through, and the state is still RES_WAITCANPATH... return to IDLE
+                    m_State = RES_IDLE;
+                }
+            }
+
+            if(m_pAgent)
+            {
+                //Was path found?
+                switch(m_pAgent->getState())
+                {
+                case IPathFinder::FOUND:
+                    {
+                        //Give target to moving logic
+                        m_pUnit->getMovingLogic()->addTarget(m_pTarget);
+                        m_State = RES_MOVING;
+                        delete m_pAgent;
+                        m_pAgent = NULL;
+
+                        break;
+                    }
+                case IPathFinder::NOT_FOUND:    //NOT_FOUND means there is no path at all, NOT_FINISHED means search hasn't been ended yet
+                    {
+                        delete m_pAgent;
+                        m_pAgent = NULL;
+                        break;
+                    }
+
+                }
+            }
+            
+            break;
+        }
+
     case RES_MOVING:
         //TODO: NEEDS better system to keep track of reaching target (nonreachable/target might get destroyed => crash)
         if((abs(m_pTarget->getTargetX() - m_pUnit->getCenterGridX()) + abs(m_pTarget->getTargetY() - m_pUnit->getCenterGridY())) < 2)

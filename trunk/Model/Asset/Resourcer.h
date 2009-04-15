@@ -10,10 +10,13 @@
 #define __RESOURCER_H__
 
 #include "../Defs/Defs.h"
+#include "../Common/HeapTree.h"
 
 //Forward declarations
 class Unit;
 class Target;
+class PathAgent;
+class Building;
 
 class Resourcer
 {
@@ -27,10 +30,11 @@ public:
 
     enum ResourcerState
     {
-        RES_IDLE,       //Resources is doing nothing (automatically scans for nearby resources)
-        RES_MOVING,     //Resourcer is between locations
-        RES_LOADING,    //Resourcer is loading in mine
-        RES_UNLOADING   //Resourcer is unloading at refinery
+        RES_IDLE,           //Resources is doing nothing (automatically scans for nearby resources)
+        RES_WAITCANPATH,    //Resourcer is waiting for pathing confirmation
+        RES_MOVING,         //Resourcer is between locations
+        RES_LOADING,        //Resourcer is loading in mine
+        RES_UNLOADING       //Resourcer is unloading at resource yard
     };
 
     /** 
@@ -41,6 +45,11 @@ public:
     Resourcer(Unit* pUnit, ResourcerDef& def) : m_Def(def)
     {
         m_pUnit = pUnit;
+
+        m_pAgent = NULL;
+        m_pTargetList = new CHeapTree<Building*, int>();
+        m_pTarget = NULL;
+
         m_State = RES_IDLE;
         m_Ore = 0;
         m_LoadTimer = 0;
@@ -48,6 +57,7 @@ public:
 
     virtual ~Resourcer()
     {
+        release();
     }
 
     /**
@@ -55,6 +65,11 @@ public:
      * @param deltaT Time passed in seconds
      */
     virtual void update(float deltaT);
+
+    /**
+     * Releases resources allocated by this resourcer
+     */
+    virtual void release();
 
 protected:
     
@@ -76,6 +91,12 @@ protected:
     //Target, shared with moving logic so this object knows when to change state
     //(moving logic still owns the target, and takes care of destruction)
     Target* m_pTarget;
+
+    //PathAgent-pointer used in pathing checks
+    PathAgent* m_pAgent;
+
+    //Binary heap of viable targets, sorted by distance
+    CHeapTree<Building*, int>* m_pTargetList;
 };
 
 #endif //__RESOURCER_H__
