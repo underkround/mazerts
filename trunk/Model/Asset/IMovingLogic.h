@@ -105,15 +105,6 @@ public:
     virtual bool release(Unit* host) = 0;
 
     /**
-     * GetActions
-     * @TODO: implement when the command-flags are more mature!
-     *
-     * The logic should "flag" given target for it's possible actions in it.
-     * ..can the logic go in the target, is it passable?
-     */
-    //const int getActionFlags(Target* t);
-
-    /**
      * @return current target to which to move, or NULL if none
      */
     virtual Target* getTarget() = 0;

@@ -40,7 +40,6 @@ bool UIAsset::Update(float fFrameTime)
 
 void UIAsset::handleAssetStateChange(IAsset* pAsset, IAsset::State newState)
 {
-    //TODO: if needed
     if (pAsset->getAssetType() == IAsset::BUILDING)
     {
         if (newState == IAsset::STATE_ACTIVE)

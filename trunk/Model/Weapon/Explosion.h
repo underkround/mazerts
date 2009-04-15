@@ -36,29 +36,26 @@ public:
     {
         Terrain* pTerrain = Terrain::getInstance();
         int damageRange = m_Radius >> 1;
-	    for(int x = -(damageRange); x <= damageRange; ++x)
-	    {
-		    for(int y = -(damageRange); y <= damageRange; ++y)
-		    {
-                int xPos = (x + m_PositionX);
-                int yPos = (y + m_PositionY);
-			    if( xPos >= 0 && xPos < pTerrain->getSize() && yPos >= 0 && yPos < pTerrain->getSize())
-			    {
-                    IAsset* pAsset = AssetCollection::getAssetAt(xPos, yPos);
-                    if(pAsset != NULL)
-				    {
-					    float dist = (float)(abs(x) + abs(y) + 1);
-					    float currentDamage = m_Damage / (float)dist;
-    					
-                        Damage* pDamage = new Damage(Damage::EXPLOSIVE, currentDamage);
 
-                        pAsset->handleDamage(pDamage);
-    					
-				    }
-			    }
-		    }
-	    }
+        DoubleLinkedList<IAsset*> list;
+        if(AssetCollection::getAssetsAt(&list, m_PositionX - damageRange, m_PositionY - damageRange, m_Radius, m_Radius) != 0)
+        {
+            ListNode<IAsset*>* pNode = list.headNode();
+            while(pNode)
+            {
+                IAsset* pAsset = pNode->item;
+                float dist = (float)(abs(m_PositionX - pAsset->getCenterGridX()) + abs(m_PositionY - pAsset->getCenterGridY()) + 1);
+			    float currentDamage = m_Damage / dist;
+
+                Damage* pDamage = new Damage(Damage::EXPLOSIVE, currentDamage);
+
+                pAsset->handleDamage(pDamage);
+
+                pNode = pNode->next;
+            }
+        }
     }
+
     //Getters for position and radius
     inline const unsigned short getX() const { return m_PositionX; }
     inline const unsigned short getY() const { return m_PositionY; }

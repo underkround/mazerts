@@ -185,6 +185,16 @@ UIAsset* UI3DObjectManager::pickAsset(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
 
 void UI3DObjectManager::loadMeshes(LPDIRECT3DDEVICE9 pDevice)
 {
+
+    //Textures are added first into the container to minimize the iteration when particle-explosions are created
+    LPDIRECT3DTEXTURE9 pTexture = NULL;
+
+    for(int i = 0; i < NUMBER_OF_TEXTURES; i++)
+    {
+        D3DXCreateTextureFromFile(pDevice, g_ppTextureNames[i], &pTexture);
+        m_ResourceContainer.AddResource(g_ppTextureNames[i], pTexture);
+    }
+
     //Hardcoded filenames
     for(int i = 0; i < NUMBER_OF_UNITS_WITH_MESHES; i++)
     {
@@ -199,15 +209,6 @@ void UI3DObjectManager::loadMeshes(LPDIRECT3DDEVICE9 pDevice)
         CXFileLoader::Load(g_ppBuildingMeshNames[i][1], m_ResourceContainer, NULL);
         CXFileLoader::Load(g_ppBuildingMeshNames[i][2], m_ResourceContainer, NULL);
     }    
-
-    //Textures
-    LPDIRECT3DTEXTURE9 pTexture = NULL;
-
-    for(int i = 0; i < NUMBER_OF_TEXTURES; i++)
-    {
-        D3DXCreateTextureFromFile(pDevice, g_ppTextureNames[i], &pTexture);
-        m_ResourceContainer.AddResource(g_ppTextureNames[i], pTexture);
-    }
 
     //Miscellanous objects
     LPD3DXMESH pMesh = NULL;

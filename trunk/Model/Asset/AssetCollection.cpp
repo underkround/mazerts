@@ -1,5 +1,4 @@
 /**
- * @TODO: convert to use DoubleLinkedList class
  *
  * $Revision$
  * $Date$
@@ -286,50 +285,12 @@ IAsset* AssetCollection::getAssetAt(const unsigned short x, const unsigned short
 Unit* AssetCollection::getUnitAt(const unsigned short x, const unsigned short y)
 {
     return m_pppUnitArray[y][x];
-    /*
-     * deprecated
-    // @TODO: location based data structure
-    unsigned short tmpX, tmpY;
-    ListNode<Unit*>* node = units.headNode();
-    while(node) {
-        tmpX = node->item->getGridX();
-        if( (tmpX <= x)  &&  (tmpX >= x + node->item->getWidth()) )
-        {
-            tmpY = node->item->getGridY();
-            if( (tmpY <= y)  &&  (tmpY >= y + node->item->getHeight()) )
-            {
-                return node->item;
-            }
-        }
-        node = node->next;
-    }
-    return NULL;
-    */
 }
 
 
 Building* AssetCollection::getBuildingAt(const unsigned short x, const unsigned short y)
 {
     return m_pppBuildingArray[y][x];
-    /*
-     * deprecated
-    // @TODO: location based data structure
-    unsigned short tmpX, tmpY;
-    ListNode<Building*>* node = buildings.headNode();
-    while(node) {
-        tmpX = node->item->getGridX();
-        if( (tmpX >= x)  &&  (tmpX + node->item->getWidth() <= x) )
-        {
-            tmpY = node->item->getGridY();
-            if( (tmpY >= y)  &&  (tmpY + node->item->getHeight() <= y) )
-            {
-                return node->item;
-            }
-        }
-        node = node->next;
-    }
-    return NULL;
-    */
 }
 
 const int AssetCollection::getUnitsAt(DoubleLinkedList<Unit*>* pList, const unsigned short x, const unsigned short y, const unsigned short width, const unsigned short height)

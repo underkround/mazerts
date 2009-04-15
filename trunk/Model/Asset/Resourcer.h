@@ -73,6 +73,34 @@ public:
 
 protected:
     
+    /**
+     * Updates the idle state
+     */
+    void idle();
+
+    /**
+     * Searches viable targets for closest with existing path
+     */
+    void waitCanPath();
+
+    /**
+     * Checks when loading/unloading area is reached
+     */
+    void moving();
+
+    /** 
+     * Loads the ore
+     * @param deltaT Time passed since last call
+     */
+    void loading(float deltaT);
+
+    /**
+     * Unloads the ore
+     * @param deltaT Time passed since last call
+     */
+    void unloading(float deltaT);
+
+
     //Unit this resourcer belongs to
     Unit* m_pUnit;
 

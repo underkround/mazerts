@@ -30,8 +30,7 @@ void Building::create()
     // IAsset's create registers & transfers the ownership to the collection
     IAsset::create();
 
-    //Mark position as unpassable in map
-    //TODO: For factories, it is necessary to leave passable area where the units come out
+    //Mark position as unpassable in map    
     for(int i = 0; i < m_Def.height; i++)
     {
         for(int j = 0; j < m_Def.width; j++)

@@ -115,15 +115,6 @@ public:
     const int count() const { return m_Count; }
 
     /**
-     * @TODO:
-     * if you need the list to return next or previous nodes when deleting node
-     * while iterating, implement methods such as:
-     *
-     * ListNode<T>* removeAndNext(ListNode<T>* beGone)
-     * ListNode<T>* removeAndPrev(ListNode<T>* beGone)
-     */
-
-    /**
      * Self explanary
      */
     const bool empty() const { return (!head && !tail); }

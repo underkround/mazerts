@@ -30,12 +30,9 @@ Fog::Fog()
 
 Fog::~Fog()
 {
-  /*
-  // TODO: These probably need to be deleted, but it crashes
   unsigned short len = Terrain::getInstance()->getSize();
   for (int i = 0; i < len; i++)
-    delete [] m_Fog[i];
-    */
+    delete [] m_Fog[i];    
   delete [] m_Fog;
 }
 

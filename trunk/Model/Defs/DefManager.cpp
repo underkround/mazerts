@@ -259,6 +259,7 @@ bool DefManager::loadWeaponDef(int tag)
     d->range        = c->getValueAsFloat(   tags, "weapon range", 10.0f);
     d->turnSpeed    = c->getValueAsFloat(   tags, "weapon turning speed", 1.0f);
     d->damage       = c->getValueAsInt(     tags, "weapon damage");
+    d->damageRange  = c->getValueAsInt(     tags, "weapon explosion radius", 0);
     // store if new
     if(isNew)
         m_WeaponDefs.pushHead(d);

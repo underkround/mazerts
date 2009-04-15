@@ -48,7 +48,7 @@ public:
         m_TargetX = targetX;
         m_TargetY = targetY;
         m_Damage = def.damage;
-        //TODO: Radius for explosion
+        m_DamageRange = def.damageRange;
 
         if(m_ConcreteType == SHELL)
         {
@@ -122,8 +122,15 @@ protected:
     unsigned short m_TargetX;
     unsigned short m_TargetY;
 
-    //Damage
+    /**
+     * Damage
+     */
     int m_Damage;
+
+    /**
+     * Damage range
+     */
+    int m_DamageRange;
 
     /**
      * Flight time for Shell-projectiles, used to advance the shell along the flightPath

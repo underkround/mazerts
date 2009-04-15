@@ -46,13 +46,28 @@ void ParticleFactory::createExplosion(Explosion* pExplosion)
 	params.fLifeTime = 0.75f;
 	params.fLifeTimeSpread = 0.25f;
 
-	params.fSize = 1.0f;
-	params.fSizeSpread = 0.25f;
+    if(pExplosion->getDamage() > 15)
+    {
+        params.fSize = pExplosion->getDamage() * 0.033f;
+        params.fSizeSpread = pExplosion->getDamage() * 0.020f;
+    }
+    else
+    {
+        params.fSize = 0.5f;
+        params.fSizeSpread = 0.20f;
+    }
 
 	params.fWeight = 10.0f;
 	params.fWeightSpread = 3.0f;
 
-    params.dwCount = (int)(pExplosion->getDamage()) >> 1;
+    if(pExplosion->getDamage() < 100)
+    {
+        params.dwCount = (int)(pExplosion->getDamage()) >> 2;
+    }
+    else
+    {
+        params.dwCount = 25;
+    }
 
     pEmitter->SetFade(TRUE);    
     pEmitter->SetScale(TRUE);
@@ -84,6 +99,8 @@ void ParticleFactory::createExplosion(const D3DXVECTOR3& pos, int size)
     C3DParticleEmitter::EMIT_PARAMS params;
 	::memset(&params, 0, sizeof(C3DParticleEmitter::EMIT_PARAMS));
 
+    params.vPositionSpread = D3DXVECTOR3((FLOAT)size, (FLOAT)size, 0);
+
 	// direction
 	params.vDirection = D3DXVECTOR3(0.0f, 0.0f, -5.0f);
 	params.vDirectionSpread = D3DXVECTOR3(10.0f, 10.0f, 5.0f);
@@ -101,7 +118,7 @@ void ParticleFactory::createExplosion(const D3DXVECTOR3& pos, int size)
 	params.fWeight = 10.0f;
 	params.fWeightSpread = 3.0f;
 
-    params.dwCount = 20 * size;
+    params.dwCount = 10 * size;
 
     pEmitter->SetFade(TRUE);    
     pEmitter->SetScale(TRUE);

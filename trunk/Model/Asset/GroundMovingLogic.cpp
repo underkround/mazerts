@@ -646,7 +646,6 @@ void GroundMovingLogic::clearTargets()
         delete m_pTarget;
         m_pTarget = NULL;
 
-        // TODO: what? set state to idle?
         if(m_pAgent)
         {
             m_pAgent->cancel();
@@ -654,8 +653,7 @@ void GroundMovingLogic::clearTargets()
             m_pAgent = NULL;
         }
         m_CachedReachedTargetX = -1;
-        m_CachedReachedTargetY = -1;
-        m_State = IDLE;
+        m_CachedReachedTargetY = -1;        
     }
 
     //Release queued
@@ -670,6 +668,8 @@ void GroundMovingLogic::clearTargets()
             pNode = m_TargetList.removeGetNext(pNode);
         }
     }
+    
+    m_State = IDLE;
 }
 
 void GroundMovingLogic::clearCurrentTarget(const bool forceRelease)

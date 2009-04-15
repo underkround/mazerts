@@ -49,7 +49,8 @@ struct WeaponDef //: public BaseDef
     //Damage caused by single projectile
     int damage;
 
-    // TODO: damage range?    
+    //damage range
+    int damageRange;
 };
 
 

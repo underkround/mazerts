@@ -28,8 +28,7 @@ bool Projectile::update(const float deltaT)
 
             if(m_FlightTime >= m_TargetTime)
             {
-                //TODO: Explosion radius
-                pExplosion = new Explosion(m_TargetX, m_TargetY, 1, (float)m_Damage);
+                pExplosion = new Explosion(m_TargetX, m_TargetY, m_DamageRange, (float)m_Damage);
                 ExplosionCollection::addExplosion(pExplosion);
                 m_Alive = false;
             }

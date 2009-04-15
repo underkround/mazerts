@@ -86,7 +86,7 @@ static const float g_pUnitBarrelLength[NUMBER_OF_UNITS_WITH_MESHES] =
 };
 
 
-static const int NUMBER_OF_BUILDINGS_WITH_MESHES = 3;
+static const int NUMBER_OF_BUILDINGS_WITH_MESHES = 4;
 
 /**
  * Contains filenames for different meshes, 3 for every building (leave unused parts as _T("") )
@@ -103,6 +103,10 @@ static const TCHAR g_ppBuildingMeshNames[NUMBER_OF_BUILDINGS_WITH_MESHES][3][256
     _T(""),
 
     _T("../data/mesh/yard.x"),
+    _T(""),                                                
+    _T(""),
+
+    _T("../data/mesh/plant.x"),
     _T(""),                                                
     _T("")
 
@@ -122,6 +126,10 @@ static const float g_ppBuildingMeshOffsets[NUMBER_OF_BUILDINGS_WITH_MESHES][3][3
     0, 0, 0,
 
     0, 0, 0,                //Resource yard base
+    0, 0, 0,
+    0, 0, 0,
+
+    0, 0, 0,                //Power plant base
     0, 0, 0,
     0, 0, 0
 };

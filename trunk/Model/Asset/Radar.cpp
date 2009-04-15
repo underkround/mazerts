@@ -76,7 +76,8 @@ DoubleLinkedList<IAsset*>* Radar::getVisibleEnemyAssets()
         ListNode<IAsset*>* ln = m_VisibleEnemyAssets.headNode();
         while (ln)
         {
-            if (!(m_pHost->getOwner()->getEnemies() & ln->item->getOwner()->getId()))
+            //Don't get own or 0-player assets
+            if (!(m_pHost->getOwner()->getEnemies() & ln->item->getOwner()->getId()) && ln->item->getOwner() != 0)
                 ln = m_VisibleEnemyAssets.removeGetNext(ln);
             else
                 ln = ln->next;

@@ -154,50 +154,45 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     //TEST
     if(!Config::getInstance()->getValueAsBool("debug skip starting units", false))
     {
-        for(int i = 0; i < 50; i++)
+        //Units
+        for(int i = 0; i < 100; i++)
+        {
+            int plr = 1;
+            int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
+            int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
+            if(i < 25)
+                plr = 1;                
+            else if(i < 50)
+                plr = 2;            
+            else if(i < 75)
+                plr = 3;
+            else
+                plr = 4;
+            AssetFactory::createUnit(PlayerManager::getPlayer(plr), (rand() % 6) + 1, posx, posy);
+        }
+
+        //Buildings
+        for(int i = 0; i < 30; i++)
+        {
+            int plr = (rand() % 4) + 1;
+            int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
+            int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
+
+            AssetFactory::createBuilding(PlayerManager::getPlayer(plr), 52 + rand() % 3, posx, posy);
+        }
+
+        //Mines
+        for(int i = 0; i < 10; i++)
         {
             int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
             int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
-            if(i < 13)
-                AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, 40+((i / 5) * 5), 20+(i % 5) * 5);
-    //            AssetFactory::createUnit(PlayerManager::getPlayer(1), 5, posx, posy);
-            else if(i < 25)
-                AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, 80+((i / 5) * 5), 60+(i % 5) * 5);
-    //            AssetFactory::createUnit(PlayerManager::getPlayer(2), 5, posx, posy);
-/*            else if(i < 38)
-    //            AssetFactory::createUnit(PlayerManager::getPlayer(3), (rand() % 3) + 1, 0+((i / 5) * 5), 20+(i % 5) * 5);
-  //              AssetFactory::createUnit(PlayerManager::getPlayer(1), (rand() % 3) + 1, posx, posy);
-            else
-    //            AssetFactory::createUnit(PlayerManager::getPlayer(4), (rand() % 3) + 1, 40+((i / 5) * 5), 60+(i % 5) * 5);
-//                AssetFactory::createUnit(PlayerManager::getPlayer(2), (rand() % 3) + 1, posx, posy);*/
-        }
-        for(int i = 0; i < 10; i++)
-        {
-            AssetFactory::createBuilding(PlayerManager::getPlayer(IApplication::RandInt(1, 2)), 52, 20+(i * 20), 100+(i % 5) * 10);
+
+            AssetFactory::createOreMine(posx, posy);
         }
 
-        AssetFactory::createUnit(PlayerManager::getPlayer(1), 6, 100, 100);
-
-        AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 5, 5);
-        AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 200, 5);
-        AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 200, 200);
-        AssetFactory::createUnit(PlayerManager::getPlayer(1), 1, 5, 200);
-
-        /*
-        AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 130, 450);
-        AssetFactory::createBuilding(PlayerManager::getPlayer(2), 52, 90, 450);
-        AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 30, 500);
-        AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 150, 500);*/
-
-        //ORE TESTS
-        AssetFactory::createUnit(PlayerManager::getPlayer(1), 2, 100, 400);    
-        AssetFactory::createUnit(PlayerManager::getPlayer(2), 6, 160, 500);    
-        AssetFactory::createOreMine(200, 500);    
-        AssetFactory::createOreMine(50, 500);    
-        AssetFactory::createBuilding(PlayerManager::getPlayer(2), 53, 100, 490);
-        
     }
-    else {
+    else 
+    {
         getCurrentPlayer()->getFog()->setEnabled(false);
     }
 

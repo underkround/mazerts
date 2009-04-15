@@ -126,9 +126,8 @@ HRESULT Selector::create(LPDIRECT3DDEVICE9 pDevice)
     }
     m_pIB->Unlock();
 
-    //Load texture
-    //TODO: get from resource container
-    hres = D3DXCreateTextureFromFile(pDevice, _T("Selector.tga"), &m_pTexture);
+    //Load texture    
+    hres = D3DXCreateTextureFromFile(pDevice, _T("../data/textures/Selector.tga"), &m_pTexture);
     if(FAILED(hres))
     {
         return hres;

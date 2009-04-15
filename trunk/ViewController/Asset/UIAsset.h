@@ -71,7 +71,7 @@ public:
     virtual void handleAssetReleased(IAsset* pAsset)
     {
         m_Alive = false;
-        ParticleFactory::createExplosion((D3DXVECTOR3&)m_mWorld._41, (int)(m_HalfSize) * 3);
+        ParticleFactory::createExplosion((D3DXVECTOR3&)m_mWorld._41, (int)(m_HalfSize));
         m_pHealthBlock->kill();
     }
 
