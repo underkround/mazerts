@@ -22,6 +22,7 @@
 
 Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, short positionY)
 {
+    // TODO: What to do if there's already unit / building?
     DefManager* dm = DefManager::getInstance();
     AssetDef* def = dm->getAssetDef(unitType);
     if(!def)
@@ -47,6 +48,7 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, sho
 
 Building* AssetFactory::createBuilding(Player* owner, int buildingType, short positionX, short positionY)
 {
+    // TODO: What to do if there's already unit / building?
     DefManager* dm = DefManager::getInstance();
     AssetDef* def = dm->getAssetDef(buildingType);
     if(!def)
@@ -71,6 +73,7 @@ Building* AssetFactory::createBuilding(Player* owner, int buildingType, short po
 
 IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX, short positionY)
 {
+    // TODO: What to do if there's already unit / building?
     AssetDef* def = DefManager::getInstance()->getAssetDef(assetType);
     if(!def)
         return NULL; // invalid assetType
@@ -87,6 +90,7 @@ IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX,
 
 OreMine* AssetFactory::createOreMine(short positionX, short positionY)
 {    
+    // TODO: What to do if there's already unit / building?
     DefManager* dm = DefManager::getInstance();
     //TODO: Hardcoded-value, any reasonable way to get from defs-file?
     AssetDef* def = dm->getAssetDef(51);

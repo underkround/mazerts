@@ -190,6 +190,22 @@ HRESULT GameState::create(ID3DApplication* pApplication)
             AssetFactory::createOreMine(posx, posy);
         }
 
+        // some kind of starting base for player 1
+        for (int i = 0; i < 5; i++)
+        {
+            AssetFactory::createUnit(getCurrentPlayer(), 1, 50 + i * 7, 10);
+            AssetFactory::createUnit(getCurrentPlayer(), 2, 50 + i * 7, 17);
+            AssetFactory::createUnit(getCurrentPlayer(), 3, 50 + i * 7, 24);
+            //AssetFactory::createUnit(getCurrentPlayer(), 4, 50 + i * 7, 31);
+            AssetFactory::createUnit(getCurrentPlayer(), 5, 50 + i * 7, 31);
+            AssetFactory::createUnit(getCurrentPlayer(), 6, 50 + i * 7, 38);
+        }
+        AssetFactory::createBuilding(getCurrentPlayer(), 54, 15, 15);
+        AssetFactory::createBuilding(getCurrentPlayer(), 54, 30, 15);
+        AssetFactory::createBuilding(getCurrentPlayer(), 52, 15, 30);
+        AssetFactory::createBuilding(getCurrentPlayer(), 53, 30, 30);
+        AssetFactory::createOreMine(15, 80);
+
     }
     else 
     {
