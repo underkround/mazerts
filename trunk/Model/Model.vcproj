@@ -636,34 +636,6 @@
 					RelativePath=".\Player\PlayerManager.h"
 					>
 				</File>
-				<Filter
-					Name="PathFinding"
-					>
-					<File
-						RelativePath=".\PathFinding\IPathFinder.h"
-						>
-					</File>
-					<File
-						RelativePath=".\PathFinding\PathAgent.h"
-						>
-					</File>
-					<File
-						RelativePath=".\PathFinding\PathFinder.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\PathFinding\PathFinder.h"
-						>
-					</File>
-					<File
-						RelativePath=".\PathFinding\PathFinderMaster.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\PathFinding\PathFinderMaster.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="Defs"
@@ -678,6 +650,34 @@
 				</File>
 				<File
 					RelativePath=".\Defs\Defs.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="PathFinding"
+				>
+				<File
+					RelativePath=".\PathFinding\IPathFinder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PathFinding\PathAgent.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PathFinding\PathFinder.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PathFinding\PathFinder.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PathFinding\PathFinderMaster.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PathFinding\PathFinderMaster.h"
 					>
 				</File>
 			</Filter>
