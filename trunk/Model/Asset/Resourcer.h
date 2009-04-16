@@ -92,13 +92,13 @@ protected:
      * Loads the ore
      * @param deltaT Time passed since last call
      */
-    void loading(float deltaT);
+    void loading(const float deltaT);
 
     /**
      * Unloads the ore
      * @param deltaT Time passed since last call
      */
-    void unloading(float deltaT);
+    void unloading(const float deltaT);
 
 
     //Unit this resourcer belongs to

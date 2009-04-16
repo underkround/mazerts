@@ -39,16 +39,28 @@ public:
 
     /**
      * Set the position of minimap (in pixels from upperleft corner)
-     * @param x
-     * @param y
+     * @param x How many pixels right
+     * @param y How many pixels down
      */
     void setPosition(const int x, const int y);
+
+    /**
+     * Returns the position of minimap as D3DXVECTOR2
+     * @return Position of minimap as D3DXVECTOR2
+     */
+    inline const D3DXVECTOR2 getPosition() const { return m_Position; }
 
     /**
      * Set the size of minimap (size * size pixels)
      * @param size Size of one side of minimap in pixels
      */
     void setSize(const int size);
+
+    /**
+     * Returns the size of a single minimap size
+     * @return Size as int
+     */
+    inline const int getSize() const { return (int)m_Size; }
 
     /**
      * Set the update interval (in seconds) between unit-position updates
@@ -91,6 +103,12 @@ public:
      * Updates the camera to new position if minimap is clicked
      */
     void moveCameraOnClick();
+
+    /**
+     * Converts the given pixel coordinates to world coordinates
+     * @param coordinates D3DXVECTOR2 containing pixel coordinates from TOPLEFT CORNER of the screen, NOT map
+     */
+    D3DXVECTOR2 minimapPositionToWorld(D3DXVECTOR2 coordinates);
 
 private:
 

@@ -49,10 +49,15 @@ UIWeapon::UIWeapon(IWeapon* pWeapon)
 
     int damage = pWeapon->getDef()->damage;
 
-    if(damage > 15)
+    if(damage > 15 && damage < 1000)
     {
         m_EmitParams.fSize = damage * 0.033f;
         m_EmitParams.fSizeSpread = damage * 0.020f;
+    }
+    else if(damage > 999)
+    {
+        m_EmitParams.fSize = 30.0f;
+        m_EmitParams.fSizeSpread = 1.50f;
     }
     else
     {

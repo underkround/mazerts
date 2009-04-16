@@ -7,6 +7,9 @@
 #include "../PathFinding/PathFinderMaster.h"
 #include "../PathFinding/PathAgent.h"
 
+//TODO: Stop-command
+//TODO: "Reset" after the player allows the resourcer to continue gathering -> switch state to RES_IDLE
+
 //Used to check for targets only between certain intervals (keep it low but not too low)
 #define RES_IDLE_UPDATE 0.2f
 
@@ -46,6 +49,12 @@ void Resourcer::update(const float deltaT)
                 {
                     delete m_pTarget;
                     m_pTarget = NULL;
+                }
+                //Destroy agent if it exist
+                if(m_pAgent)
+                {
+                    delete m_pAgent;
+                    m_pAgent = NULL;
                 }
 
                 idle();                
@@ -195,7 +204,7 @@ void Resourcer::waitCanPath()
 void Resourcer::moving()
 {
     if(m_pTarget->getTargetType() == Target::ASSET)
-    {            
+    {
         if((abs(m_pTarget->getTargetX() - m_pUnit->getCenterGridX()) + abs(m_pTarget->getTargetY() - m_pUnit->getCenterGridY())) < 4)        
         {
             if(m_Ore == 0)
@@ -214,7 +223,7 @@ void Resourcer::moving()
     }
 }
 
-void Resourcer::loading(float deltaT)
+void Resourcer::loading(const float deltaT)
 {
     m_LoadTimer += deltaT;
     if(m_LoadTimer > m_Def.loadTime)
@@ -225,7 +234,7 @@ void Resourcer::loading(float deltaT)
     }
 }
 
-void Resourcer::unloading(float deltaT)
+void Resourcer::unloading(const float deltaT)
 {
     m_LoadTimer += deltaT;
     if(m_LoadTimer > m_Def.loadTime)

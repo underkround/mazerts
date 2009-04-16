@@ -10,6 +10,7 @@
 
 #include "../Input/MouseState.h"
 #include "../Input/KeyboardState.h"
+#include "../Terrain/UITerrain.h"
 #include "../Terrain/TerrainIntersection.h"
 #include "../Asset/UI3DObjectManager.h"
 #include "../Sound/SoundManager.h"
@@ -406,6 +407,18 @@ void UIAssetController::onActionRelease(const float frameTime)
         {
             m_ActionState = IDLE;
             return; // action not allowed when dragging
+        }
+        
+        //Check if user clicked on minimap
+        MiniMap* pMiniMap = UITerrain::getInstance()->getMiniMap();
+        
+        if(MouseState::mouseX > pMiniMap->getPosition().x && MouseState::mouseX < (pMiniMap->getPosition().x + pMiniMap->getSize())
+            && MouseState::mouseY > pMiniMap->getPosition().y && MouseState::mouseY < (pMiniMap->getPosition().y + pMiniMap->getSize()))
+        {
+            D3DXVECTOR2 target = pMiniMap->minimapPositionToWorld(D3DXVECTOR2(MouseState::mouseX, MouseState::mouseY));
+            m_pUnitCommandDispatcher->getTarget()->setTarget((const unsigned short)target.x, (const unsigned short)target.y, false);
+            m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
+            return;
         }
 
         D3DXMATRIX matProj, matView;

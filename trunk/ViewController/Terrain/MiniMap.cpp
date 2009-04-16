@@ -448,3 +448,8 @@ void MiniMap::moveCameraOnClick()
         Camera::getCurrent()->setPosition(moveViewToX, moveViewToY, moveViewToZ);
     }
 }
+
+D3DXVECTOR2 MiniMap::minimapPositionToWorld(D3DXVECTOR2 coordinates)
+{
+    return D3DXVECTOR2((MouseState::mouseX - m_Position.x) / m_SizeFactor, (m_Position.y + m_Size - MouseState::mouseY) / m_SizeFactor);    
+}

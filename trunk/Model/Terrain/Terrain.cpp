@@ -197,8 +197,16 @@ short Terrain::getMoveCost(const short x, const short y, const signed char dirX,
         }
         else
         {
+            short baseCost = m_ppTerrainHeightData[targetY][targetX] - m_ppTerrainHeightData[y][x];
+            
+            //Penalize uphills
+            /*if(baseCost > 0)
+            {
+                baseCost <<= 2;
+            }*/
+
             //Calculate offsetted value
-            short moveCost = m_ppTerrainHeightData[targetY][targetX] - m_ppTerrainHeightData[y][x] + MOVECOST_OFFSET;
+            short moveCost = baseCost + MOVECOST_OFFSET;
 
             if(moveCost > MOVECOST_MAX || moveCost < MOVECOST_MIN)
             {
