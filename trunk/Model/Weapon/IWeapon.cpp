@@ -2,6 +2,7 @@
 #include "../Command/Target.h"
 #include "Projectile.h"
 #include "ProjectileCollection.h"
+#include "../Asset/Unit.h"
 
 void IWeapon::setTarget(Target* pTarget)
 {
@@ -13,7 +14,12 @@ void IWeapon::setTarget(Target* pTarget)
 
     if(pTarget->getTargetType() == Target::ASSET || pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
     {
+        pTarget->setRange(m_Def.range - 2.0f);
         m_pTarget = pTarget;
+        if(m_pHost->getAssetType() == IAsset::UNIT)
+        {
+            ((Unit*)m_pHost)->getMovingLogic()->addTarget(new Target(*pTarget));
+        }
     }
     else
     {

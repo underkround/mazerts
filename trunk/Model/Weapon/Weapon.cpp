@@ -52,11 +52,12 @@ void Weapon::update(const float deltaT)
         if(
             // target is not asset, and forceattack flag is not set
                ( m_pTarget->getTargetType() != Target::ASSET && !m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK) )
-            // if target relection time exceeded
+            // if target rejection time exceeded
             || ( m_TargetRejectionTimer > TARGET_REJECTIONTIME )
             // if target is not an enemy
             || ( m_pTarget->getTargetType() == Target::ASSET && !m_pHost->getOwner()->isEnemy(m_pTarget->getTargetAsset()->getOwner()) )
-        ) {
+        ) 
+        {
             delete m_pTarget;
             m_pTarget = NULL;
         }

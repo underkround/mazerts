@@ -90,13 +90,27 @@ bool UnitCommandDispatcher::dispatch(bool addToQueue)
         {
             node->item->getMovingLogic()->clearTargets();
         }
-
-        node->item->getMovingLogic()->addTarget(new Target(m_Target));
-
-        //TODO: Testing, revise: Only set weapon-target when target is asset? (or some key is down or something)
-        if(node->item->getWeapon())
+                
+        if(m_Target.getTargetAsset())
         {
-            node->item->getWeapon()->setTarget(new Target(m_Target));
+            //TODO: Force attack
+            if(node->item->getWeapon() && m_Target.getTargetAsset()->getOwner() != node->item->getOwner())
+            {
+                //Enemy unit, set target range based on weapon range
+                m_Target.setRange(node->item->getWeapon()->getDef()->range - 2.0f);                
+                //Also gives the target to moving logic
+                node->item->getWeapon()->setTarget(new Target(m_Target));
+            }
+            else
+            {
+                //Only move to target
+                node->item->getMovingLogic()->addTarget(new Target(m_Target));
+            }
+        }
+        else
+        {
+            //Only move to target
+            node->item->getMovingLogic()->addTarget(new Target(m_Target));
         }
 
         node = node->next;
