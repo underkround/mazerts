@@ -2,7 +2,7 @@
 #include "Explosion.h"
 #include "ExplosionCollection.h"
 
-const float Projectile::SHELL_SPEED = 20.0f;
+const float Projectile::SHELL_SPEED = 40.0f;
 
 bool Projectile::update(const float deltaT)
 {

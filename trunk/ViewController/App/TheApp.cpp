@@ -16,7 +16,7 @@
 
 CTheApp::CTheApp(void)
 {
-    m_Help = true;
+    m_Help = false;
 
     m_TextRow = 0;
     m_pCurrentState = NULL;

@@ -27,15 +27,31 @@ void Building::create()
 {
     if(m_Created)
         return;
+
     // IAsset's create registers & transfers the ownership to the collection
     IAsset::create();
 
-    //Mark position as unpassable in map    
+    Terrain* pTerrain = Terrain::getInstance();
+
+    int averageHeight = 0;
+    //Look for average height
     for(int i = 0; i < m_Def.height; i++)
     {
         for(int j = 0; j < m_Def.width; j++)
         {
-            Terrain::getInstance()->setPassability((unsigned short)(m_Position.x + j), (unsigned short)(m_Position.y + i), false);
+            averageHeight += pTerrain->getTerrainHeight((unsigned short)(m_Position.x + j), (unsigned short)(m_Position.y + i));
+        }
+    }
+
+    averageHeight /= (m_Def.height * m_Def.width);
+
+    //Mark position as unpassable in map and flatten
+    for(int i = 0; i < m_Def.height; i++)
+    {
+        for(int j = 0; j < m_Def.width; j++)
+        {
+            pTerrain->setPassability((unsigned short)(m_Position.x + j), (unsigned short)(m_Position.y + i), false);
+            pTerrain->setTerrainHeight((unsigned short)(m_Position.x + j), (unsigned short)(m_Position.y + i), averageHeight);
         }
     }
 

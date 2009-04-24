@@ -12,9 +12,10 @@
 
 
 const float Weapon::TARGET_REJECTIONTIME = 4.0f;
+const float Weapon::TARGET_ASKRADARTIME = 0.5f;
 
 void Weapon::update(const float deltaT)
-{
+{   
 
     //Reloading if necessary
     if(m_Ammo == 0)
@@ -45,6 +46,7 @@ void Weapon::update(const float deltaT)
     //Used to control firing
     bool pointingInRightDirection = false;
     
+
     //If current target is not asset and does not contain forcing flag, delete it
     if(m_pTarget)
     {
@@ -64,28 +66,37 @@ void Weapon::update(const float deltaT)
     }
 
 
-    //If there is no target, ask radar component for any
-    if(!m_pTarget)
+    //If there is no target, ask radar component for any at specific intervals
+    m_TargetAskRadarTimer += deltaT;
+    
+    if(!m_pTarget && m_TargetAskRadarTimer > TARGET_ASKRADARTIME)
     {
-        DoubleLinkedList<IAsset*>* list = m_pHost->getRadar()->getVisibleEnemyAssets();
-
-        ListNode<IAsset*>* pNode = list->headNode();
+        m_TargetAskRadarTimer = 0.0f;
         
         int ownX = m_pHost->getCenterGridX();
         int ownY = m_pHost->getCenterGridY();
-        int shortestDist = 10000;
+        //Squared shortest distance
+        int shortestDistSq = 100000000;
         IAsset* currentNearest = NULL;
         bool outOfRange = true;
+        int rangeSq = (int)(m_Def.range * m_Def.range);
+
+        DoubleLinkedList<IAsset*>* list = m_pHost->getRadar()->getVisibleEnemyAssets();
+        ListNode<IAsset*>* pNode = list->headNode();
 
         while(pNode)
-        {
-            int distance = abs(pNode->item->getCenterGridX() - ownX) + abs(pNode->item->getCenterGridY() - ownY);
-            if(distance < shortestDist)
+        {            
+            int xDistSq = pNode->item->getCenterGridX() - ownX;
+            xDistSq *= xDistSq;
+            int yDistSq = pNode->item->getCenterGridY() - ownY;
+            yDistSq *= yDistSq;
+            int distanceSq = xDistSq + yDistSq;
+            if(distanceSq < shortestDistSq)
             {
-                shortestDist = distance;
+                shortestDistSq = distanceSq;
                 currentNearest = pNode->item;
 
-                if(distance < m_Def.range)
+                if(distanceSq < rangeSq)
                 {
                     outOfRange = false;
                 }
@@ -109,7 +120,7 @@ void Weapon::update(const float deltaT)
                     pTarget->setRange(m_Def.range - 2.0f);
                     pUnit->getMovingLogic()->addTarget(pTarget);
                 }
-            }            
+            }
         }
     }
 

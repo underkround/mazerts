@@ -117,14 +117,6 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     PlayerManager::create(4);
     setCurrentPlayer(PlayerManager::getPlayer(1));
 
-    //UI-Terrain
-    m_pUITerrain = UITerrain::getInstance();
-    hres = m_pUITerrain->create(pDevice, getCurrentPlayer());
-    if(FAILED(hres))
-    {
-        return hres;
-    }    
-
     //Initialize particlefactory
     ParticleFactory::create(pDevice);
 
@@ -212,6 +204,13 @@ HRESULT GameState::create(ID3DApplication* pApplication)
         getCurrentPlayer()->getFog()->setEnabled(false);
     }
 
+    //UI-Terrain
+    m_pUITerrain = UITerrain::getInstance();
+    hres = m_pUITerrain->create(pDevice, getCurrentPlayer());
+    if(FAILED(hres))
+    {
+        return hres;
+    }
 
     //Selector
     hres = m_Selector.create(pDevice);

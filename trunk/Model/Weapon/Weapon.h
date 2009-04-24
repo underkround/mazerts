@@ -21,9 +21,15 @@ public:
      */
     static const float TARGET_REJECTIONTIME;
 
+    /**
+     * If no target is acquired, ask the radar for new target between this many seconds
+     */
+    static const float TARGET_ASKRADARTIME;
+
     Weapon(WeaponDef& def) : IWeapon(DEFAULT, def)
     {
         m_TargetRejectionTimer = 0.0f;
+        m_TargetAskRadarTimer = 0.0f;
     }
 
     virtual ~Weapon()
@@ -55,6 +61,10 @@ private:
      */
     float m_TargetRejectionTimer;
 
+    /**
+     * Timer used to check for new targets from radar
+     */
+    float m_TargetAskRadarTimer;
 };
 
 #endif // __WEAPON_H__

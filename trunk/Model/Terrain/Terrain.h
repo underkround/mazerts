@@ -157,6 +157,21 @@ public:
     }
 
     /**
+     * Sets the vertex heights and tile height for given tile
+     * @param x X tile coordinate
+     * @param y Y tile coordinate
+     * @param height Height for tile
+     */
+    inline void setTerrainHeight(const short x, const short y, const unsigned char height)
+    {
+        m_ppVertexHeightData[y][x] = height;
+        m_ppVertexHeightData[y+1][x] = height;
+        m_ppVertexHeightData[y][x+1] = height;
+        m_ppVertexHeightData[y+1][x+1] = height;
+        m_ppTerrainHeightData[y][x] = height;
+    }
+
+    /**
      * Returns a two-dimensional unmodifiable array of terrain vertex-height -data.
      * First dimension is Y, second dimension is X
      * @return Pointer to two-dimensional array of terrain vertex-heights
@@ -164,7 +179,7 @@ public:
     inline const unsigned char * const * getTerrainVertexHeightData() const
     {
         return m_ppVertexHeightData;
-    }
+    }    
 
     /**
      * Return the terrain generator

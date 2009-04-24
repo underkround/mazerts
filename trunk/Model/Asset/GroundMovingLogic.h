@@ -147,6 +147,20 @@ private:
      */
     void followPath();
 
+    /** 
+     * Make current unit steer aside from it's current movement direction
+     * @param whichWay Which way to steer from current direction vector,
+     *        0 for random(left/right), 1 for left, 2 for right (or the other way around)
+     */
+    void steerAway(char whichWay);
+
+    /**
+     * Checks if the square the unit is about to move in is available
+     * also performs giving non-moving own units commands to move out of the way
+     * @return true if squares are free, otherwise false
+     */
+    bool squareAvailability();
+
     /**
      * Called no matter what the unit state is, handles actual moving (as in changing coordinates)
      * @param deltaTime Frametime in seconds

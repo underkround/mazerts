@@ -405,191 +405,17 @@ void GroundMovingLogic::move(float deltaTime)
 
         if(m_State == FOLLOWPATH || m_State == JUSTMOVE)
         {
-             //Current moving directions
-            signed short dirX = (signed short)floor(dir->x + 0.5f);
-            signed short dirY = (signed short)floor(dir->y + 0.5f);            
-
-            //Check the squares for availability
-            bool squaresAvailable = true;
-            static DoubleLinkedList<Unit*> unitsAtSquares;  //Reusing same list all the time
-            char whichWay = 0;  //Used to tell the blocking unit to move the other way than the unit trying to get past
-
-            //Ask for units in the way
-            if(AssetCollection::getUnitsAt(&unitsAtSquares, (unsigned short)(((signed short)floor(pos->x + 0.5f)) + dirX), 
-                                                            (unsigned short)(((signed short)floor(pos->y + 0.5f)) + dirY), 
-                                                            m_pUnit->getWidth(), m_pUnit->getHeight())      != 0)
-            {
-                //Check found units
-                ListNode<Unit*>* pNode = unitsAtSquares.headNode();
-                while(pNode)
-                {
-                    //Check that the unit isn't this one
-                    if(pNode->item != m_pUnit)
-                    {
-                        //Only own units can be told to move
-                        if(pNode->item->getOwner() == m_pUnit->getOwner())
-                        {
-                            float minDist = (float)(pNode->item->getWidth() + m_pUnit->getWidth());
-                            
-                            Vector3 posDiff = *pNode->item->getPosition() - *pos;
-
-                            //Check if the target already has a MAKEWAY-priority target
-                            Target* unitTarget = pNode->item->getMovingLogic()->getTarget();
-                            if(unitTarget == NULL || !unitTarget->isFlag(Target::TGTFLAG_MAKEWAY))
-                            {
-                                Target* makeWayTarget = NULL;
-                                
-                                int targetX = 0;
-                                int targetY = 0;
-                                
-                                //Normalize position difference to use it as direction vector between units
-                                posDiff.normalize();
-
-                                //Take normal vector from unit direction and selected avoidance target moving direction
-                                //based on which side of the current path the unit is
-                                //Vector3 right(dir->y, -dir->x, 0);                                
-                                //if(posDiff * right < 0)
-
-                                //Just randomize
-                                if(rand() < (RAND_MAX / 2))
-                                {
-                                    whichWay = 1;
-                                }
-                                else
-                                {
-                                    whichWay = 2;
-                                }
-                                
-                                if(whichWay == 1)
-                                {
-                                    targetX = (int)(pNode->item->getPosition()->x - (posDiff.y * minDist));
-                                    targetY = (int)(pNode->item->getPosition()->y + (posDiff.x * minDist));                                    
-                                }
-                                else
-                                {
-                                    targetX = (int)(pNode->item->getPosition()->x + (posDiff.y * minDist));
-                                    targetY = (int)(pNode->item->getPosition()->y - (posDiff.x * minDist));
-                                }
-
-                                //Bounds checks
-                                unsigned short mapSize = Terrain::getInstance()->getSize();
-                                if(targetX < 0)
-                                {
-                                    targetX = 0;
-                                }
-                                else if(targetX > mapSize)
-                                {
-                                    targetX = mapSize;
-                                }
-                                
-                                if(targetY < 0)
-                                {
-                                    targetY = 0;
-                                }
-                                else if(targetY > mapSize)
-                                {
-                                    targetY = mapSize;
-                                }
-                                
-                                //Check that the target is passable
-                                if(Terrain::getInstance()->isPassable(targetX, targetY, pNode->item->getWidth()))
-                                {
-                                    makeWayTarget = new Target((unsigned short)targetX, (unsigned short)targetY, false, Target::TGTFLAG_MAKEWAY);
-                                    pNode->item->getMovingLogic()->priorityTarget(makeWayTarget);                                                                        
-                                
-//show line for where the unit is told to move
-#ifdef PATH_UI_DEBUG
-        float halfX = m_pUnit->getWidth() * 0.5f;
-        float halfY = m_pUnit->getHeight() * 0.5f;
-        float x1 = pNode->item->getPosition()->x;
-        float y1 = pNode->item->getPosition()->y;
-        //float x2 = pNode->item->getPosition()->x + posDiff.x * minDist;
-        //float y2 = pNode->item->getPosition()->y + posDiff.y * minDist;
-        float x2 = (float)makeWayTarget->getTargetX();
-        float y2 = (float)makeWayTarget->getTargetY();
-        UI3DDebug::addLine( x1, y1, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x1, y1) - 0.5f,
-                            x2, y2, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x2, y2) - 0.5f, 0.5f, 5.0f);
-#endif                       
-                                }
-                                else
-                                {                                    
-                                    whichWay = 0;
-                                }
-                            }
-                        }                        
-
-                        squaresAvailable = false;
-                    }
-                    
-                    pNode = pNode->next;
-                }
-                //Clear the list
-                unitsAtSquares.release();
-            }
+            bool squaresAvailable = squareAvailability();
             
             if(!squaresAvailable) //&& !m_pTarget->isFlag(Target::TGTFLAG_MAKEWAY)))
             {
-                //Cancel old makeway target, if any
-                if(m_pTarget->isFlag(Target::TGTFLAG_MAKEWAY))
-                {
-                    clearCurrentTarget();
-                }
-
-                //Try to get around
-                //signed short dirX = (signed short)(dir->x * m_pUnit->getWidth() * 2.0f);
-                //signed short dirY = (signed short)(dir->y * m_pUnit->getHeight() * 2.0f);             
-                unsigned short targetX;
-                unsigned short targetY;
-
-                
-                if(whichWay == 2)
-                {
-                    //Using constant 6 instead of getHeight/Widht * 2 (so the unit can go past biggest other units,
-                    //small units wouldn't move far enough with big enemy units, and never actually got past them)
-                    //TODO: Better system for distance selection?
-                    targetX = (unsigned short)(pos->x - (dirY * 6));
-                    targetY = (unsigned short)(pos->y + (dirX * 6));
-                }
-                else if(whichWay == 1)
-                {
-                    targetX = (unsigned short)(pos->x + (dirY * 6));
-                    targetY = (unsigned short)(pos->y - (dirX * 6));
-                }                
-                else
-                {
-                    //No direction known, pick at random
-                    unsigned char width8 = m_pUnit->getWidth() << 3;
-                    unsigned char width4 = m_pUnit->getWidth() << 2;
-                    targetX = m_pUnit->getGridX() + (rand() % width8) - width4;
-                    targetY = m_pUnit->getGridY() + (rand() % width8) - width4;
-                }
-                //Bounds and passability check
-                if(targetX < Terrain::getInstance()->getSize() && targetY < Terrain::getInstance()->getSize())
-                {
-                    if(Terrain::getInstance()->isPassable(targetX, targetY, m_pUnit->getWidth()))
-                    {
-                        //Useless to move on top of another unit/building
-                        if(AssetCollection::getAssetsAt(NULL, targetX, targetY, m_pUnit->getWidth(), m_pUnit->getHeight()) == 0)
-                        {
-                            priorityTarget(new Target(targetX, targetY, false, Target::TGTFLAG_MAKEWAY));
-                        }                    
-                    }
-                    /*else if(makeWayCleared)
-                    {
-                        //Sideways/random movement wasn't passable, try some random normal target in vicinity (since it's not a MAKEWAY-target, the
-                        //pathfinder will check the passabilities)
-                        unsigned char width4 = m_pUnit->getWidth() << 2;
-                        unsigned char width2 = m_pUnit->getWidth() << 1;
-                        targetX = m_pUnit->getGridX() + (rand() % width4) - width2;
-                        targetY = m_pUnit->getGridY() + (rand() % width4) - width2;
-                        Target* pTarget = new Target((unsigned short)targetX, (unsigned short)targetY, false);
-                        priorityTarget(pTarget);
-                    }*/
-                }
+                steerAway(0);
             }
 
             if(squaresAvailable)
             {
+                signed short dirX = (signed short)(dir->x + 0.5f);//(signed short)floor(dir->x + 0.5f);
+                signed short dirY = (signed short)(dir->y + 0.5f);//(signed short)floor(dir->y + 0.5f);            
 
                 //Heading (pretty much) toward correct direction and the road is clear, hit the pedal to the metal    
                 //Offsets (m_HalfSize) are needed because the speed is calculated from "center" of unit
@@ -605,13 +431,35 @@ void GroundMovingLogic::move(float deltaTime)
                 //Just stop the unit, too many problems with two units stuck inside each other
                 m_CurrentSpeed = 0;
 
-                //Used to clear "stuck" MAKEWAY-flags (häröpallo)
-                if(m_pTarget && m_pTarget->isFlag(Target::TGTFLAG_MAKEWAY))
+                //Used to clear "stuck" normal and MAKEWAY-targets (häröpallo)
+                if(m_pTarget)
                 {
                     m_StuckCounter += deltaTime;
                     if(m_StuckCounter > STUCKCOUNTER_CANCEL)
                     {
-                        clearCurrentTarget();
+                        if(m_pTarget->isFlag(Target::TGTFLAG_MAKEWAY))
+                        {
+                            clearCurrentTarget();
+                        }
+                        else
+                        {
+                            unsigned char width8 = m_pUnit->getWidth() << 3;
+                            unsigned char width4 = m_pUnit->getWidth() << 2;
+                            unsigned short targetX = m_pUnit->getGridX() + (rand() % width8) - width4;
+                            unsigned short targetY = m_pUnit->getGridY() + (rand() % width8) - width4;
+                            //Bounds and passability check
+                            if(targetX < Terrain::getInstance()->getSize() && targetY < Terrain::getInstance()->getSize())
+                            {
+                                if(Terrain::getInstance()->isPassable(targetX, targetY, m_pUnit->getWidth()))
+                                {
+                                    //Useless to move on top of another unit/building
+                                    if(AssetCollection::getAssetsAt(NULL, targetX, targetY, m_pUnit->getWidth(), m_pUnit->getHeight()) == 0)
+                                    {
+                                        priorityTarget(new Target(targetX, targetY, false, Target::TGTFLAG_MAKEWAY));
+                                    }                    
+                                }
+                            }
+                        }
                         m_StuckCounter = 0;
                         return;
                     }
@@ -737,4 +585,172 @@ void GroundMovingLogic::priorityTarget(Target* target)
     m_pTarget = target;
     m_State = IDLE;
     m_StuckCounter = 0; //For MAKEWAY-targets
+}
+
+void GroundMovingLogic::steerAway(char whichWay)
+{
+    Vector3* pos = m_pUnit->getPosition();
+    Vector3* dir = m_pUnit->getDirection();
+
+    //Cancel old makeway target, if any
+    if(m_pTarget->isFlag(Target::TGTFLAG_MAKEWAY))
+    {
+        clearCurrentTarget();
+    }
+
+    //Try to get around
+    signed short dirX = (signed short)(dir->x * m_pUnit->getWidth());
+    signed short dirY = (signed short)(dir->y * m_pUnit->getHeight());
+    unsigned short targetX;
+    unsigned short targetY;
+
+
+    if(whichWay == 0)
+    {
+        //No direction known, pick at random
+        unsigned char width8 = m_pUnit->getWidth() << 3;
+        unsigned char width4 = m_pUnit->getWidth() << 2;
+        targetX = m_pUnit->getGridX() + (rand() % width8) - width4;
+        targetY = m_pUnit->getGridY() + (rand() % width8) - width4;
+    }
+    else if(whichWay == 1)
+    {
+        //Using constant 6 instead of getHeight/Width * 2 (so the unit can go past biggest other units,
+        //small units wouldn't move far enough with big enemy units, and never actually got past them)
+        //TODO: Better system for distance selection?
+        targetX = (unsigned short)(pos->x + (dirY * 6));
+        targetY = (unsigned short)(pos->y - (dirX * 6));
+    }                
+    else
+    {
+        targetX = (unsigned short)(pos->x - (dirY * 6));
+        targetY = (unsigned short)(pos->y + (dirX * 6));
+    }
+    //Bounds and passability check
+    if(targetX < Terrain::getInstance()->getSize() && targetY < Terrain::getInstance()->getSize())
+    {
+        if(Terrain::getInstance()->isPassable(targetX, targetY, m_pUnit->getWidth()))
+        {
+            //Useless to move on top of another unit/building
+            if(AssetCollection::getAssetsAt(NULL, targetX, targetY, m_pUnit->getWidth(), m_pUnit->getHeight()) == 0)
+            {
+                priorityTarget(new Target(targetX, targetY, false, Target::TGTFLAG_MAKEWAY));
+            }                    
+        }
+    }
+}
+
+bool GroundMovingLogic::squareAvailability()
+{
+    Vector3* pos = m_pUnit->getPosition();
+    Vector3* dir = m_pUnit->getDirection();
+
+    //Current moving directions
+    signed short dirX = (signed short)(dir->x + 0.5f);//(signed short)floor(dir->x + 0.5f);
+    signed short dirY = (signed short)(dir->y + 0.5f);//(signed short)floor(dir->y + 0.5f);            
+
+    //Check the squares for availability
+    bool squaresAvailable = true;
+    static DoubleLinkedList<Unit*> unitsAtSquares;  //Reusing same list all the time
+
+    //Ask for units in the way
+    if(AssetCollection::getUnitsAt(&unitsAtSquares, (unsigned short)(((signed short)(pos->x + 0.5f)) + dirX), 
+                                                    (unsigned short)(((signed short)(pos->y + 0.5f)) + dirY), 
+                                                    m_pUnit->getWidth(), m_pUnit->getHeight())      != 0)
+    {
+            
+        //Check found units
+        ListNode<Unit*>* pNode = unitsAtSquares.headNode();
+        while(pNode)
+        {
+            //Check that the unit isn't this one
+            if(pNode->item != m_pUnit)
+            {
+                //Only own units can be told to move
+                if(pNode->item->getOwner() == m_pUnit->getOwner())
+                {                    
+                    //Only non-moving (no movinglogic-target) are told to move
+                    Target* unitTarget = pNode->item->getMovingLogic()->getTarget();
+                    if(unitTarget == NULL)// || !unitTarget->isFlag(Target::TGTFLAG_MAKEWAY))//Check if the target already has a MAKEWAY-priority target
+                    {
+                        Target* makeWayTarget = NULL;
+                        
+                        signed short targetX = 0;
+                        signed short targetY = 0;
+                        
+                        float minDist = (float)(pNode->item->getWidth() + m_pUnit->getWidth());
+                        Vector3 posDiff = *pNode->item->getPosition() - *pos;
+                        //Normalize position difference to use it as direction vector between units
+                        posDiff.normalize();
+
+                        //Take normal vector from unit direction and selected avoidance target moving direction
+                        //based on which side of the current path the unit is
+                        //Vector3 right(dir->y, -dir->x, 0);                                
+                        //if(posDiff * right < 0)
+
+                        //Just randomize
+                        if(rand() < (RAND_MAX / 2))
+                        {
+                            targetX = (signed short)(pNode->item->getPosition()->x - (posDiff.y * minDist));
+                            targetY = (signed short)(pNode->item->getPosition()->y + (posDiff.x * minDist));                                    
+                        }
+                        else
+                        {
+                            targetX = (signed short)(pNode->item->getPosition()->x + (posDiff.y * minDist));
+                            targetY = (signed short)(pNode->item->getPosition()->y - (posDiff.x * minDist));
+                        }
+                        
+                        //Bounds checks
+                        unsigned short mapSize = Terrain::getInstance()->getSize();
+                        if(targetX < 0)
+                        {
+                            targetX = 0;
+                        }
+                        else if(targetX > mapSize)
+                        {
+                            targetX = mapSize;
+                        }
+                        
+                        if(targetY < 0)
+                        {
+                            targetY = 0;
+                        }
+                        else if(targetY > mapSize)
+                        {
+                            targetY = mapSize;
+                        }
+                        
+                        //Check that the target is passable
+                        if(Terrain::getInstance()->isPassable(targetX, targetY, pNode->item->getWidth()))
+                        {
+                            makeWayTarget = new Target((unsigned short)targetX, (unsigned short)targetY, false, Target::TGTFLAG_MAKEWAY);
+                            pNode->item->getMovingLogic()->priorityTarget(makeWayTarget);  
+                        
+    //show line for where the unit is told to move
+    #ifdef PATH_UI_DEBUG
+                            float halfX = m_pUnit->getWidth() * 0.5f;
+                            float halfY = m_pUnit->getHeight() * 0.5f;
+                            float x1 = pNode->item->getPosition()->x;
+                            float y1 = pNode->item->getPosition()->y;
+                            //float x2 = pNode->item->getPosition()->x + posDiff.x * minDist;
+                            //float y2 = pNode->item->getPosition()->y + posDiff.y * minDist;
+                            float x2 = (float)makeWayTarget->getTargetX();
+                            float y2 = (float)makeWayTarget->getTargetY();
+                            UI3DDebug::addLine( x1, y1, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x1, y1) - 0.5f,
+                                            x2, y2, (float)UITerrain::getInstance()->calculateTriangleHeightAt(x2, y2) - 0.5f, 0.5f, 5.0f);
+    #endif                       
+                        }
+                    }
+                }                        
+
+                squaresAvailable = false;
+            }
+            
+            pNode = pNode->next;
+        }
+        //Clear list
+        unitsAtSquares.release();
+    }
+
+    return squaresAvailable;
 }
