@@ -14,6 +14,7 @@
 #include "../App/C3DObject.h"
 #include "../../Model/Weapon/Projectile.h"
 #include "../Terrain/UITerrain.h"
+#include "../Sound/SoundManager.h"
 
 class UIProjectile : public C3DObject
 {
@@ -51,6 +52,11 @@ public:
         m_mWorld._42 = m_Origin.y + m_Target.y * t;
         m_mWorld._43 = m_Origin.z + m_Target.z * t - sin(t * D3DX_PI) * m_FlyHeight;
         
+        if(!m_pProjectile->isAlive())
+        {
+            //Play sound
+            SoundManager::playSound(SOUND_EXPLOSION, 0.01f, *((D3DXVECTOR3*)&m_mWorld._41), true);
+        }
         return m_pProjectile->isAlive();
     }
     
