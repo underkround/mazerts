@@ -19,7 +19,7 @@ public:
      * Initializes using provided BMP-image.
      * @param filename  name of the bmp.
      */
-    ImageTerrainGenerator(char* filename);
+    ImageTerrainGenerator(const char* filename);
 
     /**
      * Get the preferred size for generator's preferences.
@@ -42,11 +42,11 @@ public:
      * map size and tries to open "map.bmp" when generateHeightmap is called.
      * @param filename name of the map
      */
-    void initialize(char* filename);
+    void initialize(const char* filename);
 
 private:
     unsigned short  m_Size;
-    char*           m_Filename;
+    char*           m_pFilename;
 };
 
 #endif

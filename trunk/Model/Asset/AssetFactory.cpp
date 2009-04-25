@@ -77,6 +77,14 @@ IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX,
     AssetDef* def = DefManager::getInstance()->getAssetDef(assetType);
     if(!def)
         return NULL; // invalid assetType
+
+    // special case for ore mine
+    // TODO: changed here from gamestate, temporary solution for Levels-demo. Do it better :)
+    // TODO: GET RID OF THAT STUPID HARDCODED VALUE (see notes in createOreMine)
+    if(def->tag == 51)
+        return createOreMine(positionX, positionY);
+
+    // general Units and Buildings
     switch(def->concreteType)
     {
     case 1:
@@ -88,8 +96,15 @@ IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX,
     }
 }
 
+
+// TODO when more time: the ore mine overrides two behaviours:
+//  1) it doesn't register to collection
+//  2) it cannot be destroyed
+//  3) it's anonymous
+// -> 1 and 2 could be implemented with def parameters, and 3) is not
+//    really needed (same as to pass player 0 to createAsset or createBuilding)
 OreMine* AssetFactory::createOreMine(short positionX, short positionY)
-{    
+{
     // TODO: What to do if there's already unit / building?
     DefManager* dm = DefManager::getInstance();
     //TODO: Hardcoded-value, any reasonable way to get from defs-file?
@@ -102,7 +117,7 @@ OreMine* AssetFactory::createOreMine(short positionX, short positionY)
     OreMine* b = new OreMine((AssetDef&)(*def));
     b->setOwner(PlayerManager::getPlayer(0));
     b->forcePosition(positionX, positionY);
-    
+
     b->create();
     return b;
 }

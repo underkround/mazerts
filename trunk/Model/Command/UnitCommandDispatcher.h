@@ -18,13 +18,28 @@
 #ifndef __UNITCOMMANDDISPATCHER_H__
 #define __UNITCOMMANDDISPATCHER_H__
 
+//
+// NOTE!
+// lines commented out with "TEMP:" are zemm's additions for what seems to
+// avoid breaking pointers when selected assets are being destroyed, but
+// it was laying around uncommited few weeks and i forgot if it worked or not..
+// to:
+// a) avoid breaking the game right now with tight schedule
+// b) avoid rewriting the same thing again later
+//
+// I now add these to commit, but comment them out ;P sorry about the mess,
+// you can find all stuff related with "//TEMP" prefix.
+//
+
 #include "Target.h"
 //#include "Command.h"
 #include "../Asset/Unit.h"
 #include "../Common/DoubleLinkedList.h"
+//TEMP: #include "../Asset/IAssetListener.h"
 
 class Player;
 
+//TEMP: class UnitCommandDispatcher : public IAssetListener
 class UnitCommandDispatcher
 {
 public:
@@ -34,6 +49,9 @@ public:
     ~UnitCommandDispatcher();
 
     void release();
+
+//TEMP:    virtual void handleAssetStateChange(IAsset* pAsset, IAsset::State newState);
+//TEMP:    virtual void handleAssetReleased(IAsset* pAsset);
 
 // ===== Subject control - subject is asset currently under control
 

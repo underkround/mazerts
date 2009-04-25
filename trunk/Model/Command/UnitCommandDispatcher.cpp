@@ -1,6 +1,20 @@
 #include "UnitCommandDispatcher.h"
 
 
+//
+// NOTE!
+// lines commented out with "TEMP:" are zemm's additions for what seems to
+// avoid breaking pointers when selected assets are being destroyed, but
+// it was laying around uncommited few weeks and i forgot if it worked or not..
+// to:
+// a) avoid breaking the game right now with tight schedule
+// b) avoid rewriting the same thing again later
+//
+// I now add these to commit, but comment them out ;P sorry about the mess,
+// you can find all stuff related with "//TEMP" prefix.
+//
+
+
 UnitCommandDispatcher::UnitCommandDispatcher(Player* owner) : m_Target(0, 0, false)
 {
     // TODO?
@@ -29,8 +43,13 @@ Target* UnitCommandDispatcher::getTarget() {
 */
 }
 
+//TEMP void UnitCommandDispatcher::handleAssetStateChange(IAsset* pAsset, IAsset::State newState) { }
+
+//TEMP void UnitCommandDispatcher::handleAssetReleased(IAsset* pAsset) { removeAsset(pAsset); }
+
 void UnitCommandDispatcher::removeAsset(IAsset* asset)
 {
+//TEMP    asset->unregisterListener(this);
     switch(asset->getAssetType())
     {
     case IAsset::UNIT:
@@ -46,6 +65,7 @@ void UnitCommandDispatcher::removeAsset(IAsset* asset)
 void UnitCommandDispatcher::addUnit(Unit* unit)
 {
     m_Units.pushHead(unit);
+//TEMP    unit->registerListener(this);
 }
 
 
@@ -53,11 +73,17 @@ void UnitCommandDispatcher::setUnit(Unit* unit)
 {
     m_Units.release();
     m_Units.pushHead(unit);
+//TEMP    unit->registerListener(this);
 }
 
 
 void UnitCommandDispatcher::clearUnits()
 {
+//TEMP    ListNode<Unit*>* node = m_Units.headNode();
+//TEMP    while(node) {
+//TEMP        node->item->unregisterListener(this);
+//TEMP        node = node->next;
+//TEMP    }
     m_Units.release();
 }
 

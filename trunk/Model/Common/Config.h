@@ -170,6 +170,12 @@ public:
 
 // ===== Methods
 
+    /**
+     * Return true if section has been read (and it has some values)
+     * @param sectionName   section to look for
+     * @return              true, if found with one or more values
+     */
+    const bool hasSection(const string sectionName);
 
     /**
      * Convert integer to string

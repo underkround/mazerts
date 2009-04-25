@@ -59,4 +59,16 @@ void testConfig() {
     cout << " value: \"int\" as float: " << c.getValueAsFloat("int") << endl;
 
 //    cout << c.getValueAsInt("", "sekt1", "olen monessa sectionissa") << endl;
+
+    // test section finding
+    cout << endl << " *** Section finding ***" << endl;
+
+    cout << " section \"muut\"";
+    if(c.hasSection("muut")) cout << " -> exists" << endl;
+    else cout << " -> does not exist" << endl;
+
+    cout << " section \"muutfoo\"";
+    if(c.hasSection("muutfoo")) cout << " -> exists" << endl;
+    else cout << " -> does not exist" << endl;
+
 }

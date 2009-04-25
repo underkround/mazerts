@@ -278,6 +278,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RtsInitializer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RtsInitializer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Units.ini"
 				>
 			</File>

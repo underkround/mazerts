@@ -1,11 +1,11 @@
 #include "GameState.h"
 
-#include "../../Model/Terrain/Terrain.h"
-#include "../../Model/Terrain/AntinTerrainGenerator.h"
-#include "../../Model/Terrain/ImageTerrainGenerator.h"
+//#include "../../Model/Terrain/Terrain.h"
+//#include "../../Model/Terrain/AntinTerrainGenerator.h"
+//#include "../../Model/Terrain/ImageTerrainGenerator.h"
 #include "../../Model/PathFinding/PathFinderMaster.h"
-#include "../../Model/Asset/AssetCollection.h"
-#include "../../Model/Asset/AssetFactory.h"
+//#include "../../Model/Asset/AssetCollection.h"
+//#include "../../Model/Asset/AssetFactory.h"
 #include "../../Model/Weapon/ProjectileCollection.h"
 #include "../../Model/Weapon/ExplosionCollection.h"
 
@@ -14,8 +14,8 @@
 #include "../../Model/Common/Config.h"
 
 // player manager
-#include "../../Model/Player/PlayerManager.h"
-#include "../../Model/Player/Fog.h"
+//#include "../../Model/Player/PlayerManager.h"
+//#include "../../Model/Player/Fog.h"
 
 // Camera related
 #include "../Camera/SphereCamera.h"
@@ -48,6 +48,8 @@
 #include "../UIComponent/GridLayout.h"
 #include "../App/GameConsole.h"
 
+// Game initializer
+#include "../../Model/RtsInitializer.h"
 
 #define KEYBOARD_CAMSPEED 60.0f
 #define MOUSE_CAMSPEED 0.01f
@@ -88,33 +90,46 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     m_pDevice = pDevice;
 
-    // Load definition files
-    DefManager::getInstance()->loadConfigurations();
 
     //Prepare manager
     UI3DObjectManager::create(pDevice);
     m_pManager = UI3DObjectManager::getInstance();
 
+    // Get the scenario file to load
+    RtsInitializer::loadScenario(Config::getInstance()->getValueAsString("", "scenario file", "").c_str());
+
+    // Initialize the game (model-side)
+//    if(!RtsInitializer::initializeDebug())
+    if(!RtsInitializer::initializeScenario())
+    {
+        return S_FALSE;
+    }
+
+    // Load definition files
+//    DefManager::getInstance()->loadConfigurations();
+
     //Model-terrain
-    Terrain* pTerrain = Terrain::getInstance();
-    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
+//    Terrain* pTerrain = Terrain::getInstance();
+//    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
     //ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/map.bmp");// :P
 
     // for zemm's slow computer's local override
-    if(!Config::getInstance()->getValueAsBool("debug skip terrain generating", false))
-        pTerrain->initialize(pGenerator);
+//    if(!Config::getInstance()->getValueAsBool("debug skip terrain generating", false))
+//        pTerrain->initialize(pGenerator);
 
     // initialize asset collection
-    AssetCollection::create(pTerrain->getSize());
+//    AssetCollection::create(pTerrain->getSize());
+
     //Initialize projectile collection
-    ProjectileCollection::create();
+//    ProjectileCollection::create();
     ProjectileCollection::setCreationCallback(&UI3DObjectManager::createProjectile);
+
     //Initialize explosion collection and set callback-method
-    ExplosionCollection::create();
+//    ExplosionCollection::create();
     ExplosionCollection::setCallBack(&ParticleFactory::createExplosion);
 
     // Initialize player manager
-    PlayerManager::create(4);
+//    PlayerManager::create(4);
     setCurrentPlayer(PlayerManager::getPlayer(1));
 
     //Initialize particlefactory
@@ -140,9 +155,10 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     m_pCont2->setLayoutManager(new GridLayout(0, 2));
     m_pCont1->setTooltip("packing panel");
 
-    m_pRootContainer->addComponent(m_pCont1);
+    //m_pRootContainer->addComponent(m_pCont1);
     m_pRootContainer->addComponent(m_pCont2);
 
+/*
     //TEST
     if(!Config::getInstance()->getValueAsBool("debug skip starting units", false))
     {
@@ -179,7 +195,8 @@ HRESULT GameState::create(ID3DApplication* pApplication)
             int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
             int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
 
-            AssetFactory::createOreMine(posx, posy);
+            //AssetFactory::createOreMine(posx, posy);
+            AssetFactory::createAsset(PlayerManager::getPlayer(0), 51, posx, posy);
         }
 
         // some kind of starting base for player 1
@@ -196,13 +213,16 @@ HRESULT GameState::create(ID3DApplication* pApplication)
         AssetFactory::createBuilding(getCurrentPlayer(), 54, 30, 15);
         AssetFactory::createBuilding(getCurrentPlayer(), 52, 15, 30);
         AssetFactory::createBuilding(getCurrentPlayer(), 53, 30, 30);
-        AssetFactory::createOreMine(15, 80);
+
+        //AssetFactory::createOreMine(15, 80);
+        AssetFactory::createAsset(PlayerManager::getPlayer(0), 51, 15, 80);
 
     }
     else 
     {
         getCurrentPlayer()->getFog()->setEnabled(false);
     }
+*/
 
     //UI-Terrain
     m_pUITerrain = UITerrain::getInstance();
@@ -226,7 +246,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     }
 
     // Get the pathfinder running
-    PathFinderMaster::getInstance()->start();
+//    PathFinderMaster::getInstance()->start();
 
     // Camera
     Camera::create(pDevice);
@@ -255,11 +275,15 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 void GameState::release()
 {
     //Tell the PathFinder-thread to stop and wait for it to finish
-    if(PathFinderMaster::getInstance()->isRunning())
-    {
-        PathFinderMaster::getInstance()->stop();
-        PathFinderMaster::getInstance()->wait();
-    }
+//    if(PathFinderMaster::getInstance()->isRunning())
+//    {
+//        PathFinderMaster::getInstance()->stop();
+//        PathFinderMaster::getInstance()->wait();
+//    }
+
+    // Release the game (model-side)
+    RtsInitializer::release();
+
 
     //Release controllers
     ListNode<IUIController*>* node = m_UIControllers.headNode();
@@ -281,17 +305,17 @@ void GameState::release()
     //The children of the Object Manager root object are listeners to model-side
     //AssetCollection, and will be released via listener-interface, but they have
     //to be released first (order matters!)
-    AssetCollection::releaseAll();
+//    AssetCollection::releaseAll();
 
     //Release anything else left (effect-objects, debug-objects...)
     m_pManager->release();
 
     // release fog
-    Fog::release();
+//    Fog::release();
 
     // release player manager
-    PlayerManager::release();
-    
+//    PlayerManager::release();
+
     m_pUITerrain->release();
 }
 

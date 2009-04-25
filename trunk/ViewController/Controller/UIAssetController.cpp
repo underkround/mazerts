@@ -122,6 +122,7 @@ void UIAssetController::updateControls(const float frameTime)
 
     if(KeyboardState::keyReleased[m_KeyFirstPersonCamera])
     {
+        // disable unit camera
         if(m_pUnitCarryingCamera)
         {
             if(Camera::countStack())
@@ -133,6 +134,7 @@ void UIAssetController::updateControls(const float frameTime)
             m_UnitCamera.detach();
             m_pUnitCarryingCamera = NULL;
         }
+        // enable unit camera
         else if(!m_SelectedUIAssets.empty() && m_SelectedAssetType == UNIT)
         {
             m_pUnitCarryingCamera = (UIUnit*)m_SelectedUIAssets.peekHead();
@@ -459,6 +461,17 @@ void UIAssetController::onActionRelease(const float frameTime)
 
 void UIAssetController::handleReleasedAsset(IAsset* instance)
 {
+    // check if the released asset is the one with unit camera, if any
+    if(m_pUnitCarryingCamera && m_pUnitCarryingCamera->getUnit() == instance)
+    {
+        m_UnitCamera.detach();
+        m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
+        // clear the camera stack
+        if(Camera::countStack())
+            Camera::pop(&m_UnitCamera);
+        m_pUnitCarryingCamera = NULL;
+    }
+
     // check if we have asset selected that is to be released
     ListNode<UIAsset*>* node = m_SelectedUIAssets.headNode();
     while(node)

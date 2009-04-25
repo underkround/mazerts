@@ -10,19 +10,34 @@ using namespace std;
 
 ImageTerrainGenerator::ImageTerrainGenerator()
 {
+    m_pFilename = NULL;
     initialize(DEFAULT_FILENAME);
 }
 
-ImageTerrainGenerator::ImageTerrainGenerator(char* filename)
+ImageTerrainGenerator::ImageTerrainGenerator(const char* filename)
 {
+    m_pFilename = NULL;
     initialize(filename);
 }
 
-void ImageTerrainGenerator::initialize(char* filename)
+void ImageTerrainGenerator::initialize(const char* filename)
 {
-    m_Filename = filename;
+    //m_pFilename = filename; // no longer working since i change the param to const -z
 
-    ifstream file(m_Filename, ios::in|ios::binary|ios::beg);
+    // copy the const string into our member string
+    if(filename)
+    {
+        const int ccount = strlen(filename) + 1;
+        m_pFilename = new char[ccount];
+        if(m_pFilename)
+        {
+            m_pFilename[ccount -1] = 0;
+            ::memcpy(m_pFilename, filename, ccount);
+        }
+    }
+
+
+    ifstream file(m_pFilename, ios::in|ios::binary|ios::beg);
     if (file.is_open())
     {
         char* check = new char[2];
@@ -31,7 +46,7 @@ void ImageTerrainGenerator::initialize(char* filename)
         {
             // not a bmp file
             m_Size = DEFAULT_SIZE;
-            m_Filename = NULL;
+            m_pFilename = NULL;
         }
         else
         {
@@ -49,16 +64,16 @@ void ImageTerrainGenerator::initialize(char* filename)
     {
         // TODO: Handle error?
         m_Size = DEFAULT_SIZE;
-        m_Filename = NULL;
+        m_pFilename = NULL;
     }
 }
     
 void ImageTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData, const unsigned short terrainSize)
 {
-    if (!m_Filename) return;
+    if (!m_pFilename) return;
     char* data = new char[m_Size * m_Size];
 
-    ifstream file(m_Filename, ios::in|ios::binary|ios::beg);
+    ifstream file(m_pFilename, ios::in|ios::binary|ios::beg);
     if (file.is_open())
     {
         file.seekg(BITMAP_DATA_OFFSET, ios::beg);

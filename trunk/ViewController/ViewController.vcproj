@@ -195,6 +195,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Model\RtsInitializer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\RtsInitializer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Model\Units.ini"
 				>
 			</File>
@@ -367,6 +375,10 @@
 				</File>
 				<File
 					RelativePath="..\Model\Asset\IMovingLogic.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Asset\OreMine.h"
 					>
 				</File>
 				<File

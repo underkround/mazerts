@@ -19,6 +19,8 @@ int APIENTRY WinMain(   HINSTANCE hInstance,
     Config& c = *Config::getInstance();
     c.setFilename("../data/config.ini");
     c.readFile();
+    c.setFilename("../data/local.ini");
+    c.readFile();
     int resw    = c.getValueAsInt("screen width",  1024);
     int resh    = c.getValueAsInt("screen height",   768);
     int bpp     = c.getValueAsInt("screen bpp",  32);

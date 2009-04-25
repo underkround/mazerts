@@ -97,6 +97,17 @@ void Config::readFile(void) {
 }
 
 
+const bool Config::hasSection(const string sectionName)
+{
+    for(vector<Setting*>::iterator iter = settingData.begin(); iter != settingData.end(); ++iter) {
+        if((*iter)->section == sectionName) {
+            return true; // found value with requested section
+        }
+    }
+    return false;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////
 // Value nodes to iterate through array-settings
 
