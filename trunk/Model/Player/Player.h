@@ -10,6 +10,7 @@
 #define __PLAYER_H__
 
 #include "Fog.h"
+#include "../AI/Antin/AntinAI.h"
 
 class Player
 {
@@ -61,6 +62,8 @@ public:
 
 	inline Fog* getFog() { return m_pFog; }
 
+    void UpdateAI(float fFrametime);
+
 private:
     int         m_Id; // id of this player
     int         m_Index; // index of this player
@@ -75,6 +78,9 @@ private:
 	int			m_Ore; // amount of "money"
 
     Fog*		m_pFog; // FOG OF WAR!! This is a pointer because of initialization order.
+
+    //AI
+    AntinAI*    m_pAI;
 };
 
 #endif // __PLAYER_H__

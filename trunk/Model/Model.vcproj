@@ -241,6 +241,14 @@
 		<Filter
 			Name="AI"
 			>
+			<File
+				RelativePath=".\AI\IAI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\AI\IAI.h"
+				>
+			</File>
 			<Filter
 				Name="Antin"
 				>

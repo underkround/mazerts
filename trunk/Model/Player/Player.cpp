@@ -19,6 +19,14 @@ Player::Player(const int index)
     
     m_pFog = new Fog();
     m_pFog->setOwner(this);
+
+    m_pAI = NULL;
+
+    //HACK: make all players AI except first one
+    if(index > 0)
+    {
+        m_pAI = new AntinAI();
+    }
 }
 
 Player::~Player()
@@ -27,5 +35,18 @@ Player::~Player()
     {
         delete m_pFog;
         m_pFog = NULL;
+    }
+    if (m_pAI)
+    {
+        delete m_pAI;
+        m_pAI = NULL;
+    }
+}
+
+void Player::UpdateAI(float fFrametime)
+{
+    if(m_pAI)
+    {
+        m_pAI->Update(fFrametime);
     }
 }

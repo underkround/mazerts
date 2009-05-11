@@ -4,6 +4,7 @@
 #include "../../Constants.h"
 #include "../../Common/Config.h"
 #include "../../Common/Enums.h"
+#include "../IAI.h"
 #include <string>
 #include <vector>
 
@@ -17,7 +18,7 @@ using namespace std;
  * about this issue and want to make your own AI, if nobody does and this works ok
  * then we will refactor it's name
  */
-class AntinAI
+class AntinAI : public IAI
 {
 public:
 #pragma region constructors and structures
@@ -25,6 +26,8 @@ public:
     virtual ~AntinAI(void);
 
     void Release(void);
+
+    void Update(float fFrameTime);
 
     struct UNIT //values about units AI cares about
     {
@@ -101,6 +104,7 @@ private:
     int m_CostMod;
     int m_CountMod;
     int m_KillMod;
+    float m_fUpdatetime;
 #pragma endregion
 };
 

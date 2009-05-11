@@ -111,7 +111,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     //Model-terrain
 //    Terrain* pTerrain = Terrain::getInstance();
 //    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
-    //ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/map.bmp");// :P
+    //ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/scandinavia.bmp");// :P
 
     // for zemm's slow computer's local override
 //    if(!Config::getInstance()->getValueAsBool("debug skip terrain generating", false))
@@ -361,6 +361,9 @@ bool GameState::update(const float frameTime)
 
     // Update UIComponents
     m_pRootContainer->update(frameTime);
+
+    // Update AI
+    PlayerManager::getInstance()->update(frameTime);
 
     // update fog
     m_pCurrentPlayer->getFog()->update(frameTime);

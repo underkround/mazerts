@@ -78,7 +78,18 @@ public:
      */
     inline static const int getPlayerCount() { return getInstance()->m_PlayerCount; }
 
-private:
+    /**
+     * Run AI
+     */
+    inline static void update(float fFrametime) {
+        PlayerManager* pInstance = getInstance();
+        for (int i = 0; i < pInstance->m_PlayerCount + 1; ++i)
+        {
+            Player* p = pInstance->m_arrPlayers[i];
+            p->UpdateAI(fFrametime);
+        }
+    }
+
     /**
      * Gets the PlayerManager-instance
      * @return Pointer to PlayerManager
@@ -88,6 +99,8 @@ private:
         static PlayerManager instance;
         return &instance; 
     }
+
+private:
 
     int                 m_PlayerCount; // player count
     vector<Player*>     m_arrPlayers; // pointers to players

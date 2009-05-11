@@ -5,6 +5,7 @@ AntinAI::AntinAI()
     //m_vUnits = new vector<UNIT*>();
     //m_vBuildings = new vector<BUILDING*>();
     LoadConfigFromFile();
+    m_fUpdatetime = 0.0f;
 }
 
 AntinAI::~AntinAI() 
@@ -38,6 +39,15 @@ void AntinAI::LoadConfigFromFile(void)
     //ChooseUnitToBuild();
 }
 #pragma endregion
+
+void AntinAI::Update(float fFrameTime)
+{
+    m_fUpdatetime += fFrameTime;
+    if(m_fUpdatetime > 1.0f) {
+        m_fUpdatetime -= 1.0f;
+        //tee juttuja
+    }
+}
 
 #pragma region functions that do strategic calculations
 
