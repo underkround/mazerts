@@ -1,11 +1,14 @@
 #include "AntinAI.h"
+#include "../Asset/AssetFactory.h"
+#include "../Terrain/Terrain.h"
 
-AntinAI::AntinAI()
+AntinAI::AntinAI(Player* player)
 {
     //m_vUnits = new vector<UNIT*>();
     //m_vBuildings = new vector<BUILDING*>();
     LoadConfigFromFile();
     m_fUpdatetime = 0.0f;
+    m_pPlayer = player;
 }
 
 AntinAI::~AntinAI() 
@@ -42,10 +45,11 @@ void AntinAI::LoadConfigFromFile(void)
 
 void AntinAI::Update(float fFrameTime)
 {
+    Config & c = * Config::getInstance();
     m_fUpdatetime += fFrameTime;
     if(m_fUpdatetime > 1.0f) {
         m_fUpdatetime -= 1.0f;
-        //tee juttuja
+        AssetFactory::createBuilding(m_pPlayer, 54, rand() % (Terrain::getInstance()->getSize())-10, rand() % (Terrain::getInstance()->getSize())-10);
     }
 }
 
@@ -76,18 +80,24 @@ int AntinAI::CalculateUnitBuildValue(UNIT_TYPE unittype)
 
 int AntinAI::FindUnitCost(UNIT_TYPE unittype)
 {
+    //ei näitä pitäisi tässä konfikista lukea - muuta!
+    Config & c = * Config::getInstance();
     switch(unittype)
     {
     case UNIT_TYPE_CAR:
-        return 10;
+        return c.getValueAsInt("1", "asset construction cost ore", 10);
         break;
     case UNIT_TYPE_TANK:
+        return c.getValueAsInt("2", "asset construction cost ore", 20);
         break;
     case UNIT_TYPE_LAUNCHER:
+        return c.getValueAsInt("4", "asset construction cost ore", 30);
         break;
     case UNIT_TYPE_SUPER:
+        return c.getValueAsInt("3", "asset construction cost ore", 40);
         break;
     case UNIT_TYPE_NUKER:
+        return c.getValueAsInt("5", "asset construction cost ore", 50);
         break;
     }
     return 0;

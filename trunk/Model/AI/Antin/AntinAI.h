@@ -5,8 +5,12 @@
 #include "../../Common/Config.h"
 #include "../../Common/Enums.h"
 #include "../IAI.h"
+#include "../../Player/Player.h"
 #include <string>
 #include <vector>
+
+//circular dependency here
+class Player;
 
 using namespace std;
 
@@ -22,7 +26,7 @@ class AntinAI : public IAI
 {
 public:
 #pragma region constructors and structures
-    AntinAI(void);
+    AntinAI(Player* player);
     virtual ~AntinAI(void);
 
     void Release(void);
@@ -100,6 +104,8 @@ private:
     // ** Unit AI configuration values ** (these are set from AI config file)
     vector<UNIT*>        m_vUnits;
     vector<BUILDING*>    m_vBuildings;
+
+    Player*              m_pPlayer;
 
     int m_CostMod;
     int m_CountMod;

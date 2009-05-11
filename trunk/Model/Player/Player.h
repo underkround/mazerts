@@ -11,6 +11,8 @@
 
 #include "Fog.h"
 #include "../AI/Antin/AntinAI.h"
+//circular dependency here
+class AntinAI;
 
 class Player
 {
