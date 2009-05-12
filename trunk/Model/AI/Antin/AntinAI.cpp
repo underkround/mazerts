@@ -32,14 +32,18 @@ void AntinAI::Release(void)
 void AntinAI::LoadConfigFromFile(void)
 {
     Config & c = * Config::getInstance();
-    c.setFilename("", "AntinAI.ini");
+    c.setFilename("../Data/", "AntinAI.ini");
     c.readFile();
-    c.setFilename("", "Buildings.ini");
-    c.readFile();
-    c.setFilename("", "Units.ini");
-    c.readFile();
-    //test
-    //ChooseUnitToBuild();
+
+    //gather unit specs for simple strategic calculation access purposes
+    int units[6] = {1,2,3,4,5,6};
+    for(int i=0;i<6;++i)
+    {
+        UNIT* tmp = new UNIT();
+        tmp->strName = c.getValueAsString(convertToString(units[i]), "asset name", "unknown");
+        tmp->cost = c.getValueAsInt(convertToString(units[i]), "asset construction cost ore", 10);
+        tmp->eType = (UNIT_TYPE)units[i];
+    }
 }
 #pragma endregion
 
@@ -49,7 +53,9 @@ void AntinAI::Update(float fFrameTime)
     m_fUpdatetime += fFrameTime;
     if(m_fUpdatetime > 1.0f) {
         m_fUpdatetime -= 1.0f;
-        AssetFactory::createBuilding(m_pPlayer, 54, rand() % (Terrain::getInstance()->getSize())-10, rand() % (Terrain::getInstance()->getSize())-10);
+        AssetFactory::createBuilding(m_pPlayer, 54, 
+            (rand() % (Terrain::getInstance()->getSize())-20)+10, 
+            (rand() % (Terrain::getInstance()->getSize())-20)+10);
     }
 }
 

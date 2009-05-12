@@ -8,6 +8,7 @@
 #include "../../Player/Player.h"
 #include <string>
 #include <vector>
+#include <sstream>
 
 //circular dependency here
 class Player;
@@ -97,6 +98,22 @@ private:
      * @return how many units of UNIT_TYPE this player has
      */
     int FindUnitCount(UNIT_TYPE unittype);
+
+#pragma endregion
+
+#pragma region miscellaneous
+
+    /**
+     * converts integer to string
+     * probably should be at some common library instead of here
+     */
+    template <class T>
+    inline std::string convertToString(const T& t) {
+        std::stringstream ss;
+        ss << t;
+        return ss.str();
+    }
+
 
 #pragma endregion
 
