@@ -152,6 +152,11 @@ public:
     inline const unsigned short getChangeCounter() const { return m_ChangeCounter; }
 
     /**
+     ' Increases change counter by one
+     */
+    inline void increaseChangeCounter() { ++m_ChangeCounter; }
+
+    /**
      * Releases D3DPOOL_DEFAULT -resources
      * @return S_OK if releasing went fine, otherwise error code
      */

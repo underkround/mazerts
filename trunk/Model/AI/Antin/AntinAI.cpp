@@ -54,7 +54,7 @@ void AntinAI::Update(float fFrameTime)
     if(m_fUpdatetime > 1.0f) {
         m_fUpdatetime -= 1.0f;
         AssetFactory::createBuilding(m_pPlayer, 54, 
-            (rand() % (Terrain::getInstance()->getSize())-20)+10, 
+            (rand() % (Terrain::getInstance()->getSize())-20)+10,
             (rand() % (Terrain::getInstance()->getSize())-20)+10);
     }
 }
