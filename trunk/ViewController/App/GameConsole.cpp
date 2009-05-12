@@ -8,6 +8,7 @@ int GameConsole::m_MessageLength = 0;
 
 //*** Protected ***
 GameConsole::GameConsole(void) {
+    m_pGamestate = NULL;
 }
 
 GameConsole* GameConsole::pInstance = 0;// initialize pointer
@@ -74,8 +75,6 @@ void GameConsole::parse(void)
         for(int i=0;i<spikes;++i)
             for(int j=0;j<spikes;++j)
                 t->setTerrainHeight(i*jump, j*jump, 255);
-
-        UITerrain*ut = UITerrain::getInstance();
-        ut->increaseChangeCounter();
+        //m_pGamestate->redrawTerrain();
     }
 }

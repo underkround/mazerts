@@ -46,6 +46,8 @@ public:
 
     inline int getSize() { return CONSOLE_BUFFERLENGTH; }
 
+    inline void setGamestate(GameState* gs) { m_pGamestate = gs; }
+
 protected:
 
     GameConsole(void);
@@ -59,6 +61,7 @@ private:
     static TCHAR m_arrMessage[128];
     static int m_MessageLength;
     static GameConsole* pInstance;
+    GameState* m_pGamestate;
 };
 
 #endif // __GAMECONSOLE_H__

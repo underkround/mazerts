@@ -268,6 +268,9 @@ HRESULT GameState::create(ID3DApplication* pApplication)
 
     m_Created = true;
 
+    GameConsole & co = *GameConsole::getInstance();
+    co.setGamestate(this);
+
     return S_OK;
 }
 
@@ -569,6 +572,11 @@ void GameState::updateControls(const float frameTime)
         }
     }
 
+    if(KeyboardState::keyReleased[m_KeyTerrainRedraw])
+    {
+        redrawTerrain();
+    }
+
 #ifdef _DEBUG
     //HACK: this is a cheat key to enable/disable fog
     if(KeyboardState::keyReleased[33])
@@ -602,6 +610,7 @@ void GameState::loadConfigurations()
     c.updateInt("key toggle wireframe",             m_KeyToggleWireframe);
     c.updateInt("key terrain detail up",            m_KeyTerrainDetailUp);
     c.updateInt("key terrain detail down",          m_KeyTerrainDetailDown);
+    c.updateInt("key terrain redraw",               m_KeyTerrainRedraw);
 
     m_pRootContainer->loadConfigurations();
 
@@ -612,4 +621,14 @@ void GameState::loadConfigurations()
         node->item->loadConfigurations();
         node = node->next;
     }
+}
+
+void GameState::redrawTerrain()
+{
+        UITerrain*ut = UITerrain::getInstance();
+        PathFinderMaster* pf = PathFinderMaster::getInstance();
+        pf->stop();
+        pf->wait();
+        ut->create(m_pDevice, getCurrentPlayer());
+        pf->start();
 }

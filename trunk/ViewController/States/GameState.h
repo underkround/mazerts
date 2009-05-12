@@ -110,6 +110,11 @@ public:
      */
     inline void setCurrentPlayer(Player* pPlayer) { m_pCurrentPlayer = pPlayer; }
 
+    /**
+     * Draws UI terrain again, call this after terrain has changed
+     */
+    void redrawTerrain();
+
 private:
 
     /** 
@@ -161,6 +166,7 @@ private:
     int m_KeyToggleWireframe;
     int m_KeyTerrainDetailUp;
     int m_KeyTerrainDetailDown;
+    int m_KeyTerrainRedraw;
 
     // Root container covering the whole screen and managing components
     RootContainer*      m_pRootContainer;
