@@ -53,6 +53,7 @@ public:
      * Do not use value over 128 (indexbuffer is limited to 16 bits, and needed vertice amount has some overhead)!
      */
     static const int PATCHSIZE = 64;
+    static const int PATCHSIZEPLUSONE = 65;
 
     /**
      * Creates a new terrain mesh from Model Terrain-data
@@ -230,6 +231,11 @@ public:
     void updateFog(LPDIRECT3DDEVICE9 pDevice);
 
     inline Player* getCurrentPlayer() { return m_pCurrentPlayer; }
+
+    /**
+     * Force terrain update
+     */
+    void reCreate();
 
 private:
     

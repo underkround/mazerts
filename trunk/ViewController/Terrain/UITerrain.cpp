@@ -1218,7 +1218,6 @@ float UITerrain::calculateAverageHeightForVertex(unsigned short x, unsigned shor
     result /= (float)steps;
 
     return result * HEIGHTFACTOR;
-
 }
 
 void UITerrain::updateFog(LPDIRECT3DDEVICE9 pDevice)
@@ -1230,4 +1229,96 @@ void UITerrain::updateFog(LPDIRECT3DDEVICE9 pDevice)
         bool** fogArray = m_pCurrentPlayer->getFog()->getFogArray();
         updateColorMapTexture(fogArray);
     }
+}
+
+void UITerrain::reCreate()
+{
+    m_ChangeCounter++;
+
+    //Detail-factor, 2^m_DetailLevel (=1,2,4,8...)
+    unsigned char detail = 1 << m_DetailLevel;
+
+    //Recalculate triangle normals for new detail-level
+    calculateTriangleNormals();
+
+    //Check if using multiple buffers
+    if(m_MultiBufferRender)
+    {
+        setDetailLevelMultiBuffer();
+        return;
+    }
+
+    USHORT* pIndices = NULL;
+    
+    //Index-array index
+    int ind = 0;
+    //Vertice index
+    int vIndex = 0;
+
+    int loops = (PATCHSIZE / detail);
+
+    //indices dont't change here right?
+    //Fill index-data  (draw every "detail"th vertex as triangle corner, rowhops = (PATCHSIZE+1)*detail)
+    /*m_pIB->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD);
+    {
+        for(int i = 0; i < loops; ++i)
+        {
+            vIndex = i * ((PATCHSIZE + 1) * detail);
+
+            for(int j = 0; j < loops; ++j)
+            {
+                pIndices[ind++] = vIndex;
+                pIndices[ind++] = vIndex + (PATCHSIZE + 1) * detail;
+                pIndices[ind++] = vIndex + detail;//1;
+                
+                pIndices[ind++] = vIndex + detail;//1;  //Second triangle
+                pIndices[ind++] = vIndex + (PATCHSIZE + 1) * detail;
+                pIndices[ind++] = vIndex + (PATCHSIZE + 1) * detail + detail;
+                vIndex += detail;
+            }
+        }
+    }
+    m_pIB->Unlock();*/
+
+
+
+    //Single patch is PATCHSIZE * PATCHSIZE squares, detail^2 squares averaged to single quad,  2 triangles per quad
+    /**
+    +-+-+       +----+
+    |\|\|       | \  |
+    +-+-+  =>   |  \ |
+    |\|\|       |   \|
+    +-+-+       +----+
+    */
+    m_NumPrimitives = (PATCHSIZE * PATCHSIZE * 2) / (detail * detail);
+
+    VERTEX2UV* pVertices = NULL;
+
+    //Location within vertexbuffer
+    int loc = 0;
+
+    //Fill vertex-data
+    m_pVB->Lock(0, 0, (void**)&pVertices, NULL);
+    {
+        for(int y = 0; y < m_Patches; ++y)
+        {
+            for(int x = 0; x < m_Patches; ++x)
+            {
+                loc = (y * (((PATCHSIZEPLUSONE) * (PATCHSIZEPLUSONE)) * m_Patches)) + (x * ((PATCHSIZEPLUSONE) * (PATCHSIZEPLUSONE)));
+                for(int i = 0; i < ((PATCHSIZEPLUSONE) * (PATCHSIZEPLUSONE)); i += detail)
+                {                   
+                    pVertices[loc].z = -calculateAverageHeightForVertex((int)pVertices[loc].x, (int)pVertices[loc].y);
+                    
+                    //Calculate normals
+                    D3DXVECTOR3 normal = getNormalAt(pVertices[loc].x, pVertices[loc].y, detail);
+
+                    pVertices[loc].nx = normal.x;
+                    pVertices[loc].ny = normal.y;
+                    pVertices[loc].nz = normal.z;
+                    loc += detail;
+                }
+            }
+        }        
+    }
+    m_pVB->Unlock();
 }

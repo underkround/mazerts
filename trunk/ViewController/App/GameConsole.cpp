@@ -75,6 +75,14 @@ void GameConsole::parse(void)
         for(int i=0;i<spikes;++i)
             for(int j=0;j<spikes;++j)
                 t->setTerrainHeight(i*jump, j*jump, 255);
-        //m_pGamestate->redrawTerrain();
+        UITerrain*ut = UITerrain::getInstance();
+        ut->reCreate();
+    }
+    if(!_tcscmp(m_arrMessage, _T("flat")))
+    {
+        Terrain*t = Terrain::getInstance();
+        t->flattenMap(Terrain::DEFAULT_FLATHEIGHT);
+        UITerrain*ut = UITerrain::getInstance();
+        ut->reCreate();
     }
 }

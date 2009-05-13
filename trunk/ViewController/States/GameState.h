@@ -111,7 +111,7 @@ public:
     inline void setCurrentPlayer(Player* pPlayer) { m_pCurrentPlayer = pPlayer; }
 
     /**
-     * Draws UI terrain again, call this after terrain has changed
+     * Regenerates UI terrain
      */
     void redrawTerrain();
 
