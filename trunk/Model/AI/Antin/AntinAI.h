@@ -78,11 +78,6 @@ private:
 
 #pragma region functions that gather data from model
     /**
-     * @return does this player have science building built
-     */
-    bool HaveScienceBuilding(void);
-
-    /**
      * @param unittype type of unit
      * @return cost to build this type of unit
      */
@@ -95,9 +90,19 @@ private:
     int FindUnitKillCount(UNIT_TYPE unittype);
 
     /**
+     * @return does this player have specified type of building built
+     */
+    bool HaveBuilding(BUILDING_TYPE buildingtype);
+
+    /**
      * @return how many units of UNIT_TYPE this player has
      */
     int FindUnitCount(UNIT_TYPE unittype);
+
+    /**
+     * @return how many buildings of BUILDING_TYPE this player has
+     */
+    int FindBuildingCount(BUILDING_TYPE buildingtype);
 
 #pragma endregion
 

@@ -1,6 +1,10 @@
 #include "AntinAI.h"
+#include "../Common/DoubleLinkedList.h"
 #include "../Asset/AssetFactory.h"
+#include "../Asset/AssetCollection.h"
 #include "../Terrain/Terrain.h"
+#include "../Asset/Unit.h"
+#include "../Asset/Building.h"
 
 AntinAI::AntinAI(Player* player)
 {
@@ -57,6 +61,10 @@ void AntinAI::Update(float fFrameTime)
             (rand() % (Terrain::getInstance()->getSize())-20)+10,
             (rand() % (Terrain::getInstance()->getSize())-20)+10);*/
     }
+    if(HaveBuilding(BUILDING_TYPE_PLANT))
+    {
+        //int i = 0;
+    }
 }
 
 #pragma region functions that do strategic calculations
@@ -109,17 +117,62 @@ int AntinAI::FindUnitCost(UNIT_TYPE unittype)
     return 0;
 }
 
-bool AntinAI::HaveScienceBuilding(void)
+bool AntinAI::HaveBuilding(BUILDING_TYPE buildingtype)
 {
-    //TODO: go and find out
+    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
+    ListNode<Building*>* pNode = buildings->headNode();
+    while(pNode)
+    {
+        if(pNode->item->getOwner() == m_pPlayer)
+        {
+            if(pNode->item->getTypeTag() == buildingtype)
+            {
+                return true;
+            }
+        }
+        pNode->next;
+    }
     return false;
 }
 
 int AntinAI::FindUnitCount(UNIT_TYPE unittype)
 {
-    //TODO: go and find out
-    return 0;
+    int count = 0;
+    DoubleLinkedList<Unit*>* units = AssetCollection::getAllUnits();
+    ListNode<Unit*>* pNode = units->headNode();
+    while(pNode)
+    {
+        if(pNode->item->getOwner() == m_pPlayer)
+        {
+            if(pNode->item->getTypeTag() == unittype)
+            {
+                ++count;
+            }
+        }
+        pNode->next;
+    }
+    return count;
 }
+
+int AntinAI::FindBuildingCount(BUILDING_TYPE buildingtype)
+{
+    int count = 0;
+    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
+    ListNode<Building*>* pNode = buildings->headNode();
+    while(pNode)
+    {
+        if(pNode->item->getOwner() == m_pPlayer)
+        {
+            if(pNode->item->getTypeTag() == buildingtype)
+            {
+                ++count;
+            }
+        }
+        pNode->next;
+    }
+    return count;
+}
+
 
 int AntinAI::FindUnitKillCount(UNIT_TYPE unittype)
 {
