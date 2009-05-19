@@ -128,8 +128,9 @@ public:
     static void unregisterListener(IAssetCollectionListener* listener);
 
 // ===== DEBUG
-
+#ifdef _DEBUG
     static void debugPrintCollection();
+#endif
 
 // ===== UPDATES
 

@@ -86,7 +86,7 @@ static const float g_pUnitBarrelLength[NUMBER_OF_UNITS_WITH_MESHES] =
 };
 
 
-static const int NUMBER_OF_BUILDINGS_WITH_MESHES = 4;
+static const int NUMBER_OF_BUILDINGS_WITH_MESHES = 8;
 
 /**
  * Contains filenames for different meshes, 3 for every building (leave unused parts as _T("") )
@@ -108,7 +108,35 @@ static const TCHAR g_ppBuildingMeshNames[NUMBER_OF_BUILDINGS_WITH_MESHES][3][256
 
     _T("../data/mesh/plant.x"),
     _T(""),                                                
+    _T(""),
+
+    _T("../data/mesh/deepmine.x"),
+    _T(""),                                                
+    _T(""),
+
+    _T("../data/mesh/tutkatalo.x"),
+    _T("../data/mesh/tutkalautanen.x"),                                                
+    _T(""),
+
+    _T("../data/mesh/sciencebuilding.x"),
+    _T(""),                                                
+    _T(""),
+
+    _T("../data/mesh/nukesilo.x"),
+    _T(""),                                                
     _T("")
+
+//    BUILDING_TYPE_MINE = 51,
+//    BUILDING_TYPE_FACTORY = 52,
+//    BUILDING_TYPE_YARD = 53,
+//    BUILDING_TYPE_PLANT = 54,
+//    BUILDING_TYPE_BORE = 55,
+//    BUILDING_TYPE_RADAR = 56,
+//    BUILDING_TYPE_SCIENCE = 57,
+//    BUILDING_TYPE_SILO = 58,
+//    BUILDING_TYPE_GUNTOWER = 59,
+//    BUILDING_TYPE_CANTOWER = 60,
+//    BUILDING_TYPE_END
 
 };
 

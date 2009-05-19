@@ -41,13 +41,13 @@ public:
         string                    strWeaponName;
         bool                    bOffensive; //don't go attacking with weaponless units
         int                        cost;
-        //here probably should be pointer to actual unit
+
     };
     struct BUILDING
     {
         string                    strName;
         AntinAI::BUILDING_TYPE    eType;
-        int                        cost;
+        int                       cost;
         //here probably should be pointer to actual building
     };
 
@@ -65,6 +65,16 @@ private:
      */
     void HammerTime(void);
 
+    /**
+     * find a nice spot in a map for a new building and start building it
+     */
+    void BuildBuilding(BUILDING_TYPE building);
+
+    /**
+     * queue some unit in factory
+     */
+    void BuildUnit(void);
+
 #pragma endregion
 
 #pragma region functions that do strategic calculations
@@ -74,9 +84,19 @@ private:
     UNIT_TYPE ChooseUnitToBuild(void);
 
     int CalculateUnitBuildValue(UNIT_TYPE unittype);
+
+    /**
+     * decides whether more units should be constructed now
+     */
+    bool NeedMoreUnits();
 #pragma endregion
 
 #pragma region functions that gather data from model
+    /**
+     * @return cost to build this type of building
+     */
+    int FindUnitCost(BUILDING_TYPE buildingtype);
+
     /**
      * @param unittype type of unit
      * @return cost to build this type of unit
@@ -104,6 +124,26 @@ private:
      */
     int FindBuildingCount(BUILDING_TYPE buildingtype);
 
+    /**
+     * counts total amount of different buildings
+     */
+    int CountMyBuildings();
+
+    /**
+     * counts total amount of different units
+     */
+    int CountMyUnits();
+
+    /**
+     * @return can current energy infrastructure afford new building of specified type
+     */
+    bool CanSupport(BUILDING_TYPE buildingtype);
+
+    /**
+     * @return does AI have enough ore to build a new building of specified type
+     */
+    bool CanIAffordToBuild(BUILDING_TYPE buildingtype);
+
 #pragma endregion
 
 #pragma region miscellaneous
@@ -121,6 +161,28 @@ private:
 
 
 #pragma endregion
+
+    /*
+#pragma region configurable values
+
+    int unitCostCar;
+    int unitCostTank;
+    int unitCostLauncher;
+    int unitCostSuper;
+    int unitCostNuker;
+
+    int buildCostFactory;
+    int buildCostYard;
+    int buildCostPlant;
+    int buildCostBore;
+
+    int buildCostRadar;
+    int buildCostScience;
+    int buildCostSilo;
+    int buildCostGuntower;
+    int buildCostCantower;
+
+#pragma endregion*/
 
 #pragma region members
     // ** Unit AI configuration values ** (these are set from AI config file)

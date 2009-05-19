@@ -517,6 +517,8 @@ void AssetCollection::updatePosition(IAsset* a, const unsigned short oldPosX, co
 
 // ===== DEBUG
 
+#ifdef _DEBUG
+
 #include <iostream>
 void AssetCollection::debugPrintCollection()
 {
@@ -537,3 +539,5 @@ void AssetCollection::debugPrintCollection()
     }
     std::cout << "</AssetCollectionContent>\n";
 }
+
+#endif
