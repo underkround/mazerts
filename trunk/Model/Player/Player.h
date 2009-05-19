@@ -11,8 +11,10 @@
 
 #include "Fog.h"
 #include "../AI/Lame/LameAI.h"
-//circular dependency here
+#include "../AI/Lame/CombatAI.h"
+//circular dependencies here
 class LameAI;
+class CombatAI;
 
 class Player
 {
@@ -83,6 +85,7 @@ private:
 
     //AI
     LameAI*    m_pAI;
+    CombatAI*  m_pUnitAI;
 };
 
 #endif // __PLAYER_H__

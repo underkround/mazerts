@@ -27,6 +27,10 @@ Player::Player(const int index)
     {
         m_pAI = new LameAI(this);
     }
+    if(index > 1)
+    {
+        m_pUnitAI = new CombatAI(this);
+    }
 }
 
 Player::~Player()
@@ -41,6 +45,11 @@ Player::~Player()
         delete m_pAI;
         m_pAI = NULL;
     }
+    if (m_pUnitAI)
+    {
+        delete m_pUnitAI;
+        m_pUnitAI = NULL;
+    }
 }
 
 void Player::UpdateAI(float fFrametime)
@@ -48,5 +57,9 @@ void Player::UpdateAI(float fFrametime)
     if(m_pAI)
     {
         m_pAI->Update(fFrametime);
+    }
+    if(m_pUnitAI)
+    {
+        m_pUnitAI->Update(fFrametime);
     }
 }
