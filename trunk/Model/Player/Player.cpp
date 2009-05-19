@@ -21,6 +21,7 @@ Player::Player(const int index)
     m_pFog->setOwner(this);
 
     m_pAI = NULL;
+    m_pUnitAI = NULL;
 
     //HACK: make all players AI except first one
     if(index > 1)

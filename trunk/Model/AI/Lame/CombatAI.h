@@ -12,7 +12,9 @@ public:
 
     void Release(void);
 
+    void EvasiveManeuver();
+
 private:
-    Player*             m_pPlayer;
-    float               m_fUpdatetime;
+    Player*     m_pPlayer;
+    float       m_fUpdatetime;
 };
