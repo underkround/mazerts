@@ -10,9 +10,9 @@
 #define __PLAYER_H__
 
 #include "Fog.h"
-#include "../AI/Antin/AntinAI.h"
+#include "../AI/Lame/LameAI.h"
 //circular dependency here
-class AntinAI;
+class LameAI;
 
 class Player
 {
@@ -82,7 +82,7 @@ private:
     Fog*		m_pFog; // FOG OF WAR!! This is a pointer because of initialization order.
 
     //AI
-    AntinAI*    m_pAI;
+    LameAI*    m_pAI;
 };
 
 #endif // __PLAYER_H__

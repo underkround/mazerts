@@ -630,14 +630,22 @@
 					>
 				</File>
 				<Filter
-					Name="Antin"
+					Name="LameAI"
 					>
 					<File
-						RelativePath="..\Model\AI\Antin\AntinAI.cpp"
+						RelativePath="..\Model\AI\Lame\CombatAI.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\Model\AI\Antin\AntinAI.h"
+						RelativePath="..\Model\AI\Lame\CombatAI.h"
+						>
+					</File>
+					<File
+						RelativePath="..\Model\AI\Lame\LameAI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\Model\AI\Lame\LameAI.h"
 						>
 					</File>
 				</Filter>

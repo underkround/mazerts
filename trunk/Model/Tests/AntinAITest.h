@@ -1,7 +1,7 @@
-#include "../AI/Antin/AntinAI.h"
+#include "../AI/Antin/LameAI.h"
 #include <assert.h>
 
-void testAntinAI() {
-    AntinAI* ai = new AntinAI();
+void testLameAI() {
+    LameAI* ai = new LameAI();
     delete ai; // PLEASE CLEAN UP! Your mother does not work here.
 }

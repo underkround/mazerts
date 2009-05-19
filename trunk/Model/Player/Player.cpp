@@ -25,7 +25,7 @@ Player::Player(const int index)
     //HACK: make all players AI except first one
     if(index > 1)
     {
-        m_pAI = new AntinAI(this);
+        m_pAI = new LameAI(this);
     }
 }
 
