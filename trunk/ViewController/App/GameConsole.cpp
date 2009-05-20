@@ -1,6 +1,9 @@
 #include "GameConsole.h"
 #include "../Terrain/Terrain.h"
 #include "../Terrain/UITerrain.h"
+#include "../Player/Player.h"
+#include "../Player/PlayerManager.h"
+#include "../AI/Lame/LameAI.h"
 
 //it seems these need to be redeclared here, god knows why (and devil won't tell)
 TCHAR GameConsole::m_arrMessage[128];
@@ -58,7 +61,7 @@ void GameConsole::clear(void)
 
 void GameConsole::parse(void)
 {
-    if(!_tcscmp(m_arrMessage, _T("testi")))
+    if(!_tcscmp(m_arrMessage, _T("testi"))) //display test message
     {
         ::MessageBox(NULL, _T("testi"), _T("testi"), NULL);
     }
@@ -66,7 +69,7 @@ void GameConsole::parse(void)
     {
         //pGamestate->getCurrentPlayer()->getFog()->setEnabled(false);
     }
-    if(!_tcscmp(m_arrMessage, _T("spikes")))
+    if(!_tcscmp(m_arrMessage, _T("spikes"))) //make uniform spikes to terrain
     {
 
         Terrain*t = Terrain::getInstance();
@@ -78,11 +81,26 @@ void GameConsole::parse(void)
         UITerrain*ut = UITerrain::getInstance();
         ut->reCreate();
     }
-    if(!_tcscmp(m_arrMessage, _T("flat")))
+    if(!_tcscmp(m_arrMessage, _T("flat"))) //flatten terrain
     {
         Terrain*t = Terrain::getInstance();
         t->flattenMap(Terrain::DEFAULT_FLATHEIGHT);
         UITerrain*ut = UITerrain::getInstance();
         ut->reCreate();
     }
+    if(!_tcscmp(m_arrMessage, _T("idkfa"))) //make everyone rich
+    {
+        for(int i=1;i<PlayerManager::getPlayerCount();++i)
+        {
+            PlayerManager::getInstance()->getPlayer(i)->setOre(100000);
+        }
+    }
+    if(!_tcscmp(m_arrMessage, _T("energy"))) //free power for everyone
+    {
+        for(int i=1;i<PlayerManager::getPlayerCount();++i)
+        {
+            PlayerManager::getInstance()->getPlayer(i)->setEnergyProduced(1000);
+        }
+    }
+
 }

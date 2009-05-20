@@ -57,6 +57,7 @@ public:
 
 	inline const int getOre() { return m_Ore; }
 	inline void setOre(const int amount) { m_Ore = amount; }
+    inline void modifyOre(const int amount) { m_Ore += amount; }
 
 	inline const int getEnergyProduced() { return m_EnergyProduced; }
 	inline void setEnergyProduced(const int amount) { m_EnergyProduced = amount; }

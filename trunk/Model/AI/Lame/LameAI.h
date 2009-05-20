@@ -41,6 +41,7 @@ public:
         string                    strWeaponName;
         bool                    bOffensive; //don't go attacking with weaponless units
         int                        cost;
+        bool                    bAdvanced;
 
     };
     struct BUILDING
@@ -73,7 +74,7 @@ private:
     /**
      * queue some unit in factory
      */
-    void BuildUnit(void);
+    void BuildUnit(UNIT_TYPE unittype);
 
 #pragma endregion
 
@@ -89,13 +90,19 @@ private:
      * decides whether more units should be constructed now
      */
     bool NeedMoreUnits();
+
+    /**
+     * decides whether more defensive structures should be constructed now
+     */
+    bool NeedMoreDefensiveStructures();
+
 #pragma endregion
 
 #pragma region functions that gather data from model
     /**
      * @return cost to build this type of building
      */
-    int FindUnitCost(BUILDING_TYPE buildingtype);
+    int FindBuildingCost(BUILDING_TYPE buildingtype);
 
     /**
      * @param unittype type of unit
@@ -159,7 +166,6 @@ private:
         return ss.str();
     }
 
-
 #pragma endregion
 
 #pragma region members
@@ -172,7 +178,9 @@ private:
     int m_CostMod;
     int m_CountMod;
     int m_KillMod;
+    float m_UnitRatio;
     float m_fUpdatetime;
+
 #pragma endregion
 };
 

@@ -48,6 +48,8 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, sho
 
 Building* AssetFactory::createBuilding(Player* owner, int buildingType, short positionX, short positionY)
 {
+    //owner->modifyOre(-b->getCost()); //where actually should the player be charged for purchase?
+
     // TODO: What to do if there's already unit / building?
     DefManager* dm = DefManager::getInstance();
     AssetDef* def = dm->getAssetDef(buildingType);

@@ -7,6 +7,8 @@
 #include "../Asset/Building.h"
 
 #define AI_UPDATE_INTERVAL 1.0f
+#define AI_UNIT_LIMIT 100
+#define AI_BUILDING_LIMIT 16
 
 LameAI::LameAI(Player* player)
 {
@@ -44,7 +46,7 @@ void LameAI::Release(void)
 void LameAI::LoadConfigFromFile(void)
 {
     Config & c = * Config::getInstance();
-    c.setFilename("../Data/", "LameAI.ini");
+    c.setFilename("../Data/defs/", "LameAI.ini");
     c.readFile();
 
     //gather unit specs for simple strategic calculation access purposes
@@ -55,6 +57,8 @@ void LameAI::LoadConfigFromFile(void)
         tmp->strName = c.getValueAsString(convertToString(units[i]), "asset name", "unknown");
         tmp->cost = c.getValueAsInt(convertToString(units[i]), "asset construction cost ore", 10);
         tmp->eType = (UNIT_TYPE)units[i];
+        tmp->bOffensive = (c.getValueAsInt(convertToString(units[i]), "asset weapon tag", 0) > 0) ? true : false;
+        tmp->bAdvanced = c.getValueAsBool(convertToString(units[i]), "asset advanced", false);
         m_vUnits.push_back(tmp);
     }
     int buildings[9] = {52, 53, 54, 55, 56,
@@ -67,6 +71,12 @@ void LameAI::LoadConfigFromFile(void)
         tmp->eType = (BUILDING_TYPE)buildings[i];
         m_vBuildings.push_back(tmp);
     }
+
+    c.updateFloat("AAI", "unit ratio", m_UnitRatio);
+    c.updateInt("AAI", "cost mod", m_CostMod);
+    c.updateInt("AAI", "count mod", m_CountMod);
+    c.updateInt("AAI", "kill mod", m_KillMod);
+
 
 }
 #pragma endregion
@@ -85,11 +95,25 @@ void LameAI::Update(float fFrameTime)
 UNIT_TYPE LameAI::ChooseUnitToBuild(void)
 {
     UNIT_TYPE out = UNIT_TYPE_CAR;
-    int value = 0;
-    int i;
-    for(i=0;i<UNIT_TYPE_END;++i)
+    float value = 0.0f;
+    unsigned int i;
+    for(i=0;i<m_vUnits.size();++i)
     {
-        //
+        float cost = (float)m_vUnits[i]->cost / m_CostMod;
+        float total = (float)FindUnitCount(m_vUnits[i]->eType) / m_CountMod;
+        float kills = (float)FindUnitKillCount(m_vUnits[i]->eType) * m_KillMod;
+        float calc = kills / (cost*total);
+        if( calc > value && m_vUnits[i]->bOffensive )
+        {
+            if(!m_vUnits[i]->bAdvanced)
+            {
+                value = calc;
+                out = m_vUnits[i]->eType;
+            } else if(HaveBuilding(BUILDING_TYPE_SCIENCE)) {
+                value = calc;
+                out = m_vUnits[i]->eType;
+            }
+        }
     }
     return out;
 }
@@ -101,13 +125,28 @@ int LameAI::CalculateUnitBuildValue(UNIT_TYPE unittype)
     return cost;
 }
 
+bool LameAI::NeedMoreUnits()
+{
+    float unitcount = (float)CountMyUnits();
+    float buildingcount = (float)CountMyBuildings();
+    if( (unitcount * m_UnitRatio / buildingcount) < 1.0f )
+        return true; //I need more units!
+    else
+        return false; //enough units for now
+}
+
+bool LameAI::NeedMoreDefensiveStructures()
+{
+    //let's not need these until they have been actually implemented
+    return false;
+}
+
 #pragma endregion
 
 #pragma region functions that gather data from model
 
 int LameAI::FindUnitCost(UNIT_TYPE unittype)
 {
-    //ei näitä pitäisi tässä konfikista lukea - muuta!
     for(unsigned int i=0;i<m_vUnits.size();++i)
     {
         if(m_vUnits[i]->eType == unittype)
@@ -116,38 +155,12 @@ int LameAI::FindUnitCost(UNIT_TYPE unittype)
     return 0;
 }
 
-int LameAI::FindUnitCost(BUILDING_TYPE buildingtype)
+int LameAI::FindBuildingCost(BUILDING_TYPE buildingtype)
 {
-    Config & c = * Config::getInstance();
-    switch(buildingtype)
+    for(unsigned int i=0;i<m_vBuildings.size();++i)
     {
-    case BUILDING_TYPE_FACTORY: //war factory
-        return c.getValueAsInt("52", "asset construction cost ore", 250);
-        break;
-    case BUILDING_TYPE_YARD: //resource yard
-        return c.getValueAsInt("53", "asset construction cost ore", 200);
-        break;
-    case BUILDING_TYPE_PLANT: //power plant
-        return c.getValueAsInt("54", "asset construction cost ore", 80);
-        break;
-    case BUILDING_TYPE_BORE: //deep bore mine
-        return c.getValueAsInt("55", "asset construction cost ore", 400);
-        break;
-    case BUILDING_TYPE_RADAR: //radar building
-        return c.getValueAsInt("56", "asset construction cost ore", 100);
-        break;
-    case BUILDING_TYPE_SCIENCE: //science building
-        return c.getValueAsInt("57", "asset construction cost ore", 400);
-        break;
-    case BUILDING_TYPE_SILO: //nuke silo
-        return c.getValueAsInt("58", "asset construction cost ore", 1500);
-        break;
-    case BUILDING_TYPE_GUNTOWER: //gun tower
-        return c.getValueAsInt("59", "asset construction cost ore", 200);
-        break;
-    case BUILDING_TYPE_CANTOWER: //cannon tower
-        return c.getValueAsInt("60", "asset construction cost ore", 300);
-        break;
+        if(m_vBuildings[i]->eType == buildingtype)
+            return m_vBuildings[i]->cost;
     }
     return 0;
 }
@@ -212,7 +225,7 @@ int LameAI::FindBuildingCount(BUILDING_TYPE buildingtype)
 int LameAI::FindUnitKillCount(UNIT_TYPE unittype)
 {
     //TODO: go and find out
-    return 0;
+    return 10;
 }
 
 bool LameAI::CanSupport(BUILDING_TYPE buildingtype)
@@ -230,7 +243,14 @@ bool LameAI::CanSupport(BUILDING_TYPE buildingtype)
 
 bool LameAI::CanIAffordToBuild(BUILDING_TYPE buildingtype)
 {
-    return false;
+    int cost = 0;
+    for(unsigned int i=0;i<m_vBuildings.size();++i)
+    {
+        if(m_vBuildings[i]->eType == buildingtype)
+            cost = m_vBuildings[i]->cost;
+    }
+    if(m_pPlayer->getOre() > cost) return true;
+    else return false;
 }
 
 int LameAI::CountMyBuildings()
@@ -276,57 +296,101 @@ int LameAI::CountMyUnits()
 
 void LameAI::HammerTime(void)
 {
-    /*AssetFactory::createBuilding(m_pPlayer, 54, 
-    (rand() % (Terrain::getInstance()->getSize())-20)+10,
-    (rand() % (Terrain::getInstance()->getSize())-20)+10);*/
-    if(!HaveBuilding(BUILDING_TYPE_FACTORY))
-    {
-        BuildBuilding(BUILDING_TYPE_FACTORY);
-    }
-    if(!HaveBuilding(BUILDING_TYPE_YARD))
+    if( !HaveBuilding(BUILDING_TYPE_YARD) )
     {
         BuildBuilding(BUILDING_TYPE_YARD);
     }
-    if(!HaveBuilding(BUILDING_TYPE_PLANT))
+    else 
     {
-        BuildBuilding(BUILDING_TYPE_PLANT);
-    }
-    if(!HaveBuilding(BUILDING_TYPE_SCIENCE))
-    {
-        BuildBuilding(BUILDING_TYPE_SCIENCE);
-    }
-    if(!HaveBuilding(BUILDING_TYPE_RADAR))
-    {
-        BuildBuilding(BUILDING_TYPE_RADAR);
-    }
-    if(!HaveBuilding(BUILDING_TYPE_BORE))
-    {
-        BuildBuilding(BUILDING_TYPE_BORE);
-    }
-    if(!HaveBuilding(BUILDING_TYPE_SILO))
-    {
-        BuildBuilding(BUILDING_TYPE_SILO);
-    }
-    if(!HaveBuilding(BUILDING_TYPE_GUNTOWER))
-    {
-        BuildBuilding(BUILDING_TYPE_GUNTOWER);
-    }
-    if(!HaveBuilding(BUILDING_TYPE_CANTOWER))
-    {
-        BuildBuilding(BUILDING_TYPE_CANTOWER);
+        if( !HaveBuilding(BUILDING_TYPE_FACTORY) )
+        {
+            BuildBuilding(BUILDING_TYPE_FACTORY);
+        }
+        else 
+        {
+            if(NeedMoreUnits())
+            {
+                BuildUnit(ChooseUnitToBuild());
+            }
+            else {
+                if( !HaveBuilding(BUILDING_TYPE_SCIENCE) )
+                {
+                    if( CanSupport(BUILDING_TYPE_SCIENCE) ) {
+                        BuildBuilding(BUILDING_TYPE_SCIENCE);
+                    } else {
+                        BuildBuilding(BUILDING_TYPE_PLANT);
+                    }
+                }
+                else
+                {
+                    if( !NeedMoreDefensiveStructures() )
+                    {
+                        if( !HaveBuilding(BUILDING_TYPE_RADAR) )
+                        {
+                            if( CanSupport(BUILDING_TYPE_RADAR) ) {
+                                BuildBuilding(BUILDING_TYPE_RADAR);
+                            } else {
+                                BuildBuilding(BUILDING_TYPE_PLANT);
+                            }
+                        }
+                        else 
+                        {
+                            if(!HaveBuilding(BUILDING_TYPE_SILO))
+                            {
+                                if( CanSupport(BUILDING_TYPE_SILO) ) {
+                                    BuildBuilding(BUILDING_TYPE_SILO);
+                                } else {
+                                    BuildBuilding(BUILDING_TYPE_PLANT);
+                                }
+                            }
+                            else 
+                            {
+                                if( CanSupport(BUILDING_TYPE_BORE) ) {
+                                    BuildBuilding(BUILDING_TYPE_BORE);
+                                } else {
+                                    BuildBuilding(BUILDING_TYPE_PLANT);
+                                }
+                            }
+                        }
+                    }
+                    else 
+                    {
+                        //build base defences!
+                        /*
+                            if(!HaveBuilding(BUILDING_TYPE_GUNTOWER))
+                            {
+                                BuildBuilding(BUILDING_TYPE_GUNTOWER);
+                            }
+                            if(!HaveBuilding(BUILDING_TYPE_CANTOWER))
+                            {
+                                BuildBuilding(BUILDING_TYPE_CANTOWER);
+                            }
+                        */
+                    }
+                }
+            }
+        }
     }
 }
 
 void LameAI::BuildBuilding(BUILDING_TYPE building)
 {
-    AssetFactory::createBuilding(m_pPlayer, building, 100+CountMyBuildings()*15, 200);
+    if(CountMyBuildings() < AI_BUILDING_LIMIT)
+    {
+        if(CanIAffordToBuild(building)) AssetFactory::createBuilding(m_pPlayer, building, 100+CountMyBuildings()*15, 40*m_pPlayer->getId()+20 );
+    }
 }
 
-void LameAI::BuildUnit(void)
+void LameAI::BuildUnit(UNIT_TYPE unittype)
 {
     //find my factory
     //find out what unit to build (implement ChooseUnitToBuild(void))
     //order factory to build that unit
+
+    if(CountMyUnits() < AI_UNIT_LIMIT)
+    {
+        AssetFactory::createUnit(m_pPlayer, unittype, 100+CountMyUnits()*5, 40*m_pPlayer->getId()+10 );
+    }
 }
 
 #pragma endregion
