@@ -76,8 +76,6 @@ void LameAI::LoadConfigFromFile(void)
     c.updateInt("AAI", "cost mod", m_CostMod);
     c.updateInt("AAI", "count mod", m_CountMod);
     c.updateInt("AAI", "kill mod", m_KillMod);
-
-
 }
 #pragma endregion
 

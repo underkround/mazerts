@@ -61,15 +61,25 @@ void GameConsole::clear(void)
 
 void GameConsole::parse(void)
 {
-    if(!_tcscmp(m_arrMessage, _T("testi"))) //display test message
+    if(!_tcscmp(m_arrMessage, _T("help")))
     {
-        ::MessageBox(NULL, _T("testi"), _T("testi"), NULL);
+        ::MessageBox(NULL,
+                     _T("\n \
+help \t display this help\n \
+spikes \t make uniform spikes to terrain\n \
+flat \t flatten terrain\n \
+idkfa \t give all players a lot of ore\n \
+energy \t give all players some power\n \
+poor \t everyone loses all resources\n \
+\n"),
+                     _T("game console commands"),
+                     NULL);
     }
     if(!_tcscmp(m_arrMessage, _T("fog")))
     {
         //pGamestate->getCurrentPlayer()->getFog()->setEnabled(false);
     }
-    if(!_tcscmp(m_arrMessage, _T("spikes"))) //make uniform spikes to terrain
+    if(!_tcscmp(m_arrMessage, _T("spikes")))
     {
 
         Terrain*t = Terrain::getInstance();
@@ -81,25 +91,33 @@ void GameConsole::parse(void)
         UITerrain*ut = UITerrain::getInstance();
         ut->reCreate();
     }
-    if(!_tcscmp(m_arrMessage, _T("flat"))) //flatten terrain
+    if(!_tcscmp(m_arrMessage, _T("flat")))
     {
         Terrain*t = Terrain::getInstance();
         t->flattenMap(Terrain::DEFAULT_FLATHEIGHT);
         UITerrain*ut = UITerrain::getInstance();
         ut->reCreate();
     }
-    if(!_tcscmp(m_arrMessage, _T("idkfa"))) //make everyone rich
+    if(!_tcscmp(m_arrMessage, _T("idkfa")))
     {
         for(int i=1;i<PlayerManager::getPlayerCount();++i)
         {
             PlayerManager::getInstance()->getPlayer(i)->setOre(100000);
         }
     }
-    if(!_tcscmp(m_arrMessage, _T("energy"))) //free power for everyone
+    if(!_tcscmp(m_arrMessage, _T("energy")))
     {
         for(int i=1;i<PlayerManager::getPlayerCount();++i)
         {
             PlayerManager::getInstance()->getPlayer(i)->setEnergyProduced(1000);
+        }
+    }
+    if(!_tcscmp(m_arrMessage, _T("poor")))
+    {
+        for(int i=1;i<PlayerManager::getPlayerCount();++i)
+        {
+            PlayerManager::getInstance()->getPlayer(i)->setEnergyProduced(0);
+            PlayerManager::getInstance()->getPlayer(i)->setOre(0);
         }
     }
 
