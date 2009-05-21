@@ -7,6 +7,7 @@ using namespace std;
 
 void testAssetFactory()
 {
+#ifdef _DEBUG
     cout << " *** TESTING ASSET FACTORY ***\n";
     AssetCollection::debugPrintCollection();
 
@@ -35,4 +36,5 @@ void testAssetFactory()
 
     cout << " - total of " << IAsset::getInstanceCount() << " assets created\n";
     cout << " - total of " << IAsset::getInstanceDestructionCount() << " assets deleted\n";
+#endif
 }
