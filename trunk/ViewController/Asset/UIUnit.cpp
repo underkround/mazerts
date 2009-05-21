@@ -124,7 +124,7 @@ void UIUnit::updatePosition()
 }
 
 
-//Overridden here to do alignToTerrain only for visible units,
+//Overridden here to do updatePosition only for visible units,
 //otherwise same as in C3DObject
 void UIUnit::Render(LPDIRECT3DDEVICE9 pDevice)
 {

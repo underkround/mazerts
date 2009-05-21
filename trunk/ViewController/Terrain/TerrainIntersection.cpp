@@ -9,7 +9,8 @@
 
 D3DXVECTOR3* TerrainIntersection::pickTerrain(D3DXVECTOR3 rayOrigin, D3DXVECTOR3 rayDir)
 {
-    if(rayDir.z < 0.0f)
+    //If the ray is traveling upwards (= positive z) or along the plane, no collision check occurs
+    if(rayDir.z <= 0.0f)
     {
         return NULL;
     }

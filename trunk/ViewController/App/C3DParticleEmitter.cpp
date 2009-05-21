@@ -183,7 +183,7 @@ void C3DParticleEmitter::Render(LPDIRECT3DDEVICE9 pDevice)
                         m_mWorld._42 + partAABBMax.y,
                         m_mWorld._43 + partAABBMax.z);
         
-    if(FrustumCull::cullAABB(minAABB, maxAABB))
+    if((m_pParticleList->headNode() != NULL) && (FrustumCull::cullAABB(minAABB, maxAABB)))
     {
 	    // set identity matrix as a world transformation
 	    D3DXMATRIX m;

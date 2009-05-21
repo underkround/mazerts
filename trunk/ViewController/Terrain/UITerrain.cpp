@@ -223,6 +223,7 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
     if(m_pPixelTexture)
     {
         pDevice->SetTexture(1, NULL);
+        pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
     }
 
     m_MiniMap.render(pDevice, m_pPixelTexture);

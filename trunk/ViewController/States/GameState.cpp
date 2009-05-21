@@ -456,6 +456,12 @@ void GameState::updateControls(const float frameTime)
      * components) should go here.
      */
 
+    if(KeyboardState::keyDown[9])
+    {
+        m_Selector.setState(Selector::SELECTOR_BUILDINGPLACEMENT);
+        m_Selector.setSize(D3DXVECTOR2(10,10));
+    }
+
     // reload def-files on fly
     // reload config files on the fly
     if(KeyboardState::keyReleased[32]) // key: D
