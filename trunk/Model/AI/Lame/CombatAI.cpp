@@ -1,9 +1,9 @@
 #include "CombatAI.h"
 
-#include "../Common/DoubleLinkedList.h"
-#include "../Asset/Unit.h"
-#include "../Command/Target.h"
-#include "../Terrain/Terrain.h"
+#include "../../Common/DoubleLinkedList.h"
+#include "../../Asset/Unit.h"
+#include "../../Command/Target.h"
+#include "../../Terrain/Terrain.h"
 
 //define how often combat AI thinks it's decisions
 #define COMBAT_AI_UPDATE_INTERVAL 5.0f

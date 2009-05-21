@@ -1,9 +1,9 @@
 #include "GameConsole.h"
-#include "../Terrain/Terrain.h"
+#include "../../Model/Terrain/Terrain.h"
 #include "../Terrain/UITerrain.h"
-#include "../Player/Player.h"
-#include "../Player/PlayerManager.h"
-#include "../AI/Lame/LameAI.h"
+#include "../../Model/Player/Player.h"
+#include "../../Model/Player/PlayerManager.h"
+#include "../../Model/AI/Lame/LameAI.h"
 
 //it seems these need to be redeclared here, god knows why (and devil won't tell)
 TCHAR GameConsole::m_arrMessage[128];

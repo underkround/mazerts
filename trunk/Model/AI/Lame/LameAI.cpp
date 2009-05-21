@@ -1,10 +1,10 @@
 #include "LameAI.h"
-#include "../Common/DoubleLinkedList.h"
-#include "../Asset/AssetFactory.h"
-#include "../Asset/AssetCollection.h"
-#include "../Terrain/Terrain.h"
-#include "../Asset/Unit.h"
-#include "../Asset/Building.h"
+#include "../../Common/DoubleLinkedList.h"
+#include "../../Asset/AssetFactory.h"
+#include "../../Asset/AssetCollection.h"
+#include "../../Terrain/Terrain.h"
+#include "../../Asset/Unit.h"
+#include "../../Asset/Building.h"
 
 #define AI_UPDATE_INTERVAL 1.0f
 #define AI_UNIT_LIMIT 100
