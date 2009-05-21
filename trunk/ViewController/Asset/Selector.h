@@ -144,6 +144,20 @@ public:
     }
 
     /**
+     * Returns the current position of selector lower-left (minx, miny)
+     * corner, only for SELECTOR_BUILDINGPLACEMENT
+     * @return Cornerpoint as D3DXVECTOR2
+     */
+    inline D3DXVECTOR2 getBuildingPoint()
+    {
+        if(m_SelectorState == SELECTOR_BUILDINGPLACEMENT)
+        {
+            return D3DXVECTOR2(m_Point1.x - (m_BuildingPlacementSize.x * 0.5f), m_Point1.y - (m_BuildingPlacementSize.y * 0.5f));
+        }
+        return D3DXVECTOR2(0, 0);
+    }
+
+    /**
      * Set the both points and updates the mesh data to match these
      * @param point1 D3DXVECTOR2 containing start point xy-coordinates
      * @param point2 D3DXVECTOR2 containing end point xy-coordinates
