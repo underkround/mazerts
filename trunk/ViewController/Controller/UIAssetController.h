@@ -16,13 +16,22 @@
 #include "../Camera/Camera.h"
 #include "../Camera/UnitCamera.h"
 #include "../../Model/Common/Config.h"
+#include "../UIComponent/IButtonListener.h"
+#include "../UIComponent/BasicButton.h"
+#include "../UIComponent/UIContainer.h"
 
 #include "d3d9.h"
 
 
-class UIAssetController : public IUIController, public IAssetCollectionListener
+class UIAssetController : public IUIController, public IAssetCollectionListener, public IButtonListener
 {
 public:
+
+    enum State
+    {
+        STATE_ASSET_CONTROL = 0,
+        STATE_BUILDING_PLACEMENT
+    };
 
     enum PointerState
     {
@@ -63,6 +72,12 @@ public:
      */
     void clearSelection();
 
+// ===== IButtonListener methods
+
+    virtual void onButtonClick(BasicButton* pSrc);
+
+    virtual void onButtonAltClick(BasicButton* pSrc);
+
 // ===== AssetCollectionListener methods
 
     virtual void handleCreatedAsset(IAsset* instance)
@@ -76,6 +91,14 @@ public:
     virtual void handleReleasedAsset(IAsset* instance);
 
 private:
+
+    void changeState(State newState);
+
+// ===== HUD control
+
+    void clearPanel();
+
+// ===== Input handlers
 
     void onPickButton(const float frameTime);
 
@@ -102,6 +125,15 @@ private:
     float m_TooltipTreshold;
     float m_TooltipLifetime;
     bool m_TooltipShown;
+
+    // General state of the assetcontroller
+    State                       m_State;
+
+    // container holding the build buttons
+    UIContainer*                m_pButtonPanel;
+
+    // tag of building being built
+    int m_BuildTag;
 
     // current state of the selection
     PointerState                m_SelectionState;

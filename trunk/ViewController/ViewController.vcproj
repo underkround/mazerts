@@ -1102,6 +1102,14 @@
 				Name="UIComponent"
 				>
 				<File
+					RelativePath=".\UIComponent\BasicButton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\BasicButton.h"
+					>
+				</File>
+				<File
 					RelativePath=".\UIComponent\ComponentCommon.h"
 					>
 				</File>

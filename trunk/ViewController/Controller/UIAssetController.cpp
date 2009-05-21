@@ -19,6 +19,9 @@
 
 #include "../../Model/Asset/AssetCollection.h"
 
+#include "../UIComponent/RootContainer.h"
+#include "../UIComponent/GridLayout.h"
+
 #include "Cursor.h" // for tooltip
 #include <TCHAR.h>  // for tooltip
 
@@ -31,8 +34,22 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_ActionState = IDLE;
     m_TempMouseX = 0;
     m_TempMouseY = 0;
+    m_State = STATE_ASSET_CONTROL;
 
     m_pUnitCarryingCamera = NULL;
+
+    // create the buttoncontainer
+    RootContainer* rc = RootContainer::getInstance();
+    const int bcX = 10;
+    const int bcY = 320;
+    const int bcW = 160;
+    const int bcH = 430;
+    m_pButtonPanel = new UIContainer(bcX, bcY, bcW, bcH);
+    m_pButtonPanel->setBackground(0xCC222222);
+    m_pButtonPanel->setLayoutFlag(LAYOUT_HINT_NORESIZE);
+    m_pButtonPanel->setLayoutManager(new GridLayout(0, 2));
+    m_pButtonPanel->setTooltip("Building control panel");
+    RootContainer::getInstance()->addComponent(m_pButtonPanel);
 
     // default setting values
     m_KeyMouseActionButton = 1;
@@ -59,10 +76,54 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
 }
 
 
-
 UIAssetController::~UIAssetController()
 {
     release();
+}
+
+
+void UIAssetController::changeState(State newState)
+{
+    // end current state
+    switch(m_State) {
+
+        case STATE_ASSET_CONTROL:
+            m_SelectionState = IDLE;
+            m_ActionState = IDLE;
+            m_TempMouseX = 0;
+            m_TempMouseY = 0;
+            break;
+
+        case STATE_BUILDING_PLACEMENT:
+            m_pSelector->setState(Selector::SELECTOR_NORMAL);
+            break;
+
+    }
+
+    // begin new state
+    m_State = newState;
+    switch(m_State) {
+
+        case STATE_ASSET_CONTROL:
+            m_SelectionState = IDLE;
+            m_ActionState = IDLE;
+            m_TempMouseX = 0;
+            m_TempMouseY = 0;
+            m_pSelector->setState(Selector::SELECTOR_NORMAL);
+            break;
+
+        case STATE_BUILDING_PLACEMENT:
+            // check for what to build
+            // @TODO: check from defManager if m_BuildTag exists and can be build
+            if(m_BuildTag < 0) {
+                changeState(STATE_ASSET_CONTROL);
+                break;
+            } else {
+
+            }
+            break;
+
+    }
 }
 
 
@@ -106,42 +167,88 @@ void UIAssetController::release()
     m_pSelector = NULL;
 }
 
+
+void UIAssetController::onButtonClick(BasicButton* pSrc)
+{
+}
+
+
+void UIAssetController::onButtonAltClick(BasicButton* pSrc)
+{
+}
+
+
 void UIAssetController::updateControls(const float frameTime)
 {
     bool pickModifier = (!m_KeyPickModifier || KeyboardState::keyDown[m_KeyPickModifier]) ? true : false;
     bool actionModifier = (!m_KeyActionModifier || KeyboardState::keyDown[m_KeyActionModifier]) ? true : false;
-    
-    if(pickModifier && MouseState::mouseButton[m_KeyMousePickButton])
-        onPickButton(frameTime);
-    else if(pickModifier && MouseState::mouseButtonReleased[m_KeyMousePickButton])
-        onPickRelease(frameTime);
-    else if(MouseState::mouseButtonReleased[m_KeyMouseActionButton])
-        onActionRelease(frameTime);
-    else if(MouseState::mouseButton[m_KeyMouseActionButton])
-        onActionButton(frameTime);
 
-    if(KeyboardState::keyReleased[m_KeyFirstPersonCamera])
-    {
-        // disable unit camera
-        if(m_pUnitCarryingCamera)
-        {
-            if(Camera::countStack())
+    switch(m_State) {
+
+        // =====
+        case STATE_ASSET_CONTROL:
+            if(pickModifier && MouseState::mouseButton[m_KeyMousePickButton])
+                onPickButton(frameTime);
+            else if(pickModifier && MouseState::mouseButtonReleased[m_KeyMousePickButton])
+                onPickRelease(frameTime);
+            else if(MouseState::mouseButtonReleased[m_KeyMouseActionButton])
+                onActionRelease(frameTime);
+            else if(MouseState::mouseButton[m_KeyMouseActionButton])
+                onActionButton(frameTime);
+
+            if(KeyboardState::keyReleased[m_KeyFirstPersonCamera])
             {
-                //Camera::popTop();
-                Camera::pop(&m_UnitCamera);
+                // disable unit camera
+                if(m_pUnitCarryingCamera)
+                {
+                    if(Camera::countStack())
+                    {
+                        //Camera::popTop();
+                        Camera::pop(&m_UnitCamera);
+                    }
+                    m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
+                    m_UnitCamera.detach();
+                    m_pUnitCarryingCamera = NULL;
+                }
+                // enable unit camera
+                else if(!m_SelectedUIAssets.empty() && m_SelectedAssetType == UNIT)
+                {
+                    m_pUnitCarryingCamera = (UIUnit*)m_SelectedUIAssets.peekHead();
+                    m_UnitCamera.attach(m_pUnitCarryingCamera);
+                    Camera::pushTop(&m_UnitCamera);
+                }
             }
-            m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
-            m_UnitCamera.detach();
-            m_pUnitCarryingCamera = NULL;
-        }
-        // enable unit camera
-        else if(!m_SelectedUIAssets.empty() && m_SelectedAssetType == UNIT)
-        {
-            m_pUnitCarryingCamera = (UIUnit*)m_SelectedUIAssets.peekHead();
-            m_UnitCamera.attach(m_pUnitCarryingCamera);
-            Camera::pushTop(&m_UnitCamera);
-        }
-    }
+            break;
+
+        // =====
+        case STATE_BUILDING_PLACEMENT:
+            // sanity check
+            if(m_BuildTag < 0) {
+                changeState(STATE_ASSET_CONTROL);
+                break;
+            }
+
+            // update selector
+            //m_pSelector->update();
+
+            // mouse actions
+            if(MouseState::mouseButtonReleased[MouseState::mouseSecondButton]) {
+                // cancel build state with secondary mouse button
+                changeState(STATE_ASSET_CONTROL);
+                break;
+            } else if(MouseState::mouseButtonReleased[MouseState::mouseFirstButton]) {
+                // placement made
+                if(m_pSelector->isBuildable()) {
+                    // @TODO: assetfactory->create
+                    changeState(STATE_ASSET_CONTROL);
+                    break;
+                }
+                // @TODO ??
+            }
+
+            break;
+
+    } // switch
 
     // if mouse idles over asset, display tooltip showing it's name
     if(!MouseState::mouseMoved && (MouseState::mouseIdle > m_TooltipTreshold))

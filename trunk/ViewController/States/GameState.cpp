@@ -66,7 +66,7 @@ GameState::GameState()
     // default settings
     m_KeyGenerateNewTerrain     = 57;
     m_KeyGeneratePassability    = 2;
-    m_KeyToggleWireframe        = 15;
+    m_KeyToggleWireframe        = 68;
     m_KeyTerrainDetailUp        = 49;
     m_KeyTerrainDetailDown      = 50;
 }
@@ -156,7 +156,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     m_pCont1->setTooltip("packing panel");
 
     //m_pRootContainer->addComponent(m_pCont1);
-    m_pRootContainer->addComponent(m_pCont2);
+    //m_pRootContainer->addComponent(m_pCont2);
 
 /*
     //TEST

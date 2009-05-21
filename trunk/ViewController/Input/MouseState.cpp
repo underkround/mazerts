@@ -29,6 +29,9 @@ float MouseState::mouseIdle = 0.0f;
 int MouseState::lastPosX = 0;
 int MouseState::lastPosY = 0;
 
+int MouseState::mouseFirstButton = 0;
+int MouseState::mouseSecondButton = 1;
+
 IApplication* MouseState::pApp = NULL;
 
 void MouseState::create(IApplication* pApplication)

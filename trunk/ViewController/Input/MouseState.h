@@ -91,6 +91,10 @@ public:
     static bool mouseMoved;
     static float mouseIdle; // mouse idling time
 
+    // swap these for left hand config
+    static int mouseFirstButton;
+    static int mouseSecondButton;
+
     /** 
      * Project 2d-mouse position as a ray into 3d-space
      * @param matView View-matrix

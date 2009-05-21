@@ -361,6 +361,14 @@ void CTheApp::handleConfig()
     c.setFilename("../data/controls.ini");
     c.readFile();
 
+    // read & set mouse buttons
+    int tmp = c.getValueAsInt("mouse first button", -1);
+    if(tmp >= 0)
+        MouseState::mouseFirstButton = tmp;
+    tmp = c.getValueAsInt("mouse second button", -1);
+    if(tmp >= 1)
+        MouseState::mouseSecondButton = tmp;
+
     //NOTE! values used here are loaded in program Main() method
     bool sounds = c.getValueAsBool("sound enabled", true);
     bool music  = c.getValueAsBool("music enabled", true);
