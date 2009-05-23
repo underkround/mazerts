@@ -237,6 +237,20 @@ public:
      */
     void reCreate();
 
+    /**
+     * Checks if the model-side terrain has changed and updates as needed
+     */     
+    void update()
+    {
+        unsigned short value = Terrain::getInstance()->getChangeCounter();
+
+        if(value != m_ModelTerrainCounter)
+        {
+            m_ModelTerrainCounter = value;
+            reCreate();
+        }
+    }
+
 private:
     
     /**
@@ -396,6 +410,11 @@ private:
 
     // player whose fog is showing
     Player* m_pCurrentPlayer;
+
+    /**
+     * Model-side terrain changecounter value, used to track if terrain has changed
+     */
+    unsigned short m_ModelTerrainCounter;
 };
 
 #endif // __UITERRAIN_H__

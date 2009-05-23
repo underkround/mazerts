@@ -264,6 +264,13 @@ public:
             }
         }
     }
+    
+    /**
+     * Returns the current change counter-value, used by outside classes to
+     * see if terrain has changed
+     * @return ChangeCounter-value
+     */
+    inline unsigned short getChangeCounter() { return m_ChangeCounter; }
 
 // ===== SETTERS
 
@@ -282,6 +289,8 @@ public:
      */
     inline void setWaterLevel(const unsigned char waterLevel)
     {
+        m_ChangeCounter++;
+
         m_WaterLevel = waterLevel;
         
         //Re-calculates also passable-array, which can be affected by changed waterlevel
@@ -311,6 +320,8 @@ public:
         {
             return;
         }
+        
+        m_ChangeCounter++;
 
         m_ppPassableTile[y][x] = passable;
     }
@@ -453,6 +464,11 @@ protected:
      */
     unsigned char m_WaterLevel;
 
+    /**
+     * Changecounter, used by outside classes to check if the UITerrain has been changed and
+     * to react on said changes
+     */
+    unsigned short m_ChangeCounter;
 };
 
 #endif // __TERRAIN_H__

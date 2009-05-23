@@ -19,6 +19,8 @@ Terrain::Terrain()
     m_WaterLevel    = Terrain::DEFAULT_WATERLEVEL;
     m_pTerrainGenerator = NULL; // no generator by default, results flat
     m_Initialized = false;
+    m_ChangeCounter = 0;
+
     initialize(); // initialize flat with defaults
 }
 
@@ -82,6 +84,9 @@ void Terrain::initialize()
 
     // calculate tile heights and mark as passable/non-passable
     calculateHeightMapFromVertices();
+
+    //Alter changecounter
+    m_ChangeCounter++;
 
     m_Initialized = true; // set the flag
 }
@@ -279,6 +284,8 @@ void Terrain::setTerrainVertexHeight(const short x, const short y, const unsigne
     }
     else
     {
+        m_ChangeCounter++;
+
         m_ppVertexHeightData[y][x] = height;
 
         //Calculate changes in tileheights
@@ -312,6 +319,7 @@ void Terrain::flattenMap(const unsigned char heightValue)
         }
     }
 
+    m_ChangeCounter++;
 }
 
 
@@ -474,6 +482,8 @@ void Terrain::smoothMap(int smoothPasses)
 
         //calculateHeightMapFromVertices();
     }//Smoothing cycle
+
+    m_ChangeCounter++;
 }
 
 

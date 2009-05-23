@@ -335,7 +335,8 @@ bool GameState::update(const float frameTime)
 
     m_pManager->getRootObject()->Update(frameTime);
 
-    //Update minimap
+    //Update UITerrain & minimap
+    m_pUITerrain->update();
     m_pUITerrain->getMiniMap()->updateAssets(m_pManager->getAssetList(), frameTime);
     m_pUITerrain->getMiniMap()->updateCamera(m_pDevice);
 
