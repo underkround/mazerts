@@ -164,6 +164,61 @@ public:
     inline HRESULT onLostDevice()
     {
         HRESULT hres = S_OK;
+        
+        if(m_MultiBufferRender)
+        {
+            if(m_pppVB)
+            {
+                for(int i = 0; i < m_Patches; i++)
+                {
+                    for(int j = 0; j < m_Patches; j++)
+                    {
+                        if (m_pppVB[i][j])
+                        {
+                            m_pppVB[i][j]->Release();
+                            m_pppVB[i][j] = NULL;
+                        }
+                    }
+                    delete [] m_pppVB[i];
+                    m_pppVB[i] = NULL;
+                }
+                delete [] m_pppVB;
+                m_pppVB = NULL;
+            }
+            if(m_pppIB)
+            {
+                for(int i = 0; i < m_Patches; i++)
+                {
+                    for(int j = 0; j < m_Patches; j++)
+                    {
+                        if(m_pppIB[i][j])
+                        {
+                            m_pppIB[i][j]->Release();                
+                            m_pppIB[i][j] = NULL;
+                        }
+                    }
+                    delete [] m_pppIB[i];
+                    m_pppIB[i] = NULL;
+                }        
+                delete [] m_pppIB;
+                m_pppIB = NULL;
+            }
+        }
+        else
+        {
+            //Single vertex- and indexbuffer releases
+            if(m_pIB)
+            {
+                m_pIB->Release();                
+                m_pIB = NULL;
+            }
+
+            if (m_pVB)
+            {
+                m_pVB->Release();
+                m_pVB = NULL;
+            }
+        }
 
         if(m_pPixelTexture)
         {            
@@ -191,6 +246,17 @@ public:
      */
     inline HRESULT onRestore(LPDIRECT3DDEVICE9 pDevice)
     {
+        HRESULT hres = create(pDevice, m_pCurrentPlayer);
+        /*
+        if(pInstance->m_MultiBufferRender)
+        {
+            hres = initializeMulti(pDevice);
+        }
+        else
+        {
+            hres = initialize(pDevice);
+        }        
+
         if(m_pPixelTexture)
         {
             HRESULT hres = m_pPixelTexture->Release();
@@ -220,7 +286,7 @@ public:
         if(FAILED(hres))
         {
             return hres;
-        }
+        }*/
 
         return hres; 
     }
@@ -233,9 +299,9 @@ public:
     inline Player* getCurrentPlayer() { return m_pCurrentPlayer; }
 
     /**
-     * Force terrain update
+     * Force terrain update, rebuilding from heightdata
      */
-    void reCreate();
+    void updateTerrain();
 
     /**
      * Checks if the model-side terrain has changed and updates as needed
@@ -247,7 +313,7 @@ public:
         if(value != m_ModelTerrainCounter)
         {
             m_ModelTerrainCounter = value;
-            reCreate();
+            updateTerrain();
         }
     }
 
@@ -415,6 +481,13 @@ private:
      * Model-side terrain changecounter value, used to track if terrain has changed
      */
     unsigned short m_ModelTerrainCounter;
+
+    /**
+     * Vertexbuffer for waterplane
+     */
+    LPDIRECT3DVERTEXBUFFER9 m_pWaterPlane;
+
+    D3DMATERIAL9 m_WaterMat;
 };
 
 #endif // __UITERRAIN_H__

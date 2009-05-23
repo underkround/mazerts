@@ -36,9 +36,12 @@ void CombatAI::EvasiveManeuver()
     {
         if(pNode->item->getOwner() == m_pPlayer)
         {
-            int size = Terrain::getInstance()->getSize();
-            pNode->item->getMovingLogic()->clearTargets();
-            pNode->item->getMovingLogic()->addTarget(new Target(rand() % size, rand() % size, false, 0));
+            if(rand() < (RAND_MAX / 3))
+            {
+                int size = Terrain::getInstance()->getSize();
+                pNode->item->getMovingLogic()->clearTargets();
+                pNode->item->getMovingLogic()->addTarget(new Target(rand() % size, rand() % size, false, 0));
+            }
         }
         pNode = pNode->next;
     }

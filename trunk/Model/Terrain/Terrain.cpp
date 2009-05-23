@@ -498,7 +498,7 @@ void Terrain::handleDamage(const unsigned short x, const unsigned short y, float
         unsigned short cornerY = y - craterRad;
                 
         int craterRadSquared = craterRad*craterRad;
-        
+        //unsigned char hitHeight = m_ppVertexHeightData[y][x];
         for(int i = 0; i < (2 * craterRad); i++)
         {
             for(int j = 0; j < (2 * craterRad); j++)
@@ -512,13 +512,17 @@ void Terrain::handleDamage(const unsigned short x, const unsigned short y, float
                     if(curX >= 0 && curX < m_Size && curY >= 0 && curY < m_Size)
                     {
                         int heightMod = (int)((craterDepth / 2)*(1 + cos(3.1415f * dist / craterRadSquared) ));
-                        if(m_ppVertexHeightData[curY][curX] > heightMod)
+                        
+                        //if(m_ppVertexHeightData[curY][curX] > hitHeight);
                         {
-                            m_ppVertexHeightData[curY][curX] -= heightMod;
-                        }
-                        else
-                        {
-                            m_ppVertexHeightData[curY][curX] = 0;
+                            if(m_ppVertexHeightData[curY][curX] > heightMod)
+                            {
+                                m_ppVertexHeightData[curY][curX] -= heightMod;
+                            }
+                            else
+                            {
+                                m_ppVertexHeightData[curY][curX] = 0;
+                            }
                         }
                     }
                 }

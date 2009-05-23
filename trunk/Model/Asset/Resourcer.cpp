@@ -239,11 +239,9 @@ void Resourcer::unloading(const float deltaT)
     m_LoadTimer += deltaT;
     if(m_LoadTimer > m_Def.loadTime)
     {
+        m_pUnit->getOwner()->modifyOre(m_Ore);
         m_LoadTimer = 0;
-        m_Ore = 0;
-        //Add ore to player
-        m_pUnit->getOwner()->modifyOre(m_Def.oreCapacity);
-    
+        m_Ore = 0;                
         m_State = RES_IDLE;
     }
 }

@@ -18,6 +18,7 @@ UITerrain::UITerrain()
     m_pppIB = NULL;
     m_pppVB = NULL;
 
+    m_pWaterPlane = NULL;
     m_pTexture = NULL;
     m_pPixelTexture = NULL;
     m_Patches = 0;
@@ -34,8 +35,11 @@ UITerrain::UITerrain()
     m_TextureRepeat = 24.0f;
     
     ::memset(&m_Mat, 0, sizeof(D3DMATERIAL9));
-    m_Mat.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
- 
+    m_Mat.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f); 
+
+    ::memset(&m_WaterMat, 0, sizeof(D3DMATERIAL9));
+    m_WaterMat.Diffuse = D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f);
+    //m_WaterMat.Specular = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 UITerrain::~UITerrain(void)
@@ -147,6 +151,13 @@ void UITerrain::release()
         m_pppIB = NULL;
     }
 
+    //Waterplane release
+    if(m_pWaterPlane)
+    {
+        m_pWaterPlane->Release();
+        m_pWaterPlane = NULL;
+    }
+
     m_ChangeCounter++;
 }
 
@@ -226,6 +237,22 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
         pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
     }
 
+    if(m_pWaterPlane)
+    {       
+        pDevice->SetTexture(0, NULL);
+        pDevice->SetMaterial(&m_WaterMat);
+        pDevice->SetFVF(VERTEX::GetFVF());
+        pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);        
+        pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCCOLOR);
+        pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_DESTCOLOR);
+ //       pDevice->SetTextureStageState(0,D3DTSS_ALPHAOP,D3DTOP_SELECTARG1);
+ //       pDevice->SetTextureStageState(0,D3DTSS_ALPHAARG1,D3DTA_DIFFUSE);
+
+        pDevice->SetStreamSource(0, m_pWaterPlane, 0, sizeof(VERTEX));  
+        pDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
+        pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    }
+
     m_MiniMap.render(pDevice, m_pPixelTexture);
 }
 
@@ -286,7 +313,9 @@ HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer)
     //Create colormap
     bool** fog = NULL;
     if (m_pCurrentPlayer)
+    {
         fog = m_pCurrentPlayer->getFog()->getFogArray();
+    }
     hres = pInstance->createColorMapTexture(pDevice);
     if(FAILED(hres))
     {
@@ -357,9 +386,9 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
     
     //Create buffer
     hres = pDevice->CreateIndexBuffer(indAmount * sizeof(USHORT),
-        D3DUSAGE_WRITEONLY,         //Index- and vertexbuffers are modified, but arent marked as dynamical because modifications occur so rarely
+        D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
         D3DFMT_INDEX16,             //16-bit index offsets for legacy support
-        D3DPOOL_MANAGED,
+        D3DPOOL_DEFAULT,
         &m_pIB,
         NULL);
 
@@ -369,9 +398,9 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
     }
 
     hres = pDevice->CreateVertexBuffer(m_NumVertices * sizeof(VERTEX2UV),
-                                D3DUSAGE_WRITEONLY,
+                                D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
                                 VERTEX2UV::GetFVF(),
-                                D3DPOOL_MANAGED,
+                                D3DPOOL_DEFAULT,
                                 &m_pVB,
                                 NULL);
 
@@ -462,6 +491,73 @@ HRESULT UITerrain::initialize(LPDIRECT3DDEVICE9 pDevice)
     //setDetailLevel won't do anything if parameter == m_DetailLevel (this is to prevent unnecessary recalculations)
     setDetailLevel(value);
 
+    //Waterplane
+    hres = pDevice->CreateVertexBuffer(4 * sizeof(VERTEX),
+                                D3DUSAGE_WRITEONLY,
+                                VERTEX::GetFVF(),
+                                D3DPOOL_MANAGED,
+                                &m_pWaterPlane,
+                                NULL);
+
+    //Fill vertex-data
+    VERTEX* pVert = NULL;
+
+    float waterLevel = (float)-pTerrain->getWaterLevel() * HEIGHTFACTOR;
+
+    m_pWaterPlane->Lock(0, 0, (void**)&pVert, D3DLOCK_DISCARD);
+    {
+        pVert[0].x = -100.0f;
+        pVert[0].y = -100.0f;
+        pVert[0].z = waterLevel;
+
+        pVert[0].nx = 0;
+        pVert[0].ny = 0;
+        pVert[0].nz = -1;
+        //pVert[0].dwColor = D3DXCOLOR(0, 0, 1.0f, 0.5f);
+
+        pVert[0].tu = 0;
+        pVert[0].tv = 0;
+
+        pVert[1].x = -100.0f;
+        pVert[1].y = m_Size + 100.0f;
+        pVert[1].z = waterLevel;
+
+        pVert[1].nx = 0;
+        pVert[1].ny = 0;
+        pVert[1].nz = -1;
+        //pVert[1].dwColor = D3DXCOLOR(0, 0, 1.0f, 0.5f);
+
+        pVert[1].tu = 0;
+        pVert[1].tv = 1.0f;
+
+        pVert[2].x = m_Size + 100.0f;
+        pVert[2].y = m_Size + 100.0f;
+        pVert[2].z = waterLevel;
+
+        pVert[2].nx = 0;
+        pVert[2].ny = 0;
+        pVert[2].nz = -1;
+        //pVert[2].dwColor = D3DXCOLOR(0, 0, 1.0f, 0.5f);
+
+        pVert[2].tu = 1.0f;
+        pVert[2].tv = 1.0f;
+
+        pVert[3].x = m_Size + 100.0f;
+        pVert[3].y = -100.0f;
+        pVert[3].z = waterLevel;
+
+        pVert[3].nx = 0;
+        pVert[3].ny = 0;
+        pVert[3].nz = -1;
+        //pVert[3].dwColor = D3DXCOLOR(0, 0, 1.0f, 0.5f);
+
+        pVert[3].tu = 1.0f;
+        pVert[3].tv = 0;
+        
+
+    }
+    m_pWaterPlane->Unlock();
+
     return S_OK;
 }
 
@@ -526,7 +622,7 @@ HRESULT UITerrain::initializeMulti(LPDIRECT3DDEVICE9 pDevice)
 
 
             hres = pDevice->CreateVertexBuffer(    m_NumVertices * sizeof(VERTEX2UV),
-                                        0,
+                                        D3DUSAGE_WRITEONLY,
                                         VERTEX2UV::GetFVF(),
                                         D3DPOOL_MANAGED,
                                         &m_pppVB[y][x],
@@ -1232,7 +1328,7 @@ void UITerrain::updateFog(LPDIRECT3DDEVICE9 pDevice)
     }
 }
 
-void UITerrain::reCreate()
+void UITerrain::updateTerrain()
 {
     m_ChangeCounter++;
 

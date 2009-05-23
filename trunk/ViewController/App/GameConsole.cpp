@@ -91,19 +91,19 @@ nolimits \t set all AI build limits to 100000\n \
             for(int j=0;j<spikes;++j)
                 t->setTerrainHeight(i*jump, j*jump, 255);
         UITerrain*ut = UITerrain::getInstance();
-        ut->reCreate();
+        ut->updateTerrain();
     }
     if(!_tcscmp(m_arrMessage, _T("flat")))
     {
         Terrain*t = Terrain::getInstance();
         t->flattenMap(Terrain::DEFAULT_FLATHEIGHT);
         UITerrain*ut = UITerrain::getInstance();
-        ut->reCreate();
+        ut->updateTerrain();
     }
     if(!_tcscmp(m_arrMessage, _T("rebuild")))
     {
         UITerrain*ut = UITerrain::getInstance();
-        ut->reCreate();
+        ut->updateTerrain();
     }
     if(!_tcscmp(m_arrMessage, _T("idkfa")))
     {

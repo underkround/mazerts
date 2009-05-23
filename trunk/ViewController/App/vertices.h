@@ -64,6 +64,5 @@ struct TRANSLITVERTEX
     float            tu, tv;        // one set of texture coordinates
 };
 
-
 #endif    // __VERTICES_H__
 
