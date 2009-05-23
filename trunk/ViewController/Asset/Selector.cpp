@@ -144,7 +144,7 @@ HRESULT Selector::update()
 {
     float width = 0;
     float height = 0;
-    D3DXCOLOR baseColor(1.0f, 1.0f, 1.0f, 1.0f);
+    D3DXCOLOR baseColor(0.7f, 0.7f, 0.7f, 1.0f);
 
     //Width/height-steps
     if(m_SelectorState == SELECTOR_NORMAL)
@@ -277,10 +277,18 @@ bool Selector::isBuildable()
         //Check terrain by getting lowest and highest point from the area, and checking if the difference is too great
         unsigned char low = 255;
         unsigned char high = 0;
+        unsigned char waterlevel = Terrain::getInstance()->getWaterLevel();
         for(int i = cornerY; i < (cornerY + m_BuildingPlacementSize.y); ++i)
         {
             for(int j = cornerX; j < (cornerX + m_BuildingPlacementSize.x); ++j)
-            {                
+            {
+                //Check waterlevel
+                if(ppVData[i][j] < waterlevel)
+                {
+                    return false;
+                }
+
+                //Store heights
                 if(ppVData[i][j] < low)
                 {
                     low = ppVData[i][j];
@@ -315,7 +323,7 @@ void Selector::render(LPDIRECT3DDEVICE9 pDevice)
         pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 	    pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
         pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-        pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_DESTCOLOR);
+        pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
         pDevice->SetTransform(D3DTS_WORLD, &m_mWorld);
         
         pDevice->SetMaterial(&m_Mat);
@@ -325,12 +333,6 @@ void Selector::render(LPDIRECT3DDEVICE9 pDevice)
         if(m_pTexture)
         {
             pDevice->SetTexture(0, m_pTexture);
-            //pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_ADD);
-            //pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_CURRENT);
-            //pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-            //pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_BLENDTEXTUREALPHA);
-            //pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_CURRENT);
-            //pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
         }
         
         pDevice->SetStreamSource(0, m_pVB, 0, sizeof(LITVERTEX));
