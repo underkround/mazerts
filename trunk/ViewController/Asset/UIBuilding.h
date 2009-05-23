@@ -41,7 +41,6 @@ public:
         //Update position
         m_mLocal._41 = pBuilding->getGridX() + (pBuilding->getWidth() / 2.0f);
         m_mLocal._42 = pBuilding->getGridY() + (pBuilding->getHeight() / 2.0f);
-        //TODO: Should height be got from model-size?
         //m_mLocal._43 = UITerrain::getInstance()->calculateTriangleHeightAt(m_mLocal._41, m_mLocal._42);
         m_mLocal._43 = Terrain::getInstance()->getTerrainHeight((const short)m_mLocal._41, (const short)m_mLocal._42) * -UITerrain::HEIGHTFACTOR;
     }

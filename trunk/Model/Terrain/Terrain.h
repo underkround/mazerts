@@ -330,14 +330,11 @@ public:
 
     /**
      * HandleDamage
-     * Currently does nothing.
-     * Just a reminder how this could work =P
-     * From Damage-object, this only cares about TYPE_EXPLOSION.
-     * The ownership of the passed Damage-object is transferred to this,
-     * and the object will be destroyed inside this method.
-     * TODO
+     * @param x X-position to cause the damage in
+     * @param y Y-position to cause the damage in
+     * @param damage Amount of damage to cause
      */
-    const int handleDamage(Damage* pDamage);
+    void handleDamage(const unsigned short x, unsigned short y, float damage);
 
     /**
      * Sync the given vector's z-component to match the current level of the

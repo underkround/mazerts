@@ -54,6 +54,10 @@ public:
                 pNode = pNode->next;
             }
         }
+        //else
+        {
+            pTerrain->handleDamage(m_PositionX, m_PositionY, m_Damage);
+        }
     }
 
     //Getters for position and radius
