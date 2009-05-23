@@ -241,7 +241,8 @@ void Resourcer::unloading(const float deltaT)
     {
         m_LoadTimer = 0;
         m_Ore = 0;
-        //TODO: Add ore to player
+        //Add ore to player
+        m_pUnit->getOwner()->modifyOre(m_Def.oreCapacity);
     
         m_State = RES_IDLE;
     }
