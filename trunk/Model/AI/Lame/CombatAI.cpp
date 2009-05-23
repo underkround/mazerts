@@ -6,7 +6,7 @@
 #include "../../Terrain/Terrain.h"
 
 //define how often combat AI thinks it's decisions
-#define COMBAT_AI_UPDATE_INTERVAL 5.0f
+#define COMBAT_AI_UPDATE_INTERVAL 20.0f
 
 CombatAI::CombatAI(Player* player)
 {
