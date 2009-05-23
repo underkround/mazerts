@@ -334,7 +334,7 @@ public:
      * @param y Y-position to cause the damage in
      * @param damage Amount of damage to cause
      */
-    void handleDamage(const unsigned short x, unsigned short y, float damage);
+    void handleDamage(const unsigned short x, const unsigned short y, float damage);
 
     /**
      * Sync the given vector's z-component to match the current level of the
