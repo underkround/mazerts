@@ -49,6 +49,8 @@ public:
         string                    strName;
         LameAI::BUILDING_TYPE    eType;
         int                       cost;
+        int                      width;
+        int                      height;
         //here probably should be pointer to actual building
     };
 
@@ -151,6 +153,17 @@ private:
      */
     bool CanIAffordToBuild(BUILDING_TYPE buildingtype);
 
+    /**
+     * Checks if the area is free for building
+     * @return true if area has nothing that prevents building
+     */
+    bool LocationValidToBuild(int x, int y, BUILDING_TYPE b);
+
+    /**
+     * Finds out middlepoint of our base, puts values to *x and *y
+     */
+    void FindBaseCenterPoint(unsigned int *xCenter, unsigned int *yCenter);
+
 #pragma endregion
 
 #pragma region miscellaneous
@@ -166,6 +179,13 @@ private:
         return ss.str();
     }
 
+public:
+
+    inline void setUnitLimit(int limit) { m_UnitLimit = limit; }
+    inline void setBuildingLimit(int limit) { m_BuildingLimit = limit; }
+
+private:
+
 #pragma endregion
 
 #pragma region members
@@ -179,7 +199,13 @@ private:
     int m_CountMod;
     int m_KillMod;
     float m_UnitRatio;
+    float m_UnitRatio2;
     float m_fUpdatetime;
+    int m_BaseSpread;
+    float m_fUpdateInterval;
+    int m_UnitLimit;
+    int m_BuildingLimit;
+    int m_iDebug;
 
 #pragma endregion
 };

@@ -6,17 +6,19 @@
 #include "../../Asset/Unit.h"
 #include "../../Asset/Building.h"
 
-#define AI_UPDATE_INTERVAL 1.0f
-#define AI_UNIT_LIMIT 100
-#define AI_BUILDING_LIMIT 16
-
 LameAI::LameAI(Player* player)
 {
     //m_vUnits = new vector<UNIT*>();
     //m_vBuildings = new vector<BUILDING*>();
-    LoadConfigFromFile();
     m_fUpdatetime = 0.0f;
+    m_fUpdateInterval = 1.0f;
+    m_UnitRatio = 0.4f;
+    m_UnitRatio2 = 0.1f;
+    m_UnitLimit = 100;
+    m_BuildingLimit = 16;
+    m_BaseSpread = 25;
     m_pPlayer = player;
+    LoadConfigFromFile();
 }
 
 LameAI::~LameAI() 
@@ -68,22 +70,32 @@ void LameAI::LoadConfigFromFile(void)
         BUILDING* tmp = new BUILDING();
         tmp->strName = c.getValueAsString(convertToString(buildings[i]), "asset name", "unknown");
         tmp->cost = c.getValueAsInt(convertToString(buildings[i]), "asset construction cost ore", 10);
+        tmp->width = c.getValueAsInt(convertToString(buildings[i]), "asset width", 10);
+        tmp->height = c.getValueAsInt(convertToString(buildings[i]), "asset height", 10);
         tmp->eType = (BUILDING_TYPE)buildings[i];
         m_vBuildings.push_back(tmp);
     }
 
+    c.updateFloat("AAI", "update interval", m_fUpdateInterval);
+    c.updateInt("AAI", "unit limit", m_UnitLimit);
+    c.updateInt("AAI", "building limit", m_BuildingLimit);
+
     c.updateFloat("AAI", "unit ratio", m_UnitRatio);
+    c.updateFloat("AAI", "unit ratio finale", m_UnitRatio2);
+
+
     c.updateInt("AAI", "cost mod", m_CostMod);
     c.updateInt("AAI", "count mod", m_CountMod);
     c.updateInt("AAI", "kill mod", m_KillMod);
+    c.updateInt("AAI", "base spread", m_BaseSpread);
 }
 #pragma endregion
 
 void LameAI::Update(float fFrameTime)
 {
     m_fUpdatetime += fFrameTime;
-    if(m_fUpdatetime > AI_UPDATE_INTERVAL) {
-        m_fUpdatetime -= AI_UPDATE_INTERVAL;
+    if(m_fUpdatetime > m_fUpdateInterval) {
+        m_fUpdatetime -= m_fUpdateInterval;
         HammerTime();
     }
 }
@@ -127,6 +139,8 @@ bool LameAI::NeedMoreUnits()
 {
     float unitcount = (float)CountMyUnits();
     float buildingcount = (float)CountMyBuildings();
+    //if building ratio has been reached we can afford to build more units
+    float ratio = (m_BuildingLimit <= buildingcount) ? m_UnitRatio2 : m_UnitRatio;
     if( (unitcount * m_UnitRatio / buildingcount) < 1.0f )
         return true; //I need more units!
     else
@@ -286,7 +300,79 @@ int LameAI::CountMyUnits()
 
 }
 
+bool LameAI::LocationValidToBuild(int x, int y, BUILDING_TYPE b)
+{
+    BUILDING* buildingData;
+    Terrain* pTerrain = Terrain::getInstance();
+    for(unsigned int i=0;i<m_vBuildings.size();++i)
+    {
+        if(m_vBuildings[i]->eType == b)
+            buildingData = m_vBuildings[i];
+    }
+    //check are we inside the map
+    if( (x + buildingData->width) > pTerrain->getSize() || (y + buildingData->height) > pTerrain->getSize() )
+    {
+        return false;
+    }
+    if( x < 1 || y < 1 )
+    {
+        return false;
+    }
+    //check if area is passable
+    if( buildingData->width == buildingData->height ) {
+        if( !pTerrain->isPassable(x, y, buildingData->width) ) return false;
+    }
+    else { //not very accurate but is mostly implemented for sanity's sake anyway
+        if(buildingData->width > buildingData->height) {
+            if( !pTerrain->isPassable(x, y, buildingData->width) ) return false;
+        }
+        else {
+            if( !pTerrain->isPassable(x, y, buildingData->height) ) return false;
+        }
+    }
 
+    //check how many units are in the area
+    const int unitcount = AssetCollection::getUnitsAt(NULL, x, y, buildingData->width, buildingData->height);
+    if(unitcount > 0)
+    {
+        return false;
+    }
+
+    //area free!
+    return true;
+}
+
+void LameAI::FindBaseCenterPoint(unsigned int *xCenter, unsigned int *yCenter)
+{
+    unsigned int count = 0;
+    unsigned int xTotal = 0;
+    unsigned int yTotal = 0;
+
+    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
+    ListNode<Building*>* pNode = buildings->headNode();
+    while(pNode)
+    {
+        if(pNode->item->getOwner() == m_pPlayer)
+        {
+            ++count;
+            xTotal += pNode->item->getCenterGridX();
+            yTotal += pNode->item->getCenterGridY();
+        }
+        pNode = pNode->next;
+    }
+
+    if(count > 0)
+    {
+        *xCenter = xTotal/count;
+        *yCenter = yTotal/count;
+    }
+    else
+    { //zero buildings! game over man!
+        Terrain* pTerrain = Terrain::getInstance();
+        *xCenter = (rand() % pTerrain->getSize() / 2)+pTerrain->getSize()/4;
+        *yCenter = (rand() % pTerrain->getSize() / 2)+pTerrain->getSize()/4;
+    }
+}
 
 #pragma endregion
 
@@ -373,9 +459,37 @@ void LameAI::HammerTime(void)
 
 void LameAI::BuildBuilding(BUILDING_TYPE building)
 {
-    if(CountMyBuildings() < AI_BUILDING_LIMIT)
+    //int x = 100+CountMyBuildings()*15;
+    //int y = 40*m_pPlayer->getId()+20;
+    unsigned int x;
+    unsigned int y;
+    int locationOffsetX;
+    int locationOffsetY;
+    FindBaseCenterPoint(&x, &y);
+
+    if(CountMyBuildings() < m_BuildingLimit)
     {
-        if(CanIAffordToBuild(building)) AssetFactory::createBuilding(m_pPlayer, building, 100+CountMyBuildings()*15, 40*m_pPlayer->getId()+20 );
+        if(CanIAffordToBuild(building))
+        {
+            for(int trycount = 0; trycount < 10; ++trycount)
+            {
+                locationOffsetX = (((CountMyBuildings()/5)+1) * m_BaseSpread);
+                locationOffsetY = rand() % locationOffsetX;
+                locationOffsetX -= locationOffsetY;
+                if(rand() % 2 == 1) locationOffsetX *= -1;
+                if(rand() % 2 == 1) locationOffsetY *= -1;
+                if( LocationValidToBuild(x+locationOffsetX, y+locationOffsetY, building) ) {
+                    AssetFactory::createBuilding(m_pPlayer, building, x+locationOffsetX, y+locationOffsetY);
+                    return;
+                }
+            }
+            //run out of tries
+            //AssetFactory::createBuilding(PlayerManager::getInstance()->getPlayer(0), BUILDING_TYPE_RADAR, 10, 10);
+            ++m_iDebug;
+        }
+    }
+    else {
+        
     }
 }
 
@@ -385,9 +499,13 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
     //find out what unit to build (implement ChooseUnitToBuild(void))
     //order factory to build that unit
 
-    if(CountMyUnits() < AI_UNIT_LIMIT)
+    if(CountMyUnits() < m_UnitLimit)
     {
-        AssetFactory::createUnit(m_pPlayer, unittype, 100+CountMyUnits()*5, 40*m_pPlayer->getId()+10 );
+        unsigned int x, y;
+        FindBaseCenterPoint(&x, &y);
+        x += (rand() % 11) - 5;
+        y += (rand() % 11) - 5;
+        AssetFactory::createUnit(m_pPlayer, unittype, x, y );
     }
 }
 

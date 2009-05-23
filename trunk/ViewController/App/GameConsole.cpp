@@ -68,9 +68,11 @@ void GameConsole::parse(void)
 help \t display this help\n \
 spikes \t make uniform spikes to terrain\n \
 flat \t flatten terrain\n \
+rebuild \t rebuild terrain mesh\n \
 idkfa \t give all players a lot of ore\n \
 energy \t give all players some power\n \
 poor \t everyone loses all resources\n \
+nolimits \t set all AI build limits to 100000\n \
 \n"),
                      _T("game console commands"),
                      NULL);
@@ -98,6 +100,11 @@ poor \t everyone loses all resources\n \
         UITerrain*ut = UITerrain::getInstance();
         ut->reCreate();
     }
+    if(!_tcscmp(m_arrMessage, _T("rebuild")))
+    {
+        UITerrain*ut = UITerrain::getInstance();
+        ut->reCreate();
+    }
     if(!_tcscmp(m_arrMessage, _T("idkfa")))
     {
         for(int i=1;i<PlayerManager::getPlayerCount();++i)
@@ -120,5 +127,16 @@ poor \t everyone loses all resources\n \
             PlayerManager::getInstance()->getPlayer(i)->setOre(0);
         }
     }
-
+    if(!_tcscmp(m_arrMessage, _T("nolimits")))
+    {
+        for(int i=1;i<PlayerManager::getPlayerCount();++i)
+        {
+            LameAI *tmp = PlayerManager::getInstance()->getPlayer(i)->getLameAI();
+            if(tmp)
+            {
+                tmp->setUnitLimit(100000);
+                tmp->setBuildingLimit(100000);
+            }
+        }
+    }
 }

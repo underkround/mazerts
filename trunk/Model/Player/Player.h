@@ -67,6 +67,9 @@ public:
 
 	inline Fog* getFog() { return m_pFog; }
 
+    inline LameAI* getLameAI() { return m_pAI; }
+    inline CombatAI* getCombatAI() { return m_pUnitAI; }
+
     void UpdateAI(float fFrametime);
 
 private:
