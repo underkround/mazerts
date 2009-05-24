@@ -127,7 +127,16 @@ HRESULT ID3DApplication::Create(    int iWidth,
         m_Present.BackBufferHeight = iHeight;
 //        m_Present.SwapEffect = D3DSWAPEFFECT_FLIP;
         m_Present.FullScreen_RefreshRateInHz = 0;
-        m_Present.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+
+        // vsync
+        if (Config::getInstance()->getValueAsBool("vsync", false))
+        {
+            m_Present.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+        }
+        else
+        {
+            m_Present.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+        }
 
         // antialias
         if (aa)

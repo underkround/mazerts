@@ -276,7 +276,7 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     co.setGamestate(this);
 
     // antialias
-    pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+    if (Config::getInstance()->getValueAsBool("antialias", false)) pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
     return S_OK;
 }

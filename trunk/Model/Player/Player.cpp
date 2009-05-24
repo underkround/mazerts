@@ -31,11 +31,11 @@ Player::Player(const int index)
     m_EnergyProduced = 0;
 
     //HACK: make all players AI except first one
-    if(index > 1)
+    if(index > 0)
     {
         m_pAI = new LameAI(this);
     }
-    if(index > 1)
+    if(index > 0)
     {
         m_pUnitAI = new CombatAI(this);
     }
