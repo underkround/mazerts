@@ -517,11 +517,11 @@ void Terrain::handleDamage(const unsigned short x, const unsigned short y, float
                         {
                             if(m_ppVertexHeightData[curY][curX] > heightMod)
                             {
-                                m_ppVertexHeightData[curY][curX] -= heightMod;
+                                setTerrainVertexHeight(curX, curY, m_ppVertexHeightData[curY][curX] -= heightMod);
                             }
                             else
                             {
-                                m_ppVertexHeightData[curY][curX] = 0;
+                                setTerrainVertexHeight(curX, curY, 0);
                             }
                         }
                     }
