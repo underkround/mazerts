@@ -58,7 +58,7 @@ CombatAI::~CombatAI(void)
     }
 }
 
-#include "../../../ViewController/App/Timer.h"
+//#include "../../../ViewController/App/Timer.h"
 
 void CombatAI::Update(float fFrameTime)
 {
@@ -66,10 +66,12 @@ void CombatAI::Update(float fFrameTime)
     if(m_fUpdatetime > COMBAT_AI_UPDATE_INTERVAL) {
         //m_fUpdatetime -= COMBAT_AI_UPDATE_INTERVAL;
         m_fUpdatetime = 0;
-        
+
+        /*
         CTimer t;
         t.Create();
         t.BeginTimer();
+        */
 
 //#ifdef _DEBUG
         if (m_pPlayer->getIndex() == 2)
@@ -268,13 +270,15 @@ void CombatAI::Update(float fFrameTime)
         //do your magic
 //        EvasiveManeuver();
 
+        /*
         t.EndTimer();
         float f = t.GetElapsedSeconds();
         char* timex = new char[128];
         sprintf_s(timex, 128, "--- UPDATE TOOK: %f seconds", f);
         if (m_PrintOutput) Console::debug(timex);
+        */
 
-//        if (m_PrintOutput) Console::debug("--- END UPDATE SEQUENCE");
+        if (m_PrintOutput) Console::debug("--- END UPDATE SEQUENCE");
     }
 }
 
