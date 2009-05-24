@@ -138,6 +138,8 @@ bool DefManager::loadAssetDef(int tag)
     d->width                = c->getValueAsInt(     tags, "asset width", 2);
     d->height               = c->getValueAsInt(     tags, "asset height", 2);
 
+    d->threat               = c->getValueAsInt(     tags, "asset threat", 1);
+
     // load component definitions for asset
     int t;
 

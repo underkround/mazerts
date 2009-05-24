@@ -4,6 +4,7 @@
 #include "Terrain/Terrain.h"
 #include "Terrain/AntinTerrainGenerator.h"
 #include "Terrain/ImageTerrainGenerator.h"
+#include "Terrain/PlainTerrainGenerator.h"
 #include "Asset/AssetCollection.h"
 #include "Asset/AssetFactory.h"
 
@@ -192,6 +193,11 @@ const bool RtsInitializer::initializeScenario()
         if(paramNode) paramNode = paramNode->next;
         int size = (paramNode && paramNode->getInt() > 0) ? paramNode->getInt() : 256;
         pGenerator = new AntinTerrainGenerator(seed, size);
+    }
+    else if (generator == "plain")
+    {
+        int size = c->getValueAsInt("scenario", "scenario terrain params", 512);
+        pGenerator = new PlainTerrainGenerator(size);
     }
 
     // apply the generator

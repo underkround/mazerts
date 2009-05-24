@@ -146,6 +146,8 @@ struct AssetDef //: public BaseDef
     int gridEntrancePointX;
     int gridEntrancePointY;
 
+    int threat;
+
     // TODO: damage resistance values
 
     // bindings to other definitions

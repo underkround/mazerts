@@ -52,7 +52,7 @@
 #include "../../Model/RtsInitializer.h"
 
 
-#include "../Console.h"
+#include "../../Model/Console.h"
 
 
 #define KEYBOARD_CAMSPEED 60.0f

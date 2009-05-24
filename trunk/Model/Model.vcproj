@@ -393,6 +393,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Terrain\PlainTerrainGenerator.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Terrain\RandomTerrainGenerator.cpp"
 					>
 				</File>
@@ -522,6 +526,14 @@
 				</File>
 				<File
 					RelativePath=".\Command\UnitCommandDispatcher.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Command\UnitGroup.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Command\UnitGroup.h"
 					>
 				</File>
 			</Filter>

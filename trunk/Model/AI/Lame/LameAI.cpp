@@ -5,6 +5,7 @@
 #include "../../Terrain/Terrain.h"
 #include "../../Asset/Unit.h"
 #include "../../Asset/Building.h"
+#include "../../Defs/DefManager.h"
 
 LameAI::LameAI(Player* player)
 {
@@ -502,10 +503,24 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
     if(CountMyUnits() < m_UnitLimit)
     {
         unsigned int x, y;
+        unsigned int w = DefManager::getInstance()->getAssetDef(unittype)->width;
+        unsigned int h = DefManager::getInstance()->getAssetDef(unittype)->height;
         FindBaseCenterPoint(&x, &y);
-        x += (rand() % 11) - 5;
-        y += (rand() % 11) - 5;
-        AssetFactory::createUnit(m_pPlayer, unittype, x, y );
+        unsigned int offset = 10;
+        bool clear = false;
+        while (!clear && offset < 100)
+        {
+            offset += 2;
+            x += (rand() % (offset + 1)) - (offset >> 1);
+            y += (rand() % (offset + 1)) - (offset >> 1);
+            if (x <= 0 || y <= 0 || x + w + 1>= Terrain::getInstance()->getSize() || y + h + 1>= Terrain::getInstance()->getSize())
+                continue;
+
+            clear = ((Terrain::getInstance()->isPassable(x, y, max(w, h))) &&
+                (AssetCollection::getAssetsAt(NULL, x, y, w, h)));
+        }
+        if (clear)
+            AssetFactory::createUnit(m_pPlayer, unittype, x, y );
     }
 }
 
