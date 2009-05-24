@@ -98,9 +98,6 @@ bool UnitCommandDispatcher::dispatch(bool addToQueue)
 {
     if(m_Units.empty())
         return false;
-    // TODO: if target is coordinate, and there are multiple units selected,
-    // alter the target so the unit's wont all try to go in the same coordinate
-
     //TODO: testing, set assets to follow if the target is not static
     // also set some range to the flag so that the units don't prod each other so much
     if(!m_Target.isStatic())
@@ -108,6 +105,19 @@ bool UnitCommandDispatcher::dispatch(bool addToQueue)
         m_Target.setFlag(Target::TGTFLAG_REPEATING_UNTIL_STATIC);
         m_Target.setRange(20.0f);
     }
+
+    ListNode<Unit*>* n = m_Units.headNode();
+    int step = 1;
+    while (n)
+    {
+        if (n->item->getDef()->width > step) step = n->item->getDef()->width;
+        n = n->next;
+    }
+
+    step += 2;
+    const int square = (int)ceilf(sqrtf((float)m_Units.count()));
+    int xoff = (-square >> 1) * step;
+    int yoff = (-square >> 1) * step;
 
     ListNode<Unit*>* node = m_Units.headNode();
     while(node)
@@ -130,13 +140,26 @@ bool UnitCommandDispatcher::dispatch(bool addToQueue)
             else
             {
                 //Only move to target
-                node->item->getMovingLogic()->addTarget(new Target(m_Target));
+//                node->item->getMovingLogic()->addTarget(new Target(m_Target));
+                node->item->getMovingLogic()->addTarget(new Target(m_Target.getTargetX() + xoff, m_Target.getTargetY() + yoff));
+                xoff += step;
+                if (xoff >= square >> 1) 
+                {
+                    yoff += step;
+                    xoff = (-square >> 1) * step;
+                }
             }
         }
         else
         {
             //Only move to target
-            node->item->getMovingLogic()->addTarget(new Target(m_Target));
+            node->item->getMovingLogic()->addTarget(new Target(m_Target.getTargetX() + xoff, m_Target.getTargetY() + yoff));
+            xoff += step;
+            if (xoff >= square >> 1) 
+            {
+                yoff += step;
+                xoff = (-square >> 1) * step;
+            }
         }
 
         node = node->next;

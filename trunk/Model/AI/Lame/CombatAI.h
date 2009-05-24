@@ -55,7 +55,10 @@ private:
 
     unsigned int    m_DefensePointX;
     unsigned int    m_DefensePointY;
+    unsigned int    m_RallyPointX;
+    unsigned int    m_RallyPointY;
 
     bool            m_PrintOutput;
     unsigned int    m_UpdatesSinceAttackBegan;
+    int             m_TargetFlags;
 };

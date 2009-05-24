@@ -22,6 +22,7 @@
 #define MIN_ATTACK_GROUP_SIZE 3
 
 #define ATTACK_TIMEOUT 25
+#define RALLY_POINT_DISTANCE 30
 
 CombatAI::CombatAI(Player* player)
 {
@@ -36,8 +37,12 @@ CombatAI::CombatAI(Player* player)
     m_pDefenseTarget = NULL;
     m_DefensePointX = 0;
     m_DefensePointY = 0;
+    m_RallyPointX = 0;
+    m_RallyPointY = 0;
     m_UpdatesSinceAttackBegan = 0;
     m_PrintOutput = false;
+
+    m_TargetFlags = 0;//Target::TGTFLAG_MAKEWAY;
 
     AssetCollection::registerListener(this);
 }
@@ -86,9 +91,16 @@ void CombatAI::Update(float fFrameTime)
 
         if (m_PrintOutput) Console::debug("--- START UPDATE SEQUENCE");
 
-        // set rally point
         // TODO: This really could do some optimizing
         FindBaseCenterPoint(&m_DefensePointX, &m_DefensePointY);
+        // set rally point
+        unsigned int s = Terrain::getInstance()->getSize();
+        int rallyoffx = RALLY_POINT_DISTANCE;
+        int rallyoffy = RALLY_POINT_DISTANCE;
+        if (m_DefensePointX > (s >> 1)) rallyoffx = -rallyoffx;
+        if (m_DefensePointY > (s >> 1)) rallyoffy = -rallyoffy;
+        m_RallyPointX = m_DefensePointX + rallyoffx;
+        m_RallyPointY = m_DefensePointY + rallyoffy;
 
         // DEFENSE ============================================================
         // check if our defense team is dead
@@ -166,7 +178,7 @@ void CombatAI::Update(float fFrameTime)
                     if (m_PrintOutput) Console::debug("Defense: lol apua2");
                     clearDefense();
                 }
-                if (m_PrintOutput) Console::debug("Defense: seeking if defense is needed");
+                if (m_PrintOutput) Console::debug("Defense: checking if defense is needed");
                 m_pDefenseTarget = needDefending();
                 if (m_pDefenseTarget != NULL)
                 {
@@ -206,8 +218,8 @@ void CombatAI::Update(float fFrameTime)
             if (m_pAttackTarget)
             {
                 // target is destroyed
-                delete m_pAttackTarget;
-                m_pAttackTarget = NULL;
+                if (m_PrintOutput) Console::debug("Offense: target destroyed");
+                clearAttacks();
             }
 
             if (readyToAttack())
@@ -345,7 +357,8 @@ Target* CombatAI::needDefending()
 
             pNode = pNode->next;
         }
-        return new Target(pTarget);
+        Target* t = new Target(pTarget, m_TargetFlags);
+        return t;
     }
     return NULL;
 }
@@ -390,8 +403,13 @@ Target* CombatAI::findAttackTarget(float* threatasdf)
     }
 
     *threatasdf = threat;
-    if (pTarget == NULL) return NULL;
-    return new Target(pTarget);
+    Target* t = NULL;
+
+    if (pTarget)
+    {
+        t = new Target(pTarget, m_TargetFlags);
+    }
+    return t;
 }
 
 void CombatAI::assignReservesToGroup(UnitGroup* g)
@@ -415,9 +433,6 @@ void CombatAI::releaseToReserve(UnitGroup* g)
 {
     if (!g->getUnits()->empty())
     {
-        Target t(m_DefensePointX, m_DefensePointY);
-        g->setTarget(&t);
-
         ListNode<Unit*>* pNode = g->getUnits()->headNode();
         while(pNode)
         {
@@ -429,6 +444,8 @@ void CombatAI::releaseToReserve(UnitGroup* g)
             pNode = g->getUnits()->removeGetNext(pNode);
         }
     }
+    Target t(m_RallyPointX, m_RallyPointY, false, m_TargetFlags);
+    m_pReserveGroup->setTarget(&t);
 }
 
 const bool CombatAI::readyToAttack()
@@ -523,9 +540,6 @@ void CombatAI::clearDefense()
 {
     if (!m_pDefenseGroup->getUnits()->empty())
     {
-        Target t(m_DefensePointX, m_DefensePointY);
-        m_pDefenseGroup->setTarget(&t);
-        
         releaseToReserve(m_pDefenseGroup);
     }
 
@@ -545,6 +559,11 @@ void CombatAI::handleCreatedAsset(IAsset* instance)
         if (instance->getDef()->concreteType != 6) // TODO: this is a crude way to check if unit is a ore truck
         {
             m_pReserveGroup->addUnit((Unit*)instance);
+            if (m_RallyPointX != 0)
+            {
+                Target t(m_RallyPointX, m_RallyPointY, false, m_TargetFlags);
+                m_pReserveGroup->setTarget(&t);
+            }
         }
     }
 }
@@ -558,9 +577,6 @@ void CombatAI::clearAttacks()
 {
     if (!m_pAttackGroup->getUnits()->empty())
     {
-        Target t(m_DefensePointX, m_DefensePointY);
-        m_pAttackGroup->setTarget(&t);
-        
         releaseToReserve(m_pAttackGroup);
     }
 
