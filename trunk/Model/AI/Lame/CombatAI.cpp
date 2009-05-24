@@ -584,7 +584,7 @@ void CombatAI::handleCreatedAsset(IAsset* instance)
 {
     if (instance->getAssetType() == IAsset::UNIT && instance->getOwner() == m_pPlayer)
     {
-        if (instance->getDef()->concreteType != 6) // TODO: this is a crude way to check if unit is a ore truck
+        if (instance->getDef()->concreteType != UNIT_TYPE::UNIT_TYPE_MINER)
         {
             m_pReserveGroup->addUnit((Unit*)instance);
             if (m_RallyPointX != 0)
