@@ -1,3 +1,16 @@
+/**
+ * UnitGroup
+ *
+ * Pretty much same as UnitCommandDispatcher, but actually contains pointers to
+ * units in it.
+ *
+ * Used in AI, could be suitable for groups for human player.
+ *
+ * $Revision: 326 $
+ * $Date: 2009-04-15 22:32:11 +0300 (ke, 15 huhti 2009) $
+ * $Id: Target.h 326 2009-04-15 19:32:11Z ezbe $
+ */
+
 #ifndef __ASSETGROUP_H__
 #define __ASSETGROUP_H__
 
@@ -13,16 +26,33 @@ public:
     virtual ~UnitGroup(void);
     inline DoubleLinkedList<Unit*>* getUnits() { return &m_Group; }
 
+    /**
+     * Adds unit to group. Doesn't set target
+     */
     void addUnit(Unit* pUnit);
+
+    /**
+     * Removes unit from group
+     */
     void removeUnit(Unit* pUnit);
 
+    /**
+     * Does nothing
+     */
     void handleAssetStateChange(IAsset* pAsset, IAsset::State newState);
+
+    /**
+     * Removes unit from group
+     */
     void handleAssetReleased(IAsset* pAsset);
 
+    /**
+     * Sets the target of the group. Takes a copy.
+     */
     void setTarget(Target* target);
 
 private:
-    DoubleLinkedList<Unit*> m_Group;
+    DoubleLinkedList<Unit*> m_Group; // actual group of units
 };
 
 #endif

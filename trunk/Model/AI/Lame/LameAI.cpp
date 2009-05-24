@@ -49,7 +49,7 @@ void LameAI::Release(void)
 void LameAI::LoadConfigFromFile(void)
 {
     Config & c = * Config::getInstance();
-    c.setFilename("../Data/defs/", "LameAI.ini");
+    c.setFilename("../Data/defs/", "AI.ini");
     c.readFile();
 
     //gather unit specs for simple strategic calculation access purposes

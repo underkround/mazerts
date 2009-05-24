@@ -9,21 +9,6 @@
 #include "../../Command/UnitGroup.h"
 #include "../../Console.h"
 
-//define how often combat AI thinks it's decisions
-#define COMBAT_AI_UPDATE_INTERVAL 5.0f
-#define DEFENSE_THRESHOLD_MIN 125.0f
-#define DEFENSE_THRESHOLD_MAX 150.0f
-
-#define THREAT_RANGE 50
-#define THREAT_RANGE_HALF 25
-#define ATTACK_THRESHOLD 1.0f
-
-#define MIN_UNITS_IN_RESERVE 3
-#define MIN_ATTACK_GROUP_SIZE 3
-
-#define ATTACK_TIMEOUT 25
-#define RALLY_POINT_DISTANCE 30
-
 CombatAI::CombatAI(Player* player)
 {
     m_fUpdatetime = 0.0f;
@@ -43,6 +28,8 @@ CombatAI::CombatAI(Player* player)
     m_PrintOutput = false;
 
     m_TargetFlags = 0;//Target::TGTFLAG_MAKEWAY;
+
+    LoadConfigFromFile();
 
     AssetCollection::registerListener(this);
 }
@@ -68,8 +55,7 @@ CombatAI::~CombatAI(void)
 void CombatAI::Update(float fFrameTime)
 {
     m_fUpdatetime += fFrameTime;
-    if(m_fUpdatetime > COMBAT_AI_UPDATE_INTERVAL) {
-        //m_fUpdatetime -= COMBAT_AI_UPDATE_INTERVAL;
+    if(m_fUpdatetime > m_CombatUpdateInterval) {
         m_fUpdatetime = 0;
 /*
         CTimer t;
@@ -98,8 +84,8 @@ void CombatAI::Update(float fFrameTime)
         FindBaseCenterPoint(&m_DefensePointX, &m_DefensePointY);
         // set rally point
         unsigned int s = Terrain::getInstance()->getSize();
-        int rallyoffx = RALLY_POINT_DISTANCE;
-        int rallyoffy = RALLY_POINT_DISTANCE;
+        int rallyoffx = m_RallyPointDistance;
+        int rallyoffy = m_RallyPointDistance;
         if (m_DefensePointX > (s >> 1)) rallyoffx = -rallyoffx;
         if (m_DefensePointY > (s >> 1)) rallyoffy = -rallyoffy;
         m_RallyPointX = m_DefensePointX + rallyoffx;
@@ -128,7 +114,7 @@ void CombatAI::Update(float fFrameTime)
                     // target hasn't been destroyed
                     float distance = unitDistance(m_pDefenseTarget->getTargetAsset()->getCenterGridX(),
                         m_pDefenseTarget->getTargetAsset()->getCenterGridY(), m_DefensePointX, m_DefensePointY);
-                    if (distance > DEFENSE_THRESHOLD_MAX)
+                    if (distance > m_DefenseDistanceMax)
                     {
                         // target ran away
                         if (m_PrintOutput) Console::debug("Defense: target ran away");
@@ -301,7 +287,7 @@ void CombatAI::Update(float fFrameTime)
                     Console::debug(msg);
                 }
                 m_UpdatesSinceAttackBegan++;
-                if (m_UpdatesSinceAttackBegan > ATTACK_TIMEOUT)
+                if (m_UpdatesSinceAttackBegan > m_AttackTimeout)
                 {
                     // for some reason attacking has taken long time, reset attack
                     if (m_PrintOutput) Console::debug("Offense: attack timeout");
@@ -328,6 +314,7 @@ void CombatAI::Update(float fFrameTime)
     }
 }
 
+/*
 void CombatAI::EvasiveManeuver()
 {
     DoubleLinkedList<Unit*>* units = AssetCollection::getAllUnits();
@@ -346,10 +333,7 @@ void CombatAI::EvasiveManeuver()
         pNode = pNode->next;
     }
 }
-
-void CombatAI::Release(void)
-{
-}
+*/
 
 Target* CombatAI::needDefending()
 {
@@ -362,7 +346,7 @@ Target* CombatAI::needDefending()
         Unit* pUnit = pNode->item;
         if (m_pPlayer->isEnemy(pUnit->getOwner()))
         {
-            if (unitDistance(m_DefensePointX, m_DefensePointY, pUnit->getCenterGridX(), pUnit->getCenterGridY()) < DEFENSE_THRESHOLD_MIN)
+            if (unitDistance(m_DefensePointX, m_DefensePointY, pUnit->getCenterGridX(), pUnit->getCenterGridY()) < m_DefenseDistanceMin)
             {
                 enemiesInRange.pushHead(pUnit);
             }
@@ -451,7 +435,7 @@ void CombatAI::assignReservesToGroup(UnitGroup* g)
     if (!m_pReserveGroup->getUnits()->empty())
     {
         ListNode<Unit*>* pNode = m_pReserveGroup->getUnits()->headNode();
-        while(pNode && !(g == m_pAttackGroup && m_pReserveGroup->getUnits()->count() <= MIN_UNITS_IN_RESERVE))
+        while(pNode && !(g == m_pAttackGroup && m_pReserveGroup->getUnits()->count() <= m_MinUnitsInReserve))
         {
             Unit* pUnit = pNode->item;
 
@@ -484,7 +468,7 @@ void CombatAI::releaseToReserve(UnitGroup* g)
 
 const bool CombatAI::readyToAttack()
 {
-    bool b = m_pReserveGroup->getUnits()->count() >= MIN_UNITS_IN_RESERVE + MIN_ATTACK_GROUP_SIZE; // enough free units
+    bool b = m_pReserveGroup->getUnits()->count() >= m_MinUnitsInReserve + m_MinAttackGroupSize; // enough free units
     return b;
 }
 
@@ -493,7 +477,7 @@ const bool CombatAI::assessFeasibility(const float threat)
     // TODO: Find out some kind of mechanism to solve whether m_pAttackTarget
     // is attackable
 //    bool b = m_pReserveGroup->getUnits()->count() > 3; // enough free units
-    bool b = (threat > ATTACK_THRESHOLD); // threat is great enough
+    bool b = (threat > m_ThreatThreshold); // threat is great enough
 //    b = b && ((rand() % 2) == 0); // dirty häx :P
     return b;
 }
@@ -554,7 +538,7 @@ void CombatAI::FindBaseCenterPoint(unsigned int *xCenter, unsigned int *yCenter)
 const float CombatAI::calculateThreat(IAsset* pAsset)
 {
     DoubleLinkedList<IAsset*> list;
-    AssetCollection::getAssetsAt(&list, pAsset->getCenterGridX() - THREAT_RANGE_HALF, pAsset->getCenterGridY() - THREAT_RANGE_HALF, THREAT_RANGE, THREAT_RANGE);
+    AssetCollection::getAssetsAt(&list, pAsset->getCenterGridX() - (m_ThreatRange >> 1), pAsset->getCenterGridY() - (m_ThreatRange >> 1), m_ThreatRange, m_ThreatRange);
 
     ListNode<IAsset*>* pNode = list.headNode();
     int threat = 0;
@@ -631,4 +615,32 @@ void CombatAI::clearAttacks()
     }
 
     m_Attacking = false;
+}
+
+void CombatAI::LoadConfigFromFile(void)
+{
+    Config & c = * Config::getInstance();
+    c.setFilename("../Data/defs/", "AI.ini");
+    c.readFile();
+
+    /*
+    c.updateFloat("AICombat", "combat update interval", m_CombatUpdateInterval); // 5.0
+    c.updateFloat("AICombat", "defense distance min", m_DefenseDistanceMin); // 125.0
+    c.updateFloat("AICombat", "defense distance max", m_DefenseDistanceMax); // 150.0
+    c.updateInt("AICombat", "threat range", m_ThreatRange); // 50
+    c.updateFloat("AICombat", "threat threshold", m_ThreatThreshold); // 1.0
+    c.updateInt("AICombat", "min units in reserve", m_MinUnitsInReserve); // 3
+    c.updateInt("AICombat", "min attack group size", m_MinAttackGroupSize); // 3
+    c.updateInt("AICombat", "attack timeout", m_AttackTimeout); // 25
+    c.updateInt("AICombat", "rally point distance", m_RallyPointDistance); // 30
+    */
+    m_CombatUpdateInterval = c.getValueAsFloat("AICombat", "combat update interval", 5.0f);
+    m_DefenseDistanceMin = c.getValueAsFloat("AICombat", "defense distance min", 125.0f);
+    m_DefenseDistanceMax = c.getValueAsFloat("AICombat", "defense distance max", 150.0f);
+    m_ThreatRange = c.getValueAsInt("AICombat", "threat range", 50);
+    m_ThreatThreshold = c.getValueAsFloat("AICombat", "threat threshold", 1.0f);
+    m_MinUnitsInReserve = c.getValueAsInt("AICombat", "min units in reserve", 3);
+    m_MinAttackGroupSize = c.getValueAsInt("AICombat", "min attack group size", 3);
+    m_AttackTimeout = c.getValueAsInt("AICombat", "attack timeout", 25);
+    m_RallyPointDistance = c.getValueAsInt("AICombat", "rally point distance", 30);
 }

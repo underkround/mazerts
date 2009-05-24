@@ -1,3 +1,13 @@
+/**
+ * PlainTerrainGenerator
+ *
+ * Just creates a plain level with provided size.
+ *
+ * $Revision: 326 $
+ * $Date: 2009-04-15 22:32:11 +0300 (ke, 15 huhti 2009) $
+ * $Id: Target.h 326 2009-04-15 19:32:11Z ezbe $
+ */
+
 #ifndef __PLAINTERRAINGENERATOR_H__
 #define __PLAINTERRAINGENERATOR_H__
 
