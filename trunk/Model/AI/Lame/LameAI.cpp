@@ -71,6 +71,7 @@ void LameAI::LoadConfigFromFile(void)
         BUILDING* tmp = new BUILDING();
         tmp->strName = c.getValueAsString(convertToString(buildings[i]), "asset name", "unknown");
         tmp->cost = c.getValueAsInt(convertToString(buildings[i]), "asset construction cost ore", 10);
+        tmp->energyConsumption = c.getValueAsInt(convertToString(buildings[i]), "asset energy consumption", 10);
         tmp->width = c.getValueAsInt(convertToString(buildings[i]), "asset width", 10);
         tmp->height = c.getValueAsInt(convertToString(buildings[i]), "asset height", 10);
         tmp->eType = (BUILDING_TYPE)buildings[i];
@@ -89,6 +90,7 @@ void LameAI::LoadConfigFromFile(void)
     c.updateInt("AAI", "count mod", m_CountMod);
     c.updateInt("AAI", "kill mod", m_KillMod);
     c.updateInt("AAI", "base spread", m_BaseSpread);
+    c.updateInt("AAI", "energy reserve", m_EnergyReserve);
 }
 #pragma endregion
 
@@ -243,15 +245,23 @@ int LameAI::FindUnitKillCount(UNIT_TYPE unittype)
 
 bool LameAI::CanSupport(BUILDING_TYPE buildingtype)
 {
-    int cost = 0;
+    int ec = 0;
     for(unsigned int i=0;i<m_vBuildings.size();++i)
     {
         if(m_vBuildings[i]->eType == buildingtype)
-            cost = m_vBuildings[i]->cost;
+            ec = m_vBuildings[i]->energyConsumption;
     }
-    int energyBalance = m_pPlayer->getEnergyProduced() - (m_pPlayer->getEnergyConsumed() + cost);
-    if(energyBalance >= 0) return true;
-    return false;
+    int energyBalance = m_pPlayer->getPredictedEnergyProduction() - (m_pPlayer->getPredictedEnergyConsumption() + ec + m_EnergyReserve);
+    //if you want AI to update to run little bit faster here's code that doesn't use predictions
+    //int energyBalance = m_pPlayer->getEnergyProduced() - (m_pPlayer->getEnergyConsumed() + ec + m_EnergyReserve);
+    if(energyBalance > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool LameAI::CanIAffordToBuild(BUILDING_TYPE buildingtype)

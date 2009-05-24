@@ -73,6 +73,7 @@ idkfa \t give all players a lot of ore\n \
 energy \t give all players some power\n \
 poor \t everyone loses all resources\n \
 nolimits \t set all AI build limits to 100000\n \
+recalc \t force power consumption recalculation\n \
 \n"),
                      _T("game console commands"),
                      NULL);
@@ -137,6 +138,13 @@ nolimits \t set all AI build limits to 100000\n \
                 tmp->setUnitLimit(100000);
                 tmp->setBuildingLimit(100000);
             }
+        }
+    }
+    if(!_tcscmp(m_arrMessage, _T("recalc")))
+    {
+        for(int i=1;i<PlayerManager::getPlayerCount();++i)
+        {
+            PlayerManager::getInstance()->getPlayer(i)->CalculateEnergyBalance();
         }
     }
 }

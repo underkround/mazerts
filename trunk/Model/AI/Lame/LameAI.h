@@ -49,6 +49,7 @@ public:
         string                    strName;
         LameAI::BUILDING_TYPE    eType;
         int                       cost;
+        int                      energyConsumption;
         int                      width;
         int                      height;
         //here probably should be pointer to actual building
@@ -195,13 +196,15 @@ private:
 
     Player*              m_pPlayer;
 
+    //modifier values define what weights most when AI decides what unit to build next
     int m_CostMod;
     int m_CountMod;
     int m_KillMod;
-    float m_UnitRatio;
-    float m_UnitRatio2;
+    float m_UnitRatio;    //# unit ratio tells AI how many unit should it have compared to amount of it's buildings
+    float m_UnitRatio2;   //# unit ratio after building limit has been reached
     float m_fUpdatetime;
-    int m_BaseSpread;
+    int m_BaseSpread;     //how tightly to lay out the base (bigger number means more spread out)
+    int m_EnergyReserve;  //require this much energy reserve even if not needed by structures
     float m_fUpdateInterval;
     int m_UnitLimit;
     int m_BuildingLimit;

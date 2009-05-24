@@ -63,6 +63,11 @@ public:
 
     inline const int getEnergyProduced() { return m_EnergyProduced; }
 	inline const int getEnergyConsumed() { return m_EnergyConsumed; }
+
+    //these predicted energy values take into account buildings that are still being built
+    const int getPredictedEnergyProduction();
+    const int getPredictedEnergyConsumption();
+
     /**
      * Calculates if we are making more energy than we are needing
      */

@@ -95,7 +95,7 @@ bool Player::CalculateEnergyBalance(void)
 	setEnergyConsumed(consumed);
 
     //if total is negative, shut down buildings, otherwise, turn them on
-    if(produced > consumed)
+    if(produced < consumed)
     {
         PowerSwitch(false);
         return false;
@@ -109,5 +109,41 @@ bool Player::CalculateEnergyBalance(void)
 
 void Player::PowerSwitch(bool enable)
 {
-    //go thru buildings that consume energy and enable/disable them
+    //go thru buildings that consume energy and enable (true)/disable (false) them
+}
+
+const int Player::getPredictedEnergyProduction()
+{
+    int produced = 0;
+    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
+    ListNode<Building*>* pNode = buildings->headNode();
+    while(pNode)
+    {
+        if(pNode->item->getOwner()->getId() == m_Id)
+        {
+            if(pNode->item->getState() != IAsset::STATE_DESTROYED ) {
+                produced += pNode->item->getEnergyProduction();
+            }
+        }
+        pNode = pNode->next;
+    }
+	return produced;
+}
+
+const int Player::getPredictedEnergyConsumption()
+{
+    int consumed = 0;
+    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
+    ListNode<Building*>* pNode = buildings->headNode();
+    while(pNode)
+    {
+        if(pNode->item->getOwner()->getId() == m_Id)
+        {
+            if(pNode->item->getState() != IAsset::STATE_DESTROYED ) {
+                consumed += pNode->item->getEnergyConsumption();
+            }
+        }
+        pNode = pNode->next;
+    }
+    return consumed;
 }
