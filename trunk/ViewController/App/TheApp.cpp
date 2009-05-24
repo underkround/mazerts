@@ -14,6 +14,8 @@
 #include "../States/GameState.h"
 #include "../Sound/SoundManager.h"
 
+#include "../../Model/Console.h"
+
 CTheApp::CTheApp(void)
 {
     m_Help = false;
@@ -166,7 +168,7 @@ void CTheApp::OnFlip(void)
         Cursor::getInstance()->renderText(this);
         //TextComponent::renderText();
 
-
+/*
         if(m_Help)
         {
             DrawTextRow(_T("Drag with right mouse button pressed to pan view"), 0xFFFFFFFF);
@@ -180,14 +182,53 @@ void CTheApp::OnFlip(void)
             DrawTextRow(_T("F5 toggles sound, f6 toggles music, numpad +/- changes master volume"), 0xFFFFFFFF);
             DrawTextRow(_T("F1 hides/shows this help message"), 0xFFFFFFFF);
         }
+*/
         if(m_CatchInput)
         {
             GameConsole & co = *GameConsole::getInstance();
             DrawText(100, 400, _T("konsoli päällä"), 0xFFFFFFFF);
             TCHAR msg[128];
-			_stprintf_s(msg, _T("%s"), (LPCTSTR)co.output());
-            
+            _stprintf_s(msg, _T("%s"), (LPCTSTR)co.output());
             DrawText(100, 450, msg, 0xFFFFFFFF);
+        }
+
+        /** HAXHAX: just dump the model's console buffer to the screen */
+        if(m_Help)
+        {
+            if(Console::getInstance()->getCurrentSize() > 0) {
+                int consoleTextX = 350;
+                int consoleTextY = 100;
+                TCHAR msg2[128];
+                _stprintf_s(msg2, _T("-- model-konsoli, rivejä: %d --"), Console::getInstance()->getCurrentSize());
+                DrawText(consoleTextX, consoleTextY, msg2, 0xFFFFFFFF);
+                ListNode<ConsoleMsg*>* node = Console::getInstance()->getTail();
+                const int msgMaxSize = 128;
+                wchar_t msgWTF_CHAR[msgMaxSize+1];
+                int msgColor = 0xFFFFFFFF;
+                while(node) {
+                    consoleTextY += GetTextHeight();
+                    switch(node->item->level) {
+                        case MSG_LEVEL_DEBUG:
+                            msgColor = 0xFFFFFFFF;
+                            break;
+                        case MSG_LEVEL_NOTIFY:
+                            msgColor = 0xFFCCFF00;
+                            break;
+                        case MSG_LEVEL_ERROR:
+                            msgColor = 0xFFFF2222;
+                            break;
+                    }
+                    JString* msgSrc = node->item->msg;
+                    int msgSize = msgSrc->GetLength();
+                    if(msgSize > msgMaxSize)
+                        msgSize = msgMaxSize;
+                    MultiByteToWideChar(CP_ACP, 0, msgSrc->GetBuffer(), -1, msgWTF_CHAR, msgSize);
+                    msgWTF_CHAR[msgSize] = '\0';
+                    //DrawTextRow(msgWTF_CHAR, msgColor);
+                    DrawText(consoleTextX, consoleTextY, msgWTF_CHAR, msgColor);
+                    node = node->prev;
+                }
+            }
         }
 
         TCHAR text[100];

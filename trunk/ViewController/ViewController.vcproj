@@ -183,6 +183,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Model\Console.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Model\Console.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Model\Constants.h"
 				>
 			</File>

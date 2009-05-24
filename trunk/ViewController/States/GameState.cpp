@@ -51,6 +51,10 @@
 // Game initializer
 #include "../../Model/RtsInitializer.h"
 
+
+#include "../Console.h"
+
+
 #define KEYBOARD_CAMSPEED 60.0f
 #define MOUSE_CAMSPEED 0.01f
 
@@ -485,6 +489,7 @@ void GameState::updateControls(const float frameTime)
 
     if(KeyboardState::keyReleased[0x4E]) // numpad +
     {
+        /*
         int iconSize = IApplication::RandInt(32,128);
         int iconTag = IApplication::RandInt(1,6);
         DummyComponent* dc1 = new DummyComponent(10, 10, iconSize, iconSize);
@@ -497,11 +502,16 @@ void GameState::updateControls(const float frameTime)
         dc2->setTooltip("butt 2b");
         m_pCont1->addComponent(dc1);
         m_pCont2->addComponent(dc2);
+        */
+        Console::out("asset construction");
     }
     if(KeyboardState::keyReleased[0x4A]) // numpad -
     {
+        /*
         m_pCont1->releaseComponent(m_pCont1->getChildren()->peekTail());
         m_pCont2->releaseComponent(m_pCont2->getChildren()->peekTail());
+        */
+        Console::error("asset construction");
     }
 
     /*

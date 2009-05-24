@@ -282,6 +282,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Console.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Console.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Constants.h"
 				>
 			</File>
