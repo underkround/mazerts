@@ -248,7 +248,7 @@ bool LameAI::CanSupport(BUILDING_TYPE buildingtype)
         if(m_vBuildings[i]->eType == buildingtype)
             cost = m_vBuildings[i]->cost;
     }
-    int energyBalance = (m_pPlayer->getEnergyProduced() - m_pPlayer->getEnergyConsumed()) - cost;
+    int energyBalance = m_pPlayer->getEnergyProduced() - (m_pPlayer->getEnergyConsumed() + cost);
     if(energyBalance >= 0) return true;
     return false;
 }

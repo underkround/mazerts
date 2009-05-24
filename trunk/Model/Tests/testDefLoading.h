@@ -37,7 +37,8 @@ void testDefLoading()
         cout << "gridPassableAreaX: " << a->gridPassableAreaX << endl;
         cout << "gridPassableAreaY" << a->gridPassableAreaY << endl;
         cout << "height: " << a->height << endl;
-        cout << "idleEnergyConsumption: " << a->idleEnergyConsumption << endl;
+        cout << "energyProduction: " << a->energyProduction << endl;
+        cout << "energyConsumption: " << a->energyConsumption << endl;
         cout << "maxHitpoints: " << a->maxHitpoints << endl;
         cout << "name: " << a->name << endl;
         cout << "width: " << a->width << endl;

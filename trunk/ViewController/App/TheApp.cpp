@@ -241,7 +241,7 @@ void CTheApp::OnFlip(void)
         _stprintf_s(text, _T("Pathfinders  Running:%d  Waiting: %d"), PathFinderMaster::getRunningAmount(), PathFinderMaster::getWaitingAmount());
         DrawText(500, 60, text, 0xFFFFFFFF);        
 
-        _stprintf_s(text, _T("Player ore: %d   Player Energy: %d"), PlayerManager::getInstance()->getPlayer(1)->getOre(), PlayerManager::getInstance()->getPlayer(1)->getEnergyProduced());
+        _stprintf_s(text, _T("Player ore: %d   Player Energy: %d/%d"), PlayerManager::getInstance()->getPlayer(1)->getOre(), PlayerManager::getInstance()->getPlayer(1)->getEnergyConsumed(), PlayerManager::getInstance()->getPlayer(1)->getEnergyProduced());
         DrawText(500, 40, text, 0xFFFFFFFF);
 
         m_TextRow = 0;

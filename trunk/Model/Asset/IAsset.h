@@ -57,7 +57,8 @@ public:
         STATE_BEING_BUILT = 0,  // set when created, until hitpoints reach max,
                                 // cannot operate until active
         STATE_ACTIVE,           // normal state
-        STATE_PARALYZED,        // cannot do anything
+        STATE_DISABLED,         // cannot do anything until enabled explicitly
+        STATE_PARALYZED,        // cannot do anything, resets to active after time
         STATE_DESTROYED         // downcounter running for object destruction
     };
 
@@ -168,6 +169,15 @@ public:
      * Return the maximum hitpoints for this asset
      */
     inline const int getHitpointsMax() { return m_Def.maxHitpoints; }
+
+    /**
+     * Return the amount of energy this asset produces
+     */
+    inline const int getEnergyProduction() { return m_Def.energyProduction; }
+    /**
+     * return the amount of energy this asset requires to operate
+     */
+    inline const int getEnergyConsumption() { return m_Def.energyConsumption; }
 
     /**
      * Straight modification of asset's hitpoints (not to use with

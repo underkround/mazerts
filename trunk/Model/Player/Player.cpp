@@ -8,6 +8,10 @@
 
 #include "Player.h"
 
+#include "../Common/DoubleLinkedList.h"
+#include "../Asset/AssetCollection.h"
+#include "../Asset/Building.h"
+
 Player::Player(const int index)
 {
     m_Index = index;
@@ -27,7 +31,7 @@ Player::Player(const int index)
     m_EnergyProduced = 0;
 
     //HACK: make all players AI except first one
-    if(index > 1)
+    if(index > 0)
     {
         m_pAI = new LameAI(this);
     }
@@ -66,4 +70,44 @@ void Player::UpdateAI(float fFrametime)
     {
         m_pUnitAI->Update(fFrametime);
     }
+}
+
+bool Player::CalculateEnergyBalance(void)
+{
+    //cycle thru our buildings
+    int produced = 0;
+    int consumed = 0;
+    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
+    ListNode<Building*>* pNode = buildings->headNode();
+    while(pNode)
+    {
+        if(pNode->item->getOwner()->getId() == m_Id)
+        {
+            if(pNode->item->getState() != IAsset::STATE_BEING_BUILT && pNode->item->getState() != IAsset::STATE_DESTROYED ) {
+                produced += pNode->item->getEnergyProduction();
+                consumed += pNode->item->getEnergyConsumption();
+            }
+        }
+        pNode = pNode->next;
+    }
+
+	setEnergyProduced(produced);
+	setEnergyConsumed(consumed);
+
+    //if total is negative, shut down buildings, otherwise, turn them on
+    if(produced > consumed)
+    {
+        PowerSwitch(false);
+        return false;
+    }
+    else
+    {
+        PowerSwitch(true);
+        return true;
+    }
+}
+
+void Player::PowerSwitch(bool enable)
+{
+    //go thru buildings that consume energy and enable/disable them
 }

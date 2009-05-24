@@ -192,7 +192,12 @@ const float IAsset::modifyHitpoints(const float amount)
     // if we are in the state of being build and our hitpoints reach max,
     // we are ready and enter to active state
     else if(m_State == STATE_BEING_BUILT && m_Hitpoints == m_Def.maxHitpoints)
+    {
         changeState(STATE_ACTIVE);
+        //to reduce update overload, this is the optimal place to recalculate energy consumption
+        //another place is whenever building gets destroyed
+        m_pOwner->CalculateEnergyBalance();
+    }
     return m_Hitpoints;
 }
 

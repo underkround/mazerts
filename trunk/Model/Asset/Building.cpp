@@ -133,6 +133,9 @@ char Building::update(const float deltaT)
      * Destroyed -state
      */
     case STATE_DESTROYED:
+        //when building is destroyed we need to recalculate our energy needs
+        //another place to do so is whenever building becomes active
+        m_pOwner->CalculateEnergyBalance();
         return RESULT_DELETEME; // unit will be deleted when returning this value
         break;
 

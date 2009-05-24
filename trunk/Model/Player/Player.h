@@ -24,10 +24,7 @@ public:
 
     /**
      * TODO:
-     * - fog
-     * - territory
-     * - resources: energy
-     *   - ore is kept in mining units and factory buildings?
+     * - territory (for new buildings?)
      */
 
     inline const int getId() { return m_Id; }
@@ -59,11 +56,24 @@ public:
 	inline void setOre(const int amount) { m_Ore = amount; }
     inline void modifyOre(const int amount) { m_Ore += amount; }
 
-	inline const int getEnergyProduced() { return m_EnergyProduced; }
-	inline void setEnergyProduced(const int amount) { m_EnergyProduced = amount; }
-
-	inline const int getEnergyConsumed() { return m_EnergyConsumed; }
+    //only for debugging use!
+    inline void setEnergyProduced(const int amount) { m_EnergyProduced = amount; }
+    //only for debugging use!
 	inline void setEnergyConsumed(const int amount) { m_EnergyConsumed = amount; }
+
+    inline const int getEnergyProduced() { return m_EnergyProduced; }
+	inline const int getEnergyConsumed() { return m_EnergyConsumed; }
+    /**
+     * Calculates if we are making more energy than we are needing
+     */
+    bool CalculateEnergyBalance();
+    /**
+     * enables/disables buildings
+     *
+     * @param enable false = disables all buildings that consume energy
+     * @param enable true  = enables all buildings
+     */
+    void PowerSwitch(bool enable);
 
 	inline Fog* getFog() { return m_pFog; }
 
@@ -73,6 +83,7 @@ public:
     void UpdateAI(float fFrametime);
 
 private:
+
     int         m_Id; // id of this player
     int         m_Index; // index of this player
 

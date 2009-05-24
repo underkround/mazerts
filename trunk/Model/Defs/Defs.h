@@ -130,10 +130,12 @@ struct AssetDef //: public BaseDef
     unsigned char width;
     unsigned char height;
 
-    // TODO: definitions for energy and resource
+    // definitions for energy and resource
     int constructionCostOre;
-    int constructionCostEnergy;
-    int idleEnergyConsumption;
+    int constructionCostEnergy; //?!
+
+    int energyConsumption;
+    int energyProduction;
 
     // for building-types only:
     // this is a pretty much hack, but hey, !IF! it works  ;)

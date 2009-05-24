@@ -129,7 +129,9 @@ bool DefManager::loadAssetDef(int tag)
     d->gridEntrancePointX    = c->getValueAsInt(     tags, "asset grid entrance point x", 0);
     d->gridEntrancePointY    = c->getValueAsInt(     tags, "asset grid entrance point y", 0);
 
-    d->idleEnergyConsumption = c->getValueAsInt(    tags, "asset idle energy consumption", 1);
+    d->energyProduction     = c->getValueAsInt(     tags, "asset energy production", 0);
+    d->energyConsumption    = c->getValueAsInt(     tags, "asset energy consumption", 0);
+    
     d->name                 = c->getValueAsString(  tags, "asset name", "unnamed");
     d->description          = c->getValueAsString(  tags, "asset description", "unset description");
     d->maxHitpoints         = c->getValueAsInt(     tags, "asset max hitpoints", 10);
