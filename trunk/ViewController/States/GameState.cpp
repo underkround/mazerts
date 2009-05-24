@@ -275,6 +275,9 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     GameConsole & co = *GameConsole::getInstance();
     co.setGamestate(this);
 
+    // antialias
+    pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+
     return S_OK;
 }
 
@@ -441,7 +444,6 @@ void GameState::prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float fr
 
 void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 {
-
     //Terrain needs normal backface-culling
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
     pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);

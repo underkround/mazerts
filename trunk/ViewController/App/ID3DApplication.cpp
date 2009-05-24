@@ -14,6 +14,7 @@
  */
 
 #include "ID3DApplication.h"
+#include "../../Model/Common/Config.h"
 
 ID3DApplication::ID3DApplication(void)
 {
@@ -55,6 +56,35 @@ HRESULT ID3DApplication::Create(    int iWidth,
         return E_FAIL;
     }
 
+    bool aa = Config::getInstance()->getValueAsBool("antialias", false);
+    D3DMULTISAMPLE_TYPE samples = D3DMULTISAMPLE_NONE;
+    if (aa) {
+        if( FAILED(m_pD3D->CheckDeviceMultiSampleType( D3DADAPTER_DEFAULT, 
+					        D3DDEVTYPE_HAL , D3DFMT_R8G8B8, FALSE, 
+                            samples, NULL ) ) )
+                            return E_FAIL;
+
+        switch (Config::getInstance()->getValueAsInt("antialias samples", 2))
+        {
+        case 2: samples = D3DMULTISAMPLE_2_SAMPLES; break;
+        case 3: samples = D3DMULTISAMPLE_3_SAMPLES; break;
+        case 4: samples = D3DMULTISAMPLE_4_SAMPLES; break;
+        case 5: samples = D3DMULTISAMPLE_5_SAMPLES; break;
+        case 6: samples = D3DMULTISAMPLE_6_SAMPLES; break;
+        case 7: samples = D3DMULTISAMPLE_7_SAMPLES; break;
+        case 8: samples = D3DMULTISAMPLE_8_SAMPLES; break;
+        case 9: samples = D3DMULTISAMPLE_9_SAMPLES; break;
+        case 10: samples = D3DMULTISAMPLE_10_SAMPLES; break;
+        case 11: samples = D3DMULTISAMPLE_11_SAMPLES; break;
+        case 12: samples = D3DMULTISAMPLE_12_SAMPLES; break;
+        case 13: samples = D3DMULTISAMPLE_13_SAMPLES; break;
+        case 14: samples = D3DMULTISAMPLE_14_SAMPLES; break;
+        case 15: samples = D3DMULTISAMPLE_15_SAMPLES; break;
+        case 16: samples = D3DMULTISAMPLE_16_SAMPLES; break;
+        default:
+            return E_FAIL;
+        }
+    }
 
     // initialise the present parameters
     HRESULT hres;
@@ -69,8 +99,18 @@ HRESULT ID3DApplication::Create(    int iWidth,
         m_Present.BackBufferWidth = GetWindowRect().right;
         m_Present.BackBufferHeight = GetWindowRect().bottom;
         m_Present.Windowed = TRUE;
-        m_Present.SwapEffect = D3DSWAPEFFECT_COPY;
         m_Present.BackBufferCount = 1;
+
+        // antialias
+        if (aa)
+        {
+            m_Present.SwapEffect      = D3DSWAPEFFECT_DISCARD;
+            m_Present.MultiSampleType = samples;
+        }
+        else
+        {
+            m_Present.SwapEffect = D3DSWAPEFFECT_COPY;
+        }
 
         // force z-buffer to 16 bit format, without stencil bits
         m_Present.AutoDepthStencilFormat = D3DFMT_D16;
@@ -85,9 +125,20 @@ HRESULT ID3DApplication::Create(    int iWidth,
         // init fullscreen mode present parameters
         m_Present.BackBufferWidth = iWidth;
         m_Present.BackBufferHeight = iHeight;
-        m_Present.SwapEffect = D3DSWAPEFFECT_FLIP;
+//        m_Present.SwapEffect = D3DSWAPEFFECT_FLIP;
         m_Present.FullScreen_RefreshRateInHz = 0;
         m_Present.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+
+        // antialias
+        if (aa)
+        {
+            m_Present.SwapEffect      = D3DSWAPEFFECT_DISCARD;
+            m_Present.MultiSampleType = samples;
+        }
+        else
+        {
+            m_Present.SwapEffect = D3DSWAPEFFECT_FLIP;
+        }
 
         switch (iBPP)
         {

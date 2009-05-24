@@ -520,8 +520,11 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
         {
             if (pNode->item->getOwner() == m_pPlayer && pNode->item->getTypeTag() == BUILDING_TYPE_FACTORY)
             {
-                factories[count] = pNode->item;
-                ++count;
+                if (pNode->item->getState() == IAsset::STATE_ACTIVE)
+                {
+                    factories[count] = pNode->item;
+                    ++count;
+                }
             }
 
             pNode = pNode->next;
