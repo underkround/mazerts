@@ -42,7 +42,7 @@ CombatAI::CombatAI(Player* player)
     m_UpdatesSinceAttackBegan = 0;
     m_PrintOutput = false;
 
-    m_TargetFlags = 0;//Target::TGTFLAG_MAKEWAY;
+    m_TargetFlags = Target::TGTFLAG_MAKEWAY;
 
     AssetCollection::registerListener(this);
 }
