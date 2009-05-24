@@ -16,7 +16,7 @@
 
 #define THREAT_RANGE 50
 #define THREAT_RANGE_HALF 25
-#define ATTACK_THRESHOLD 10.0f
+#define ATTACK_THRESHOLD 1.0f
 
 #define MIN_UNITS_IN_RESERVE 3
 #define MIN_ATTACK_GROUP_SIZE 3
@@ -42,7 +42,7 @@ CombatAI::CombatAI(Player* player)
     m_UpdatesSinceAttackBegan = 0;
     m_PrintOutput = false;
 
-    m_TargetFlags = Target::TGTFLAG_MAKEWAY;
+    m_TargetFlags = 0;//Target::TGTFLAG_MAKEWAY;
 
     AssetCollection::registerListener(this);
 }
@@ -71,13 +71,11 @@ void CombatAI::Update(float fFrameTime)
     if(m_fUpdatetime > COMBAT_AI_UPDATE_INTERVAL) {
         //m_fUpdatetime -= COMBAT_AI_UPDATE_INTERVAL;
         m_fUpdatetime = 0;
-
-        /*
+/*
         CTimer t;
         t.Create();
         t.BeginTimer();
-        */
-
+*/
 //#ifdef _DEBUG
         if (m_pPlayer->getIndex() == 2)
         {
@@ -89,7 +87,12 @@ void CombatAI::Update(float fFrameTime)
         }
 //#endif
 
-        if (m_PrintOutput) Console::debug("--- START UPDATE SEQUENCE");
+        if (m_PrintOutput)
+        {
+            char* msg = new char[128];
+            sprintf_s(msg, 128, "--- START COMBAT UPDATE SEQUENCE FOR PLAYER %d", m_pPlayer->getIndex());
+            Console::debug(msg);
+        }
 
         // TODO: This really could do some optimizing
         FindBaseCenterPoint(&m_DefensePointX, &m_DefensePointY);
@@ -137,14 +140,25 @@ void CombatAI::Update(float fFrameTime)
                         if (!m_pReserveGroup->getUnits()->empty())
                         {
                             // more units to assign
-                            if (m_PrintOutput) Console::debug("Defense: still same target, assigning reserves");
+                        if (m_PrintOutput)
+                        {
+                            char* msg = new char[128];
+                            sprintf_s(msg, 128, "Defense: still same target (%s @ %d, %d), assigning reserves", m_pDefenseTarget->getTargetAsset()->getDef()->name.c_str(), m_pDefenseTarget->getTargetX(), m_pDefenseTarget->getTargetY());
+                            Console::debug(msg);
+                        }
+                        if (m_PrintOutput) Console::debug("Defense: ");
                             m_pReserveGroup->setTarget(m_pDefenseTarget);
                             assignReservesToGroup(m_pDefenseGroup);
                         }
                         else
                         {
                             // everybody is already doing something
-                            if (m_PrintOutput) Console::debug("Defense: still same target, but no reserves to assign");
+                            if (m_PrintOutput)
+                            {
+                                char* msg = new char[128];
+                                sprintf_s(msg, 128, "Defense: still same target (%s @ %d, %d), but no reserves to assign", m_pDefenseTarget->getTargetAsset()->getDef()->name.c_str(), m_pDefenseTarget->getTargetX(), m_pDefenseTarget->getTargetY());
+                                Console::debug(msg);
+                            }
                         }
                     }
                 }
@@ -184,8 +198,13 @@ void CombatAI::Update(float fFrameTime)
                 {
                     if (!m_pReserveGroup->getUnits()->empty())
                     {
-                        if (m_PrintOutput) Console::debug("Defense: target acquired, assigning defenders");
                         // defending is needed
+                        if (m_PrintOutput)
+                        {
+                            char* msg = new char[128];
+                            sprintf_s(msg, 128, "Defense: target acquired: %s @ %d, %d", m_pDefenseTarget->getTargetAsset()->getDef()->name.c_str(), m_pDefenseTarget->getTargetX(), m_pDefenseTarget->getTargetY());
+                            Console::debug(msg);
+                        }
                         m_pReserveGroup->setTarget(m_pDefenseTarget);
                         assignReservesToGroup(m_pDefenseGroup);
                         m_Defending = true;
@@ -236,7 +255,12 @@ void CombatAI::Update(float fFrameTime)
                 if (m_pAttackTarget)
                 {
                     // new target found
-                    if (m_PrintOutput) Console::debug("Offense: target found");
+                    if (m_PrintOutput)
+                    {
+                        char* msg = new char[128];
+                        sprintf_s(msg, 128, "Offense: target acquired: %s @ %d, %d // t: %4.2f", m_pAttackTarget->getTargetAsset()->getDef()->name.c_str(), m_pAttackTarget->getTargetX(), m_pAttackTarget->getTargetY(), threat);
+                        Console::debug(msg);
+                    }
                     if (!m_pReserveGroup->getUnits()->empty() && assessFeasibility(threat))
                     {
                         // it's feasible to attack
@@ -267,30 +291,40 @@ void CombatAI::Update(float fFrameTime)
         }
         else
         {
-            // already attacking
-            if (m_PrintOutput) Console::debug("Offense: already attacking");
-            m_UpdatesSinceAttackBegan++;
-            if (m_UpdatesSinceAttackBegan > ATTACK_TIMEOUT)
+            if (m_Attacking)
             {
-                // for some reason attacking has taken long time, reset attack
-                if (m_PrintOutput) Console::debug("Offense: attack timeout");
-                clearAttacks();
+                // already attacking
+                if (m_PrintOutput)
+                {
+                    char* msg = new char[128];
+                    sprintf_s(msg, 128, "Offense: already attacking %s @ %d, %d", m_pAttackTarget->getTargetAsset()->getDef()->name.c_str(), m_pAttackTarget->getTargetX(), m_pAttackTarget->getTargetY());
+                    Console::debug(msg);
+                }
+                m_UpdatesSinceAttackBegan++;
+                if (m_UpdatesSinceAttackBegan > ATTACK_TIMEOUT)
+                {
+                    // for some reason attacking has taken long time, reset attack
+                    if (m_PrintOutput) Console::debug("Offense: attack timeout");
+                    clearAttacks();
+                }
+            }
+            else
+            {
+                // defending
+                if (m_PrintOutput) Console::debug("Offense: cannot attack while defending");
             }
         }
         // END OFFENSE ========================================================
 
         //do your magic
 //        EvasiveManeuver();
-
-        /*
+/*
         t.EndTimer();
         float f = t.GetElapsedSeconds();
         char* timex = new char[128];
-        sprintf_s(timex, 128, "--- UPDATE TOOK: %f seconds", f);
-        if (m_PrintOutput) Console::debug(timex);
-        */
-
-        if (m_PrintOutput) Console::debug("--- END UPDATE SEQUENCE");
+        sprintf_s(timex, 128, "--- COMBAT UPDATE FOR PLAYER %d TOOK: %f ms", m_pPlayer->getIndex(), f * 1000);
+        Console::debug(timex);
+*/
     }
 }
 
@@ -460,7 +494,7 @@ const bool CombatAI::assessFeasibility(const float threat)
     // is attackable
 //    bool b = m_pReserveGroup->getUnits()->count() > 3; // enough free units
     bool b = (threat > ATTACK_THRESHOLD); // threat is great enough
-    b = b && ((rand() % 2) == 0); // dirty häx :P
+//    b = b && ((rand() % 2) == 0); // dirty häx :P
     return b;
 }
 
@@ -524,13 +558,23 @@ const float CombatAI::calculateThreat(IAsset* pAsset)
 
     ListNode<IAsset*>* pNode = list.headNode();
     int threat = 0;
+    int ownUnitsInAreaMultiplier = 1;
     while (pNode)
     {
         if (m_pPlayer->isEnemy(pNode->item->getOwner()))
             threat += pNode->item->getDef()->threat;
+        else if (pNode->item->getOwner() == m_pPlayer)
+            ++ownUnitsInAreaMultiplier;
 
         pNode = pNode->next;
     }
+
+    // adds own value into threat (so own value is little more weighed)
+    threat += pAsset->getDef()->threat;
+
+    // count own units in the area, if there are many make it more suitable for attacking
+    threat *= ownUnitsInAreaMultiplier;
+
     float dist = unitDistance(pAsset->getCenterGridX(), pAsset->getCenterGridY(), m_DefensePointX, m_DefensePointY);
     if (dist < 1.0f) dist = 1.0f;
     return ((Terrain::getInstance()->getSize() << 1) / dist) * threat;

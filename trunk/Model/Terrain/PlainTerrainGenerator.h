@@ -31,8 +31,8 @@ public:
      */
     inline void generateHeightmap(unsigned char** ppVertexHeightData, const unsigned short terrainSize)
     {
-        for (unsigned int y = 0; y < m_Size; y++)
-            for (unsigned int x = 0; x < m_Size; x++) {
+        for (unsigned int y = 0; y < terrainSize; y++)
+            for (unsigned int x = 0; x < terrainSize; x++) {
                 ppVertexHeightData[y][x] = Terrain::getInstance()->getWaterLevel() + LEVEL_ABOVE_WATER;
             }
     }

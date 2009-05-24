@@ -371,7 +371,18 @@ bool GameState::update(const float frameTime)
     m_pRootContainer->update(frameTime);
 
     // Update AI
+    CTimer aiTimer;
+    aiTimer.Create();
+    aiTimer.BeginTimer();
     PlayerManager::getInstance()->update(frameTime);
+    aiTimer.EndTimer();
+    float ms = aiTimer.GetElapsedSeconds() * 1000.0f;
+    if (ms > 0.05f)
+    {
+        char* msg = new char[128];
+        sprintf_s(msg, 128, "--- AI UPDATING TOOK %f ms", ms);
+        Console::debug(msg);
+    }
 
     // update fog
     m_pCurrentPlayer->getFog()->update(frameTime);
