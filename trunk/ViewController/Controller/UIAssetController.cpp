@@ -56,6 +56,20 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     //m_pButtonPanel->onParentChange(); // no need to call this if we add the component to the container AFTER snap settings
     RootContainer::getInstance()->addComponent(m_pButtonPanel);
 
+    // @TODO: temp, test button
+    BasicButton* but1 = new BasicButton(64, 64, 0, this);
+    but1->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1));
+    but1->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(2));
+    m_pButtonPanel->addComponent(but1);
+    BasicButton* but2 = new BasicButton(64, 64, 1, this);
+    but2->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(3));
+    but2->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(4));
+    m_pButtonPanel->addComponent(but2);
+    BasicButton* but3 = new BasicButton(64, 64, 2, this);
+    but3->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(5));
+    but3->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(6));
+    m_pButtonPanel->addComponent(but3);
+
     // default setting values
     m_KeyMouseActionButton = 1;
     m_KeyMousePickButton = 0;
@@ -173,13 +187,21 @@ void UIAssetController::release()
 }
 
 
+#include "../../Model/Console.h"
+
 void UIAssetController::onButtonClick(BasicButton* pSrc)
 {
+    char* msg = new char[128];
+    sprintf_s(msg, 128, "button %d clicked", pSrc->getId());
+    Console::debug(msg);
 }
 
 
 void UIAssetController::onButtonAltClick(BasicButton* pSrc)
 {
+    char* msg = new char[128];
+    sprintf_s(msg, 128, "button %d alt-clicked", pSrc->getId());
+    Console::debug(msg);
 }
 
 

@@ -10,6 +10,8 @@
 #include "../Input/MouseState.h"
 #include "../Controller/Cursor.h" // for mouse tooltip
 
+#include "../UIComponent/GridLayout.h"
+
 UIComponent::UIComponent(const int posX, const int posY, const unsigned int width, const unsigned int height)
 {
     m_Pos(posX, posY);

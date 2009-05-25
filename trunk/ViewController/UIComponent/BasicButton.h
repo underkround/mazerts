@@ -17,7 +17,7 @@ class BasicButton : public UIComponent
 {
 public:
 
-    BasicButton(const int buttonId, const int width, const int height);
+    BasicButton(const int width, const int height, const int buttonId=0, IButtonListener* listener=0);
 
     inline const int getId() const
     {
@@ -43,23 +43,15 @@ public:
      *
      * Use resource container in RootComponent plz
      */
-    inline void setBackgroundClicked(LPDIRECT3DTEXTURE9 pTexture)
+    inline void setBackgroundTextureClicked(LPDIRECT3DTEXTURE9 pTexture)
     {
         m_pBackgroundTextureClicked = pTexture;
-        m_Changed = true;
+        //m_Changed = true;
     }
 
     inline void setBackgroundClicked(const int argb)
     {
-        m_BackgroundARGBClicked.x = (argb & 0xFFFFFFFF);
-        m_BackgroundARGBClicked.y = (argb & 0xFFFFFFFF);
-        m_Changed = true;
-    }
-
-    inline void setBackgroundClicked(const int argb1, const int argb2)
-    {
-        m_BackgroundARGBClicked.x = (argb1 & 0xFFFFFFFF);
-        m_BackgroundARGBClicked.y = (argb2 & 0xFFFFFFFF);
+        m_BackgroundARGBClicked = (argb & 0xFFFFFFFF);
         m_Changed = true;
     }
 
@@ -71,14 +63,22 @@ public:
      */
     virtual int processEvent(int eventFlag, TCHAR arg);
 
+
+    /**
+     * Override from UIComponent to support clicked texture
+     */
+    virtual void BasicButton::onRender(LPDIRECT3DDEVICE9 pDevice);
+
 protected:
 
     int                 m_buttonId;
 
+    bool                m_ButtonDown; // internal state indicator for alt texture
+
     IButtonListener*    m_pListener;
     LPDIRECT3DTEXTURE9  m_pBackgroundTextureClicked;
 
-    Point2              m_BackgroundARGBClicked; // two color values for gradien (x for solid)
+    int                 m_BackgroundARGBClicked; // two color values for gradien (x for solid)
 
 };
 
