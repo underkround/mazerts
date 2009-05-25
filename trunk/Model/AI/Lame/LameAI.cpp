@@ -91,6 +91,7 @@ void LameAI::LoadConfigFromFile(void)
     c.updateInt("AAI", "kill mod", m_KillMod);
     c.updateInt("AAI", "base spread", m_BaseSpread);
     c.updateInt("AAI", "energy reserve", m_EnergyReserve);
+    c.updateInt("AAI", "harvesters", m_HarvesterCount);
 }
 #pragma endregion
 
@@ -108,6 +109,10 @@ void LameAI::Update(float fFrameTime)
 UNIT_TYPE LameAI::ChooseUnitToBuild(void)
 {
     UNIT_TYPE out = UNIT_TYPE_CAR;
+    if(FindUnitCount(UNIT_TYPE_MINER) < m_HarvesterCount)
+    {
+        return UNIT_TYPE_MINER;
+    }
     float value = 0.0f;
     unsigned int i;
     for(i=0;i<m_vUnits.size();++i)
@@ -275,6 +280,19 @@ bool LameAI::CanIAffordToBuild(BUILDING_TYPE buildingtype)
     if(m_pPlayer->getOre() > cost) return true;
     else return false;
 }
+
+bool LameAI::CanIAffordToBuild(UNIT_TYPE unittype)
+{
+    int cost = 0;
+    for(unsigned int i=0;i<m_vUnits.size();++i)
+    {
+        if(m_vUnits[i]->eType == unittype)
+            cost = m_vUnits[i]->cost;
+    }
+    if(m_pPlayer->getOre() > cost) return true;
+    else return false;
+}
+
 
 int LameAI::CountMyBuildings()
 {
@@ -512,57 +530,41 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
 
     if(CountMyUnits() < m_UnitLimit)
     {
-        // find factories TODO this is debug/test/stuff
-        ListNode<Building*>* pNode = AssetCollection::getAllBuildings()->headNode();
-        Building** factories = new Building*[100];
-        int count = 0;
-        while (pNode)
+        if(CanIAffordToBuild(unittype))
         {
-            if (pNode->item->getOwner() == m_pPlayer && pNode->item->getTypeTag() == BUILDING_TYPE_FACTORY)
+            // find factories TODO this is debug/test/stuff
+            ListNode<Building*>* pNode = AssetCollection::getAllBuildings()->headNode();
+            Building** factories = new Building*[100];
+            int count = 0;
+            while (pNode)
             {
-                if (pNode->item->getState() == IAsset::STATE_ACTIVE)
+                if (pNode->item->getOwner() == m_pPlayer && pNode->item->getTypeTag() == BUILDING_TYPE_FACTORY)
                 {
-                    factories[count] = pNode->item;
-                    ++count;
+                    if (pNode->item->getState() == IAsset::STATE_ACTIVE)
+                    {
+                        factories[count] = pNode->item;
+                        ++count;
+                    }
+                }
+
+                pNode = pNode->next;
+            }
+            if (count > 0)
+            {
+                // pick a factory
+                int r = (rand() % count);
+                Building* factory = factories[r];
+                int x = factory->getDef()->gridEntrancePointX + factory->getGridX();
+                int y = factory->getDef()->gridEntrancePointY + factory->getGridY();
+                int w = factory->getDef()->gridPassableAreaWidth;
+                int h = factory->getDef()->gridPassableAreaHeight;
+                if (AssetCollection::getUnitsAt(NULL, x, y, w, h) == 0)
+                {
+                    AssetFactory::createUnit(m_pPlayer, unittype, factory);
                 }
             }
 
-            pNode = pNode->next;
         }
-        if (count > 0)
-        {
-            // pick a factory
-            int r = (rand() % count);
-            Building* factory = factories[r];
-            int x = factory->getDef()->gridEntrancePointX + factory->getGridX();
-            int y = factory->getDef()->gridEntrancePointY + factory->getGridY();
-            int w = factory->getDef()->gridPassableAreaWidth;
-            int h = factory->getDef()->gridPassableAreaHeight;
-            if (AssetCollection::getUnitsAt(NULL, x, y, w, h) == 0)
-            {
-                AssetFactory::createUnit(m_pPlayer, unittype, x, y);
-            }
-        }
-/*
-        unsigned int x, y;
-        unsigned int s = max(DefManager::getInstance()->getAssetDef(unittype)->width, DefManager::getInstance()->getAssetDef(unittype)->height) + 1;
-        FindBaseCenterPoint(&x, &y);
-        unsigned int offset = 10;
-        bool clear = false;
-        while (!clear && offset < 100)
-        {
-            offset += 2;
-            x += (rand() % (offset + 1)) - (offset >> 1);
-            y += (rand() % (offset + 1)) - (offset >> 1);
-            if (x <= 0 || y <= 0 || x + s + 1>= Terrain::getInstance()->getSize() || y + s + 1>= Terrain::getInstance()->getSize())
-                continue;
-
-            clear = ((Terrain::getInstance()->isPassable(x, y, s)) &&
-                (AssetCollection::getAssetsAt(NULL, x, y, s, s) == 0));
-        }
-        if (clear)
-            AssetFactory::createUnit(m_pPlayer, unittype, x, y );
-            */
     }
 }
 

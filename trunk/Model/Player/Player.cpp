@@ -12,6 +12,10 @@
 #include "../Asset/AssetCollection.h"
 #include "../Asset/Building.h"
 
+//for AI loading
+#include "../Common/Config.h"
+#include <string>
+
 Player::Player(const int index)
 {
     m_Index = index;
@@ -31,12 +35,13 @@ Player::Player(const int index)
     m_EnergyProduced = 0;
 
     //HACK: make all players AI except first one
-    if(index > 0)
+    Config* c = Config::getInstance();
+    string strIsAI = "AI player ";
+    strIsAI += Config::intToString(index);
+
+    if(c->getValueAsBool("scenario", strIsAI, false))
     {
         m_pAI = new LameAI(this);
-    }
-    if(index > 0)
-    {
         m_pUnitAI = new CombatAI(this);
     }
 }

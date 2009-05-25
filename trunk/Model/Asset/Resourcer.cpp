@@ -228,8 +228,9 @@ void Resourcer::loading(const float deltaT)
     m_LoadTimer += deltaT;
     if(m_LoadTimer > m_Def.loadTime)
     {
+        //we don't remove ore from mine here?
         m_LoadTimer = 0;
-        m_Ore = m_Def.oreCapacity;        
+        m_Ore = m_Def.oreCapacity;
         m_State = RES_IDLE;
     }
 }
@@ -241,7 +242,7 @@ void Resourcer::unloading(const float deltaT)
     {
         m_pUnit->getOwner()->modifyOre(m_Ore);
         m_LoadTimer = 0;
-        m_Ore = 0;                
+        m_Ore = 0;
         m_State = RES_IDLE;
     }
 }

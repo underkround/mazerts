@@ -94,7 +94,7 @@ const bool RtsInitializer::initializeDebug()
                 plr = 3;
             else
                 plr = 4;
-            AssetFactory::createUnit(PlayerManager::getPlayer(plr), (rand() % 6) + 1, posx, posy);
+            AssetFactory::createUnit(PlayerManager::getPlayer(plr), (rand() % 6) + 1, posx, posy, true);
         }
 
         //Buildings
@@ -104,7 +104,7 @@ const bool RtsInitializer::initializeDebug()
             int posx = RandInt(20, Terrain::getInstance()->getSize() - 20);
             int posy = RandInt(20, Terrain::getInstance()->getSize() - 20);
 
-            AssetFactory::createBuilding(PlayerManager::getPlayer(plr), 52 + rand() % 3, posx, posy);
+            AssetFactory::createBuilding(PlayerManager::getPlayer(plr), 52 + rand() % 3, posx, posy, true);
         }
 
         //Mines
@@ -120,17 +120,17 @@ const bool RtsInitializer::initializeDebug()
         // some kind of starting base for player 1
         for (int i = 0; i < 5; i++)
         {
-            AssetFactory::createUnit(pCurrentPlayer, 1, 50 + i * 7, 10);
-            AssetFactory::createUnit(pCurrentPlayer, 2, 50 + i * 7, 17);
-            AssetFactory::createUnit(pCurrentPlayer, 3, 50 + i * 7, 24);
-            //AssetFactory::createUnit(pCurrentPlayer, 4, 50 + i * 7, 31);
-            AssetFactory::createUnit(pCurrentPlayer, 5, 50 + i * 7, 31);
-            AssetFactory::createUnit(pCurrentPlayer, 6, 50 + i * 7, 38);
+            AssetFactory::createUnit(pCurrentPlayer, 1, 50 + i * 7, 10, true);
+            AssetFactory::createUnit(pCurrentPlayer, 2, 50 + i * 7, 17, true);
+            AssetFactory::createUnit(pCurrentPlayer, 3, 50 + i * 7, 24, true);
+            //AssetFactory::createUnit(pCurrentPlayer, 4, 50 + i * 7, 31, true);
+            AssetFactory::createUnit(pCurrentPlayer, 5, 50 + i * 7, 31, true);
+            AssetFactory::createUnit(pCurrentPlayer, 6, 50 + i * 7, 38, true);
         }
-        AssetFactory::createBuilding(pCurrentPlayer, 54, 15, 15);
-        AssetFactory::createBuilding(pCurrentPlayer, 54, 30, 15);
-        AssetFactory::createBuilding(pCurrentPlayer, 52, 15, 30);
-        AssetFactory::createBuilding(pCurrentPlayer, 53, 30, 30);
+        AssetFactory::createBuilding(pCurrentPlayer, 54, 15, 15, true);
+        AssetFactory::createBuilding(pCurrentPlayer, 54, 30, 15, true);
+        AssetFactory::createBuilding(pCurrentPlayer, 52, 15, 30, true);
+        AssetFactory::createBuilding(pCurrentPlayer, 53, 30, 30, true);
 
         //AssetFactory::createOreMine(15, 80);
         AssetFactory::createAsset(PlayerManager::getPlayer(0), 51, 15, 80);
@@ -231,6 +231,19 @@ const bool RtsInitializer::initializeScenario()
             PlayerManager::getPlayer(i)->getFog()->setEnabled(false);
     }
 
+    //give players ore they deserve
+    if(players > 0)
+    {
+        for(int i=0; i<=PlayerManager::getPlayerCount(); i++)
+        {
+            string strOre = "scenario player ";
+            strOre += Config::intToString(i);
+            strOre += " ore";
+            int iOre = c->getValueAsInt("scenario", strOre, 0);
+            PlayerManager::getPlayer(i)->setOre(iOre);
+        }
+    }
+
     /*
      * ASSETS
      * validate scenario confs & initialize assets
@@ -261,7 +274,7 @@ const bool RtsInitializer::initializeScenario()
                     (posyNode->getInt() >= 0 && posyNode->getInt() < (mapSize - assetDef->height))
                 )
                 {
-                    AssetFactory::createAsset(pPlayer, assetDef->tag, (short)posxNode->getInt(), (short)posyNode->getInt());
+                    AssetFactory::createAsset(pPlayer, assetDef->tag, (short)posxNode->getInt(), (short)posyNode->getInt(), true);
                 }
                 // advance nodes
                 typeNode = typeNode->next;

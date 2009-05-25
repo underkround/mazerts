@@ -10,6 +10,7 @@
 #define __PLAYER_H__
 
 #include "Fog.h"
+//AI
 #include "../AI/Lame/LameAI.h"
 #include "../AI/Lame/CombatAI.h"
 //circular dependencies here

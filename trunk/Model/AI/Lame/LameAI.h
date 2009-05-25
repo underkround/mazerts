@@ -155,6 +155,11 @@ private:
     bool CanIAffordToBuild(BUILDING_TYPE buildingtype);
 
     /**
+     * @return does AI have enough ore to build a new unit of specified type
+     */
+    bool CanIAffordToBuild(UNIT_TYPE unittype);
+
+    /**
      * Checks if the area is free for building
      * @return true if area has nothing that prevents building
      */
@@ -200,11 +205,12 @@ private:
     int m_CostMod;
     int m_CountMod;
     int m_KillMod;
-    float m_UnitRatio;    //# unit ratio tells AI how many unit should it have compared to amount of it's buildings
-    float m_UnitRatio2;   //# unit ratio after building limit has been reached
+    float m_UnitRatio;    //unit ratio tells AI how many unit should it have compared to amount of it's buildings
+    float m_UnitRatio2;   //unit ratio after building limit has been reached
     float m_fUpdatetime;
     int m_BaseSpread;     //how tightly to lay out the base (bigger number means more spread out)
     int m_EnergyReserve;  //require this much energy reserve even if not needed by structures
+    int m_HarvesterCount; //how many ore harvesters AI always wants to have
     float m_fUpdateInterval;
     int m_UnitLimit;
     int m_BuildingLimit;

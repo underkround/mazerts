@@ -439,7 +439,7 @@ void CombatAI::assignReservesToGroup(UnitGroup* g)
         {
             Unit* pUnit = pNode->item;
 
-            g->addUnit(pUnit);
+            if(pUnit->getWeapon()) g->addUnit(pUnit);
 
             pUnit->unregisterListener(m_pReserveGroup);
             pNode = m_pReserveGroup->getUnits()->removeGetNext(pNode);
@@ -584,7 +584,7 @@ void CombatAI::handleCreatedAsset(IAsset* instance)
 {
     if (instance->getAssetType() == IAsset::UNIT && instance->getOwner() == m_pPlayer)
     {
-        if (instance->getDef()->concreteType != UNIT_TYPE::UNIT_TYPE_MINER)
+        if (instance->getDef()->concreteType != UNIT_TYPE_MINER)
         {
             m_pReserveGroup->addUnit((Unit*)instance);
             if (m_RallyPointX != 0)
