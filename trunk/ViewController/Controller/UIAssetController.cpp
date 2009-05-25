@@ -45,10 +45,15 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     const int bcW = 160;
     const int bcH = 430;
     m_pButtonPanel = new UIContainer(bcX, bcY, bcW, bcH);
-    m_pButtonPanel->setBackground(0xCC222222);
+//    m_pButtonPanel->setBackground(0xCC222222);
+    m_pButtonPanel->setBackground(0xFFCC2222, 0xFF22FF22, 0xFF2222FF, 0xFF222222);
     m_pButtonPanel->setLayoutFlag(LAYOUT_HINT_NORESIZE);
     m_pButtonPanel->setLayoutManager(new GridLayout(0, 2));
     m_pButtonPanel->setTooltip("Building control panel");
+    MarginSet* panelSnaps = m_pButtonPanel->getSnapMargins();
+    panelSnaps->left = 10;
+    panelSnaps->bottom = 10;
+    //m_pButtonPanel->onParentChange(); // no need to call this if we add the component to the container AFTER snap settings
     RootContainer::getInstance()->addComponent(m_pButtonPanel);
 
     // default setting values

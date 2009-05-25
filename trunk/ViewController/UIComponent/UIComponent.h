@@ -115,6 +115,11 @@ protected:
 
 public:
 
+    /**
+     * Gets called when the parent container changes (resize atm).
+     */
+    virtual void onParentChange();
+
 // =====
 // ===== BEGIN of default rendering - Colors and filling
 // =====
@@ -131,21 +136,53 @@ public:
      */
     inline void setBackground(const int argb)
     {
-        m_BackgroundARGB.x = (argb & 0xFFFFFFFF);
-        m_BackgroundARGB.y = (argb & 0xFFFFFFFF);
+        m_BackgroundTop.x = m_BackgroundTop.y = m_BackgroundBottom.x = m_BackgroundBottom.y = (argb & 0xFFFFFFFF);
         m_Changed = true;
     }
 
     /**
-     * Set default background colors for component.
-     * The actual component may or may not use these values.
-     * @param argb1 argb colorvalue 1
-     * @param argb2 argb colorvalue 2
+     * Set default background color, which the actual component may or may
+     * not use.
+     * This sets the background style to solid.
+     * @param argbTL    topleft argb
+     * @param argbTR    topright argb
+     * @param argbBR    bottomright argb
+     * @param argbBL    bottomleft argb
      */
-    inline void setBackground(const int argb1, const int argb2)
+    inline void setBackground(const int argbTL, const int argbTR, const int argbBR, const int argbBL)
     {
-        m_BackgroundARGB.x = (argb1 & 0xFFFFFFFF);
-        m_BackgroundARGB.y = (argb2 & 0xFFFFFFFF);
+        m_BackgroundTop.x = (argbTL & 0xFFFFFFFF);
+        m_BackgroundTop.y = (argbTR & 0xFFFFFFFF);
+        m_BackgroundBottom.x = (argbBL & 0xFFFFFFFF);
+        m_BackgroundBottom.y = (argbBR & 0xFFFFFFFF);
+        m_Changed = true;
+    }
+
+    /**
+     * Set default background colors for component as
+     * horizontal gradient.
+     * The actual component may or may not use these values.
+     * @param argbT argb value for top
+     * @param argbB argb value for bottom
+     */
+    inline void setBackgroundGradientH(const int argbT, const int argbB)
+    {
+        m_BackgroundTop.x = m_BackgroundTop.y = (argbT & 0xFFFFFFFF);
+        m_BackgroundBottom.x = m_BackgroundBottom.y = (argbB & 0xFFFFFFFF);
+        m_Changed = true;
+    }
+
+    /**
+     * Set default background colors for component as
+     * vertical gradient.
+     * The actual component may or may not use these values.
+     * @param argbL argb value for left
+     * @param argbR argb value for right
+     */
+    inline void setBackgroundGradientV(const int argb1, const int argb2)
+    {
+        m_BackgroundTop.x = m_BackgroundBottom.x = (argb1 & 0xFFFFFFFF);
+        m_BackgroundTop.x = m_BackgroundBottom.y = (argb2 & 0xFFFFFFFF);
         m_Changed = true;
     }
 
@@ -155,31 +192,16 @@ public:
      * The concrete component may or may not use this value.
      * The ownership of the texture will not transfer to this component,
      * hence this will not take care of the releasing of the texture.
+     *
+     * NOTE! use RootContainer's resource container for textures!
+     * NOTE2! The background color will affect the texture, set to white
+     * for clean
+     *
+     * @param pTexture texture to use as background, or NULL to clear
      */
-    inline void setBackground(LPDIRECT3DTEXTURE9 pTexture)
+    inline void setBackgroundTexture(LPDIRECT3DTEXTURE9 pTexture)
     {
         m_pBackgroundTexture = pTexture;
-        if(pTexture)
-        {
-            m_BackgroundStyle = FILLSTYLE_TEXTURE;
-            m_BackgroundARGB.x = 0xFFFFFFFF;
-            m_BackgroundARGB.y = 0xFFFFFFFF;
-        }
-        else
-            m_BackgroundStyle = FILLSTYLE_GRADIENT_V;
-        m_Changed = true;
-    }
-
-    /**
-     * Set the style for the component's background filling.
-     * The actual component may or may not use these values.
-     * @param style coloring style of the component background
-     */
-    inline void setBackgroundStyle(const ComponentFillStyle style)
-    {
-        if(style == FILLSTYLE_TEXTURE && !m_pBackgroundTexture)
-            return; // no texture style if there's no texture!
-        m_BackgroundStyle = style;
         m_Changed = true;
     }
 
@@ -269,6 +291,28 @@ public:
 
 
     /**
+     * Get snapmargins of this component.
+     * SnapMargins (should) work like:
+     *     top
+     * left    right
+     *    bottom
+     *
+     * Where each value is disabled (<0) by default. If the value is
+     * 0 or more, the component tries to maintain given margin to it's
+     * parent. Then intent is to create component that can resize when
+     * the parent resizes.
+     *
+     * NOTE: if you set this, you need to call onParentChange() on this
+     * component to apply the snap settings!
+     *
+     * @return  pointer to snapmargin-object, into which you can set the
+     *          values
+     */
+    inline MarginSet* getSnapMargins() {
+        return &m_SnapMargins;
+    }
+
+    /**
      * @return the absolute position X of the component (in screen space).
      */
     inline const int getPosX() const;
@@ -338,9 +382,11 @@ public:
      */
     virtual const bool setSize(const unsigned int width, const unsigned int height)
     {
-        m_Size.x = width;
-        m_Size.y = height;
-        m_Changed = true;
+        if(m_Size.x != width || m_Size.y != height) {
+            m_Size.x = width;
+            m_Size.y = height;
+            m_Changed = true;
+        }
         return m_Changed;
     }
 
@@ -458,6 +504,12 @@ protected:
     // the component's actual positions are relative to it's parent, if any.
     Point2              m_Pos;
 
+    // snap margins override the size settings, and tries to maintain given distance
+    // to parent's borders on each side. Snapping per side can be disabled by setting
+    // the value for side to <0. Snapping is disabled by default, and may not work
+    // with layouts etc... ;P
+    MarginSet           m_SnapMargins;
+
     // flags
     bool                m_Changed;
     bool                m_Visible;
@@ -477,10 +529,9 @@ protected:
 // Members for default background rendering
 
     // default colors in 0xAARRGGBB format
-    Point2                  m_BackgroundARGB; // two color values for gradien (x for solid)
+    Point2                  m_BackgroundTop; // two color values, x = topleft, y = topright vertex
+    Point2                  m_BackgroundBottom; // two color values, x = bottomleft, y = bottomright vertex
     int                     m_ForegroundARGB;
-    // style of the background filling
-    ComponentFillStyle      m_BackgroundStyle;
     // texture for the background, or NULL
     LPDIRECT3DTEXTURE9      m_pBackgroundTexture;
     // vertex buffer for default background

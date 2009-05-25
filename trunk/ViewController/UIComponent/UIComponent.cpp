@@ -26,14 +26,18 @@ UIComponent::UIComponent(const int posX, const int posY, const unsigned int widt
 //    m_pTooltip = NULL;
 
     // Background drawing stuff - from BasicComponent
-    m_BackgroundARGB.x = 0xFFFFFFFF;
-    m_BackgroundARGB.y = 0xFFFFFFFF;
-    m_ForegroundARGB = 0xFF555555;
-    m_BackgroundStyle = FILLSTYLE_GRADIENT_V;
+    m_BackgroundTop.x = 0xFFFFFFFF;
+    m_BackgroundTop.y = 0xFFFFFFFF;
+    m_BackgroundBottom.x = 0xFFFFFFFF;
+    m_BackgroundBottom.y = 0xFFFFFFFF;
     m_pBackgroundTexture = NULL;
+    m_ForegroundARGB = 0xFF555555;
+
     m_pBackgroundVB = NULL;
 
     m_StealFlags = STEAL_MOUSE;
+
+    m_SnapMargins = MarginSet(-1);
 
     m_ProcessFlags = CPROCESS_MOUSE_BUTTONS;
     m_ProcessFlags |= CPROCESS_MOUSE_IDLE; // for tooltips
@@ -175,6 +179,41 @@ void UIComponent::render(LPDIRECT3DDEVICE9 pDevice)
  *
  */
 
+void UIComponent::onParentChange()
+{
+    // check for snapmargins, if any set
+    if(m_pParent) { // "this should never happen" ;P
+        if(m_SnapMargins.left > 0) {
+            const int newVal = m_pParent->getPosX() + m_SnapMargins.left;
+            if(newVal != m_Pos.x) {
+                m_Pos.x = newVal;
+                m_Changed = true;
+            }
+        }
+        if(m_SnapMargins.top > 0) {
+            const int newVal = m_pParent->getPosY() + m_SnapMargins.top;
+            if(newVal != m_Pos.y) {
+                m_Pos.y = newVal;
+                m_Changed = true;
+            }
+        }
+        if(m_SnapMargins.right > 0) {
+            const int newVal = m_pParent->getWidth() - m_Pos.x - m_SnapMargins.right;
+            if(newVal != m_Size.x) {
+                m_Size.x = newVal;
+                m_Changed = true;
+            }
+        }
+        if(m_SnapMargins.bottom > 0) {
+            const int newVal = m_pParent->getHeight() - m_Pos.y - m_SnapMargins.bottom;
+            if(newVal != m_Size.y) {
+                m_Size.y = newVal;
+                m_Changed = true;
+            }
+        }
+    }
+}
+
 
 HRESULT UIComponent::onDeviceLost()
 {
@@ -201,7 +240,7 @@ HRESULT UIComponent::onCreate(LPDIRECT3DDEVICE9 pDevice)
 void UIComponent::onRender(LPDIRECT3DDEVICE9 pDevice)
 {
     // set texture if set
-    if(m_BackgroundStyle == FILLSTYLE_TEXTURE && m_pBackgroundTexture)
+    if(m_pBackgroundTexture)
         pDevice->SetTexture(0, m_pBackgroundTexture);
     else
         pDevice->SetTexture(0, NULL);
@@ -264,33 +303,10 @@ void UIComponent::onChange(LPDIRECT3DDEVICE9 pDevice)
         pBackVertices[3].tv = 1.0f;
         pBackVertices[3].rhw = 0.99f;
 
-        switch(m_BackgroundStyle)
-        {
-
-        default:
-        case FILLSTYLE_SOLID:
-        case FILLSTYLE_TEXTURE:
-            pBackVertices[0].dwColor = m_BackgroundARGB.x;
-            pBackVertices[1].dwColor = m_BackgroundARGB.x;
-            pBackVertices[2].dwColor = m_BackgroundARGB.x;
-            pBackVertices[3].dwColor = m_BackgroundARGB.x;
-            break;
-
-        case FILLSTYLE_GRADIENT_H:
-            pBackVertices[0].dwColor = m_BackgroundARGB.x;
-            pBackVertices[1].dwColor = m_BackgroundARGB.y;
-            pBackVertices[2].dwColor = m_BackgroundARGB.y;
-            pBackVertices[3].dwColor = m_BackgroundARGB.x;
-            break;
-
-        case FILLSTYLE_GRADIENT_V:
-            pBackVertices[0].dwColor = m_BackgroundARGB.x;
-            pBackVertices[1].dwColor = m_BackgroundARGB.x;
-            pBackVertices[2].dwColor = m_BackgroundARGB.y;
-            pBackVertices[3].dwColor = m_BackgroundARGB.y;
-            break;
-
-        } // switch
+        pBackVertices[0].dwColor = m_BackgroundTop.x;
+        pBackVertices[1].dwColor = m_BackgroundTop.y;
+        pBackVertices[2].dwColor = m_BackgroundBottom.y;
+        pBackVertices[3].dwColor = m_BackgroundBottom.x;
     }
     m_pBackgroundVB->Unlock();
 

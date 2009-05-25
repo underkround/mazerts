@@ -39,6 +39,7 @@ bool UIContainer::addComponent(UIComponent* child)
     // add as my child
     child->m_pParent = this;
     m_Children.pushTail(child);
+    child->onParentChange();
     // redo the layout
     if(m_pLayoutManager)
         m_pLayoutManager->reLayout();
@@ -150,8 +151,17 @@ void UIContainer::update(const float frameTime)
 
 const bool UIContainer::setSize(const int width, const int height)
 {
-    // TODO! take children account
-    return UIComponent::setSize(width, height);
+    // @TODO! take children account
+    bool res = UIComponent::setSize(width, height);
+    // notify children of parent size change
+    if(res) {
+        ListNode<UIComponent*>* node = m_Children.headNode();
+        while(node) {
+            node->item->onParentChange();
+            node = node->next;
+        }
+    }
+    return res;
 }
 
 

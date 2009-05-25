@@ -21,10 +21,6 @@ enum ComponentLayoutFlag
 
     LAYOUT_HINT_NORESIZE    = 1 << 1,   // no resizing allowed for component
     LAYOUT_HINT_NOREPOS     = 1 << 2,   // no repositioning allowed for component
-    LAYOUT_HINT_ALIGN_TOP   = 1 << 3,
-    LAYOUT_HINT_ALIGN_RIGHT = 1 << 4,
-    LAYOUT_HINT_ALIGN_BOTTOM= 1 << 5,
-    LAYOUT_HINT_ALIGN_LEFT  = 1 << 6,
     LAYOUT_HINT_ASPECTRATIO = 1 << 7    // maintain the component's aspect ratio
 };
 
@@ -79,18 +75,6 @@ enum EventFlags
     // keypress events
     CEVENT_KEY_PRESSED      = 1 << 9,   // general keypress event
     CEVENT_KEY_RELEASED     = 1 << 10   // general keyrelease event
-};
-
-
-/**
- * Filling styles for the components
- */
-enum ComponentFillStyle
-{
-    FILLSTYLE_SOLID = 1,    // single color
-    FILLSTYLE_GRADIENT_H,   // horizontal gradient
-    FILLSTYLE_GRADIENT_V,   // vertical gradient
-    FILLSTYLE_TEXTURE       // texture, if set
 };
 
 

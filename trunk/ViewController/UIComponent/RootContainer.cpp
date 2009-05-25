@@ -240,7 +240,14 @@ void RootContainer::render(LPDIRECT3DDEVICE9 pDevice)
 {
     // set common rendering flags settings for components here
     pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+
+    // @TODO: check if alphablending could be set to work somewhat right
+//    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+//    pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCCOLOR);
+//    pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_DESTCOLOR);
+
+    // ..disabled for now
+    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
     // we just render the children
     ListNode<UIComponent*>* node = m_Children.headNode();
@@ -274,15 +281,23 @@ HRESULT RootContainer::onRestore(LPDIRECT3DDEVICE9 pDevice)
 {
     HRESULT res = S_OK;
     m_pDevice = pDevice;
+    bool changed = false;
     if(m_pApp)
     {
         RECT win = m_pApp->GetWindowRect();
+        if(win.right != m_Size.x || win.bottom != m_Size.y) {
+            changed = true;
+        }
         m_Size.x = win.right;
         m_Size.y = win.bottom;
     }
     ListNode<UIComponent*>* node = m_Children.headNode();
     while(node)
     {
+        // notify change of size (window resize since we are in rootcontainer)
+        if(changed)
+            node->item->onParentChange();
+        // call onRestore
         res = node->item->onRestore(pDevice);
         if(FAILED(res))
         {

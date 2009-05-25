@@ -69,7 +69,7 @@ void CombatAI::Update(float fFrameTime)
         }
         else
         {
-            m_PrintOutput = false;
+            m_PrintOutput = true;
         }
 //#endif
 
