@@ -9,9 +9,14 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include "../../Asset/IAssetCollectionListener.h"
+#include <map>
 
 //circular dependency here
 class Player;
+class IAsset;
+class Building;
+class Unit;
 
 using namespace std;
 
@@ -23,7 +28,7 @@ using namespace std;
  * about this issue and want to make your own AI, if nobody does and this works ok
  * then we will refactor it's name
  */
-class LameAI : public IAI
+class LameAI : public IAI, public IAssetCollectionListener
 {
 public:
 #pragma region constructors and structures
@@ -165,11 +170,6 @@ private:
      */
     bool LocationValidToBuild(int x, int y, BUILDING_TYPE b);
 
-    /**
-     * Finds out middlepoint of our base, puts values to *x and *y
-     */
-    void FindBaseCenterPoint(unsigned int *xCenter, unsigned int *yCenter);
-
 #pragma endregion
 
 #pragma region miscellaneous
@@ -185,10 +185,19 @@ private:
         return ss.str();
     }
 
+    // from IAssetCollectionListener
+    void handleCreatedAsset(IAsset* instance);
+    void handleReleasedAsset(IAsset* instance);
+
 public:
 
     inline void setUnitLimit(int limit) { m_UnitLimit = limit; }
     inline void setBuildingLimit(int limit) { m_BuildingLimit = limit; }
+
+    /**
+     * Finds out middlepoint of our base, puts values to *x and *y
+     */
+    void FindBaseCenterPoint(unsigned int *xCenter, unsigned int *yCenter);
 
 private:
 
@@ -215,6 +224,11 @@ private:
     int m_UnitLimit;
     int m_BuildingLimit;
     int m_iDebug;
+
+    DoubleLinkedList<Building*> m_OwnBuildingList;
+    map<int, Building*> m_OwnBuildings;
+    map<int, int> m_OwnBuildingCount;
+    map<int, int> m_OwnUnitCount;
 
 #pragma endregion
 };

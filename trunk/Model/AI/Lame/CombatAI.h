@@ -135,5 +135,6 @@ private:
     int             m_MinAttackGroupSize;
     int             m_AttackTimeout;
     int             m_RallyPointDistance;
-
+    bool            m_PrintAll;
+    int             m_PrintPlayerIndex;
 };

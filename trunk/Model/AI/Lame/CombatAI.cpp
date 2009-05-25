@@ -63,13 +63,13 @@ void CombatAI::Update(float fFrameTime)
         t.BeginTimer();
 */
 //#ifdef _DEBUG
-        if (m_pPlayer->getIndex() == 2)
+        if (m_PrintAll || m_pPlayer->getIndex() == m_PrintPlayerIndex)
         {
             m_PrintOutput = true;
         }
         else
         {
-            m_PrintOutput = true;
+            m_PrintOutput = false;
         }
 //#endif
 
@@ -78,6 +78,7 @@ void CombatAI::Update(float fFrameTime)
             char* msg = new char[128];
             sprintf_s(msg, 128, "--- START COMBAT UPDATE SEQUENCE FOR PLAYER %d", m_pPlayer->getIndex());
             Console::debug(msg);
+            delete [] msg;
         }
 
         // TODO: This really could do some optimizing
@@ -131,6 +132,7 @@ void CombatAI::Update(float fFrameTime)
                             char* msg = new char[128];
                             sprintf_s(msg, 128, "Defense: still same target (%s @ %d, %d), assigning reserves", m_pDefenseTarget->getTargetAsset()->getDef()->name.c_str(), m_pDefenseTarget->getTargetX(), m_pDefenseTarget->getTargetY());
                             Console::debug(msg);
+                            delete [] msg;
                         }
                         if (m_PrintOutput) Console::debug("Defense: ");
                             m_pReserveGroup->setTarget(m_pDefenseTarget);
@@ -144,6 +146,7 @@ void CombatAI::Update(float fFrameTime)
                                 char* msg = new char[128];
                                 sprintf_s(msg, 128, "Defense: still same target (%s @ %d, %d), but no reserves to assign", m_pDefenseTarget->getTargetAsset()->getDef()->name.c_str(), m_pDefenseTarget->getTargetX(), m_pDefenseTarget->getTargetY());
                                 Console::debug(msg);
+                                delete [] msg;
                             }
                         }
                     }
@@ -190,6 +193,7 @@ void CombatAI::Update(float fFrameTime)
                             char* msg = new char[128];
                             sprintf_s(msg, 128, "Defense: target acquired: %s @ %d, %d", m_pDefenseTarget->getTargetAsset()->getDef()->name.c_str(), m_pDefenseTarget->getTargetX(), m_pDefenseTarget->getTargetY());
                             Console::debug(msg);
+                            delete [] msg;
                         }
                         m_pReserveGroup->setTarget(m_pDefenseTarget);
                         assignReservesToGroup(m_pDefenseGroup);
@@ -246,6 +250,7 @@ void CombatAI::Update(float fFrameTime)
                         char* msg = new char[128];
                         sprintf_s(msg, 128, "Offense: target acquired: %s @ %d, %d // t: %4.2f", m_pAttackTarget->getTargetAsset()->getDef()->name.c_str(), m_pAttackTarget->getTargetX(), m_pAttackTarget->getTargetY(), threat);
                         Console::debug(msg);
+                        delete [] msg;
                     }
                     if (!m_pReserveGroup->getUnits()->empty() && assessFeasibility(threat))
                     {
@@ -285,6 +290,7 @@ void CombatAI::Update(float fFrameTime)
                     char* msg = new char[128];
                     sprintf_s(msg, 128, "Offense: already attacking %s @ %d, %d", m_pAttackTarget->getTargetAsset()->getDef()->name.c_str(), m_pAttackTarget->getTargetX(), m_pAttackTarget->getTargetY());
                     Console::debug(msg);
+                    delete [] msg;
                 }
                 m_UpdatesSinceAttackBegan++;
                 if (m_UpdatesSinceAttackBegan > m_AttackTimeout)
@@ -505,33 +511,40 @@ const float CombatAI::unitDistance(const unsigned int x1, const unsigned int y1,
 
 void CombatAI::FindBaseCenterPoint(unsigned int *xCenter, unsigned int *yCenter)
 {
-    unsigned int count = 0;
-    unsigned int xTotal = 0;
-    unsigned int yTotal = 0;
-
-    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
-    ListNode<Building*>* pNode = buildings->headNode();
-    while(pNode)
+    if (m_pPlayer->getLameAI())
     {
-        if(pNode->item->getOwner() == m_pPlayer)
-        {
-            ++count;
-            xTotal += pNode->item->getCenterGridX();
-            yTotal += pNode->item->getCenterGridY();
-        }
-        pNode = pNode->next;
-    }
-
-    if(count > 0)
-    {
-        *xCenter = xTotal/count;
-        *yCenter = yTotal/count;
+        m_pPlayer->getLameAI()->FindBaseCenterPoint(xCenter, yCenter);
     }
     else
-    { //zero buildings! game over man!
-        Terrain* pTerrain = Terrain::getInstance();
-        *xCenter = (rand() % pTerrain->getSize() / 2)+pTerrain->getSize()/4;
-        *yCenter = (rand() % pTerrain->getSize() / 2)+pTerrain->getSize()/4;
+    {
+        unsigned int count = 0;
+        unsigned int xTotal = 0;
+        unsigned int yTotal = 0;
+
+        DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
+        ListNode<Building*>* pNode = buildings->headNode();
+        while(pNode)
+        {
+            if(pNode->item->getOwner() == m_pPlayer)
+            {
+                ++count;
+                xTotal += pNode->item->getCenterGridX();
+                yTotal += pNode->item->getCenterGridY();
+            }
+            pNode = pNode->next;
+        }
+
+        if(count > 0)
+        {
+            *xCenter = xTotal/count;
+            *yCenter = yTotal/count;
+        }
+        else
+        { //zero buildings! game over man!
+            Terrain* pTerrain = Terrain::getInstance();
+            *xCenter = (rand() % pTerrain->getSize() / 2)+pTerrain->getSize()/4;
+            *yCenter = (rand() % pTerrain->getSize() / 2)+pTerrain->getSize()/4;
+        }
     }
 }
 
@@ -643,4 +656,6 @@ void CombatAI::LoadConfigFromFile(void)
     m_MinAttackGroupSize = c.getValueAsInt("AICombat", "min attack group size", 3);
     m_AttackTimeout = c.getValueAsInt("AICombat", "attack timeout", 25);
     m_RallyPointDistance = c.getValueAsInt("AICombat", "rally point distance", 30);
+    m_PrintAll = c.getValueAsBool("AICombat", "print all output", false);
+    m_PrintPlayerIndex = c.getValueAsInt("AICombat", "print which player", 2);
 }

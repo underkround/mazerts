@@ -6,6 +6,7 @@
 #include "../../Asset/Unit.h"
 #include "../../Asset/Building.h"
 #include "../../Defs/DefManager.h"
+#include "../../Console.h"
 
 LameAI::LameAI(Player* player)
 {
@@ -20,6 +21,7 @@ LameAI::LameAI(Player* player)
     m_BaseSpread = 25;
     m_pPlayer = player;
     LoadConfigFromFile();
+    AssetCollection::registerListener(this);
 }
 
 LameAI::~LameAI() 
@@ -187,6 +189,16 @@ int LameAI::FindBuildingCost(BUILDING_TYPE buildingtype)
 
 bool LameAI::HaveBuilding(BUILDING_TYPE buildingtype)
 {
+    /*
+    ListNode<Building*>* pNode = m_OwnBuildingList.headNode();
+    while (pNode) {
+        if (pNode->item->getTypeTag() == buildingtype) return true;
+        pNode = pNode->next;
+    }
+    return false;
+    */
+    return m_OwnBuildings[buildingtype] != NULL;
+    /*
     DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
     ListNode<Building*>* pNode = buildings->headNode();
     while(pNode)
@@ -201,10 +213,13 @@ bool LameAI::HaveBuilding(BUILDING_TYPE buildingtype)
         pNode = pNode->next;
     }
     return false;
+    */
 }
 
 int LameAI::FindUnitCount(UNIT_TYPE unittype)
 {
+    return m_OwnUnitCount[unittype];
+    /*
     int count = 0;
     DoubleLinkedList<Unit*>* units = AssetCollection::getAllUnits();
     ListNode<Unit*>* pNode = units->headNode();
@@ -220,10 +235,13 @@ int LameAI::FindUnitCount(UNIT_TYPE unittype)
         pNode = pNode->next;
     }
     return count;
+    */
 }
 
 int LameAI::FindBuildingCount(BUILDING_TYPE buildingtype)
 {
+    return m_OwnBuildingCount[buildingtype];
+    /*
     int count = 0;
     DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
     ListNode<Building*>* pNode = buildings->headNode();
@@ -239,6 +257,7 @@ int LameAI::FindBuildingCount(BUILDING_TYPE buildingtype)
         pNode = pNode->next;
     }
     return count;
+    */
 }
 
 
@@ -274,8 +293,10 @@ bool LameAI::CanIAffordToBuild(BUILDING_TYPE buildingtype)
     int cost = 0;
     for(unsigned int i=0;i<m_vBuildings.size();++i)
     {
-        if(m_vBuildings[i]->eType == buildingtype)
+        if(m_vBuildings[i]->eType == buildingtype) {
             cost = m_vBuildings[i]->cost;
+            break;
+        }
     }
     if(m_pPlayer->getOre() > cost) return true;
     else return false;
@@ -296,6 +317,14 @@ bool LameAI::CanIAffordToBuild(UNIT_TYPE unittype)
 
 int LameAI::CountMyBuildings()
 {
+    int count = 0;
+    map<int, int>::iterator it;
+
+    for (it = m_OwnBuildingCount.begin(); it != m_OwnBuildingCount.end(); it++ )
+        count += (*it).second;
+
+    return count;
+    /*
     //yes it is a bit silly to count them here, should have added new method to asset collection instead
     int count = 0;
     DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
@@ -309,10 +338,19 @@ int LameAI::CountMyBuildings()
         pNode = pNode->next;
     }
     return count;
+    */
 }
 
 int LameAI::CountMyUnits()
 {
+    int count = 0;
+    map<int, int>::iterator it;
+
+    for (it = m_OwnUnitCount.begin(); it != m_OwnUnitCount.end(); it++ )
+        count += (*it).second;
+
+    return count;
+    /*
     //yes it is a bit silly to count them here, should have added new method to asset collection instead
     int count = 0;
     DoubleLinkedList<Unit*>* units = AssetCollection::getAllUnits();
@@ -326,7 +364,7 @@ int LameAI::CountMyUnits()
         pNode = pNode->next;
     }
     return count;
-
+    */
 }
 
 bool LameAI::LocationValidToBuild(int x, int y, BUILDING_TYPE b)
@@ -335,8 +373,10 @@ bool LameAI::LocationValidToBuild(int x, int y, BUILDING_TYPE b)
     Terrain* pTerrain = Terrain::getInstance();
     for(unsigned int i=0;i<m_vBuildings.size();++i)
     {
-        if(m_vBuildings[i]->eType == b)
+        if(m_vBuildings[i]->eType == b) {
             buildingData = m_vBuildings[i];
+            break;
+        }
     }
     //check are we inside the map
     if( (x + buildingData->width) > pTerrain->getSize() || (y + buildingData->height) > pTerrain->getSize() )
@@ -352,12 +392,7 @@ bool LameAI::LocationValidToBuild(int x, int y, BUILDING_TYPE b)
         if( !pTerrain->isPassable(x, y, buildingData->width) ) return false;
     }
     else { //not very accurate but is mostly implemented for sanity's sake anyway
-        if(buildingData->width > buildingData->height) {
-            if( !pTerrain->isPassable(x, y, buildingData->width) ) return false;
-        }
-        else {
-            if( !pTerrain->isPassable(x, y, buildingData->height) ) return false;
-        }
+        if( !pTerrain->isPassable(x, y, max(buildingData->width, buildingData->height)) ) return false;
     }
 
     //check how many units are in the area
@@ -377,16 +412,12 @@ void LameAI::FindBaseCenterPoint(unsigned int *xCenter, unsigned int *yCenter)
     unsigned int xTotal = 0;
     unsigned int yTotal = 0;
 
-    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
-    ListNode<Building*>* pNode = buildings->headNode();
+    ListNode<Building*>* pNode = m_OwnBuildingList.headNode();
     while(pNode)
     {
-        if(pNode->item->getOwner() == m_pPlayer)
-        {
-            ++count;
-            xTotal += pNode->item->getCenterGridX();
-            yTotal += pNode->item->getCenterGridY();
-        }
+        ++count;
+        xTotal += pNode->item->getCenterGridX();
+        yTotal += pNode->item->getCenterGridY();
         pNode = pNode->next;
     }
 
@@ -409,7 +440,11 @@ void LameAI::FindBaseCenterPoint(unsigned int *xCenter, unsigned int *yCenter)
 
 void LameAI::HammerTime(void)
 {
-    if( !HaveBuilding(BUILDING_TYPE_YARD) )
+if (m_pPlayer->getIndex() == 2)
+{
+    int i = 0;
+}
+    if(!HaveBuilding(BUILDING_TYPE_YARD) )
     {
         BuildBuilding(BUILDING_TYPE_YARD);
     }
@@ -421,6 +456,7 @@ void LameAI::HammerTime(void)
         }
         else 
         {
+
             if(NeedMoreUnits())
             {
                 BuildUnit(ChooseUnitToBuild());
@@ -495,18 +531,40 @@ void LameAI::BuildBuilding(BUILDING_TYPE building)
     int locationOffsetX;
     int locationOffsetY;
     FindBaseCenterPoint(&x, &y);
+    int buildingCount = CountMyBuildings();
+    const int tryCountMax = 10;
 
-    if(CountMyBuildings() < m_BuildingLimit)
+    if(buildingCount < m_BuildingLimit)
     {
         if(CanIAffordToBuild(building))
         {
-            for(int trycount = 0; trycount < 10; ++trycount)
+            for(int trycount = 0; trycount < tryCountMax; ++trycount)
             {
+                /*
+                 * antin originelli
                 locationOffsetX = (((CountMyBuildings()/5)+1) * m_BaseSpread);
                 locationOffsetY = rand() % locationOffsetX;
                 locationOffsetX -= locationOffsetY;
                 if(rand() % 2 == 1) locationOffsetX *= -1;
                 if(rand() % 2 == 1) locationOffsetY *= -1;
+                */
+
+                /*
+                 * laurin viritys
+                int offset = (int)(2 * ((((float)(buildingCount + trycount)/5)+1) * m_BaseSpread));
+                locationOffsetX = (rand() % offset) - (offset >> 1);
+                locationOffsetY = (rand() % offset) - (offset >> 1);
+                */
+
+                /*
+                 * hybrid
+                 */
+                locationOffsetX = (int)(2 * ((((float)(buildingCount + trycount)/5)+1) * m_BaseSpread));
+                locationOffsetY = rand() % locationOffsetX;
+                locationOffsetX -= locationOffsetY;
+                if(rand() % 2 == 1) locationOffsetX *= -1;
+                if(rand() % 2 == 1) locationOffsetY *= -1;
+
                 if( LocationValidToBuild(x+locationOffsetX, y+locationOffsetY, building) ) {
                     AssetFactory::createBuilding(m_pPlayer, building, x+locationOffsetX, y+locationOffsetY);
                     return;
@@ -533,6 +591,7 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
         if(CanIAffordToBuild(unittype))
         {
             // find factories TODO this is debug/test/stuff
+            /*
             ListNode<Building*>* pNode = AssetCollection::getAllBuildings()->headNode();
             Building** factories = new Building*[100];
             int count = 0;
@@ -549,11 +608,15 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
 
                 pNode = pNode->next;
             }
-            if (count > 0)
+            */
+            Building* factory = m_OwnBuildings[BUILDING_TYPE_FACTORY];
+            if (factory)
             {
+                /*
                 // pick a factory
                 int r = (rand() % count);
                 Building* factory = factories[r];
+                */
                 int x = factory->getDef()->gridEntrancePointX + factory->getGridX();
                 int y = factory->getDef()->gridEntrancePointY + factory->getGridY();
                 int w = factory->getDef()->gridPassableAreaWidth;
@@ -564,6 +627,43 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
                 }
             }
 
+        }
+    }
+}
+
+void LameAI::handleCreatedAsset(IAsset* instance)
+{
+    if (instance->getOwner() == m_pPlayer)
+    {
+        if (instance->getAssetType() == IAsset::BUILDING)
+        {
+            Building* b = (Building*)instance;
+            if (!m_OwnBuildings[b->getTypeTag()]) 
+                m_OwnBuildings[b->getTypeTag()] = b;
+            m_OwnBuildingList.pushTail(b);
+            m_OwnBuildingCount[b->getTypeTag()] = m_OwnBuildingCount[b->getTypeTag()] + 1;
+        }
+        else if (instance->getAssetType() == IAsset::UNIT)
+        {
+            m_OwnUnitCount[instance->getTypeTag()] = m_OwnUnitCount[instance->getTypeTag()] + 1;
+        }
+    }
+}
+
+void LameAI::handleReleasedAsset(IAsset* instance)
+{
+    if (instance->getOwner() == m_pPlayer)
+    {
+        if (instance->getAssetType() == IAsset::BUILDING)
+        {
+            Building* b = (Building*)instance;
+            m_OwnBuildings.erase(b->getTypeTag());
+            m_OwnBuildingList.remove(b);
+            m_OwnBuildingCount[b->getTypeTag()] = m_OwnBuildingCount[b->getTypeTag()] - 1;
+        }
+        else if (instance->getAssetType() == IAsset::UNIT)
+        {
+            m_OwnUnitCount[instance->getTypeTag()] = m_OwnUnitCount[instance->getTypeTag()] - 1;
         }
     }
 }
