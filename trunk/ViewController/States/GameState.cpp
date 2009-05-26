@@ -276,7 +276,15 @@ HRESULT GameState::create(ID3DApplication* pApplication)
     co.setGamestate(this);
 
     // antialias
-    if (Config::getInstance()->getValueAsBool("antialias", false)) pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+    if (Config::getInstance()->getValueAsBool("antialias", false)) 
+    {
+        pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+        m_Antialias = true;
+    } 
+    else
+    {
+        m_Antialias = false;
+    }
 
     return S_OK;
 }
@@ -460,7 +468,9 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
     pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     m_Selector.render(pDevice);    
 
+    //if (m_Antialias) pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
     m_pRootContainer->render(pDevice);
+    //if (m_Antialias) pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
     //Draw cursor
     Cursor::getInstance()->render(pDevice);

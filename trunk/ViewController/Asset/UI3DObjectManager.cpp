@@ -65,7 +65,7 @@ void UI3DObjectManager::createBuilding(Building* pBuilding)
     CXFileLoader::Load(g_ppBuildingMeshNames[tag][0], m_ResourceContainer, pUIBuilding);
 
     // change base mesh color to player color
-    pUIBuilding->setBaseMaterial(getPlayerMaterials(pBuilding->getOwner()->getIndex()));
+    pUIBuilding->setBaseMaterial(getPlayerMaterials(pBuilding->getOwner()->getIndex()), getDisabledMaterial());
 
     // creates healthblock (it automagically adds itself to asset)
     new HealthBlock(pUIBuilding, 0.5f, &m_ResourceContainer);
@@ -235,6 +235,14 @@ void UI3DObjectManager::createPlayerMaterials()
         material.Power = 0.0f;
         m_ResourceContainer.AddResource(g_ppPlayerMaterialNames[i], material);
     }
+
+    D3DMATERIAL9 material;
+    material.Ambient = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+    material.Diffuse = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
+    material.Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+    material.Specular = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+    material.Power = 0.0f;
+    m_ResourceContainer.AddResource(_T("DisabledMaterial"), material);
 }
 
 D3DMATERIAL9* UI3DObjectManager::getPlayerMaterials(const unsigned int playerIndex)
@@ -242,6 +250,10 @@ D3DMATERIAL9* UI3DObjectManager::getPlayerMaterials(const unsigned int playerInd
     return m_ResourceContainer.FindMaterial(g_ppPlayerMaterialNames[playerIndex]);
 }
 
+D3DMATERIAL9* UI3DObjectManager::getDisabledMaterial()
+{
+    return m_ResourceContainer.FindMaterial(_T("DisabledMaterial"));
+}
 
 void UI3DObjectManager::createProjectile(Projectile* pProjectile)
 {    

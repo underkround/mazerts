@@ -60,18 +60,7 @@ public:
      */
     virtual inline void setBaseMaterial(D3DMATERIAL9* pMaterial)
     {
-        switch(m_pUnit->getTypeTag())
-        {
-        case 5: //Nuker            
-            GetMeshDataArray()[2].pMaterial = pMaterial;
-            break;
-        case 6: //Ore truck
-            GetMeshDataArray()[4].pMaterial = pMaterial;
-            break;
-        default:            
-            GetMeshDataArray()[0].pMaterial = pMaterial;
-            break;
-        }
+        GetMeshDataArray()[m_pUnit->getDef()->basematerial].pMaterial = pMaterial;
     }
 
 protected:

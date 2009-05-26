@@ -140,6 +140,7 @@ bool DefManager::loadAssetDef(int tag)
     d->height               = c->getValueAsInt(     tags, "asset height", 2);
 
     d->threat               = c->getValueAsInt(     tags, "asset threat", 1);
+    d->basematerial         = c->getValueAsInt(     tags, "asset base material index", 0);
 
     // load component definitions for asset
     int t;

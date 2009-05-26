@@ -23,47 +23,17 @@ public:
      * @param pBuilding Pointer to model-side building this
      *       object represents
      */
-    UIBuilding(Building* pBuilding) : UIAsset(pBuilding)
-    {
-        m_pBuilding = pBuilding;
-
-        D3DXMatrixRotationX(&m_mLocal, D3DX_PI * 0.5f);
-        m_mLocal._11 = -m_mLocal._11;    
-        m_mLocal._12 = -m_mLocal._12;
-        m_mLocal._13 = -m_mLocal._13;
-        m_mLocal._21 = -m_mLocal._21;
-        m_mLocal._22 = -m_mLocal._22;
-        m_mLocal._23 = -m_mLocal._23;
-        m_mLocal._31 = -m_mLocal._31;
-        m_mLocal._32 = -m_mLocal._32;
-        m_mLocal._33 = -m_mLocal._33;
-
-        //Update position
-        m_mLocal._41 = pBuilding->getGridX() + (pBuilding->getWidth() / 2.0f);
-        m_mLocal._42 = pBuilding->getGridY() + (pBuilding->getHeight() / 2.0f);
-        //m_mLocal._43 = UITerrain::getInstance()->calculateTriangleHeightAt(m_mLocal._41, m_mLocal._42);
-        m_mLocal._43 = Terrain::getInstance()->getTerrainHeight((const short)m_mLocal._41, (const short)m_mLocal._42) * -UITerrain::HEIGHTFACTOR;
-    }
+    UIBuilding(Building* pBuilding);
 
     /**
      * Set base material
      * Used for player colors
      */
-    virtual inline void setBaseMaterial(D3DMATERIAL9* pMaterial)
-    {
-        switch (m_pBuilding->getTypeTag())
-        {
-        case 51: // ore mine, do not show player color
-            break;
-        case 52: // war factory
-            GetMeshDataArray()[3].pMaterial = pMaterial;
-            break;
-        default:
-            GetMeshDataArray()[0].pMaterial = pMaterial;
-        }
-    }
+    virtual void setBaseMaterial(D3DMATERIAL9* pBaseMaterial, D3DMATERIAL9* pDisabledMaterial);
 
-    virtual ~UIBuilding() {}
+    void handleAssetStateChange(IAsset* pAsset, IAsset::State newState);
+
+    virtual ~UIBuilding();
 
 private:
 
@@ -71,6 +41,10 @@ private:
      * Model-side building this object represents
      */
     Building* m_pBuilding;
+
+    bool            m_Powered; // just a flag to remember whether we are disabled or not
+    D3DMATERIAL9*   m_pDisabledMaterial; // pointer to "disabled" -material
+    D3DMATERIAL9**  m_ppOriginalMaterials;
 
 };
 

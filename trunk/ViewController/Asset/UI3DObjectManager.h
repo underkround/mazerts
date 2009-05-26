@@ -111,6 +111,7 @@ public:
      * @param playerIndex   index of the player
      */
     D3DMATERIAL9* getPlayerMaterials(const unsigned int playerIndex);
+    D3DMATERIAL9* getDisabledMaterial();
 
     /**
      * Creates player materials

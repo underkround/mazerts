@@ -40,12 +40,6 @@ bool UIAsset::Update(float fFrameTime)
 
 void UIAsset::handleAssetStateChange(IAsset* pAsset, IAsset::State newState)
 {
-    if (pAsset->getAssetType() == IAsset::BUILDING)
-    {
-        if (newState == IAsset::STATE_ACTIVE)
-            if (UITerrain::getInstance()->getCurrentPlayer() == pAsset->getOwner())
-                SoundManager::playSound(SOUND_CONSTRUCTION_COMPLETE, 0.01f, *(D3DXVECTOR3*)pAsset->getPosition(), false);
-    }
 }
 
 

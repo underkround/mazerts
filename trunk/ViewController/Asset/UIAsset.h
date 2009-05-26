@@ -127,15 +127,6 @@ public:
     */
 
     /**
-     * Set base material
-     * Used for player colors
-     */
-    virtual inline void setBaseMaterial(D3DMATERIAL9* pMaterial)
-    {
-        GetMeshDataArray()[0].pMaterial = pMaterial;
-    }
-
-    /**
      * HealthBlock calls this internally
      */
     inline void setHealthBlock(HealthBlock* pHealthBlock)

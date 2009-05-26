@@ -168,6 +168,9 @@ private:
     int m_KeyTerrainDetailDown;
     int m_KeyTerrainRedraw;
 
+    // aa
+    bool m_Antialias;
+
     // Root container covering the whole screen and managing components
     RootContainer*      m_pRootContainer;
 

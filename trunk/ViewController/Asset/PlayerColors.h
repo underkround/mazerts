@@ -22,7 +22,6 @@ const TCHAR g_ppPlayerMaterialNames[MAXPLAYERCOUNT][256] =
     _T("PlayerMaterial7"),
 };
 
-
 const DWORD PLAYERCOLORS[MAXPLAYERCOUNT] =
 {
     0xff000000, // player 0, null/neutral player
