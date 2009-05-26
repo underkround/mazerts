@@ -29,7 +29,7 @@ const DWORD PLAYERCOLORS[MAXPLAYERCOUNT] =
     0xffff0000, // player 1
     0xff00ff00, // player 2 etc.
     0xff0000ff,
-    0xffffff00,
+    0xffff7700,
     0xffff00ff,
     0xff00ffff,
     0xffffffff

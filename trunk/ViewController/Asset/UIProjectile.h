@@ -44,7 +44,8 @@ public:
      */
     inline bool Update(float fFrametime)
     {
-        SetVisible(UITerrain::getInstance()->getCurrentPlayer()->getFog()->isVisibleCoord((int)m_mWorld._41, (int)m_mWorld._42));
+        Fog* pFog = UITerrain::getInstance()->getCurrentPlayer()->getFog();        
+        SetVisible(!pFog->isEnabled() || pFog->isVisibleCoord((int)m_mWorld._41, (int)m_mWorld._42));
 
         float t = m_pProjectile->getFlightT();
             

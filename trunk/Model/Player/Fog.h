@@ -53,7 +53,14 @@ public:
     /**
      * Is a map coord visible?
      */
-    inline const bool isVisibleCoord(const int x, const int y) { return m_Fog[y][x]; }
+    inline const bool isVisibleCoord(const int x, const int y) 
+    { 
+        if(!m_Enabled)
+        {
+            return true;
+        }
+        return m_Fog[y][x]; 
+    }
 
     /**
      * Set map coord visibility (probably not too much use, this one)

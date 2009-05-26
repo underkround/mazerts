@@ -8,10 +8,14 @@ UI3DObjectManager* ParticleFactory::pManager = NULL;
 
 void ParticleFactory::createExplosion(Explosion* pExplosion)
 {
-    if (!UITerrain::getInstance()->getCurrentPlayer()->getFog()->isVisibleCoord(pExplosion->getX(), pExplosion->getY())) 
+    Fog* pFog = UITerrain::getInstance()->getCurrentPlayer()->getFog();
+    if (pFog->isEnabled())        
     {
-        // explosion is not visible, so don't fire up the emitter
-        return;
+        if(!pFog->isVisibleCoord(pExplosion->getX(), pExplosion->getY()))
+        {
+            // explosion is not visible, so don't fire up the emitter
+            return;
+        }
     }
 
     //TODO: Should textures be cached somewhere? (FindTexture iterates through the vector EVERY time a unit fires, an explosion occurs etc...)
@@ -78,10 +82,14 @@ void ParticleFactory::createExplosion(Explosion* pExplosion)
 
 void ParticleFactory::createExplosion(const D3DXVECTOR3& pos, int size)
 {
-    if (!UITerrain::getInstance()->getCurrentPlayer()->getFog()->isVisibleCoord((int)pos.x, (int)pos.y)) 
+    Fog* pFog = UITerrain::getInstance()->getCurrentPlayer()->getFog();
+    if (pFog->isEnabled())
     {
-        // explosion is not visible, so don't fire up the emitter
-        return;
+        if(!pFog->isVisibleCoord((int)pos.x, (int)pos.y))
+        {
+            // explosion is not visible, so don't fire up the emitter
+            return;
+        }
     }
 
     //TODO: Should textures be cached somewhere? (FindTexture iterates through the vector EVERY time a unit fires, an explosion occurs etc...)
@@ -129,10 +137,14 @@ void ParticleFactory::createExplosion(const D3DXVECTOR3& pos, int size)
 
 void ParticleFactory::createFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir, float lifeTime)
 {
-    if (!UITerrain::getInstance()->getCurrentPlayer()->getFog()->isVisibleCoord((int)pos.x, (int)pos.y)) 
+    Fog* pFog = UITerrain::getInstance()->getCurrentPlayer()->getFog();
+    if (pFog->isEnabled())        
     {
-        // flame is not visible, so don't fire up the emitter
-        return;
+        if(!pFog->isVisibleCoord((int)pos.x, (int)pos.y))
+        {
+            // flame is not visible, so don't fire up the emitter
+            return;
+        }
     }
 
     LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_ppTextureNames[BALLTEXTURE]); 
