@@ -19,6 +19,8 @@
 //After how many seconds a stuck unit cancels its MAKEWAY-target
 #define STUCKCOUNTER_CANCEL 0.75f
 
+#include "../Console.h"
+
 GroundMovingLogic::GroundMovingLogic(MovingDef& def) : IMovingLogic(GROUNDMOVING, def)
 {
     m_pUnit = NULL;
@@ -34,8 +36,11 @@ GroundMovingLogic::GroundMovingLogic(MovingDef& def) : IMovingLogic(GROUNDMOVING
 
     m_CachedReachedTargetX = -1;
     m_CachedReachedTargetY = -1;
+    m_CachedTargetOnLastPathX = -1;
+    m_CachedTargetOnLastPathY = -1;
 
     m_StuckCounter = 0;
+    m_TargetChangeTreshold = 20;
 }
 
 GroundMovingLogic::~GroundMovingLogic()
@@ -55,6 +60,25 @@ void GroundMovingLogic::attach(Unit* pUnit)
     m_TargetDir.y = m_pUnit->getDirection()->y;
 
     m_HalfSize = m_pUnit->getWidth() * 0.5f;
+}
+
+bool GroundMovingLogic::shouldWeRePath() const {
+    // no target or static target == not changed
+    if(!m_pTarget || m_pTarget->isStatic())
+        return false;
+    // no cached coords into which to compare :(
+    if(m_CachedTargetOnLastPathX < 0 || m_CachedTargetOnLastPathY < 0)
+        return false;
+    // check for change over treshold
+    if(abs(m_pTarget->getTargetX() - m_CachedTargetOnLastPathX) > m_TargetChangeTreshold) {
+        //Console::debug("new path!");
+        return true;
+    }
+    if(abs(m_pTarget->getTargetY() - m_CachedTargetOnLastPathY) > m_TargetChangeTreshold) {
+        //Console::debug("new path!");
+        return true;
+    }
+    return false;
 }
 
 void GroundMovingLogic::update(Unit* pUnit, const float deltaT)
@@ -78,7 +102,10 @@ void GroundMovingLogic::update(Unit* pUnit, const float deltaT)
         }
     case FOLLOWPATH:
         {
-            followPath();
+            if(shouldWeRePath())
+                m_State = IDLE;
+            else
+                followPath();
             break;
         }
     case JUSTMOVE:
@@ -148,12 +175,18 @@ void GroundMovingLogic::askPath()
         m_State = IDLE;
         return;
     }
+
+    m_CachedTargetOnLastPathX = m_pTarget->getTargetX();
+    m_CachedTargetOnLastPathY = m_pTarget->getTargetY();
+
     unsigned short m_TargetX = m_pTarget->getTargetX();
     unsigned short m_TargetY = m_pTarget->getTargetY();
 
     //Is the target reached?
     if( abs(m_pUnit->getGridX() - m_TargetX) < 2 && abs(m_pUnit->getGridY() - m_TargetY) < 2)
     {
+        m_CachedTargetOnLastPathX = -1;
+        m_CachedTargetOnLastPathY = -1;
         // if the target was static coordinates - not tracking asset,
         // we can remove it when it's reached
         if(m_pTarget->isStatic())

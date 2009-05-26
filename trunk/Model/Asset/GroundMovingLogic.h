@@ -175,6 +175,11 @@ private:
     void clearCurrentTarget(const bool forceRelease=false);
 
     /**
+     * @return true, if the target has changed enough so we should get new path.
+     */
+    bool shouldWeRePath() const;
+
+    /**
      * Unit this MovingLogic is owned by
      */
     Unit* m_pUnit;
@@ -210,6 +215,8 @@ private:
     int m_CachedReachedTargetX;
     int m_CachedReachedTargetY;
 
+    int m_CachedTargetOnLastPathX;
+    int m_CachedTargetOnLastPathY;
 
     /** 
      * Half of unit width, used for offsets (unit "center")
@@ -220,6 +227,13 @@ private:
      * Counter used to cancel MAKEWAY-targets if the unit cannot move in certain number of seconds
      */
     float m_StuckCounter;
+
+    /**
+     * Treshold for how much the target can change before the path is recalculated.
+     * Note that the check is in it's own method if you want to change the whole implementation.
+     */
+    int m_TargetChangeTreshold;
+
 };
 
 #endif // __GROUNDMOVINGLOGIC_H__
