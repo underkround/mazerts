@@ -115,6 +115,20 @@ bool Player::CalculateEnergyBalance(void)
 void Player::PowerSwitch(bool enable)
 {
     //go thru buildings that consume energy and enable (true)/disable (false) them
+    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
+    ListNode<Building*>* pNode = buildings->headNode();
+    while(pNode)
+    {
+        Building* b = (Building*)pNode->item;
+        if(b->getOwner()->getId() == m_Id && b->getState() != IAsset::STATE_DESTROYED)
+        {
+            if(b->getEnergyConsumption() > 0)
+            {
+                b->setPower(enable);
+            }
+        }
+        pNode = pNode->next;
+    }
 }
 
 const int Player::getPredictedEnergyProduction()

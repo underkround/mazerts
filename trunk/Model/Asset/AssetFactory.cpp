@@ -43,7 +43,8 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, Building* building)
                     building->getGridX() + building->getDef()->gridEntrancePointX,
                     building->getGridY() + building->getDef()->gridEntrancePointY,
                     false);
-        //give newly created unit orders to drive out
+        //give newly created unit orders to drive out (weaponless units know by themselves what to do)
+        if(u->hasWeapon())
         u->getMovingLogic()->addTarget( new Target( building->getDef()->gridEntrancePointX,
                                                     building->getDef()->gridEntrancePointY - 6,
                                                     false,
@@ -146,8 +147,7 @@ IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX,
 
     // special case for ore mine
     // TODO: changed here from gamestate, temporary solution for Levels-demo. Do it better :)
-    // TODO: GET RID OF THAT STUPID HARDCODED VALUE (see notes in createOreMine)
-    if(def->tag == 51)
+    if(def->tag == BUILDING_TYPE_MINE)
         return createOreMine(positionX, positionY);
 
     // general Units and Buildings

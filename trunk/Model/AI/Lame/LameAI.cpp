@@ -189,75 +189,17 @@ int LameAI::FindBuildingCost(BUILDING_TYPE buildingtype)
 
 bool LameAI::HaveBuilding(BUILDING_TYPE buildingtype)
 {
-    /*
-    ListNode<Building*>* pNode = m_OwnBuildingList.headNode();
-    while (pNode) {
-        if (pNode->item->getTypeTag() == buildingtype) return true;
-        pNode = pNode->next;
-    }
-    return false;
-    */
     return m_OwnBuildings[buildingtype] != NULL;
-    /*
-    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
-    ListNode<Building*>* pNode = buildings->headNode();
-    while(pNode)
-    {
-        if(pNode->item->getOwner() == m_pPlayer)
-        {
-            if(pNode->item->getTypeTag() == buildingtype)
-            {
-                return true;
-            }
-        }
-        pNode = pNode->next;
-    }
-    return false;
-    */
 }
 
 int LameAI::FindUnitCount(UNIT_TYPE unittype)
 {
     return m_OwnUnitCount[unittype];
-    /*
-    int count = 0;
-    DoubleLinkedList<Unit*>* units = AssetCollection::getAllUnits();
-    ListNode<Unit*>* pNode = units->headNode();
-    while(pNode)
-    {
-        if(pNode->item->getOwner() == m_pPlayer)
-        {
-            if(pNode->item->getTypeTag() == unittype)
-            {
-                ++count;
-            }
-        }
-        pNode = pNode->next;
-    }
-    return count;
-    */
 }
 
 int LameAI::FindBuildingCount(BUILDING_TYPE buildingtype)
 {
     return m_OwnBuildingCount[buildingtype];
-    /*
-    int count = 0;
-    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
-    ListNode<Building*>* pNode = buildings->headNode();
-    while(pNode)
-    {
-        if(pNode->item->getOwner() == m_pPlayer)
-        {
-            if(pNode->item->getTypeTag() == buildingtype)
-            {
-                ++count;
-            }
-        }
-        pNode = pNode->next;
-    }
-    return count;
-    */
 }
 
 
@@ -324,21 +266,6 @@ int LameAI::CountMyBuildings()
         count += (*it).second;
 
     return count;
-    /*
-    //yes it is a bit silly to count them here, should have added new method to asset collection instead
-    int count = 0;
-    DoubleLinkedList<Building*>* buildings = AssetCollection::getAllBuildings();
-    ListNode<Building*>* pNode = buildings->headNode();
-    while(pNode)
-    {
-        if(pNode->item->getOwner() == m_pPlayer)
-        {
-            ++count;
-        }
-        pNode = pNode->next;
-    }
-    return count;
-    */
 }
 
 int LameAI::CountMyUnits()
@@ -350,21 +277,6 @@ int LameAI::CountMyUnits()
         count += (*it).second;
 
     return count;
-    /*
-    //yes it is a bit silly to count them here, should have added new method to asset collection instead
-    int count = 0;
-    DoubleLinkedList<Unit*>* units = AssetCollection::getAllUnits();
-    ListNode<Unit*>* pNode = units->headNode();
-    while(pNode)
-    {
-        if(pNode->item->getOwner() == m_pPlayer)
-        {
-            ++count;
-        }
-        pNode = pNode->next;
-    }
-    return count;
-    */
 }
 
 bool LameAI::LocationValidToBuild(int x, int y, BUILDING_TYPE b)
@@ -440,10 +352,6 @@ void LameAI::FindBaseCenterPoint(unsigned int *xCenter, unsigned int *yCenter)
 
 void LameAI::HammerTime(void)
 {
-if (m_pPlayer->getIndex() == 2)
-{
-    int i = 0;
-}
     if(!HaveBuilding(BUILDING_TYPE_YARD) )
     {
         BuildBuilding(BUILDING_TYPE_YARD);
@@ -612,19 +520,7 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
             Building* factory = m_OwnBuildings[BUILDING_TYPE_FACTORY];
             if (factory)
             {
-                /*
-                // pick a factory
-                int r = (rand() % count);
-                Building* factory = factories[r];
-                */
-                int x = factory->getDef()->gridEntrancePointX + factory->getGridX();
-                int y = factory->getDef()->gridEntrancePointY + factory->getGridY();
-                int w = factory->getDef()->gridPassableAreaWidth;
-                int h = factory->getDef()->gridPassableAreaHeight;
-                if (AssetCollection::getUnitsAt(NULL, x, y, w, h) == 0)
-                {
-                    AssetFactory::createUnit(m_pPlayer, unittype, factory);
-                }
+                AssetFactory::createUnit(m_pPlayer, unittype, factory);
             }
 
         }

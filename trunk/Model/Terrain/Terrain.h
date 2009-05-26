@@ -179,7 +179,7 @@ public:
     inline const unsigned char * const * getTerrainVertexHeightData() const
     {
         return m_ppVertexHeightData;
-    }    
+    }
 
     /**
      * Return the terrain generator

@@ -200,8 +200,26 @@ const bool RtsInitializer::initializeScenario()
         pGenerator = new PlainTerrainGenerator(size);
     }
 
+    //add scenario defined features to map
+    if(generator == "anthex")
+    {
+        Config::ValueNode* heightNode = c->getNode("scenario terrain plains height");
+        Config::ValueNode* posxNode = c->getNode("scenario terrain plains posx");
+        Config::ValueNode* posyNode = c->getNode("scenario terrain plains posy");
+        // all values need to exist
+        while(heightNode && posxNode && posyNode)
+        {
+            ((AntinTerrainGenerator*)pGenerator)->addStartingLocation(posxNode->getInt(), posyNode->getInt(), heightNode->getInt());
+            // advance nodes
+            heightNode = heightNode->next;
+            posxNode = posxNode->next;
+            posyNode = posyNode->next;
+        }
+    }
+
     // apply the generator
     pTerrain->initialize(pGenerator);
+
 
     /*
      * COLLECTION INITIALIZATION

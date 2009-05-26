@@ -104,13 +104,16 @@ char Building::update(const float deltaT)
         //modifyHitpoints((float)m_Def.maxHitpoints);
         {
             float hpMod = (float)m_Def.maxHitpoints;
-            hpMod /= 20;
+            hpMod /= (float)m_Def.constructionTime;
             modifyHitpoints(hpMod*deltaT);
         }
         break;
 
     case STATE_PARALYZED:
         changeState(STATE_ACTIVE);
+        break;
+
+    case STATE_DISABLED:
         break;
 
     /*
@@ -142,4 +145,15 @@ char Building::update(const float deltaT)
     } // switch
 
     return RESULT_OK; // normal return value
+}
+
+void Building::setPower(bool active)
+{
+    if(m_State == STATE_ACTIVE || m_State == STATE_DISABLED)
+    {
+        if(active)
+            changeState(STATE_ACTIVE);
+        else
+            changeState(STATE_DISABLED);
+    }
 }

@@ -124,6 +124,8 @@ struct AssetDef //: public BaseDef
 
     // maximum hitpoints for asset
     int maxHitpoints;
+    //how fast is this constructed
+    float constructionTime;
     // lasting of the destroyed -state (seconds) before object deletion
     float destructionTime;
     // size parameters

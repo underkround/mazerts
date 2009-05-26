@@ -16,7 +16,9 @@ AntinTerrainGenerator::AntinTerrainGenerator(const unsigned int seed, const unsi
 
 AntinTerrainGenerator::~AntinTerrainGenerator()
 {
-    
+    m_height.clear();
+    m_posx.clear();
+    m_posy.clear();
 }
 
 
@@ -49,8 +51,14 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
                         45);
     }
 
-    //"starting area"
-    flattenArea(ppVertexHeightData, terrainSize, 80, 100, 0, 50, 100);
+    //"starting areas"
+    if(m_height.size() > 0)
+    {
+        for(unsigned int i=0; i<m_height.size(); ++i)
+        {
+            flattenArea(ppVertexHeightData, terrainSize, m_height.at(i), m_posx.at(i), m_posy.at(i), 50, 100);
+        }
+    }
 
     //"minmax volcano"
     flattenArea(ppVertexHeightData, terrainSize, 255, 50, 100, 15, 20);

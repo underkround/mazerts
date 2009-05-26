@@ -105,13 +105,11 @@ void Resourcer::idle()
     //Look for target
     if(m_Ore == 0)
     {
-        //TODO: hardcoded tag for ore mine, better way to distinguish?
-        tagToLookFor = 51;
+        tagToLookFor = BUILDING_TYPE_MINE;
     }
     else
     {
-        //TODO: Hard coded tag for resource yard, better way to distinguish
-        tagToLookFor = 53;
+        tagToLookFor = BUILDING_TYPE_YARD;
         playerToLookFor = m_pUnit->getOwner()->getIndex();
     }
 

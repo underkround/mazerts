@@ -9,6 +9,9 @@
 #define __ANTINTERRAINGENERATOR_H__
 
 #include "ITerrainGenerator.h"
+#include <vector>
+
+using namespace std;
  
 class AntinTerrainGenerator : public ITerrainGenerator
 {
@@ -48,6 +51,8 @@ public:
     {
         return m_Seed;
     }
+
+    inline void addStartingLocation(int x, int y, int height) { m_posx.push_back(x); m_posy.push_back(y); m_height.push_back(height); }
 
 private:
     /*** own helper methods ***/
@@ -124,6 +129,13 @@ private:
      * Our seed
      */
     unsigned int        m_Seed;
+
+    /**
+     * starting locations
+     */
+    vector<int>         m_posx;
+    vector<int>         m_posy;
+    vector<int>         m_height;
 
 };
 

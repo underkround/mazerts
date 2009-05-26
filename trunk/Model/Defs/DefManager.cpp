@@ -135,6 +135,7 @@ bool DefManager::loadAssetDef(int tag)
     d->name                 = c->getValueAsString(  tags, "asset name", "unnamed");
     d->description          = c->getValueAsString(  tags, "asset description", "unset description");
     d->maxHitpoints         = c->getValueAsInt(     tags, "asset max hitpoints", 10);
+    d->constructionTime     = c->getValueAsFloat(   tags, "asset construction time", 20);
     d->width                = c->getValueAsInt(     tags, "asset width", 2);
     d->height               = c->getValueAsInt(     tags, "asset height", 2);
 

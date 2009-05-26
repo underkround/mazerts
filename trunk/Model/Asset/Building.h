@@ -27,6 +27,8 @@ public:
 
     virtual char update(const float deltaT);
 
+    void setPower(bool active);
+
 private:
 
 };
