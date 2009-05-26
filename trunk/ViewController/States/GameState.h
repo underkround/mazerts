@@ -30,6 +30,12 @@ public:
     GameState();
     virtual ~GameState();
 
+    enum GAMECONDITION {
+        CONDITION_NONE,
+        CONDITION_WIN,
+        CONDITION_LOSE
+    };
+
     /**
      * Called when the state is created
      * @param pApplication Pointer to I3DApplication
@@ -115,6 +121,11 @@ public:
      */
     void redrawTerrain();
 
+    inline const GAMESTATE getStateType() { return GAMESTATE_GAME; }
+
+    inline const GAMECONDITION getGameCondition() { return m_Condition; }
+    inline void setGameCondition(const GAMECONDITION cond) { m_Condition = cond; }
+
 private:
 
     /** 
@@ -127,6 +138,12 @@ private:
      * initializes controls
      */
     void loadConfigurations(void);
+
+    /**
+     * Checks win/lose condition
+     * @return false if game is over
+     */
+    bool checkGameConditions(const float fFrameTime);
 
     /**
      * Main application
@@ -170,6 +187,13 @@ private:
 
     // aa
     bool m_Antialias;
+
+    // condition update timers
+    float m_ConditionUpdateTime;
+    float m_ConditionUpdateInterval;
+
+    // current game condition
+    GAMECONDITION m_Condition;
 
     // Root container covering the whole screen and managing components
     RootContainer*      m_pRootContainer;

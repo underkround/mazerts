@@ -50,20 +50,17 @@ void UIBuilding::setBaseMaterial(D3DMATERIAL9* pBaseMaterial, D3DMATERIAL9* pDis
 
 void UIBuilding::handleAssetStateChange(IAsset* pAsset, IAsset::State newState)
 {
-    if (newState == IAsset::STATE_DISABLED)
+    if (newState == IAsset::STATE_DISABLED && m_Powered)
     {
-        if (m_Powered)
+        m_Powered = false;
+        // change into disabled material
+        for (unsigned int i = 0; i < GetMeshDataArray().size(); i++)
         {
-            m_Powered = false;
-            // change into disabled material
-            for (unsigned int i = 0; i < GetMeshDataArray().size(); i++)
-            {
-                m_ppOriginalMaterials[i] = GetMeshDataArray()[i].pMaterial;
-                GetMeshDataArray()[i].pMaterial = m_pDisabledMaterial;
-            }
+            m_ppOriginalMaterials[i] = GetMeshDataArray()[i].pMaterial;
+            GetMeshDataArray()[i].pMaterial = m_pDisabledMaterial;
         }
     }
-    else if (!m_Powered)
+    else if (newState == IAsset::STATE_ACTIVE && !m_Powered)
     {
         // enable power
         m_Powered = true;

@@ -54,6 +54,9 @@
 
 #include "../../Model/Console.h"
 
+// for condition checking
+#include "../../Model/Asset/Building.h"
+
 
 #define KEYBOARD_CAMSPEED 60.0f
 #define MOUSE_CAMSPEED 0.01f
@@ -73,6 +76,10 @@ GameState::GameState()
     m_KeyToggleWireframe        = 68;
     m_KeyTerrainDetailUp        = 49;
     m_KeyTerrainDetailDown      = 50;
+
+    m_ConditionUpdateTime = 0.0f;
+    m_ConditionUpdateInterval = 5.0f;
+    m_Condition = CONDITION_NONE;
 }
 
 GameState::~GameState()
@@ -399,8 +406,10 @@ bool GameState::update(const float frameTime)
     m_pCurrentPlayer->getFog()->update(frameTime);
     UITerrain::getInstance()->updateFog(m_pDevice);
 
+    bool notaLoser = checkGameConditions(frameTime);
+
     //Keep running
-    return true;
+    return notaLoser;
 }
 
 
@@ -652,6 +661,8 @@ void GameState::loadConfigurations()
     c.updateInt("key terrain detail down",          m_KeyTerrainDetailDown);
     c.updateInt("key terrain redraw",               m_KeyTerrainRedraw);
 
+    c.getValueAsFloat("condition update interval", 5.0f);
+
     m_pRootContainer->loadConfigurations();
 
     // update configurations of the controllers
@@ -671,4 +682,39 @@ void GameState::redrawTerrain()
         pf->wait();
         ut->create(m_pDevice, getCurrentPlayer());
         pf->start();
+}
+
+bool GameState::checkGameConditions(const float fFrameTime)
+{
+    m_ConditionUpdateTime += fFrameTime;
+    if(m_ConditionUpdateTime > m_ConditionUpdateInterval) {
+        m_ConditionUpdateTime = 0;
+
+        int enemyBuildings = 0;
+        int ownBuildings = 0;
+        ListNode<Building*>* pNode = AssetCollection::getAllBuildings()->headNode();
+        while (pNode)
+        {
+            Building* b = pNode->item;
+            if (m_pCurrentPlayer->isEnemy(b->getOwner()))
+            {
+                ++enemyBuildings;
+            }
+            else if (b->getOwner() == m_pCurrentPlayer)
+            {
+                ++ownBuildings;
+            }
+            pNode = pNode->next;
+        }
+
+        if (enemyBuildings == 0) { // victory! \o/
+            m_Condition = CONDITION_WIN;
+            return false; 
+        }
+        if (ownBuildings == 0) { // defeat :(
+            m_Condition = CONDITION_LOSE;
+            return false;
+        }
+    }
+    return true;
 }

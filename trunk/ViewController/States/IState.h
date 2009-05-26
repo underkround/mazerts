@@ -22,6 +22,13 @@ public:
 
     virtual ~IState() {}
 
+    enum GAMESTATE
+    {
+        GAMESTATE_GAME = 0,
+        GAMESTATE_MAINMENU,
+        GAMESTATE_INTRO
+    };
+
     /**
      * Called when the state is created
      * @param pApplication Pointer to I3DApplication, get D3D-device and other needed stuff through this
@@ -75,6 +82,8 @@ public:
      * @return Error code if recreation failed
      */
     virtual HRESULT onRestore(void) { return S_OK; };
+
+    virtual const GAMESTATE getStateType() = 0;
 
 protected:
 

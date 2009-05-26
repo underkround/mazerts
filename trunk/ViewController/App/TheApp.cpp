@@ -140,12 +140,30 @@ void CTheApp::OnFlip(void)
     //State update
     if(m_pCurrentState->update(frameTime) == false)
     {
-        HRESULT hres = nextState();
-
-        if(FAILED(hres))
+        if (m_pCurrentState->getStateType() == IState::GAMESTATE_GAME)
         {
-            ::MessageBox(GetWindow(), _T("nextState returned error code on TheApp.cpp OnFlip"), _T("FATAL ERROR"), MB_OK);
-            Close();
+            if (((GameState*)m_pCurrentState)->getGameCondition() == GameState::CONDITION_WIN)
+            {
+                // TODO: Something proper
+                ::MessageBox(GetWindow(), _T("You won! \\o/"), _T("Congratulations!"), MB_OK);
+                Close();
+            }
+            else
+            {
+                // TODO: Something proper
+                ::MessageBox(GetWindow(), _T("You lost :("), _T("Better luck next time."), MB_OK);
+                Close();
+            }
+        }
+        else
+        {
+            HRESULT hres = nextState();
+
+            if(FAILED(hres))
+            {
+                ::MessageBox(GetWindow(), _T("nextState returned error code on TheApp.cpp OnFlip"), _T("FATAL ERROR"), MB_OK);
+                Close();
+            }
         }
 
         return;
