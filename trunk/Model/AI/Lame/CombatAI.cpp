@@ -30,6 +30,7 @@ CombatAI::CombatAI(Player* player)
     m_TargetFlags = 0;//Target::TGTFLAG_MAKEWAY;
 
     LoadConfigFromFile();
+    m_fUpdatetime = (float)((::rand() / (float)RAND_MAX)) * m_CombatUpdateInterval;
 
     AssetCollection::registerListener(this);
 }

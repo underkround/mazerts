@@ -22,6 +22,7 @@ LameAI::LameAI(Player* player)
     m_pPlayer = player;
     LoadConfigFromFile();
     AssetCollection::registerListener(this);
+    m_fUpdatetime = (float)((::rand() / (float)RAND_MAX)) * m_fUpdateInterval;
 }
 
 LameAI::~LameAI() 
