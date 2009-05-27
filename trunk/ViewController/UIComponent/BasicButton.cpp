@@ -54,7 +54,7 @@ void BasicButton::onRender(LPDIRECT3DDEVICE9 pDevice)
     // set texture if set
     if(m_ButtonDown && m_pBackgroundTextureClicked)
         pDevice->SetTexture(0, m_pBackgroundTextureClicked);
-    else if(!m_ButtonDown && m_pBackgroundTexture)
+    else if(m_pBackgroundTexture)
         pDevice->SetTexture(0, m_pBackgroundTexture);
     else
         pDevice->SetTexture(0, NULL);

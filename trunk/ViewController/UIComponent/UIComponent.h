@@ -120,6 +120,24 @@ public:
      */
     virtual void onParentChange();
 
+    /**
+     * Set loading mode on, or change it's status.
+     * If the button is in loadin phase, it's disabled.
+     * The phase ends when 100 is given, or clearLoading gets called.
+     * @param percentage loading state in 0..100 where 100 = complete, back to normal
+     */
+    void setLoadingStatus(const int percentage);
+
+    /**
+     * Return current loading value
+     */
+    int getLoadingValue() const;
+
+    /**
+     * Set loading mode off
+     */
+    void clearLoading();
+
 // =====
 // ===== BEGIN of default rendering - Colors and filling
 // =====
@@ -527,6 +545,9 @@ protected:
     int                 m_LayoutFlags;
 
 // Members for default background rendering
+
+    int                 m_Loading;  // status for loading phase. if the value is between 0..99,
+                                    // loading is on and the button is disabled
 
     // default colors in 0xAARRGGBB format
     Point2                  m_BackgroundTop; // two color values, x = topleft, y = topright vertex

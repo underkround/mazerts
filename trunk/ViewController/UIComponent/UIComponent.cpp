@@ -25,6 +25,7 @@ UIComponent::UIComponent(const int posX, const int posY, const unsigned int widt
     m_Visible = true; // render the component?
     m_Clipped = false; // use viewport clipping with component?
 
+    m_Loading = 100;
 //    m_pTooltip = NULL;
 
     // Background drawing stuff - from BasicComponent
@@ -305,12 +306,58 @@ void UIComponent::onChange(LPDIRECT3DDEVICE9 pDevice)
         pBackVertices[3].tv = 1.0f;
         pBackVertices[3].rhw = 0.99f;
 
-        pBackVertices[0].dwColor = m_BackgroundTop.x;
-        pBackVertices[1].dwColor = m_BackgroundTop.y;
-        pBackVertices[2].dwColor = m_BackgroundBottom.y;
-        pBackVertices[3].dwColor = m_BackgroundBottom.x;
+        if(m_Loading >= 0 && m_Loading < 100) {
+            const int zeroComponent = 0x11; // color component value at 0 load state
+            const int zeroAddition = 0xFF - zeroComponent;
+
+            int j;
+            int p[4];
+            int a = (int)(m_BackgroundTop.x + m_BackgroundTop.y + m_BackgroundBottom.x + m_BackgroundBottom.y);
+            for(int i=0; i<4; ++i) {
+                j = 3-i;
+                p[i] = (m_Loading <= 25*j) ? 0
+                    : (m_Loading >= 25*(j+1)) ? 25
+                    : m_Loading - 25*j; // l between 1..24
+                p[i] = 0xFF & ( (int)( p[i] * zeroAddition / 25) + zeroComponent);
+                
+            }
+            pBackVertices[0].dwColor = (0xFF000000 & m_BackgroundTop.x   ) + (p[0]<<16) + (p[0]<<8) + p[0];
+            pBackVertices[1].dwColor = (0xFF000000 & m_BackgroundTop.y   ) + (p[1]<<16) + (p[1]<<8) + p[1];
+            pBackVertices[2].dwColor = (0xFF000000 & m_BackgroundBottom.y) + (p[2]<<16) + (p[2]<<8) + p[2];
+            pBackVertices[3].dwColor = (0xFF000000 & m_BackgroundBottom.x) + (p[3]<<16) + (p[3]<<8) + p[3];
+        } else {
+            pBackVertices[0].dwColor = m_BackgroundTop.x;
+            pBackVertices[1].dwColor = m_BackgroundTop.y;
+            pBackVertices[2].dwColor = m_BackgroundBottom.y;
+            pBackVertices[3].dwColor = m_BackgroundBottom.x;
+        }
     }
     m_pBackgroundVB->Unlock();
 
     m_Changed = false; // handled the change
+}
+
+
+void UIComponent::setLoadingStatus(const int percentage)
+{
+    if(percentage >= 0 && percentage <= 100 && percentage != m_Loading)
+    {
+        m_Loading = percentage;
+    }
+    m_Changed = true;
+}
+
+
+int UIComponent::getLoadingValue() const
+{
+    return (m_Loading >= 0 && m_Loading < 100) ? m_Loading : 100;
+}
+
+
+void UIComponent::clearLoading()
+{
+    if(m_Loading != 100) {
+        m_Loading = 100;
+        m_Changed = true;
+    }
 }

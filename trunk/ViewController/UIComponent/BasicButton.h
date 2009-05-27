@@ -46,13 +46,31 @@ public:
     inline void setBackgroundTextureClicked(LPDIRECT3DTEXTURE9 pTexture)
     {
         m_pBackgroundTextureClicked = pTexture;
-        //m_Changed = true;
     }
 
     inline void setBackgroundClicked(const int argb)
     {
         m_BackgroundARGBClicked = (argb & 0xFFFFFFFF);
         m_Changed = true;
+    }
+
+    /**
+     * Setting button disabled might also dim's it.
+     */
+    void setEnabled(bool value)
+    {
+        if(value != m_Enabled) {
+            m_Changed = true;
+            m_Enabled = value;
+        }
+    }
+
+    /**
+     * Button is disabled if it's set to be, or if it's in loading phase.
+     */
+    inline bool isEnabled() const
+    {
+        return (m_Loading >= 0 && m_Loading < 100) ? false : m_Enabled;
     }
 
     /**
@@ -63,7 +81,6 @@ public:
      */
     virtual int processEvent(int eventFlag, TCHAR arg);
 
-
     /**
      * Override from UIComponent to support clicked texture
      */
@@ -72,6 +89,8 @@ public:
 protected:
 
     int                 m_buttonId;
+
+    bool                m_Enabled; // enable/disable functionality, optionally dim the button
 
     bool                m_ButtonDown; // internal state indicator for alt texture
 
