@@ -90,6 +90,9 @@ public:
      */
     virtual HRESULT pushState(IState* pState);
 
+    void win();
+    void lose();
+    void credits();
 
 private:
 

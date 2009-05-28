@@ -51,6 +51,8 @@ void MiniMap::setSize(const int size)
 
 HRESULT MiniMap::create(LPDIRECT3DDEVICE9 pDevice)
 {
+    setSize(300);
+
     //Background vertexbuffer
     HRESULT hres = pDevice->CreateVertexBuffer(4 * sizeof(TRANSLITVERTEX), D3DUSAGE_WRITEONLY, TRANSLITVERTEX::GetFVF(), D3DPOOL_MANAGED, &m_pBackVB, NULL);
 

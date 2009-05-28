@@ -256,7 +256,7 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
     m_MiniMap.render(pDevice, m_pPixelTexture);
 }
 
-HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer)
+HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer, bool enableMinimap)
 {
     UITerrain* pInstance = getInstance();
 
@@ -328,7 +328,15 @@ HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer)
     }
 
     //Create minimap
-    hres = pInstance->m_MiniMap.create(pDevice);
+    if (enableMinimap)
+    {
+        hres = pInstance->m_MiniMap.create(pDevice);
+        m_ShowMinimap = true;
+    }
+    else
+    {
+        m_ShowMinimap = false;
+    }
 
     if(FAILED(hres))
     {

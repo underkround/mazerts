@@ -12,6 +12,7 @@
 #include "../3DDebug/UI3DDebug.h"
 #include "../../Model/PathFinding/PathFinderMaster.h"
 #include "../States/GameState.h"
+#include "../States/IntroState.h"
 #include "../Sound/SoundManager.h"
 
 #include "../../Model/Console.h"
@@ -58,6 +59,7 @@ HRESULT CTheApp::OnCreate(void)
 
     //Fill starting states to list (TODO: should be Intro & menu, but for now just GameState is done)
     m_pStates = new DoubleLinkedList<IState*>();
+    m_pStates->pushTail(new IntroState());
     m_pStates->pushTail(new GameState());
 
     //Get first state
@@ -87,7 +89,8 @@ void CTheApp::OnRelease(void)
     while(node)
     {
         IState* pChild = node->item;
-        pChild->release();
+        if (pChild->isCreated())
+            pChild->release();
         delete pChild;
 
         node = node->next;
@@ -138,32 +141,14 @@ void CTheApp::OnFlip(void)
     
     timer1->BeginTimer();
     //State update
-    if(m_pCurrentState->update(frameTime) == false)
+    if(!m_pCurrentState->update(frameTime))
     {
-        if (m_pCurrentState->getStateType() == IState::GAMESTATE_GAME)
-        {
-            if (((GameState*)m_pCurrentState)->getGameCondition() == GameState::CONDITION_WIN)
-            {
-                // TODO: Something proper
-                ::MessageBox(GetWindow(), _T("You won! \\o/"), _T("Congratulations!"), MB_OK);
-                Close();
-            }
-            else
-            {
-                // TODO: Something proper
-                ::MessageBox(GetWindow(), _T("You lost :("), _T("Better luck next time."), MB_OK);
-                Close();
-            }
-        }
-        else
-        {
-            HRESULT hres = nextState();
+        HRESULT hres = nextState();
 
-            if(FAILED(hres))
-            {
-                ::MessageBox(GetWindow(), _T("nextState returned error code on TheApp.cpp OnFlip"), _T("FATAL ERROR"), MB_OK);
-                Close();
-            }
+        if(FAILED(hres))
+        {
+            ::MessageBox(GetWindow(), _T("nextState returned error code on TheApp.cpp OnFlip"), _T("FATAL ERROR"), MB_OK);
+            Close();
         }
 
         return;
@@ -440,4 +425,25 @@ void CTheApp::handleConfig()
     SoundManager::setMusicEnabled(music);
     SoundManager::setMasterVolume(svol);
     SoundManager::setMusicVolume(mvol);
+}
+
+void CTheApp::win()
+{
+    // TODO: Something proper
+    ::MessageBox(GetWindow(), _T("You won! \\o/"), _T("Congratulations!"), MB_OK);
+    Close();
+}
+
+void CTheApp::lose()
+{
+    // TODO: Something proper
+    ::MessageBox(GetWindow(), _T("You lost :("), _T("Better luck next time."), MB_OK);
+    Close();
+}
+
+void CTheApp::credits()
+{
+    // TODO: Something proper
+    ::MessageBox(GetWindow(), _T("MAZE\n\nm :: murgo\na :: anthex\nz :: zemm\ne :: ezbe\n\nmusic :: deggis"), _T("Credits"), MB_OK);
+    Close();
 }

@@ -1,20 +1,21 @@
 /**
- * Game-state of the application
+ * Intro-state of the application
  *
- * $Revision$
- * $Date$
- * $Id$
+ * $Revision: 395 $
+ * $Date: 2009-05-27 02:16:14 +0300 (ke, 27 touko 2009) $
+ * $Id: IntroState.h 395 2009-05-26 23:16:14Z murgo $
  */
 
-#ifndef __GAMESTATE_H__
-#define __GAMESTATE_H__
+#ifndef __INTROSTATE_H__
+#define __INTROSTATE_H__
 
 #include "IState.h"
-//#include "../App/ID3DApplication.h"
+#include "../App/ID3DApplication.h"
 #include "../Asset/UI3DObjectManager.h"
 #include "../Asset/Selector.h"
 #include "../Terrain/UITerrain.h"
 #include "../Camera/Camera.h"
+#include "../Camera/UnitCamera.h"
 
 #include "../Controller/IUIController.h"
 
@@ -24,13 +25,17 @@
 //#include "../UIComponent/UIContainer.h"
 #include "../UIComponent/RootContainer.h"
 
+#include "../UIComponent/IButtonListener.h"
+#include "../UIComponent/BasicButton.h"
+#include "../UIComponent/MenuGui.h"
+
 class CTheApp;
 
-class GameState : public IState
+class IntroState : public IState, IButtonListener
 {
 public:
-    GameState();
-    virtual ~GameState();
+    IntroState();
+    virtual ~IntroState();
 
     /**
      * Called when the state is created
@@ -70,7 +75,6 @@ public:
     {
         if(m_pUITerrain)
             m_pUITerrain->onLostDevice();
-        m_Selector.onDeviceLost();
         m_pRootContainer->onDeviceLost();
     }
 
@@ -87,12 +91,6 @@ public:
             return hres;
         }
         
-        hres = m_Selector.onRestore(m_pDevice);
-        if(FAILED(hres))
-        {
-            return hres;
-        }
-
         hres = m_pRootContainer->onRestore(m_pDevice);
         if(FAILED(hres))
         {
@@ -101,6 +99,11 @@ public:
 
         return S_OK;
     }
+
+    /**
+     * Regenerates UI terrain
+     */
+    void redrawTerrain();
 
     /**
      * Returns player who's in charge
@@ -112,13 +115,11 @@ public:
      */
     inline void setCurrentPlayer(Player* pPlayer) { m_pCurrentPlayer = pPlayer; }
 
-    /**
-     * Regenerates UI terrain
-     */
-    void redrawTerrain();
+// ===== IButtonListener methods
 
-    void win();
-    void lose();
+    virtual void onButtonClick(BasicButton* pSrc);
+
+    virtual void onButtonAltClick(BasicButton* pSrc);
 
 private:
 
@@ -132,12 +133,6 @@ private:
      * initializes controls
      */
     void loadConfigurations(void);
-
-    /**
-     * Checks win/lose condition
-     * @return false if game is over
-     */
-    bool checkGameConditions(const float fFrameTime);
 
     /**
      * Main application
@@ -160,11 +155,6 @@ private:
     UITerrain* m_pUITerrain;
 
     /**
-     * Selector mesh
-     */
-    Selector m_Selector;
-
-    /**
      * Controllers that receive updateControls -calls
      */
     DoubleLinkedList<IUIController*> m_UIControllers;
@@ -179,21 +169,22 @@ private:
     int m_KeyTerrainDetailDown;
     int m_KeyTerrainRedraw;
 
-    // aa
-    bool m_Antialias;
-
-    // condition update timers
-    float m_ConditionUpdateTime;
-    float m_ConditionUpdateInterval;
-
     // Root container covering the whole screen and managing components
     RootContainer*      m_pRootContainer;
 
-    UIContainer*        m_pCont1;
-    UIContainer*        m_pCont2;
-
     // Player who is currently playing
     Player*             m_pCurrentPlayer;
+
+    // switch this to 0 to escape from menu
+    bool                m_NotFinished;
+
+    MenuGui*            m_pMenuGui;
+    BasicButton*        m_pLogo;
+
+    UnitCamera*         m_UnitCamera;
+
+    float               m_Timer;
+
 };
 
 #endif //__GAMESTATE_H__

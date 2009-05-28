@@ -58,9 +58,10 @@ public:
     /**
      * Creates a new terrain mesh from Model Terrain-data
      * @param pDevice LPDIRECT3DDEVICE9 to use for creation
+     * @param enableMinimap show minimap
      * @return HRESULT, S_OK if successfull, otherwise error code
      */
-    HRESULT create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer);
+    HRESULT create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer, bool enableMinimap);
 
     /**
      * Releases resources held by this instance
@@ -246,7 +247,7 @@ public:
      */
     inline HRESULT onRestore(LPDIRECT3DDEVICE9 pDevice)
     {
-        HRESULT hres = create(pDevice, m_pCurrentPlayer);
+        HRESULT hres = create(pDevice, m_pCurrentPlayer, m_ShowMinimap);
         /*
         if(pInstance->m_MultiBufferRender)
         {
@@ -488,6 +489,8 @@ private:
     LPDIRECT3DVERTEXBUFFER9 m_pWaterPlane;
 
     D3DMATERIAL9 m_WaterMat;
+
+    bool m_ShowMinimap;
 };
 
 #endif // __UITERRAIN_H__

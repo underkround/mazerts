@@ -11,7 +11,6 @@ int GameConsole::m_MessageLength = 0;
 
 //*** Protected ***
 GameConsole::GameConsole(void) {
-    m_pGamestate = NULL;
 }
 
 GameConsole* GameConsole::pInstance = 0;// initialize pointer
@@ -108,21 +107,21 @@ recalc \t force power consumption recalculation\n \
     }
     if(!_tcscmp(m_arrMessage, _T("idkfa")))
     {
-        for(int i=1;i<PlayerManager::getPlayerCount();++i)
+        for(int i=1;i<PlayerManager::getPlayerCount() + 1;++i)
         {
             PlayerManager::getInstance()->getPlayer(i)->setOre(100000);
         }
     }
     if(!_tcscmp(m_arrMessage, _T("energy")))
     {
-        for(int i=1;i<PlayerManager::getPlayerCount();++i)
+        for(int i=1;i<PlayerManager::getPlayerCount() + 1;++i)
         {
             PlayerManager::getInstance()->getPlayer(i)->setEnergyProduced(1000);
         }
     }
     if(!_tcscmp(m_arrMessage, _T("poor")))
     {
-        for(int i=1;i<PlayerManager::getPlayerCount();++i)
+        for(int i=1;i<PlayerManager::getPlayerCount() + 1;++i)
         {
             PlayerManager::getInstance()->getPlayer(i)->setEnergyProduced(0);
             PlayerManager::getInstance()->getPlayer(i)->setOre(0);
@@ -130,7 +129,7 @@ recalc \t force power consumption recalculation\n \
     }
     if(!_tcscmp(m_arrMessage, _T("nolimits")))
     {
-        for(int i=1;i<PlayerManager::getPlayerCount();++i)
+        for(int i=1;i<PlayerManager::getPlayerCount() + 1;++i)
         {
             LameAI *tmp = PlayerManager::getInstance()->getPlayer(i)->getLameAI();
             if(tmp)
@@ -142,7 +141,7 @@ recalc \t force power consumption recalculation\n \
     }
     if(!_tcscmp(m_arrMessage, _T("recalc")))
     {
-        for(int i=1;i<PlayerManager::getPlayerCount();++i)
+        for(int i=1;i<PlayerManager::getPlayerCount() + 1;++i)
         {
             PlayerManager::getInstance()->getPlayer(i)->CalculateEnergyBalance();
         }

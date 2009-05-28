@@ -45,6 +45,7 @@ void LameAI::Release(void)
         delete pBuilding;
     }
     m_vBuildings.clear();
+    AssetCollection::unregisterListener(this);
 }
 #pragma endregion
 

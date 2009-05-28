@@ -34,6 +34,21 @@ void RtsInitializer::loadScenario(const char* filename)
         path += "debug.ini";
     else
         path += filename;
+    // clear old scenario data
+    Config::getInstance()->deleteSettingSection("scenario");
+    Config::getInstance()->deleteSettingSection("scenario assets 0");
+    Config::getInstance()->deleteSettingSection("scenario assets 1");
+    Config::getInstance()->deleteSettingSection("scenario assets 2");
+    Config::getInstance()->deleteSettingSection("scenario assets 3");
+    Config::getInstance()->deleteSettingSection("scenario assets 4");
+    Config::getInstance()->deleteSettingSection("scenario assets 5");
+    Config::getInstance()->deleteSettingSection("scenario assets 6");
+    Config::getInstance()->deleteSettingSection("scenario assets 7");
+    Config::getInstance()->deleteSettingSection("scenario assets 8");
+    Config::getInstance()->deleteSettingSection("scenario assets 9");
+    Config::getInstance()->deleteSettingSection("scenario assets 10");
+
+    // load
     Config::getInstance()->setFilename(path);
     Config::getInstance()->readFile();
 }
@@ -270,7 +285,7 @@ const bool RtsInitializer::initializeScenario()
     Player* pPlayer;
     AssetDef* assetDef;
     // loop through scenario's assets and create them
-    for(int playerNum=0; playerNum<=PlayerManager::getPlayerCount(); playerNum++)
+    for(int playerNum=0; playerNum<PlayerManager::getPlayerCount() + 1; playerNum++)
     {
         string section = "scenario assets ";
         section += Config::intToString(playerNum);
@@ -325,14 +340,17 @@ void RtsInitializer::release()
     //The children of the Object Manager root object are listeners to model-side
     //AssetCollection, and will be released via listener-interface, but they have
     //to be released first (order matters!)
-    AssetCollection::releaseAll();
+    if (AssetCollection::isCreated())
+        AssetCollection::releaseAll();
 
     // release fog
     Fog::release();
 
     // release player manager
-    PlayerManager::release();
+    if (PlayerManager::isCreated())
+        PlayerManager::release();
 
     // release the terrain
-    Terrain::getInstance()->release();
+    if (Terrain::getInstance()->isInitialized())
+        Terrain::getInstance()->release();
 }

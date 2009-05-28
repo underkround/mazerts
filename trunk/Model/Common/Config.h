@@ -460,6 +460,11 @@ public:
     void deleteSetting(string in_section, string in_name);
 
     /**
+     * Removes all values from given section
+     */
+    void Config::deleteSettingSection(string in_section);
+
+    /**
      * settingExists
      *
      * checks if setting exists

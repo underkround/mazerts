@@ -136,6 +136,8 @@ public:
 
     static void updatePosition(IAsset* a, const unsigned short oldPosX, const unsigned short oldPosY);
 
+    static inline const bool isCreated() { return m_Created; }
+
 private:
 
     AssetCollection();
@@ -167,6 +169,8 @@ private:
     // to avoid broken pointers with compicated update-chain-hell
     static DoubleLinkedList<Unit*>      m_UnitReleaseStack;
     static DoubleLinkedList<Building*>  m_BuildingReleaseStack;
+
+    static bool                         m_Created;
 
 // ===== OBSERVER FUNCTIONALITY
 

@@ -526,6 +526,19 @@ void Config::deleteSetting(string in_section, string in_name) {
     }
 }
 
+void Config::deleteSettingSection(string in_section) {
+    Setting* s;
+    for (vector<Setting*>::iterator iter = settingData.begin(); iter!=settingData.end(); ++iter) {
+        s = (*iter);
+
+        if(s->section == "" || s->section != in_section)
+            continue;
+        deleteValueNodes((*iter));
+        settingData.erase(iter);
+        return;
+    }
+}
+
 bool Config::settingExists(string in_name) {
     return settingExists("", in_name);
 }

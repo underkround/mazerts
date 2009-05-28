@@ -111,6 +111,8 @@ public:
 
     virtual void release()
     {
+        m_ResourceContainer.Release();
+        m_pFocused = NULL;
     }
 
     /**
@@ -119,6 +121,13 @@ public:
     virtual int updateControls(const float frameTime);
 
     virtual UIComponent* getFocus(ProcessFlags processEvent);
+
+    virtual bool removeComponent(UIComponent* child) 
+    {
+        if (m_pFocused == child) m_pFocused = NULL;
+        if (m_pIdleFocus == child) m_pIdleFocus = NULL;
+        return UIContainer::removeComponent(child);
+    }
 
 protected:
 

@@ -1026,6 +1026,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\States\IntroState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\States\IntroState.h"
+					>
+				</File>
+				<File
 					RelativePath=".\States\IState.h"
 					>
 				</File>
@@ -1155,6 +1163,14 @@
 				</File>
 				<File
 					RelativePath=".\UIComponent\ILayoutManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\MenuGui.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UIComponent\MenuGui.h"
 					>
 				</File>
 				<File

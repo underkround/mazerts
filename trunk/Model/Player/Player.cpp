@@ -55,6 +55,7 @@ Player::~Player()
     }
     if (m_pAI)
     {
+        m_pAI->Release();
         delete m_pAI;
         m_pAI = NULL;
     }

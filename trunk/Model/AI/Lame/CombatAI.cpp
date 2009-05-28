@@ -49,6 +49,7 @@ CombatAI::~CombatAI(void)
         delete m_pReserveGroup;
         m_pReserveGroup = NULL;
     }
+    AssetCollection::unregisterListener(this);
 }
 
 //#include "../../../ViewController/App/Timer.h"

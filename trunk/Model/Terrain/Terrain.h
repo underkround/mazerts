@@ -385,6 +385,8 @@ public:
      */
     void smoothMap(int smoothPasses);
 
+    inline const bool isInitialized() { return m_Initialized; }
+
 
 protected:
 

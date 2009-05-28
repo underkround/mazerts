@@ -90,6 +90,9 @@ public:
      */
     virtual void handleReleasedAsset(IAsset* instance);
 
+    void toggleFirstPersonCamera();
+    void UIAssetController::toggleFirstPersonCamera(UIUnit* pUnit);
+
 private:
 
     void changeState(State newState);

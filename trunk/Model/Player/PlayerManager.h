@@ -18,6 +18,10 @@ class PlayerManager
 {
 public:
 
+    PlayerManager() {
+        m_Created = false;
+    }
+
     /**
      * Creates provided amount of players + 1 neutral player (index 0)
      * @param playerCount   number of players (2 for two-player game)
@@ -43,6 +47,7 @@ public:
                 p->setEnemies(p->getEnemies() | p2->getId());
             }
         }
+        pInstance->m_Created = true;
     }
 
     /**
@@ -54,6 +59,7 @@ public:
         for (int i = 0; i < pInstance->m_PlayerCount + 1; i++)
             delete pInstance->m_arrPlayers[i];
         pInstance->m_arrPlayers.clear();
+        pInstance->m_Created = false;
     }
 
     /**
@@ -100,10 +106,13 @@ public:
         return &instance; 
     }
 
+    inline static const bool isCreated()  { return getInstance()->m_Created; }
+
 private:
 
     int                 m_PlayerCount; // player count
     vector<Player*>     m_arrPlayers; // pointers to players
+    bool                m_Created;
 
 };
 

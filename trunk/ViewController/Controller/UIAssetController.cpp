@@ -235,25 +235,7 @@ void UIAssetController::updateControls(const float frameTime)
 
             if(KeyboardState::keyReleased[m_KeyFirstPersonCamera])
             {
-                // disable unit camera
-                if(m_pUnitCarryingCamera)
-                {
-                    if(Camera::countStack())
-                    {
-                        //Camera::popTop();
-                        Camera::pop(&m_UnitCamera);
-                    }
-                    m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
-                    m_UnitCamera.detach();
-                    m_pUnitCarryingCamera = NULL;
-                }
-                // enable unit camera
-                else if(!m_SelectedUIAssets.empty() && m_SelectedAssetType == UNIT)
-                {
-                    m_pUnitCarryingCamera = (UIUnit*)m_SelectedUIAssets.peekHead();
-                    m_UnitCamera.attach(m_pUnitCarryingCamera);
-                    Camera::pushTop(&m_UnitCamera);
-                }
+                toggleFirstPersonCamera();
             }
             break;
 
@@ -629,4 +611,50 @@ void UIAssetController::handleReleasedAsset(IAsset* instance)
         }
         node = node->next;
     }
+}
+
+void UIAssetController::toggleFirstPersonCamera()
+{
+                // disable unit camera
+                if(m_pUnitCarryingCamera)
+                {
+                    if(Camera::countStack())
+                    {
+                        //Camera::popTop();
+                        Camera::pop(&m_UnitCamera);
+                    }
+                    m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
+                    m_UnitCamera.detach();
+                    m_pUnitCarryingCamera = NULL;
+                }
+                // enable unit camera
+                else if(!m_SelectedUIAssets.empty() && m_SelectedAssetType == UNIT)
+                {
+                    m_pUnitCarryingCamera = (UIUnit*)m_SelectedUIAssets.peekHead();
+                    m_UnitCamera.attach(m_pUnitCarryingCamera);
+                    Camera::pushTop(&m_UnitCamera);
+                }
+}
+
+void UIAssetController::toggleFirstPersonCamera(UIUnit* pUnit)
+{
+                // disable unit camera
+                if(m_pUnitCarryingCamera)
+                {
+                    if(Camera::countStack())
+                    {
+                        //Camera::popTop();
+                        Camera::pop(&m_UnitCamera);
+                    }
+                    m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
+                    m_UnitCamera.detach();
+                    m_pUnitCarryingCamera = NULL;
+                }
+                // enable unit camera
+                else
+                {
+                    m_pUnitCarryingCamera = pUnit;
+                    m_UnitCamera.attach(m_pUnitCarryingCamera);
+                    Camera::pushTop(&m_UnitCamera);
+                }
 }

@@ -23,6 +23,7 @@ DoubleLinkedList<IAssetCollectionListener*> AssetCollection::listeners = DoubleL
 Unit***         AssetCollection::m_pppUnitArray         = NULL;
 Building***     AssetCollection::m_pppBuildingArray     = NULL;
 unsigned short  AssetCollection::m_MapSize              = 0;
+bool            AssetCollection::m_Created              = false;
 
 // should not need ctor & dtor ever
 AssetCollection::AssetCollection() { }
@@ -33,6 +34,7 @@ AssetCollection::~AssetCollection() { releaseAll(); }
 
 void AssetCollection::create(const unsigned int mapSize)
 {
+    m_Created = true;
     m_MapSize = mapSize;
     // free memory for unit arrays
     m_pppUnitArray = new Unit**[mapSize];
@@ -238,7 +240,7 @@ void AssetCollection::releaseAll()
         delete uNode->item;
         uNode = uNode->next;
     }
-    units.release(); // not really needed? just in case
+    units.release();
 
     // release buildings
     ListNode<Building*>* bNode = buildings.headNode();
@@ -254,7 +256,7 @@ void AssetCollection::releaseAll()
         delete bNode->item;
         bNode = bNode->next;
     }
-    buildings.release(); // not really needed? just in case
+    buildings.release();
 
     // delete arrays
     for(int i = 0; i < m_MapSize; i++) 
@@ -265,6 +267,18 @@ void AssetCollection::releaseAll()
     delete [] m_pppUnitArray;
     delete [] m_pppBuildingArray;
 
+    // remove listeners
+    /*
+    ListNode<IAssetCollectionListener*>* node = listeners.headNode();
+    while(node)
+    {
+        unregisterListener(node->item);
+        node = node->next;
+    }
+    listeners.release();
+    */
+
+    m_Created = false;
 }
 
 // ===== SEARCHING
