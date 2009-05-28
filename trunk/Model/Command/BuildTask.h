@@ -65,15 +65,12 @@ public:
 
     // after execute methods
 
-    inline bool isStarted() const
+    bool isStarted() const
     {
         return m_Started;
     }
 
-    inline bool isFinished() const
-    {
-        return m_Finished;
-    }
+    bool isFinished() const;
 
     int getStatusPercentage();
 

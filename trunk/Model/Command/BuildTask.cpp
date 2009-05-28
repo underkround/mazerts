@@ -127,6 +127,7 @@ bool BuildTask::execute()
         return false;
     // reduce ore
     m_pPlayer->modifyOre( -m_pAssetDef->constructionCostOre );
+    m_Started = true;
     return true;
 }
 
@@ -142,7 +143,16 @@ int BuildTask::getStatusPercentage()
 {
     if(!m_Started || !m_pAsset)
         return 0;
-    if(m_Finished)
+    if(isFinished())
         return 100;
     return (int)( (m_pAsset->getHitpointsMax() / m_pAsset->getHitpoints()) * 100);
+}
+
+bool BuildTask::isFinished() const
+{
+    if(!m_Started || !m_pAsset)
+        return false;
+    if(m_pAsset->getState() != IAsset::STATE_BEING_BUILT)
+        m_Finished = true;
+    return m_Finished;
 }
