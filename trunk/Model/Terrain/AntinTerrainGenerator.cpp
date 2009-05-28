@@ -21,9 +21,10 @@ AntinTerrainGenerator::~AntinTerrainGenerator()
     m_posy.clear();
 }
 
-
 void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData, const unsigned short terrainSize)
 {
+    srand(m_Seed);
+
     //PERUNAPELTOGENERAATTORI aka. just testing algorithms - NOT an actual way to make good terrain!
     makeFlat(ppVertexHeightData, terrainSize, Terrain::DEFAULT_FLATHEIGHT);
 
@@ -40,11 +41,11 @@ void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData
     faultLines(ppVertexHeightData, terrainSize, 1000, 2);
 
     //"sweet spots"
-    for(int i=0;i<50;++i)
+    for(int i=0;i<20;++i)
     {
         flattenArea(    ppVertexHeightData,
                         terrainSize,
-                        100 + rand() % 100,
+                        Terrain::DEFAULT_FLATHEIGHT + rand() % 100,
                         -1,
                         -1,
                         20,

@@ -59,8 +59,16 @@ HRESULT CTheApp::OnCreate(void)
 
     //Fill starting states to list (TODO: should be Intro & menu, but for now just GameState is done)
     m_pStates = new DoubleLinkedList<IState*>();
-    m_pStates->pushTail(new IntroState());
-    m_pStates->pushTail(new GameState());
+    Config& c = *Config::getInstance();
+
+    if(!c.getValueAsInt("skip menu", false))
+    {
+        m_pStates->pushTail(new IntroState());
+    }
+    if(!c.getValueAsInt("skip game", false))
+    {
+        m_pStates->pushTail(new GameState());
+    }
 
     //Get first state
     hres = nextState();
@@ -445,5 +453,4 @@ void CTheApp::credits()
 {
     // TODO: Something proper
     ::MessageBox(GetWindow(), _T("MAZE\n\nm :: murgo\na :: anthex\nz :: zemm\ne :: ezbe\n\nmusic :: deggis"), _T("Credits"), MB_OK);
-    Close();
 }

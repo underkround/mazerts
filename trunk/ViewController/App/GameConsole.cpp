@@ -4,6 +4,9 @@
 #include "../../Model/Player/Player.h"
 #include "../../Model/Player/PlayerManager.h"
 #include "../../Model/AI/Lame/LameAI.h"
+#include "../../Model/Asset/AssetCollection.h"
+#include "../../Model/Asset/Building.h"
+#include "../../Model/Common/DoubleLinkedList.h"
 
 //it seems these need to be redeclared here, god knows why (and devil won't tell)
 TCHAR GameConsole::m_arrMessage[128];
@@ -73,6 +76,7 @@ energy \t give all players some power\n \
 poor \t everyone loses all resources\n \
 nolimits \t set all AI build limits to 100000\n \
 recalc \t force power consumption recalculation\n \
+suicide \t kill player 1\n \
 \n"),
                      _T("game console commands"),
                      NULL);
@@ -144,6 +148,17 @@ recalc \t force power consumption recalculation\n \
         for(int i=1;i<PlayerManager::getPlayerCount() + 1;++i)
         {
             PlayerManager::getInstance()->getPlayer(i)->CalculateEnergyBalance();
+        }
+    }
+    if(!_tcscmp(m_arrMessage, _T("suicide")))
+    {
+        ListNode<Building*>* pNode = AssetCollection::getAllBuildings()->headNode();
+        while (pNode)
+        {
+            Building* b = pNode->item;
+            if(b->getOwner()->getId() == 1)
+                b->modifyHitpoints(-b->getHitpoints());
+            pNode = pNode->next;
         }
     }
 }

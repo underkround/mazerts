@@ -10,6 +10,8 @@ BasicButton::BasicButton(const int width, const int height, const int buttonId, 
     m_buttonId = buttonId;
     m_ButtonDown = false;
 
+    m_AlphaBlend = false;
+
     m_BackgroundARGBClicked = 0xFFFFFFFF;
     m_pBackgroundTextureClicked = 0;
 
@@ -67,6 +69,10 @@ void BasicButton::onRender(LPDIRECT3DDEVICE9 pDevice)
         {
             pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
             pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+        }
+        if(m_AlphaBlend)
+        {
+            pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
         }
         pDevice->SetFVF(TRANSLITVERTEX::GetFVF());        
         pDevice->SetStreamSource(0, m_pBackgroundVB, 0, sizeof(TRANSLITVERTEX));

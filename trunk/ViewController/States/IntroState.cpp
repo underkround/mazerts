@@ -167,6 +167,7 @@ HRESULT IntroState::create(CTheApp* pApplication)
     m_pLogo->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1010));
     m_pLogo->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1010));
     m_pLogo->setPosition((RootContainer::getInstance()->getWidth() - 512) >> 1, (RootContainer::getInstance()->getHeight() - 128) >> 1);
+    m_pLogo->setAlphaBlending(true);
     RootContainer::getInstance()->addComponent(m_pLogo);
 
     // Controllers

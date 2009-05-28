@@ -73,6 +73,8 @@ public:
         return (m_Loading >= 0 && m_Loading < 100) ? false : m_Enabled;
     }
 
+    inline void setAlphaBlending(bool blend) { m_AlphaBlend = blend; }
+
     /**
      * Process event that the RootContainer (or other central dispatcher)
      * has casted on us.
@@ -93,6 +95,8 @@ protected:
     bool                m_Enabled; // enable/disable functionality, optionally dim the button
 
     bool                m_ButtonDown; // internal state indicator for alt texture
+
+    bool                m_AlphaBlend;
 
     IButtonListener*    m_pListener;
     LPDIRECT3DTEXTURE9  m_pBackgroundTextureClicked;
