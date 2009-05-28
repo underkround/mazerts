@@ -1,4 +1,5 @@
 /**
+ * Copy 'n paste!
  *
  * $Revision$
  * $Date$
@@ -43,13 +44,6 @@ DefManager::~DefManager()
         }
     }
     {
-        ListNode<BuilderDef*>* node = m_BuilderDefs.headNode();
-        while(node) {
-            delete node->item;
-            node = m_BuilderDefs.removeGetNext(node);
-        }
-    }
-    {
         ListNode<ResourcerDef*>* node = m_ResourcerDefs.headNode();
         while(node) {
             delete node->item;
@@ -75,8 +69,6 @@ void DefManager::loadConfigurations()
     c->setFilename("../data/defs/movings.ini");
     c->readFile();
     c->setFilename("../data/defs/weapons.ini");
-    c->readFile();
-    c->setFilename("../data/defs/builders.ini");
     c->readFile();
     c->setFilename("../data/defs/resourcers.ini");
     c->readFile();
@@ -121,6 +113,8 @@ bool DefManager::loadAssetDef(int tag)
     // load values
     d->constructionCostEnergy = c->getValueAsInt(   tags, "asset construction cost energy", 0);
     d->constructionCostOre  = c->getValueAsInt(     tags, "asset construction cost ore", 10);
+    d->constructionIn       = c->getValueAsInt(     tags, "asset construction in", 0);
+    d->constructionRequires = c->getValueAsInt(     tags, "asset construction requires", 0);
 
     d->gridPassableAreaX       = c->getValueAsInt(     tags, "asset grid passable area x", 0);
     d->gridPassableAreaY       = c->getValueAsInt(     tags, "asset grid passable area y", 0);
@@ -164,12 +158,6 @@ bool DefManager::loadAssetDef(int tag)
         d->pDefWeapon = getWeaponDef(t);
     else
         d->pDefWeapon = NULL;
-
-    t = c->getValueAsInt(tags, "asset builder tag");
-    if(t && loadBuilderDef(t))
-        d->pDefBuilder = getBuilderDef(t);
-    else
-        d->pDefBuilder = NULL;
 
     t = c->getValueAsInt(tags, "asset resourcer tag");
     if(t && loadResourcerDef(t))
@@ -274,44 +262,6 @@ bool DefManager::loadWeaponDef(int tag)
 
 
 /**
- * Load builder definitions
- */
-bool DefManager::loadBuilderDef(int tag)
-{
-    return false; // TODO: IMPLEMENT BUILDER COMPONENT!
-
-    Config* c = Config::getInstance();
-    string tags = intToString(tag);
-    BuilderDef* d = getBuilderDef(tag);
-    bool isNew = false;
-    if(!d) {
-        d = new BuilderDef();
-        ::memset(d, 0, sizeof(BuilderDef));
-        isNew = true;
-    }
-    // values
-    int type = c->getValueAsInt(tags, "builder concrete type");
-    // validate the concrete type - it needs to be n^2 value and declared concrete type
-/*
-    if( ((type & (type - 1)) != 0)  ||  !(type & (IBuilder::TYPE_END - 1)) ) {
-        // discard this def for invalid concrete type
-        if(isNew) delete d;
-        return false;
-    }
-*/
-    d->tag = tag;
-
-    // load values
-    // TODO
-
-    // store if new
-    if(isNew)
-        m_BuilderDefs.pushHead(d);
-    return true;
-}
-
-
-/**
  * Load resourcer definitions
  */
 bool DefManager::loadResourcerDef(int tag)
@@ -408,14 +358,6 @@ bool DefManager::hasWeaponDef(int tag) {
     } return false;
 }
 
-bool DefManager::hasBuilderDef(int tag) {
-    ListNode<BuilderDef*>* node = m_BuilderDefs.headNode();
-    while(node)  {
-        if(node->item->tag == tag) return true;
-        node = node->next;
-    } return false;
-}
-
 bool DefManager::hasResourcerDef(int tag) {
     ListNode<ResourcerDef*>* node = m_ResourcerDefs.headNode();
     while(node)  {
@@ -462,14 +404,6 @@ RadarDef* DefManager::getRadarDef(int tag) {
 
 MovingDef* DefManager::getMovingDef(int tag) {
     ListNode<MovingDef*>* node = m_MovingDefs.headNode();
-    while(node)  {
-        if(node->item->tag == tag) return node->item;
-        node = node->next;
-    } return NULL;
-}
-
-BuilderDef* DefManager::getBuilderDef(int tag) {
-    ListNode<BuilderDef*>* node = m_BuilderDefs.headNode();
     while(node)  {
         if(node->item->tag == tag) return node->item;
         node = node->next;

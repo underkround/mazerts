@@ -13,6 +13,7 @@
 //AI
 #include "../AI/Lame/LameAI.h"
 #include "../AI/Lame/CombatAI.h"
+#include "../Defs/Defs.h"
 //circular dependencies here
 class LameAI;
 class CombatAI;
@@ -36,6 +37,9 @@ public:
 
     inline void setAllies(const int allies) { m_Allies = allies; }
     inline const int getAllies() { return m_Allies; }
+
+    bool hasAsset(int reqTag) const;
+    bool hasAsset(AssetDef* reqDef) const;
 
     /**
      * Test if given player is our enemy

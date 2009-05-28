@@ -43,9 +43,6 @@ void testDefLoading()
         cout << "name: " << a->name << endl;
         cout << "width: " << a->width << endl;
         cout << " -- associated with: --" << endl;
-        if(a->pDefBuilder) {
-            cout << " builder: " << endl;
-        }
         if(a->pDefMoving) {
             cout << " moving: " << endl;
         }

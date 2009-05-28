@@ -72,7 +72,6 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, sho
 
     // add components
     setRadar(u);
-    setBuilder(u);
     setResourcer(u);
     setWeapon(u);
     setMoving(u);
@@ -108,7 +107,6 @@ Building* AssetFactory::createBuilding(Player* owner, int buildingType, short po
 
     // add components
     setRadar(b);
-    setBuilder(b);
     setResourcer(b);
     setWeapon(b);
 
@@ -206,18 +204,6 @@ bool AssetFactory::setRadar(IAsset* a)
         return false;
     }
     return true;
-}
-
-bool AssetFactory::setBuilder(IAsset* a)
-{
-    BuilderDef* def = a->getDef()->pDefBuilder;
-    if(!def)
-        return false; // no builder associated
-    // Waiting for concrete classes
-    /*
-    BuilderDef* def = a->getDef()->pDefBuilder;
-    */
-    return false;
 }
 
 bool AssetFactory::setResourcer(IAsset* a)

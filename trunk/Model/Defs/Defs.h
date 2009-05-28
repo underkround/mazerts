@@ -81,18 +81,6 @@ struct MovingDef //: public BaseDef
 
 
 /**
- * BuilderDef goes inside builder-component that enables the ability to
- * build and/or fix stuff (grow hitpoints)
- */
-struct BuilderDef //: public BaseDef
-{
-    int tag; // id for definition
-    int concreteType; // concrete type for the class to implement this
-
-};
-
-
-/**
  * ResourcerDef is for resourcer-component, unit with resourcer-component
  * is capable of extracting ore from mines
  */
@@ -135,6 +123,8 @@ struct AssetDef //: public BaseDef
     // definitions for energy and resource
     int constructionCostOre;
     int constructionCostEnergy; //?!
+    int constructionIn;
+    int constructionRequires;
 
     int energyConsumption;
     int energyProduction;
@@ -160,13 +150,11 @@ struct AssetDef //: public BaseDef
     int radarTag;       // radar-component
     int weaponTag;      // projectile/weapon-component
     int movingTag;      // moving-component
-    int builderTag;     // builder-component
     int resourcerTag;   // resourcer-component
 */
     RadarDef*       pDefRadar;
     MovingDef*      pDefMoving;
     WeaponDef*      pDefWeapon;
-    BuilderDef*     pDefBuilder;
     ResourcerDef*   pDefResourcer;
 };
 

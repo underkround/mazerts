@@ -39,7 +39,6 @@ public:
     DoubleLinkedList<AssetDef*>* getAssetDefs() { return &m_AssetDefs; }
     DoubleLinkedList<MovingDef*>* getMovingDefs() { return &m_MovingDefs; }
     DoubleLinkedList<WeaponDef*>* getWeaponDefs() { return &m_WeaponDefs; }
-    DoubleLinkedList<BuilderDef*>* getBuilderDefs() { return &m_BuilderDefs; }
     DoubleLinkedList<ResourcerDef*>* getResourcerDefs() { return &m_ResourcerDefs; }
     DoubleLinkedList<RadarDef*>* getRadarDefs() { return &m_RadarDefs; }
 
@@ -50,7 +49,6 @@ public:
     WeaponDef* getWeaponDef(int tag);
     RadarDef* getRadarDef(int tag);
     MovingDef* getMovingDef(int tag);
-    BuilderDef* getBuilderDef(int tag);
     ResourcerDef* getResourcerDef(int tag);
 
     /**
@@ -77,7 +75,6 @@ public:
     bool hasAssetDef(int tag);
     bool hasMovingDef(int tag);
     bool hasWeaponDef(int tag);
-    bool hasBuilderDef(int tag);
     bool hasResourcerDef(int tag);
     bool hasRadarDef(int tag);
 
@@ -95,7 +92,6 @@ private:
     bool loadAssetDef(int tag);
     bool loadMovingDef(int tag);
     bool loadWeaponDef(int tag);
-    bool loadBuilderDef(int tag);
     bool loadResourcerDef(int tag);
     bool loadRadarDef(int tag);
 
@@ -104,7 +100,6 @@ private:
     DoubleLinkedList<AssetDef*>         m_AssetDefs;
     DoubleLinkedList<MovingDef*>        m_MovingDefs;
     DoubleLinkedList<WeaponDef*>        m_WeaponDefs;
-    DoubleLinkedList<BuilderDef*>       m_BuilderDefs;
     DoubleLinkedList<ResourcerDef*>     m_ResourcerDefs;
     DoubleLinkedList<RadarDef*>         m_RadarDefs;
 

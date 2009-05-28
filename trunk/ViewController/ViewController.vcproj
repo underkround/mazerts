@@ -422,6 +422,14 @@
 				Name="Command"
 				>
 				<File
+					RelativePath="..\Model\Command\BuildTask.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\Model\Command\BuildTask.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Model\Command\Command.h"
 					>
 				</File>

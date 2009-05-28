@@ -10,7 +10,10 @@
 
 #include "../Common/DoubleLinkedList.h"
 #include "../Asset/AssetCollection.h"
+#include "../Asset/Unit.h"
 #include "../Asset/Building.h"
+#include "../Defs/Defs.h"
+#include "../Defs/DefManager.h"
 
 //for AI loading
 #include "../Common/Config.h"
@@ -64,6 +67,36 @@ Player::~Player()
         delete m_pUnitAI;
         m_pUnitAI = NULL;
     }
+}
+
+bool Player::hasAsset(int reqTag) const
+{
+    return hasAsset(DefManager::getInstance()->getAssetDef(reqTag));
+}
+
+// @TODO: this is slow.. do not overuse (no better way to get player's asset anyway?)
+bool Player::hasAsset(AssetDef* reqDef) const
+{
+    if(!reqDef)
+        return false;
+    bool found = false;
+    int reqTag = reqDef->tag;
+    if(reqDef->concreteType == IAsset::BUILDING) {
+        ListNode<Building*>* node = AssetCollection::getAllBuildings()->headNode();
+        while(!found && node) {
+            if(node->item->getTypeTag() == reqTag && node->item->getOwner() == this)
+                return true;
+            node = node->next;
+        }
+    } else if(reqDef->concreteType == IAsset::UNIT) {
+        ListNode<Unit*>* node = AssetCollection::getAllUnits()->headNode();
+        while(!found && node) {
+            if(node->item->getTypeTag() == reqTag && node->item->getOwner() == this)
+                return true;
+            node = node->next;
+        }
+    }
+    return false;
 }
 
 void Player::UpdateAI(float fFrametime)
