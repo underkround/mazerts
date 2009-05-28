@@ -16,6 +16,7 @@
 #include "../Sound/SoundManager.h"
 
 #include "../../Model/Console.h"
+#include "../Asset/PlayerColors.h"
 
 CTheApp::CTheApp(void)
 {
@@ -250,10 +251,13 @@ void CTheApp::OnFlip(void)
         DrawText(500, 20, text, 0xFFFFFFFF);
 
         _stprintf_s(text, _T("Pathfinders  Running:%d  Waiting: %d"), PathFinderMaster::getRunningAmount(), PathFinderMaster::getWaitingAmount());
-        DrawText(500, 60, text, 0xFFFFFFFF);        
+        DrawText(500, 40, text, 0xFFFFFFFF);        
 
-        _stprintf_s(text, _T("Player ore: %d   Player Energy: %d/%d"), PlayerManager::getInstance()->getPlayer(1)->getOre(), PlayerManager::getInstance()->getPlayer(1)->getEnergyConsumed(), PlayerManager::getInstance()->getPlayer(1)->getEnergyProduced());
-        DrawText(500, 40, text, 0xFFFFFFFF);
+        for(int i=1; i <= PlayerManager::getPlayerCount();++i)
+        {
+            _stprintf_s(text, _T("Player %d ore: %d  Energy: %d/%d"), i, PlayerManager::getInstance()->getPlayer(i)->getOre(), PlayerManager::getInstance()->getPlayer(i)->getEnergyConsumed(), PlayerManager::getInstance()->getPlayer(i)->getEnergyProduced());
+            DrawText(500, (60+i*10), text, PLAYERCOLORS[i]);
+        }
 
         m_TextRow = 0;
         EndText();

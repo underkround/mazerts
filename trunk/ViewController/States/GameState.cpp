@@ -65,8 +65,6 @@
 
 GameState::GameState()
 {
-    loadConfigurations();
-
     m_pManager = NULL;
     m_pUITerrain = NULL;
     m_pApp = NULL;
@@ -81,6 +79,9 @@ GameState::GameState()
 
     m_ConditionUpdateTime = 0.0f;
     m_ConditionUpdateInterval = 5.0f;
+    m_bWinConditionsEnabled = true;
+
+    loadConfigurations();
 }
 
 GameState::~GameState()
@@ -116,21 +117,6 @@ HRESULT GameState::create(CTheApp* pApplication)
     {
         return S_FALSE;
     }
-
-    // Load definition files
-//    DefManager::getInstance()->loadConfigurations();
-
-    //Model-terrain
-//    Terrain* pTerrain = Terrain::getInstance();
-//    AntinTerrainGenerator* pGenerator = new AntinTerrainGenerator(100, 512);
-    //ImageTerrainGenerator* pGenerator = new ImageTerrainGenerator("../data/terrains/scandinavia.bmp");// :P
-
-    // for zemm's slow computer's local override
-//    if(!Config::getInstance()->getValueAsBool("debug skip terrain generating", false))
-//        pTerrain->initialize(pGenerator);
-
-    // initialize asset collection
-//    AssetCollection::create(pTerrain->getSize());
 
     //Initialize projectile collection
 //    ProjectileCollection::create();
@@ -169,72 +155,6 @@ HRESULT GameState::create(CTheApp* pApplication)
 
     //m_pRootContainer->addComponent(m_pCont1);
     //m_pRootContainer->addComponent(m_pCont2);
-
-/*
-    //TEST
-    if(!Config::getInstance()->getValueAsBool("debug skip starting units", false))
-    {
-        //Units
-        for(int i = 0; i < 100; i++)
-        {
-            int plr = 1;
-            int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
-            int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
-            if(i < 25)
-                plr = 1;                
-            else if(i < 50)
-                plr = 2;            
-            else if(i < 75)
-                plr = 3;
-            else
-                plr = 4;
-            AssetFactory::createUnit(PlayerManager::getPlayer(plr), (rand() % 6) + 1, posx, posy);
-        }
-
-        //Buildings
-        for(int i = 0; i < 30; i++)
-        {
-            int plr = (rand() % 4) + 1;
-            int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
-            int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
-
-            AssetFactory::createBuilding(PlayerManager::getPlayer(plr), 52 + rand() % 3, posx, posy);
-        }
-
-        //Mines
-        for(int i = 0; i < 10; i++)
-        {
-            int posx = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
-            int posy = IApplication::RandInt(20, Terrain::getInstance()->getSize() - 20);
-
-            //AssetFactory::createOreMine(posx, posy);
-            AssetFactory::createAsset(PlayerManager::getPlayer(0), 51, posx, posy);
-        }
-
-        // some kind of starting base for player 1
-        for (int i = 0; i < 5; i++)
-        {
-            AssetFactory::createUnit(getCurrentPlayer(), 1, 50 + i * 7, 10);
-            AssetFactory::createUnit(getCurrentPlayer(), 2, 50 + i * 7, 17);
-            AssetFactory::createUnit(getCurrentPlayer(), 3, 50 + i * 7, 24);
-            //AssetFactory::createUnit(getCurrentPlayer(), 4, 50 + i * 7, 31);
-            AssetFactory::createUnit(getCurrentPlayer(), 5, 50 + i * 7, 31);
-            AssetFactory::createUnit(getCurrentPlayer(), 6, 50 + i * 7, 38);
-        }
-        AssetFactory::createBuilding(getCurrentPlayer(), 54, 15, 15);
-        AssetFactory::createBuilding(getCurrentPlayer(), 54, 30, 15);
-        AssetFactory::createBuilding(getCurrentPlayer(), 52, 15, 30);
-        AssetFactory::createBuilding(getCurrentPlayer(), 53, 30, 30);
-
-        //AssetFactory::createOreMine(15, 80);
-        AssetFactory::createAsset(PlayerManager::getPlayer(0), 51, 15, 80);
-
-    }
-    else 
-    {
-        getCurrentPlayer()->getFog()->setEnabled(false);
-    }
-*/
 
     //UI-Terrain
     m_pUITerrain = UITerrain::getInstance();
@@ -661,6 +581,7 @@ void GameState::loadConfigurations()
     c.updateInt("key terrain redraw",               m_KeyTerrainRedraw);
 
     c.getValueAsFloat("condition update interval", 5.0f);
+    toggleGameConditionChecking(c.getValueAsBool("check win conditions", true));
 
     m_pRootContainer->loadConfigurations();
 
@@ -685,32 +606,34 @@ void GameState::redrawTerrain()
 
 bool GameState::checkGameConditions(const float fFrameTime)
 {
-    m_ConditionUpdateTime += fFrameTime;
-    if(m_ConditionUpdateTime > m_ConditionUpdateInterval) {
-        m_ConditionUpdateTime = 0;
+    if(m_bWinConditionsEnabled) {
+        m_ConditionUpdateTime += fFrameTime;
+        if(m_ConditionUpdateTime > m_ConditionUpdateInterval) {
+            m_ConditionUpdateTime = 0;
 
-        int enemyBuildings = 0;
-        int ownBuildings = 0;
-        ListNode<Building*>* pNode = AssetCollection::getAllBuildings()->headNode();
-        while (pNode)
-        {
-            Building* b = pNode->item;
-            if (m_pCurrentPlayer->isEnemy(b->getOwner()))
+            int enemyBuildings = 0;
+            int ownBuildings = 0;
+            ListNode<Building*>* pNode = AssetCollection::getAllBuildings()->headNode();
+            while (pNode)
             {
-                ++enemyBuildings;
+                Building* b = pNode->item;
+                if (m_pCurrentPlayer->isEnemy(b->getOwner()))
+                {
+                    ++enemyBuildings;
+                }
+                else if (b->getOwner() == m_pCurrentPlayer)
+                {
+                    ++ownBuildings;
+                }
+                pNode = pNode->next;
             }
-            else if (b->getOwner() == m_pCurrentPlayer)
-            {
-                ++ownBuildings;
-            }
-            pNode = pNode->next;
-        }
 
-        if (enemyBuildings == 0) { // victory! \o/
-            win();
-        }
-        if (ownBuildings == 0) { // defeat :(
-            lose();
+            if (enemyBuildings == 0) { // victory! \o/
+                win();
+            }
+            if (ownBuildings == 0) { // defeat :(
+                lose();
+            }
         }
     }
     return true;

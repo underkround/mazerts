@@ -7,6 +7,7 @@
 #include "../../Model/Asset/AssetCollection.h"
 #include "../../Model/Asset/Building.h"
 #include "../../Model/Common/DoubleLinkedList.h"
+#include "../../Model/Console.h"
 
 //it seems these need to be redeclared here, god knows why (and devil won't tell)
 TCHAR GameConsole::m_arrMessage[128];

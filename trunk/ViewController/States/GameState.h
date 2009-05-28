@@ -134,6 +134,11 @@ private:
     void loadConfigurations(void);
 
     /**
+     * enable/disable win condition checking
+     */
+    void toggleGameConditionChecking(bool setting) { m_bWinConditionsEnabled = setting; }
+
+    /**
      * Checks win/lose condition
      * @return false if game is over
      */
@@ -185,6 +190,9 @@ private:
     // condition update timers
     float m_ConditionUpdateTime;
     float m_ConditionUpdateInterval;
+
+    //check for win conditions
+    bool m_bWinConditionsEnabled;
 
     // Root container covering the whole screen and managing components
     RootContainer*      m_pRootContainer;
