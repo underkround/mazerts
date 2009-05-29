@@ -14,6 +14,7 @@ class IAsset;
 class Unit;
 class Building;
 class OreMine;
+class MoneyPlant;
 class Player;
 
 class AssetFactory
@@ -97,6 +98,12 @@ public:
      * @return pointer to new OreMine-instance
      */
     static OreMine* createOreMine(short positionX, short positionY);
+
+    /**
+     * Creates deep bore mine, this is a special case building which produces
+     * ore to it's owner by itself
+     */
+    static MoneyPlant* createDeepBoreMine(Player* owner, short positionX, short positionY);
 
 private:
 

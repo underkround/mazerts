@@ -12,6 +12,7 @@
 #include "Unit.h"
 #include "Building.h"
 #include "OreMine.h"
+#include "MoneyPlant.h"
 #include "GroundMovingLogic.h"
 #include "Radar.h"
 #include "../Weapon/Weapon.h"
@@ -148,6 +149,9 @@ IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX,
     if(def->tag == BUILDING_TYPE_MINE)
         return createOreMine(positionX, positionY);
 
+    if(def->tag == BUILDING_TYPE_BORE)
+        return createDeepBoreMine(owner, positionX, positionY);
+
     // general Units and Buildings
     switch(def->concreteType)
     {
@@ -171,8 +175,7 @@ OreMine* AssetFactory::createOreMine(short positionX, short positionY)
 {
     // TODO: What to do if there's already unit / building?
     DefManager* dm = DefManager::getInstance();
-    //TODO: Hardcoded-value, any reasonable way to get from defs-file?
-    AssetDef* def = dm->getAssetDef(51);
+    AssetDef* def = dm->getAssetDef(BUILDING_TYPE_MINE);
     if(!def)
         return NULL; // invalid asset type
     if(def->concreteType != 2)
@@ -181,6 +184,26 @@ OreMine* AssetFactory::createOreMine(short positionX, short positionY)
     OreMine* b = new OreMine((AssetDef&)(*def));
     b->setOwner(PlayerManager::getPlayer(0));
     b->forcePosition(positionX, positionY);
+
+    b->create();
+    return b;
+}
+
+MoneyPlant* AssetFactory::createDeepBoreMine(Player* owner, short positionX, short positionY)
+{
+    // TODO: What to do if there's already unit / building?
+    DefManager* dm = DefManager::getInstance();
+    AssetDef* def = dm->getAssetDef(BUILDING_TYPE_BORE);
+    if(!def)
+        return NULL; // invalid asset type
+    if(def->concreteType != 2)
+        return NULL; // type is not building
+
+    MoneyPlant* b = new MoneyPlant((AssetDef&)(*def));
+    b->setOwner(owner);
+    b->forcePosition(positionX, positionY);
+
+    setRadar(b);
 
     b->create();
     return b;

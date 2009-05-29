@@ -481,6 +481,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Asset\MoneyPlant.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Asset\OreMine.h"
 					>
 				</File>

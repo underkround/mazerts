@@ -110,7 +110,7 @@ void Resourcer::idle()
     else
     {
         tagToLookFor = BUILDING_TYPE_YARD;
-        playerToLookFor = m_pUnit->getOwner()->getIndex();
+        playerToLookFor = m_pUnit->getOwner()->getId();
     }
 
     

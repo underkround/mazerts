@@ -117,6 +117,7 @@ UNIT_TYPE LameAI::ChooseUnitToBuild(void)
     {
         return UNIT_TYPE_MINER;
     }
+    bool advancedPossible = HaveBuilding(BUILDING_TYPE_SCIENCE);
     float value = 0.0f;
     unsigned int i;
     for(i=0;i<m_vUnits.size();++i)
@@ -131,7 +132,7 @@ UNIT_TYPE LameAI::ChooseUnitToBuild(void)
             {
                 value = calc;
                 out = m_vUnits[i]->eType;
-            } else if(HaveBuilding(BUILDING_TYPE_SCIENCE)) {
+            } else if(advancedPossible) {
                 value = calc;
                 out = m_vUnits[i]->eType;
             }
@@ -404,10 +405,21 @@ void LameAI::HammerTime(void)
                             }
                             else 
                             {
-                                if( CanSupport(BUILDING_TYPE_BORE) ) {
-                                    BuildBuilding(BUILDING_TYPE_BORE);
-                                } else {
-                                    BuildBuilding(BUILDING_TYPE_PLANT);
+                                if(m_pPlayer->getOre() > 4000)
+                                { //make some extra factories if we are filthy rich
+                                    if( CanSupport(BUILDING_TYPE_FACTORY) ) {
+                                        BuildBuilding(BUILDING_TYPE_FACTORY);
+                                    } else {
+                                        BuildBuilding(BUILDING_TYPE_PLANT);
+                                    }
+                                }
+                                else
+                                {
+                                    if( CanSupport(BUILDING_TYPE_BORE) ) {
+                                        BuildBuilding(BUILDING_TYPE_BORE);
+                                    } else {
+                                        BuildBuilding(BUILDING_TYPE_PLANT);
+                                    }
                                 }
                             }
                         }

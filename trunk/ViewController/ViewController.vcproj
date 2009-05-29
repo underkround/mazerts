@@ -390,6 +390,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\Model\Asset\MoneyPlant.h"
+					>
+				</File>
+				<File
 					RelativePath="..\Model\Asset\OreMine.h"
 					>
 				</File>
