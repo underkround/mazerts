@@ -120,6 +120,8 @@ struct AssetDef //: public BaseDef
     unsigned char width;
     unsigned char height;
 
+    bool anonymous; // player cannot own (added in late phase, not supported everywhere)
+
     // definitions for energy and resource
     int constructionCostOre;
     int constructionCostEnergy; //?!

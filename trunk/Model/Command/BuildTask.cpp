@@ -3,7 +3,6 @@
  */
 #include "BuildTask.h"
 
-#include "../Player/Player.h"
 #include "../Defs/DefManager.h"
 #include "../Asset/AssetCollection.h"
 #include "../Asset/AssetFactory.h"
@@ -148,7 +147,7 @@ int BuildTask::getStatusPercentage()
     return (int)( (m_pAsset->getHitpointsMax() / m_pAsset->getHitpoints()) * 100);
 }
 
-bool BuildTask::isFinished() const
+bool BuildTask::isFinished()
 {
     if(!m_Started || !m_pAsset)
         return false;

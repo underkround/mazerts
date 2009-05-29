@@ -494,14 +494,9 @@ public:
      * Set NULL / 0 to clear the tooltip.
      * @param tooltipStr    char-array to use as tooltip
      */
-    void setTooltip(char* tooltipStr)
+    void setTooltip(const char* tooltipStr)
     {
         m_Tooltip.Set(tooltipStr);
-        /*
-        if(m_pTooltip)
-            delete [] m_pTooltip;
-        m_pTooltip = tooltipStr;
-        */
     }
 
 protected:

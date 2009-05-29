@@ -111,17 +111,19 @@ bool DefManager::loadAssetDef(int tag)
     d->tag = tag;
 
     // load values
+    d->anonymous            = c->getValueAsBool(    tags, "asset anonymous", false);
+
     d->constructionCostEnergy = c->getValueAsInt(   tags, "asset construction cost energy", 0);
     d->constructionCostOre  = c->getValueAsInt(     tags, "asset construction cost ore", 10);
     d->constructionIn       = c->getValueAsInt(     tags, "asset construction in", 0);
     d->constructionRequires = c->getValueAsInt(     tags, "asset construction requires", 0);
 
-    d->gridPassableAreaX       = c->getValueAsInt(     tags, "asset grid passable area x", 0);
-    d->gridPassableAreaY       = c->getValueAsInt(     tags, "asset grid passable area y", 0);
-    d->gridPassableAreaWidth    = c->getValueAsInt(     tags, "asset grid passable area width", 0);
-    d->gridPassableAreaHeight   = c->getValueAsInt(     tags, "asset grid passable area height", 0);
-    d->gridEntrancePointX    = c->getValueAsInt(     tags, "asset grid entrance point x", 0);
-    d->gridEntrancePointY    = c->getValueAsInt(     tags, "asset grid entrance point y", 0);
+    d->gridPassableAreaX    = c->getValueAsInt(     tags, "asset grid passable area x", 0);
+    d->gridPassableAreaY    = c->getValueAsInt(     tags, "asset grid passable area y", 0);
+    d->gridPassableAreaWidth = c->getValueAsInt(    tags, "asset grid passable area width", 0);
+    d->gridPassableAreaHeight = c->getValueAsInt(   tags, "asset grid passable area height", 0);
+    d->gridEntrancePointX   = c->getValueAsInt(     tags, "asset grid entrance point x", 0);
+    d->gridEntrancePointY   = c->getValueAsInt(     tags, "asset grid entrance point y", 0);
 
     d->energyProduction     = c->getValueAsInt(     tags, "asset energy production", 0);
     d->energyConsumption    = c->getValueAsInt(     tags, "asset energy consumption", 0);

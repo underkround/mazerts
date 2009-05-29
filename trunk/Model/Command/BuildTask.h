@@ -15,10 +15,8 @@
 #define __BUILDTASK_H__
 
 #include "../Defs/Defs.h"
-
 #include "../Asset/IAsset.h"
-
-class Player;
+#include "../Player/Player.h"
 
 class BuildTask
 {
@@ -29,6 +27,8 @@ public:
 
     static BuildTask* createTask(Player* pPlayer, int assetDefTag);
     static BuildTask* createTask(Player* pPlayer, AssetDef* assetDef);
+
+    ~BuildTask();
 
     // before execute methods
 
@@ -65,20 +65,18 @@ public:
 
     // after execute methods
 
-    bool isStarted() const
+    bool isStarted()
     {
         return m_Started;
     }
 
-    bool isFinished() const;
+    bool isFinished();
 
     int getStatusPercentage();
 
 private:
 
     BuildTask(Player* pPlayer, AssetDef* assetDef);
-
-    ~BuildTask();
 
     Player*         m_pPlayer;
     AssetDef*       m_pAssetDef;

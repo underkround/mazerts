@@ -1098,6 +1098,14 @@
 				Name="Controller"
 				>
 				<File
+					RelativePath=".\Controller\BuildButtonWrapper.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Controller\BuildButtonWrapper.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Controller\CameraController.cpp"
 					>
 				</File>

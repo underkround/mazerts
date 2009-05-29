@@ -22,6 +22,9 @@
 #include "../UIComponent/RootContainer.h"
 #include "../UIComponent/GridLayout.h"
 
+#include "../../Model/Defs/Defs.h"
+#include "../../Model/Defs/DefManager.h"
+
 #include "Cursor.h" // for tooltip
 #include <TCHAR.h>  // for tooltip
 
@@ -35,8 +38,9 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_TempMouseX = 0;
     m_TempMouseY = 0;
     m_State = STATE_ASSET_CONTROL;
+    m_pCurrentWrapper = 0;
 
-    m_pUnitCarryingCamera = NULL;
+    m_pUnitCarryingCamera = 0;
 
     // create the buttoncontainer
     RootContainer* rc = RootContainer::getInstance();
@@ -45,30 +49,15 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     const int bcW = 160;
     const int bcH = 430;
     m_pButtonPanel = new UIContainer(bcX, bcY, bcW, bcH);
-//    m_pButtonPanel->setBackground(0xCC222222);
-    m_pButtonPanel->setBackground(0xFFCC2222, 0xFF22FF22, 0xFF2222FF, 0xFF222222);
+    m_pButtonPanel->setBackground(0x00222222);
     m_pButtonPanel->setLayoutFlag(LAYOUT_HINT_NORESIZE);
     m_pButtonPanel->setLayoutManager(new GridLayout(0, 2));
-    m_pButtonPanel->setTooltip("Building control panel");
+    m_pButtonPanel->setTooltip("Command panel");
     MarginSet* panelSnaps = m_pButtonPanel->getSnapMargins();
     panelSnaps->left = 10;
     panelSnaps->bottom = 10;
     //m_pButtonPanel->onParentChange(); // no need to call this if we add the component to the container AFTER snap settings
     RootContainer::getInstance()->addComponent(m_pButtonPanel);
-
-    // @TODO: temp, test button
-    BasicButton* but1 = new BasicButton(64, 64, 0, this);
-    but1->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1));
-    //but1->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(2));
-    m_pButtonPanel->addComponent(but1);
-    BasicButton* but2 = new BasicButton(64, 64, 1, this);
-    but2->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(3));
-    //but2->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(4));
-    m_pButtonPanel->addComponent(but2);
-    BasicButton* but3 = new BasicButton(64, 64, 2, this);
-    but3->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(5));
-    but3->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(6));
-    m_pButtonPanel->addComponent(but3);
 
     // default setting values
     m_KeyMouseActionButton = 1;
@@ -92,6 +81,14 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     AssetCollection::registerListener(this);
 
     m_pCurrentPlayer = pCurrentPlayer;
+
+    // for now, create buttons for all assets
+    ListNode<AssetDef*>* node = DefManager::getInstance()->getAssetDefNode();
+    while(node) {
+        if(!node->item->anonymous)
+            m_BuildWrappers.pushHead(new BuildButtonWrapper(m_pCurrentPlayer, m_pButtonPanel, node->item));
+        node = node->next;
+    }
 }
 
 
@@ -173,6 +170,10 @@ void UIAssetController::loadConfigurations()
 
 void UIAssetController::release()
 {
+    BuildButtonWrapper* bbw;
+    while(bbw = m_BuildWrappers.popHead()) {
+        delete bbw;
+    }
     AssetCollection::unregisterListener(this);
     if(m_pUnitCarryingCamera)
         Camera::popTop();
@@ -184,34 +185,6 @@ void UIAssetController::release()
         m_pUnitCommandDispatcher = NULL;
     }
     m_pSelector = NULL;
-}
-
-
-#include "../../Model/Console.h"
-
-void UIAssetController::onButtonClick(BasicButton* pSrc)
-{
-    char* msg = new char[128];
-    int newPerc = pSrc->getLoadingValue();
-    if(newPerc < 100) {
-        newPerc += 5;
-        pSrc->setLoadingStatus(newPerc);
-    }
-    sprintf_s(msg, 128, "button %d clicked, set loading to %d", pSrc->getId(), newPerc);
-    Console::debug(msg);
-}
-
-
-void UIAssetController::onButtonAltClick(BasicButton* pSrc)
-{
-    char* msg = new char[128];
-    int newPerc = pSrc->getLoadingValue();
-    if(newPerc > 0) {
-        newPerc -= 5;
-        pSrc->setLoadingStatus(newPerc);
-    }
-    sprintf_s(msg, 128, "button %d alt-clicked, set loading to %d", pSrc->getId(), newPerc);
-    Console::debug(msg);
 }
 
 

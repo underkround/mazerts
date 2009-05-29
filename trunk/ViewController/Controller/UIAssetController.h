@@ -16,14 +16,12 @@
 #include "../Camera/Camera.h"
 #include "../Camera/UnitCamera.h"
 #include "../../Model/Common/Config.h"
-#include "../UIComponent/IButtonListener.h"
-#include "../UIComponent/BasicButton.h"
 #include "../UIComponent/UIContainer.h"
+#include "BuildButtonWrapper.h"
 
 #include "d3d9.h"
 
-
-class UIAssetController : public IUIController, public IAssetCollectionListener, public IButtonListener
+class UIAssetController : public IUIController, public IAssetCollectionListener
 {
 public:
 
@@ -71,12 +69,6 @@ public:
      * Clear all units under selection
      */
     void clearSelection();
-
-// ===== IButtonListener methods
-
-    virtual void onButtonClick(BasicButton* pSrc);
-
-    virtual void onButtonAltClick(BasicButton* pSrc);
 
 // ===== AssetCollectionListener methods
 
@@ -161,6 +153,9 @@ private:
 
     DoubleLinkedList<UIAsset*>  m_SelectedUIAssets;
     SelectedType                m_SelectedAssetType; // what kind of assets are selected
+
+    DoubleLinkedList<BuildButtonWrapper*> m_BuildWrappers;
+    BuildButtonWrapper*         m_pCurrentWrapper;
 
 //    UnitCamera*                 m_pUnitCamera;
     UnitCamera                  m_UnitCamera;
