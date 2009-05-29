@@ -318,6 +318,8 @@ bool IntroState::update(const float frameTime)
 
 void IntroState::prepareForRender(const LPDIRECT3DDEVICE9 pDevice, const float frameTime)
 {
+    //spinning camera yay!
+    Camera::getCurrent()->rotate(frameTime*0.1f, 0.0f);
     //Updates view-matrix and frustum, if necessary
     Camera::getCurrent()->update();
 
