@@ -49,21 +49,22 @@ public:
 
         float t = m_pProjectile->getFlightT();
 
+        //let's not spin the simple balls
+        if(m_pProjectile->getConcreteType() != Projectile::SHELL)
+        {
+            D3DXMATRIX mTemp;
+            D3DXMatrixIdentity(&mTemp);
+            D3DXMatrixRotationYawPitchRoll( &mTemp,
+                                            0.0f,
+                                            0.1f,
+                                            0.1f
+                                           );
+            D3DXMatrixMultiply(&m_mWorld, &mTemp, &m_mWorld);
+        }
+
         m_mWorld._41 = m_Origin.x + m_Target.x * t;
         m_mWorld._42 = m_Origin.y + m_Target.y * t;
         m_mWorld._43 = m_Origin.z + m_Target.z * t - sin(t * D3DX_PI) * m_FlyHeight;
-
-        D3DXMATRIX mTemp;
-        D3DXMatrixIdentity(&mTemp);
-        /*
-        D3DXMatrixRotationYawPitchRoll( &mTemp,
-                                        atan( (m_Target.x - m_Origin.x) / (m_Target.z - m_Origin.z)),
-                                        atan( (m_Target.z - m_Origin.z) / (m_Target.y - m_Origin.y)),
-                                        atan( (m_Target.y - m_Origin.y) / (m_Target.x - m_Origin.x))
-                                       );*/
-        D3DXMatrixRotationZ(&mTemp, 0.05f);
-
-        D3DXMatrixMultiply(&m_mWorld, &mTemp, &m_mWorld);
 
         if(!m_pProjectile->isAlive())
         {

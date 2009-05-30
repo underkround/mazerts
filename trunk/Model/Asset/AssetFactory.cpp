@@ -146,10 +146,10 @@ IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX,
 
     // special case for ore mine
     // TODO: changed here from gamestate, temporary solution for Levels-demo. Do it better :)
-    if(def->tag == BUILDING_TYPE_MINE)
+    if(assetType == BUILDING_TYPE_MINE)
         return createOreMine(positionX, positionY);
 
-    if(def->tag == BUILDING_TYPE_BORE)
+    if(assetType == BUILDING_TYPE_BORE)
         return createDeepBoreMine(owner, positionX, positionY);
 
     // general Units and Buildings
