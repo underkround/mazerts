@@ -32,6 +32,8 @@ public:
     {
     }
 
+    virtual void onParentChange();
+
 // ===== Public container methods
 
     /**

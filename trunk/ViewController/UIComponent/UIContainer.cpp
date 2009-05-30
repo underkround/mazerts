@@ -21,6 +21,13 @@ UIContainer::UIContainer(const int posX, const int posY, const unsigned int widt
     unsetLayoutFlag(LAYOUT_HINT_NOREPOS);
 }
 
+void UIContainer::onParentChange()
+{
+    UIComponent::onParentChange();
+    if(m_pLayoutManager) {
+        m_pLayoutManager->reLayout();
+    }
+}
 
 int UIContainer::processEvent(int eventFlag, TCHAR arg)
 {

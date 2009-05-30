@@ -321,10 +321,10 @@ void UIComponent::onChange(LPDIRECT3DDEVICE9 pDevice)
                 p[i] = 0xFF & ( (int)( p[i] * zeroAddition / 25) + zeroComponent);
                 
             }
-            pBackVertices[0].dwColor = (0xFF000000 & m_BackgroundTop.x   ) + (p[0]<<16) + (p[0]<<8) + p[0];
-            pBackVertices[1].dwColor = (0xFF000000 & m_BackgroundTop.y   ) + (p[1]<<16) + (p[1]<<8) + p[1];
-            pBackVertices[2].dwColor = (0xFF000000 & m_BackgroundBottom.y) + (p[2]<<16) + (p[2]<<8) + p[2];
-            pBackVertices[3].dwColor = (0xFF000000 & m_BackgroundBottom.x) + (p[3]<<16) + (p[3]<<8) + p[3];
+            pBackVertices[0].dwColor = (0xFF000000 & m_BackgroundTop.x   ) + (0xFF<<16) + (p[0]<<8) + p[0];
+            pBackVertices[1].dwColor = (0xFF000000 & m_BackgroundTop.y   ) + (0xFF<<16) + (p[1]<<8) + p[1];
+            pBackVertices[2].dwColor = (0xFF000000 & m_BackgroundBottom.y) + (0xFF<<16) + (p[2]<<8) + p[2];
+            pBackVertices[3].dwColor = (0xFF000000 & m_BackgroundBottom.x) + (0xFF<<16) + (p[3]<<8) + p[3];
         } else {
             pBackVertices[0].dwColor = m_BackgroundTop.x;
             pBackVertices[1].dwColor = m_BackgroundTop.y;
