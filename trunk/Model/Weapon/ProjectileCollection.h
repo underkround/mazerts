@@ -39,7 +39,7 @@ public:
      */
     inline static void addProjectile(Projectile* pProjectile) 
     {
-        if(pProjectile->getConcreteType() == Projectile::SHELL && pCreationCallback)
+        if(pProjectile->getConcreteType() != Projectile::BULLET && pCreationCallback)
         {
             pCreationCallback(pProjectile);
         }

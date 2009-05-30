@@ -211,16 +211,22 @@ void UI3DObjectManager::loadMeshes(LPDIRECT3DDEVICE9 pDevice)
     }    
 
     //Miscellanous objects
+    //shell ball
     LPD3DXMESH pMesh = NULL;
     D3DXCreateSphere(getInstance()->getResourceContainer()->GetDevice(),
             0.3f, 6, 6, &pMesh, NULL);
     m_ResourceContainer.AddResource(_T("Shell"), pMesh);
-
     D3DMATERIAL9 material;
     memset(&material, 0, sizeof(D3DMATERIAL9));
     material.Ambient = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
     material.Diffuse = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);    
     m_ResourceContainer.AddResource(_T("ShellMaterial"), material);
+
+    //rocket
+    CXFileLoader::Load(g_ppMunitionNames[0], m_ResourceContainer, NULL);
+    //missile
+    CXFileLoader::Load(g_ppMunitionNames[1], m_ResourceContainer, NULL);
+
 }
 
 void UI3DObjectManager::createPlayerMaterials()
@@ -256,15 +262,33 @@ D3DMATERIAL9* UI3DObjectManager::getDisabledMaterial()
 }
 
 void UI3DObjectManager::createProjectile(Projectile* pProjectile)
-{    
+{
     UIProjectile* pUIProj = new UIProjectile(pProjectile);
-    pUIProj->Create(getInstance()->getResourceContainer()->FindMesh(_T("Shell")));
-
     C3DObject::MESHDATA meshdata;
     meshdata.pTexture = NULL;
-    meshdata.pMaterial = getInstance()->getResourceContainer()->FindMaterial(_T("ShellMaterial"));
+
+    switch(pProjectile->getConcreteType())
+    {
+    case Projectile::SHELL:
+        //ball
+        pUIProj->Create(getInstance()->getResourceContainer()->FindMesh(_T("Shell")));
+        meshdata.pMaterial = getInstance()->getResourceContainer()->FindMaterial(_T("ShellMaterial"));
+        break;
+
+    case Projectile::ROCKET:
+        //rocket
+        pUIProj->Create(getInstance()->getResourceContainer()->FindMesh(g_ppMunitionNames[0]));
+        //meshdata.pMaterial = getInstance()->getResourceContainer()->FindMaterial( strcat_s(g_ppMunitionNames[0], 256, _T("Material")) );
+        meshdata.pMaterial = getInstance()->getResourceContainer()->FindMaterial(_T("ShellMaterial"));
+        break;
+
+    case Projectile::ICBM:
+        //icbm
+        pUIProj->Create(getInstance()->getResourceContainer()->FindMesh(g_ppMunitionNames[1]));
+        meshdata.pMaterial = getInstance()->getResourceContainer()->FindMaterial(_T("ShellMaterial"));
+        break;
+    }
 
     pUIProj->AddMeshData(meshdata);
-
     getInstance()->getRootObject()->AddChild(pUIProj);
 }

@@ -34,13 +34,17 @@ public:
         BULLET      = 1 << 0,
         SHELL       = 1 << 1,
         BEAM        = 1 << 2,
-        TYPE_END    = 1 << 3    // remember to advance the shift when adding new concrete type
+        ROCKET      = 1 << 3,
+        ICBM        = 1 << 4,
+        TYPE_END    = 1 << 5    // remember to advance the shift when adding new concrete type
     };
 
     /**
      * Shell-projectile flight speed
      */
     static const float SHELL_SPEED;
+    static const float ROCKET_SPEED;
+    static const float ICBM_SPEED;
 
     Projectile(WeaponDef& def, unsigned short targetX, unsigned short targetY, IWeapon* launcher) 
         : m_ConcreteType((Projectile::Type)def.projectileConcreteType), m_pHost(launcher)
@@ -64,6 +68,36 @@ public:
             m_TargetTime = dist / SHELL_SPEED;
 
             m_FlyHeight = ((float)FLYHEIGHT_FACTOR) / dist;
+        }
+        if(m_ConcreteType == ROCKET)
+        {
+            m_FlightTime = 0;
+            m_Alive = true;
+
+            //Get distance to target
+            float dx = (float)(m_pHost->getHost()->getCenterGridX() - targetX);
+            dx *= dx;
+            float dy = (float)(m_pHost->getHost()->getCenterGridY() - targetY);
+            dy *= dy;
+            float dist = sqrt(dx + dy);
+            m_TargetTime = dist / ROCKET_SPEED;
+
+            m_FlyHeight = ((float)FLYHEIGHT_FACTOR*4) / dist;
+        }
+        if(m_ConcreteType == ICBM)
+        {
+            m_FlightTime = 0;
+            m_Alive = true;
+
+            //Get distance to target
+            float dx = (float)(m_pHost->getHost()->getCenterGridX() - targetX);
+            dx *= dx;
+            float dy = (float)(m_pHost->getHost()->getCenterGridY() - targetY);
+            dy *= dy;
+            float dist = sqrt(dx + dy);
+            m_TargetTime = dist / ICBM_SPEED;
+
+            m_FlyHeight = ((float)FLYHEIGHT_FACTOR*64) / dist;
         }
     }
 
@@ -89,7 +123,7 @@ public:
     inline const unsigned short getTargetY() const { return m_TargetY; }
     inline const unsigned short getOriginX() const { return m_pHost->getHost()->getCenterGridX(); }
     inline const unsigned short getOriginY() const { return m_pHost->getHost()->getCenterGridY(); }
-    
+
     /**
      * Returns the weapon which fired this projectile
      */

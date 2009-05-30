@@ -172,7 +172,7 @@ void Weapon::update(const float deltaT)
         }
 
         //If the weapon fires SHELLS, turn the barrel
-        if(m_Def.projectileConcreteType == Projectile::SHELL)
+        if(m_Def.projectileConcreteType != Projectile::BULLET)
         {
             //TODO: Use vectors?
             //Barrel pitching is just a graphical effect and has no effect on the actual firing

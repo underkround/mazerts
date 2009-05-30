@@ -3,6 +3,8 @@
 #include "ExplosionCollection.h"
 
 const float Projectile::SHELL_SPEED = 40.0f;
+const float Projectile::ROCKET_SPEED = 20.0f;
+const float Projectile::ICBM_SPEED = 10.0f;
 
 bool Projectile::update(const float deltaT)
 {
@@ -17,6 +19,8 @@ bool Projectile::update(const float deltaT)
             break;
 
         case SHELL:
+        case ROCKET:
+        case ICBM:
             m_FlightTime += deltaT;
             
             //If m_Alive was set to false on last frame, destroy it know

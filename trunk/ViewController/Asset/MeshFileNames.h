@@ -180,4 +180,10 @@ static const TCHAR g_ppTextureNames[NUMBER_OF_TEXTURES][256] =
     _T("../data/textures/16star.png")
 };
 
+static const TCHAR g_ppMunitionNames[2][256] =
+{
+    _T("../data/mesh/rocket.x"),
+    _T("../data/mesh/icbm.x")
+};
+
 #endif
