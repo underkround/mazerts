@@ -48,11 +48,23 @@ public:
         SetVisible(!pFog->isEnabled() || pFog->isVisibleCoord((int)m_mWorld._41, (int)m_mWorld._42));
 
         float t = m_pProjectile->getFlightT();
-            
+
         m_mWorld._41 = m_Origin.x + m_Target.x * t;
         m_mWorld._42 = m_Origin.y + m_Target.y * t;
         m_mWorld._43 = m_Origin.z + m_Target.z * t - sin(t * D3DX_PI) * m_FlyHeight;
-        
+
+        D3DXMATRIX mTemp;
+        D3DXMatrixIdentity(&mTemp);
+        /*
+        D3DXMatrixRotationYawPitchRoll( &mTemp,
+                                        atan( (m_Target.x - m_Origin.x) / (m_Target.z - m_Origin.z)),
+                                        atan( (m_Target.z - m_Origin.z) / (m_Target.y - m_Origin.y)),
+                                        atan( (m_Target.y - m_Origin.y) / (m_Target.x - m_Origin.x))
+                                       );*/
+        D3DXMatrixRotationZ(&mTemp, 0.05f);
+
+        D3DXMatrixMultiply(&m_mWorld, &mTemp, &m_mWorld);
+
         if(!m_pProjectile->isAlive())
         {
             //Play sound
