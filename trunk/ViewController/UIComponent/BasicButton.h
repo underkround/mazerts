@@ -72,7 +72,8 @@ public:
      */
     inline bool isEnabled() const
     {
-        return (m_Loading >= 0 && m_Loading < 100) ? false : m_Enabled;
+        return m_Enabled;
+        //return (m_Loading >= 0 && m_Loading < 100) ? false : m_Enabled;
     }
 
     inline void setAlphaBlending(bool blend) { m_AlphaBlend = blend; }
@@ -89,6 +90,10 @@ public:
      * Override from UIComponent to support clicked texture
      */
     virtual void BasicButton::onRender(LPDIRECT3DDEVICE9 pDevice);
+
+    void* getRandomObject() {
+        return m_pRandomObject;
+    }
 
     void setRandomObject(void* pRandomObject) {
         m_pRandomObject = pRandomObject;

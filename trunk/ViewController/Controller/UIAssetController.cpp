@@ -18,6 +18,8 @@
 #include "../Camera/UnitCamera.h"
 
 #include "../../Model/Asset/AssetCollection.h"
+#include "../../Model/Asset/IAsset.h"
+#include "../../Model/Asset/AssetFactory.h"
 
 #include "../UIComponent/RootContainer.h"
 #include "../UIComponent/GridLayout.h"
@@ -38,7 +40,6 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_TempMouseX = 0;
     m_TempMouseY = 0;
     m_State = STATE_ASSET_CONTROL;
-    m_pCurrentWrapper = 0;
 
     m_pUnitCarryingCamera = 0;
 
@@ -46,8 +47,8 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     RootContainer* rc = RootContainer::getInstance();
     const int bcX = 10;
     const int bcY = 320;
-    const int bcW = 138;
-    const int bcH = 430;
+    const int bcW = 2*64 + 10;
+    const int bcH = 4*64 + 20;
     m_pButtonPanel = new UIContainer(bcX, bcY, bcW, bcH);
     m_pButtonPanel->setBackground(0xFF111111);
     m_pButtonPanel->setLayoutFlag(LAYOUT_HINT_NORESIZE);
@@ -55,9 +56,15 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_pButtonPanel->setTooltip("Command panel");
     MarginSet* panelSnaps = m_pButtonPanel->getSnapMargins();
     panelSnaps->left = 10;
-    panelSnaps->bottom = 10;
+//    panelSnaps->bottom = 10;
     //m_pButtonPanel->onParentChange(); // no need to call this if we add the component to the container AFTER snap settings
-    RootContainer::getInstance()->addComponent(m_pButtonPanel);
+    rc->addComponent(m_pButtonPanel);
+
+    // create the container for asset-instance spesific components
+    const int acX = bcX + bcW + 5;
+    const int acY = bcY;
+    const int acW = bcW;
+    const int acH = bcH;
 
     // default setting values
     m_KeyMouseActionButton = 1;
@@ -82,17 +89,19 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
 
     m_pCurrentPlayer = pCurrentPlayer;
 
-    // for now, create buttons for all assets
-    BuildButtonWrapper* wrapper;
+    // create buttons for assets that are not build inside another asset
     ListNode<AssetDef*>* node = DefManager::getInstance()->getAssetDefNode();
     while(node) {
-        if(!node->item->anonymous) {
-            wrapper = new BuildButtonWrapper(this, m_pCurrentPlayer, m_pButtonPanel, node->item);
-            //wrapper->getButton()->setButtonListener(this);
-            m_BuildWrappers.pushHead(wrapper);
+        if(!node->item->anonymous && node->item->constructionIn == 0) {
+            createBuildingButton(node->item);
         }
         node = node->next;
     }
+
+    m_CurrentBuildOreTaken = 0;
+    m_pCurrentBuildAssetDef = 0;
+    m_pCurrentBuildButton = 0;
+    m_pCurrentBuildAsset = 0;
 }
 
 
@@ -101,24 +110,60 @@ UIAssetController::~UIAssetController()
     release();
 }
 
+
+void UIAssetController::createBuildingButton(AssetDef* pAssetDef)
+{
+    BasicButton* button = new BasicButton(64, 64, pAssetDef->tag, this);
+    RootContainer* rc = RootContainer::getInstance();
+    // hax for speed
+    //button->setRandomObject(pAssetDef);
+    // primary texture
+    button->setBackgroundTexture(rc->getIconTexture(pAssetDef->tag));
+    // alt texture name
+    char nameC[64];
+    sprintf_s(nameC, "alt_%d", pAssetDef->tag);
+    wchar_t nameWTF[10];
+    MultiByteToWideChar(CP_ACP, 0, nameC, -1, nameWTF, 10);
+    button->setBackgroundTextureClicked(rc->getIconTexture(nameWTF));
+    // tooltip
+    sprintf_s(nameC, "%s, cost: %d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre);
+    button->setTooltip(nameC);
+    m_pButtonPanel->addComponent(button);
+}
+
+
 // ===== IButtonListener methods
 #include "../../Model/Console.h"
 
 void UIAssetController::onButtonClick(BasicButton* pSrc)
 {
     char* msg = new char[128];
-    int newPerc = pSrc->getLoadingValue();
-    if(newPerc < 100) {
-        newPerc += 5;
-        pSrc->setLoadingStatus(newPerc);
-    }
-    sprintf_s(msg, 128, "button %d clicked, set loading to %d", pSrc->getId(), newPerc);
+    sprintf_s(msg, 128, "button %d clicked", pSrc->getId());
     Console::debug(msg);
+    // check for insufficient funds
+    /*
+    AssetDef* def = (AssetDef*)pSrc->getRandomObject();
+    if(!def)
+        def = DefManager::getInstance()->getAssetDef(pSrc->getId());
+    */
+    AssetDef* def = DefManager::getInstance()->getAssetDef(pSrc->getId());
+    if(m_pCurrentPlayer->getOre() < def->constructionCostOre) {
+        Console::error("Cannot build: not enough ore");
+        return;
+    }
+    // take the ore first to prefent the situation where there is no funds when placed
+    m_CurrentBuildOreTaken = def->constructionCostOre;
+    m_pCurrentPlayer->modifyOre(-m_CurrentBuildOreTaken);
+    // start building
+    m_pCurrentBuildAssetDef = def;
+    m_pCurrentBuildButton = pSrc;
+    changeState(STATE_BUILDING_PLACEMENT);
 }
 
 
 void UIAssetController::onButtonAltClick(BasicButton* pSrc)
 {
+    /* NOT IMPLEMENTED
     char* msg = new char[128];
     int newPerc = pSrc->getLoadingValue();
     if(newPerc > 0) {
@@ -127,11 +172,15 @@ void UIAssetController::onButtonAltClick(BasicButton* pSrc)
     }
     sprintf_s(msg, 128, "button %d alt-clicked, set loading to %d", pSrc->getId(), newPerc);
     Console::debug(msg);
+    */
 }
 
 
 void UIAssetController::changeState(State newState)
 {
+    if(m_State == newState)
+        return;
+
     // end current state
     switch(m_State) {
 
@@ -144,6 +193,10 @@ void UIAssetController::changeState(State newState)
 
         case STATE_BUILDING_PLACEMENT:
             m_pSelector->setState(Selector::SELECTOR_NORMAL);
+            m_CurrentBuildOreTaken = 0;
+            m_pCurrentBuildAsset = 0;
+            m_pCurrentBuildAssetDef = 0;
+            m_pCurrentBuildButton = 0;
             break;
 
     }
@@ -158,17 +211,24 @@ void UIAssetController::changeState(State newState)
             m_TempMouseX = 0;
             m_TempMouseY = 0;
             m_pSelector->setState(Selector::SELECTOR_NORMAL);
+            {
+                Selector::SELECTION* tmpSelection = m_pSelector->buttonUp();
+                if(tmpSelection)
+                    delete tmpSelection;
+            }
             break;
 
         case STATE_BUILDING_PLACEMENT:
             // check for what to build
-            // @TODO: check from defManager if m_BuildTag exists and can be build
-            if(m_BuildTag < 0) {
+            if(!m_pCurrentBuildButton || !m_pCurrentBuildAssetDef) {
+                // cannot continue placement state without these values
                 changeState(STATE_ASSET_CONTROL);
                 break;
-            } else {
-
             }
+//            m_pCurrentBuildButton->setLoadingStatus(0);
+            clearSelection();
+            m_pSelector->setState(Selector::SELECTOR_BUILDINGPLACEMENT);
+            m_pSelector->setSize(D3DXVECTOR2(m_pCurrentBuildAssetDef->width, m_pCurrentBuildAssetDef->height));
             break;
 
     }
@@ -202,10 +262,6 @@ void UIAssetController::loadConfigurations()
 
 void UIAssetController::release()
 {
-    BuildButtonWrapper* bbw;
-    while(bbw = m_BuildWrappers.popHead()) {
-        delete bbw;
-    }
     AssetCollection::unregisterListener(this);
     if(m_pUnitCarryingCamera)
         Camera::popTop();
@@ -222,6 +278,25 @@ void UIAssetController::release()
 
 void UIAssetController::updateControls(const float frameTime)
 {
+    // @TODO: update build status to buttons
+    if(!m_ButtonsToUpdate.empty()) {
+        IAsset* asset;
+        BasicButton* button;
+        ListNode<BasicButton*>* node = m_ButtonsToUpdate.headNode();
+        while(node) {
+            button = node->item;
+            asset = (IAsset*)button->getRandomObject();
+            if(asset && asset->getState() == IAsset::STATE_BEING_BUILT) {
+                int percentage = (int)(asset->getHitpoints() / asset->getHitpointsMax() * 100);
+                button->setLoadingStatus(percentage);
+                node = node->next;
+            } else {
+                button->setEnabled(true);
+                node = m_ButtonsToUpdate.removeGetNext(node);
+            }
+        }
+    }
+
     bool pickModifier = (!m_KeyPickModifier || KeyboardState::keyDown[m_KeyPickModifier]) ? true : false;
     bool actionModifier = (!m_KeyActionModifier || KeyboardState::keyDown[m_KeyActionModifier]) ? true : false;
 
@@ -247,23 +322,49 @@ void UIAssetController::updateControls(const float frameTime)
         // =====
         case STATE_BUILDING_PLACEMENT:
             // sanity check
-            if(m_BuildTag < 0) {
+            if(!m_pCurrentBuildButton || !m_pCurrentBuildAssetDef) {
                 changeState(STATE_ASSET_CONTROL);
                 break;
             }
 
             // update selector
-            //m_pSelector->update();
+            D3DXMATRIX matProj, matView;
+            D3DXVECTOR3 rayOrigin, rayDir;
+            m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
+            m_pDevice->GetTransform(D3DTS_VIEW, &matView);
+            MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir);
+            D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
+            if(hitSquare)
+            {
+                m_pSelector->setPoint(D3DXVECTOR2(hitSquare->x, hitSquare->y));
+                delete hitSquare;
+            }
 
             // mouse actions
             if(MouseState::mouseButtonReleased[MouseState::mouseSecondButton]) {
+                // return the preserved ore
+                if(m_CurrentBuildOreTaken) {
+                    m_pCurrentPlayer->modifyOre(m_CurrentBuildOreTaken);
+                }
                 // cancel build state with secondary mouse button
                 changeState(STATE_ASSET_CONTROL);
                 break;
             } else if(MouseState::mouseButtonReleased[MouseState::mouseFirstButton]) {
                 // placement made
                 if(m_pSelector->isBuildable()) {
+                    D3DXVECTOR2 bpos = m_pSelector->getBuildingPoint();
                     // @TODO: assetfactory->create
+                    IAsset* newAsset = AssetFactory::createAsset(m_pCurrentPlayer, m_pCurrentBuildAssetDef->tag, (short)bpos.x, (short)bpos.y, true);
+                    if(newAsset) {
+                        m_pCurrentBuildButton->setEnabled(false);
+                        m_pCurrentBuildButton->setRandomObject(newAsset);
+                        m_ButtonsToUpdate.pushHead(m_pCurrentBuildButton);
+                    }
+                    // problem, new asset not created, return ore to player
+                    else {
+                        if(m_CurrentBuildOreTaken)
+                            m_pCurrentPlayer->modifyOre(m_CurrentBuildOreTaken);
+                    }
                     changeState(STATE_ASSET_CONTROL);
                     break;
                 }

@@ -1102,11 +1102,11 @@
 				Name="Controller"
 				>
 				<File
-					RelativePath=".\Controller\BuildButtonWrapper.cpp"
+					RelativePath=".\Controller\BuildQueue.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\Controller\BuildButtonWrapper.h"
+					RelativePath=".\Controller\BuildQueue.h"
 					>
 				</File>
 				<File

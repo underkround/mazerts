@@ -19,7 +19,8 @@
 #include "../UIComponent/UIContainer.h"
 #include "../UIComponent/BasicButton.h"
 #include "../UIComponent/IButtonListener.h"
-#include "BuildButtonWrapper.h"
+//#include "BuildButtonWrapper.h"
+#include "BuildQueue.h"
 
 #include "d3d9.h"
 
@@ -59,6 +60,8 @@ public:
     virtual void onButtonAltClick(BasicButton* pSrc);
 
 // =====
+
+    void createBuildingButton(AssetDef* pAssetDef);
 
     /**
      * Release all resources
@@ -137,9 +140,6 @@ private:
     // container holding the build buttons
     UIContainer*                m_pButtonPanel;
 
-    // tag of building being built
-    int m_BuildTag;
-
     // current state of the selection
     PointerState                m_SelectionState;
     PointerState                m_ActionState;
@@ -164,8 +164,8 @@ private:
     DoubleLinkedList<UIAsset*>  m_SelectedUIAssets;
     SelectedType                m_SelectedAssetType; // what kind of assets are selected
 
-    DoubleLinkedList<BuildButtonWrapper*> m_BuildWrappers;
-    BuildButtonWrapper*         m_pCurrentWrapper;
+//    DoubleLinkedList<BuildButtonWrapper*> m_BuildWrappers;
+//    BuildButtonWrapper*         m_pCurrentWrapper;
 
 //    UnitCamera*                 m_pUnitCamera;
     UnitCamera                  m_UnitCamera;
@@ -173,6 +173,16 @@ private:
 
     // who's being controlled
     Player*                     m_pCurrentPlayer;
+
+
+    // ore taken from player, stored while between build subject selection and finished build (for canceling & refund)
+    int             m_CurrentBuildOreTaken;
+    AssetDef*       m_pCurrentBuildAssetDef;
+    BasicButton*    m_pCurrentBuildButton;
+    IAsset*         m_pCurrentBuildAsset;
+    // holds buttons for assets that are being build - for updating the buttons
+    DoubleLinkedList<BasicButton*> m_ButtonsToUpdate;
+
 };
 
 #endif // __UIASSETCONTROLLER_H__
