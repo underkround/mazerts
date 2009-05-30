@@ -41,9 +41,9 @@ int BasicButton::processEvent(int eventFlag, TCHAR arg)
     if(eventFlag == CEVENT_MOUSE_IDLE && m_Tooltip.GetLength() > 0)
         Cursor::getInstance()->setTooltip(m_Tooltip.GetBuffer(), 5.0f);
 
-    if(eventFlag == CEVENT_MOUSE_RELEASED && m_Enabled)
+    if(eventFlag == CEVENT_MOUSE_RELEASED)
         m_ButtonDown = false;
-    else if(eventFlag == CEVENT_MOUSE_PRESSED)
+    else if(eventFlag == CEVENT_MOUSE_PRESSED && m_Enabled)
         m_ButtonDown = true;
 
     if(m_Enabled && m_pListener && eventFlag == CEVENT_MOUSE_RELEASED && mouseIntersects()) {
