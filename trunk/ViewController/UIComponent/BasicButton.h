@@ -19,6 +19,8 @@ public:
 
     BasicButton(const int width, const int height, const int buttonId=0, IButtonListener* listener=0);
 
+    ~BasicButton();
+
     inline const int getId() const
     {
         return m_buttonId;
@@ -88,6 +90,14 @@ public:
      */
     virtual void BasicButton::onRender(LPDIRECT3DDEVICE9 pDevice);
 
+    void setRandomObject(void* pRandomObject) {
+        m_pRandomObject = pRandomObject;
+    }
+
+    bool hasRandomObject() const {
+        return (m_pRandomObject) ? true : false;
+    }
+
 protected:
 
     int                 m_buttonId;
@@ -102,6 +112,8 @@ protected:
     LPDIRECT3DTEXTURE9  m_pBackgroundTextureClicked;
 
     int                 m_BackgroundARGBClicked; // two color values for gradien (x for solid)
+
+    void*               m_pRandomObject; // for hax
 
 };
 

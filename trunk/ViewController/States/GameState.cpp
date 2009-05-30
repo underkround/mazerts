@@ -137,25 +137,6 @@ HRESULT GameState::create(CTheApp* pApplication)
     m_pRootContainer = RootContainer::getInstance();
     m_pRootContainer->create(pDevice, m_pApp);
 
-    // REMOVE - TESTING !!!!!!!!!!!!!!!!!!!!!!
-
-    // create panel that does not resize
-    m_pCont1 = new UIContainer(920, 0, 100, 300);
-    m_pCont1->setBackground(0x99555555);
-    m_pCont1->setLayoutFlag(LAYOUT_HINT_NORESIZE);
-    m_pCont1->setLayoutManager(new GridLayout(0, 2));
-    m_pCont1->setTooltip("static panel");
-
-    // create panel that packs
-    m_pCont2 = new UIContainer(500, 0, 100, 300);
-    m_pCont2->setBackground(0x995500aa);
-    m_pCont2->setLayoutFlag(LAYOUT_HINT_PACK);
-    m_pCont2->setLayoutManager(new GridLayout(0, 2));
-    m_pCont1->setTooltip("packing panel");
-
-    //m_pRootContainer->addComponent(m_pCont1);
-    //m_pRootContainer->addComponent(m_pCont2);
-
     //UI-Terrain
     m_pUITerrain = UITerrain::getInstance();
     hres = m_pUITerrain->create(pDevice, getCurrentPlayer(), true);
@@ -287,20 +268,14 @@ bool GameState::update(const float frameTime)
     if(MouseState::mouseButton[0])
     {
         Cursor::getInstance()->setType(Cursor::CURS_ATTACK);
-        Cursor::getInstance()->setTooltip(_T("0"), 2, false);
     }
     else if(MouseState::mouseButton[1])    
     {
         Cursor::getInstance()->setType(Cursor::CURS_SELECT);
-        Cursor::getInstance()->setTooltip(_T("1"), 2, false);
     }
     else
     {
         Cursor::getInstance()->setType(Cursor::CURS_NORMAL);
-    }
-    if(MouseState::mouseButtonReleasedBits)
-    {
-        Cursor::getInstance()->clearTooltip();
     }
 
     //Update cursor position and texture

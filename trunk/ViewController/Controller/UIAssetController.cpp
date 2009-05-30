@@ -46,10 +46,10 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     RootContainer* rc = RootContainer::getInstance();
     const int bcX = 10;
     const int bcY = 320;
-    const int bcW = 160;
+    const int bcW = 138;
     const int bcH = 430;
     m_pButtonPanel = new UIContainer(bcX, bcY, bcW, bcH);
-    m_pButtonPanel->setBackground(0x00222222);
+    m_pButtonPanel->setBackground(0xFF111111);
     m_pButtonPanel->setLayoutFlag(LAYOUT_HINT_NORESIZE);
     m_pButtonPanel->setLayoutManager(new GridLayout(0, 2));
     m_pButtonPanel->setTooltip("Command panel");
@@ -83,10 +83,14 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_pCurrentPlayer = pCurrentPlayer;
 
     // for now, create buttons for all assets
+    BuildButtonWrapper* wrapper;
     ListNode<AssetDef*>* node = DefManager::getInstance()->getAssetDefNode();
     while(node) {
-        if(!node->item->anonymous)
-            m_BuildWrappers.pushHead(new BuildButtonWrapper(m_pCurrentPlayer, m_pButtonPanel, node->item));
+        if(!node->item->anonymous) {
+            wrapper = new BuildButtonWrapper(this, m_pCurrentPlayer, m_pButtonPanel, node->item);
+            //wrapper->getButton()->setButtonListener(this);
+            m_BuildWrappers.pushHead(wrapper);
+        }
         node = node->next;
     }
 }
@@ -95,6 +99,34 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
 UIAssetController::~UIAssetController()
 {
     release();
+}
+
+// ===== IButtonListener methods
+#include "../../Model/Console.h"
+
+void UIAssetController::onButtonClick(BasicButton* pSrc)
+{
+    char* msg = new char[128];
+    int newPerc = pSrc->getLoadingValue();
+    if(newPerc < 100) {
+        newPerc += 5;
+        pSrc->setLoadingStatus(newPerc);
+    }
+    sprintf_s(msg, 128, "button %d clicked, set loading to %d", pSrc->getId(), newPerc);
+    Console::debug(msg);
+}
+
+
+void UIAssetController::onButtonAltClick(BasicButton* pSrc)
+{
+    char* msg = new char[128];
+    int newPerc = pSrc->getLoadingValue();
+    if(newPerc > 0) {
+        newPerc -= 5;
+        pSrc->setLoadingStatus(newPerc);
+    }
+    sprintf_s(msg, 128, "button %d alt-clicked, set loading to %d", pSrc->getId(), newPerc);
+    Console::debug(msg);
 }
 
 

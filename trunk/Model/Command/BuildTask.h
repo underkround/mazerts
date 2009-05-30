@@ -30,6 +30,10 @@ public:
 
     ~BuildTask();
 
+    int getAssetTag() const {
+        return m_pAssetDef->tag;
+    }
+
     // before execute methods
 
     bool requiresPosition() const;

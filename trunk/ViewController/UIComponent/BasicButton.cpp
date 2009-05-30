@@ -12,7 +12,7 @@ BasicButton::BasicButton(const int width, const int height, const int buttonId, 
 
     m_AlphaBlend = false;
 
-    m_BackgroundARGBClicked = 0xFFFFFFFF;
+    m_BackgroundARGBClicked = 0xFFFF2222;
     m_pBackgroundTextureClicked = 0;
 
     m_StealFlags |= STEAL_MOUSE;
@@ -21,6 +21,15 @@ BasicButton::BasicButton(const int width, const int height, const int buttonId, 
     m_ProcessFlags |= CPROCESS_MOUSE_IDLE; // for tooltips
 
     m_LayoutFlags = LAYOUT_HINT_ASPECTRATIO;
+
+    m_pRandomObject = 0;
+}
+
+
+BasicButton::~BasicButton()
+{
+    if(m_pRandomObject)
+        delete m_pRandomObject;
 }
 
 

@@ -13,15 +13,17 @@
 #include "../Asset/Selector.h"
 #include "../../Model/Command/UnitCommandDispatcher.h"
 #include "../../Model/Asset/IAssetCollectionListener.h" // for listenin of destroyed assets that might be selected
+#include "../../Model/Common/Config.h"
 #include "../Camera/Camera.h"
 #include "../Camera/UnitCamera.h"
-#include "../../Model/Common/Config.h"
 #include "../UIComponent/UIContainer.h"
+#include "../UIComponent/BasicButton.h"
+#include "../UIComponent/IButtonListener.h"
 #include "BuildButtonWrapper.h"
 
 #include "d3d9.h"
 
-class UIAssetController : public IUIController, public IAssetCollectionListener
+class UIAssetController : public IUIController, public IAssetCollectionListener, public IButtonListener
 {
 public:
 
@@ -49,6 +51,14 @@ public:
 
     UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* pSelector, Player* pCurrentPlayer);
     ~UIAssetController();
+
+// ===== IButtonListener methods
+
+    virtual void onButtonClick(BasicButton* pSrc);
+
+    virtual void onButtonAltClick(BasicButton* pSrc);
+
+// =====
 
     /**
      * Release all resources

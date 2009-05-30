@@ -69,6 +69,18 @@ public:
     IAsset(Type assetType, AssetDef& def);
     virtual ~IAsset();
 
+    short getAbsoluteEntrypointX() {
+        if(m_Def.gridEntrancePointX <= 0)
+            return -1;
+        return (short)(m_Def.gridEntrancePointX + getGridX());
+    }
+
+    short getAbsoluteEntrypointY() {
+        if(m_Def.gridEntrancePointY <= 0)
+            return -1;
+        return (short)(m_Def.gridEntrancePointY + getGridY());
+    }
+
 // ==== update
 
     /**

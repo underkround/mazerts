@@ -16,18 +16,24 @@
 // @TODO: remember to release these at uiassetcontroller
 // @TODO: remember to call wrapper's updateCanBuild at some interval
 
-BuildButtonWrapper::BuildButtonWrapper(Player* pPlayer, UIContainer* pButtonPanel, AssetDef* pAssetDef)
+#include "UIAssetController.h"
+#include <stdio.h>
+
+BuildButtonWrapper::BuildButtonWrapper(UIAssetController* pController, Player* pPlayer, UIContainer* pButtonPanel, AssetDef* pAssetDef)
     : m_pPlayer(pPlayer), m_pPanel(pButtonPanel), m_pAssetDef(pAssetDef)
 {
     m_pTask = 0;
-    m_CanBuild = false;
 
     RootContainer* rc = RootContainer::getInstance();
     // create the button
-    m_pButton = new BasicButton(BUILDICON_DEFAULT_SIZE, BUILDICON_DEFAULT_SIZE, pAssetDef->tag, this);
+    m_pButton = new BasicButton(BUILDICON_DEFAULT_SIZE, BUILDICON_DEFAULT_SIZE, pAssetDef->tag, pController);
     // set texture, tooltip, etc
     m_pButton->setBackgroundTexture(rc->getIconTexture(pAssetDef->tag));
-    //m_pButton->setBackgroundTextureClicked(rc->getIconTexture(pAssetDef->tag));
+    char fnameC[12];
+    sprintf(fnameC, "alt_%d", pAssetDef->tag);
+    wchar_t fnameWTF[12];
+    MultiByteToWideChar(CP_ACP, 0, fnameC, -1, fnameWTF, 12);
+    m_pButton->setBackgroundTextureClicked(rc->getIconTexture(fnameWTF));
     m_pButton->setBackgroundClicked(0xFF772222);
 
     const char* name = m_pAssetDef->name.c_str();
@@ -37,8 +43,7 @@ BuildButtonWrapper::BuildButtonWrapper(Player* pPlayer, UIContainer* pButtonPane
     // add button to container
     m_pPanel->addComponent(m_pButton);
 
-    // update canbuild status
-    updateCanBuild();
+    m_pButton->setRandomObject(this);
 }
 
 BuildButtonWrapper::~BuildButtonWrapper()
@@ -47,11 +52,11 @@ BuildButtonWrapper::~BuildButtonWrapper()
     if(m_pTask) {
         delete m_pTask;
     }
-    // remove button from panel & delete
+/*    // remove button from panel & delete
     if(m_pButton) {
         m_pPanel->removeComponent(m_pButton);
         delete m_pButton;
-    }
+    }*/
 }
 
 BuildTask* BuildButtonWrapper::getBuildTask()
@@ -101,37 +106,11 @@ void BuildButtonWrapper::update()
 void BuildButtonWrapper::updateCanBuild()
 {
     // recheck if we can build the asset
-    m_CanBuild = BuildTask::canBuild(m_pPlayer, m_pAssetDef);
+    m_CanBuild = (m_pPlayer->getOre() >= m_pAssetDef->constructionCostOre) ? true : false;
     // @TODO: update button accordingly (enabled/disabled)
     if(m_CanBuild) {
+        m_pButton->setEnabled(true);
+    } else {
+        m_pButton->setEnabled(false);
     }
-}
-
-
-// ===== IButtonListener methods
-#include "../../Model/Console.h"
-
-void BuildButtonWrapper::onButtonClick(BasicButton* pSrc)
-{
-    char* msg = new char[128];
-    int newPerc = pSrc->getLoadingValue();
-    if(newPerc < 100) {
-        newPerc += 5;
-        pSrc->setLoadingStatus(newPerc);
-    }
-    sprintf_s(msg, 128, "button %d clicked, set loading to %d", pSrc->getId(), newPerc);
-    Console::debug(msg);
-}
-
-
-void BuildButtonWrapper::onButtonAltClick(BasicButton* pSrc)
-{
-    char* msg = new char[128];
-    int newPerc = pSrc->getLoadingValue();
-    if(newPerc > 0) {
-        newPerc -= 5;
-        pSrc->setLoadingStatus(newPerc);
-    }
-    sprintf_s(msg, 128, "button %d alt-clicked, set loading to %d", pSrc->getId(), newPerc);
-    Console::debug(msg);
 }

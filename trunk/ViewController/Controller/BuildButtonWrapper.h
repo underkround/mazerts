@@ -9,15 +9,16 @@
 #define __BUILDBUTTONWRAPPER_H__
 
 #include "../UIComponent/BasicButton.h"
-#include "../UIComponent/IButtonListener.h"
 #include "../../Model/Command/BuildTask.h"
 #include "../../Model/Player/Player.h"
 
 #define BUILDICON_DEFAULT_SIZE 64
 
+class UIAssetController;
+
 // @TODO: should the button be registered as listener, or the uiassetcontroller?
 
-class BuildButtonWrapper : public IButtonListener
+class BuildButtonWrapper
 {
 public:
 
@@ -25,7 +26,7 @@ public:
      * @param buttonPanel       panel into which attach the button
      * @param assetDef          def for what to build
      */
-    BuildButtonWrapper(Player* pPlayer, UIContainer* buttonPanel, AssetDef* pAssetDef);
+    BuildButtonWrapper(UIAssetController* pController, Player* pPlayer, UIContainer* buttonPanel, AssetDef* pAssetDef);
 
     ~BuildButtonWrapper();
 
@@ -41,12 +42,6 @@ public:
     void updateCanBuild();
 
     void update();
-
-// ===== IButtonListener methods
-
-    virtual void onButtonClick(BasicButton* pSrc);
-
-    virtual void onButtonAltClick(BasicButton* pSrc);
 
 private:
 
