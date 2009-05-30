@@ -30,7 +30,7 @@ static const TCHAR g_ppUnitMeshNames[NUMBER_OF_UNITS_WITH_MESHES][3][256] =
     _T("../data/mesh/supertank_turret.x"),      //turret
     _T("../data/mesh/supertank_cannon.x"),      //barrels
 
-    _T(""),                                     //Missiletank base
+    _T("../data/mesh/launcher.x"),              //Missiletank base
     _T(""),                                     //turret
     _T(""),                                     //barrel
 
@@ -62,7 +62,7 @@ static const float g_ppUnitMeshOffsets[NUMBER_OF_UNITS_WITH_MESHES][3][3] =
     0, 0.4f, -0.65f,
 
     0, 0, 0,         //Missiletank
-    0, 0, 0,
+    0, 0.6f, 0.4f,
     0, 0, 0,
 
     0, 0, 0,         //Nukecannon
