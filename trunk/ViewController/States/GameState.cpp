@@ -147,7 +147,7 @@ HRESULT GameState::create(CTheApp* pApplication)
     }
 
     //Selector
-    hres = m_Selector.create(pDevice);
+    hres = m_Selector.create(pDevice, m_pCurrentPlayer);
     if(FAILED(hres))
     {
         return hres;

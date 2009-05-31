@@ -66,6 +66,7 @@ public:
         m_Mat.Emissive = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
         m_Render = false;
         m_FirstSet = false;
+        m_pPlayer = NULL;
         
         m_SelectorState = SELECTOR_NORMAL;
         m_BuildingPlacementSize.x = 1;
@@ -96,7 +97,7 @@ public:
     /**
      * Creates the index- and vertex-buffers and loads texture
      */
-    HRESULT create(LPDIRECT3DDEVICE9 pDevice);
+    HRESULT create(LPDIRECT3DDEVICE9 pDevice, Player* pPlayer);
 
     /**
      * Set the point of the selector
@@ -316,6 +317,11 @@ private:
      * Size used for the mesh-grid in SELECTOR_BUILDINGPLACEMENT-state
      */
     D3DXVECTOR2 m_BuildingPlacementSize;
+
+    /**
+     * Player whose units/buildings we're selecting
+     */
+    Player*     m_pPlayer;
 };
 
 #endif //__SELECTOR_H__

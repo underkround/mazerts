@@ -4,6 +4,7 @@
 #include "../App/vertices.h"
 #include "../Terrain/UITerrain.h"
 #include "../../Model/Terrain/Terrain.h"
+#include "../../Model/Asset/Building.h"
 
 Selector::SELECTION* Selector::buttonUp()
 {
@@ -70,11 +71,12 @@ Selector::SELECTION* Selector::buttonUp()
     return result;
 }
 
-HRESULT Selector::create(LPDIRECT3DDEVICE9 pDevice)
+HRESULT Selector::create(LPDIRECT3DDEVICE9 pDevice, Player* pPlayer)
 {
     HRESULT hres;
 
     m_pDevice = pDevice;
+    m_pPlayer = pPlayer;
 
     //Vertex buffer
     m_NumVertices = (SELECTOR_SIZE + 1) * (SELECTOR_SIZE + 1);
@@ -273,7 +275,7 @@ bool Selector::isBuildable()
         {
             return false;
         }
-        
+
         //Check terrain by getting lowest and highest point from the area, and checking if the difference is too great
         unsigned char low = 255;
         unsigned char high = 0;
@@ -305,6 +307,27 @@ bool Selector::isBuildable()
         {
             return false;
         }
+
+        ListNode<Building*>* pNode = AssetCollection::getAllBuildings()->headNode();
+        bool closeBuildings = false;
+        while (pNode)
+        {
+            if (pNode->item->getOwner() == m_pPlayer)
+            {
+                const unsigned short x = pNode->item->getCenterGridX();
+                const unsigned short y = pNode->item->getCenterGridY();
+                const float x2 = (m_Point1.x - x) * (m_Point1.x - x);
+                const float y2 = (m_Point1.y - y) * (m_Point1.y - y);
+                const float dist = sqrtf(x2 + y2);
+                if (dist < pNode->item->getDef()->pDefRadar->range / 2)
+                {
+                    closeBuildings = true;
+                    break;
+                }
+            }
+            pNode = pNode->next;
+        }
+        if (!closeBuildings) return false;
 
         //All ok
         return true;
