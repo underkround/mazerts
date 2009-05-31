@@ -96,6 +96,8 @@ int BuildQueue::getCount(const int assetTag)
 
 void BuildQueue::update(bool updateVisual)
 {
+    if(m_pAsset->getState() != IAsset::STATE_ACTIVE)
+        return;
     // update current
     if(m_pCurrentBuild) {
         BasicButton* button = getButton(m_pCurrentBuild->getDef()->tag);
