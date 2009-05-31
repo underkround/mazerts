@@ -33,7 +33,11 @@ public:
      */
     int getCount(int assetTag);
 
+    void haxDisableBySettingAssetToNull() { m_pAsset = 0; }
+
     void update(bool updateVisual);
+
+    void updateButtons();
 
     BasicButton* getButton(const int buttonId);
 

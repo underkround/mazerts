@@ -127,8 +127,10 @@ void IAsset::updatePositionInAssetCollection()
 
 void IAsset::changeState(State newState)
 {
-    m_State = newState;
-    notifyStateChanged();
+    if(m_State != newState) {
+        m_State = newState;
+        notifyStateChanged();
+    }
 }
 
 // ===== Listeners

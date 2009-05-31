@@ -316,6 +316,14 @@ void UIAssetController::release()
         m_pUnitCommandDispatcher = NULL;
     }
     m_pSelector = NULL;
+    // remove & delete build queues
+    /*for(map<IAsset*,BuildQueue*>::iterator it = m_BuildQueues.begin(); it != m_BuildQueues.end(); ++it) {
+        BuildQueue* bq = (*it).second;
+        delete bq;
+    }*/
+    // @TODO: why does this delete the key objects? or something else
+    //        elements are deleted, so that's ok. just that the map is now unsafe =P
+    //m_BuildQueues.clear();
 }
 
 
@@ -854,6 +862,27 @@ void UIAssetController::handleReleasedAsset(IAsset* instance)
             return;
         }
         node = node->next;
+    }
+
+    // check for buildqueue
+    /* @TODO: fix
+    if(m_BuildQueues[instance]) {
+        BuildQueue* bq = m_BuildQueues[instance];
+        delete bq;
+        m_BuildQueues.erase(instance);
+    }
+    */
+    // @TODO: temporary fix
+    /*
+    BuildQueue* bq = m_BuildQueues[instance];
+    if(bq) {
+        bq->haxDisableBySettingAssetToNull();
+    }
+    */
+    // JUST HIDE THE PANEL FFS
+    if(m_pCurrentBuildQueue && m_pCurrentBuildQueue->getAsset() == instance) {
+        m_pCurrentBuildQueue = 0;
+        m_pInstanceControlPanel->removeAllComponents();
     }
 }
 

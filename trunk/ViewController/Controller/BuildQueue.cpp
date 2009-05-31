@@ -34,7 +34,8 @@ BuildQueue::BuildQueue(IAsset* pAsset)
 BuildQueue::~BuildQueue()
 {
     if(m_pAsset) {
-        m_pAsset->unregisterListener(this);
+        // @TODO
+//        m_pAsset->unregisterListener(this);
         m_pAsset = 0;
     }
     // remove buttons
@@ -64,6 +65,9 @@ void BuildQueue::createBuildingButton(AssetDef* pAssetDef)
 
 void BuildQueue::fillPanel(UIContainer* pPanel)
 {
+    updateButtons();
+    if(!m_pAsset)
+        return;
     ListNode<BasicButton*>* node = m_Buttons.headNode();
     while(node) {
         pPanel->addComponent(node->item);
@@ -71,8 +75,37 @@ void BuildQueue::fillPanel(UIContainer* pPanel)
     }
 }
 
+void BuildQueue::updateButtons()
+{
+    if(!m_pAsset)
+        return;
+    AssetDef* def;
+    ListNode<BasicButton*>* node = m_Buttons.headNode();
+    while(node) {
+        // check requirements
+        def = (AssetDef*)node->item->getRandomObject();
+        if(def && def->constructionRequires) {
+            if(m_pAsset->getOwner()->hasAsset(def->constructionRequires)) {
+                node->item->setEnabled(true);
+                node->item->setBackground(0xFFFFFFFF);
+            } else {
+                node->item->setEnabled(false);
+                node->item->setBackground(0xFF555555);
+            }
+        }  else {
+            // requirements not set
+            node->item->setEnabled(true);
+            node->item->setBackground(0xFFFFFFFF);
+        }
+        node = node->next;
+    }
+}
+
 void BuildQueue::handleAssetStateChange(IAsset* pAsset, IAsset::State newState)
 {
+    if(newState == IAsset::STATE_DESTROYED) {
+        m_pAsset = 0;
+    }
 }
 
 void BuildQueue::handleAssetReleased(IAsset* pAsset)
@@ -82,24 +115,22 @@ void BuildQueue::handleAssetReleased(IAsset* pAsset)
 
 int BuildQueue::getCount(const int assetTag)
 {
-    if(m_Queue.empty())
+    if(!m_pAsset || m_Queue.empty())
         return 0;
     int count = 0;
     ListNode<AssetDef*>* node = m_Queue.headNode();
     while(node) {
         if(node->item->tag == assetTag)
             ++count;
+        node = node->next;
     }
     return count;
 }
 
-
 void BuildQueue::update(bool updateVisual)
 {
     if(!m_pAsset)
-    {
         return;
-    }
 
     if(m_pAsset->getState() != IAsset::STATE_ACTIVE)
         return;
@@ -148,6 +179,8 @@ void BuildQueue::update(bool updateVisual)
 
 BasicButton* BuildQueue::getButton(const int buttonId)
 {
+    if(!m_pAsset)
+        return 0;
     // @TODO: change to map
     ListNode<BasicButton*>* node = m_Buttons.headNode();
     while(node) {
@@ -161,8 +194,17 @@ BasicButton* BuildQueue::getButton(const int buttonId)
 
 bool BuildQueue::add(AssetDef* pAssetDef)
 {
-    if(m_pAsset->getOwner()->getOre() < pAssetDef->constructionCostOre)
+    if(!m_pAsset || m_pAsset->getOwner()->getOre() < pAssetDef->constructionCostOre)
         return false;
+
+    // modify this to add support for multiple requirements - or indicator
+    const int reqTag = pAssetDef->constructionRequires;
+    if(reqTag > 0) {
+        // check that the player has the asset
+        if(!m_pAsset->getOwner()->hasAsset(reqTag))
+            return false;
+    }
+
     m_pAsset->getOwner()->modifyOre(-pAssetDef->constructionCostOre);
     m_Queue.pushTail(pAssetDef);
     return true;
@@ -170,11 +212,19 @@ bool BuildQueue::add(AssetDef* pAssetDef)
 
 bool BuildQueue::cancel(AssetDef* pAssetDef)
 {
-    const int buildCost = pAssetDef->constructionCostOre;
-    if(m_Queue.remove(pAssetDef)) {
-        // refund
-        m_pAsset->getOwner()->modifyOre(buildCost);
-        return true;
+    if(!m_pAsset || !pAssetDef)
+        return false;
+    ListNode<AssetDef*>* node = m_Queue.tailNode();
+    while(node) {
+        if(node->item->tag == pAssetDef->tag) {
+            // refund
+            m_pAsset->getOwner()->modifyOre(pAssetDef->constructionCostOre);
+            m_Queue.remove(node);
+            node = 0;
+            return true;
+        } else {
+            node = node->prev;
+        }
     }
     return false;
 }
@@ -183,9 +233,11 @@ void BuildQueue::onButtonClick(BasicButton* pSrc)
 {
     AssetDef* def = (AssetDef*)pSrc->getRandomObject();
     if(def) {
-        add(def);
-        if(!m_pCurrentBuild || m_pCurrentBuild->getDef() != def) {
-            getButton(def->tag)->setLoadingStatus(0);
+        if(add(def)) {
+            if(!m_pCurrentBuild || m_pCurrentBuild->getDef() != def) {
+                //getButton(def->tag)->setLoadingStatus(0);
+                pSrc->setLoadingStatus(0);
+            }
         }
     }
 }
@@ -196,9 +248,9 @@ void BuildQueue::onButtonAltClick(BasicButton* pSrc)
     if(def) {
         cancel(def);
         if(getCount(def->tag) < 1) {
-            getButton(def->tag)->clearLoading();
+            pSrc->clearLoading();
         } else {
-            getButton(def->tag)->setLoadingStatus(0);
+            pSrc->setLoadingStatus(0);
         }
     }
 }
