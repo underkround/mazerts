@@ -290,6 +290,8 @@ void C3DParticleEmitter::Render(LPDIRECT3DDEVICE9 pDevice)
 		    pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 		    pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 		    pDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
+            
+		    //pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 		    pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
             pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
         }

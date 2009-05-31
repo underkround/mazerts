@@ -251,6 +251,8 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
         pDevice->SetStreamSource(0, m_pWaterPlane, 0, sizeof(VERTEX));  
         pDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
         pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+        pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+        pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
     }
 
     if(m_pCurrentPlayer->hasRadar())

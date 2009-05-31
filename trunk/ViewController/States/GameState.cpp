@@ -380,11 +380,9 @@ void GameState::render(const LPDIRECT3DDEVICE9 pDevice)
 
     pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
     pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-    m_Selector.render(pDevice);    
+    m_Selector.render(pDevice);
 
-    //if (m_Antialias) pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
     m_pRootContainer->render(pDevice);
-    //if (m_Antialias) pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
     //Draw cursor
     Cursor::getInstance()->render(pDevice);

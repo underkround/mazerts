@@ -387,8 +387,9 @@ void Selector::render(LPDIRECT3DDEVICE9 pDevice)
 
         pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
         pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
-	    pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-        pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);    }
+//	    pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+        pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);    
+    }
 }
 
 HRESULT Selector::onDeviceLost()
