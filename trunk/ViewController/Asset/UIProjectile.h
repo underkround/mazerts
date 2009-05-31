@@ -69,7 +69,10 @@ public:
         if(!m_pProjectile->isAlive())
         {
             //Play sound
-            SoundManager::playSound(SOUND_EXPLOSION, 0.01f, *((D3DXVECTOR3*)&m_mWorld._41), true);
+            if (m_pProjectile->getConcreteType() == Projectile::ICBM)
+                SoundManager::playSound(SOUND_NUKE, 0.01f, *((D3DXVECTOR3*)&m_mWorld._41), true);
+            else
+                SoundManager::playSound(SOUND_EXPLOSION, 0.01f, *((D3DXVECTOR3*)&m_mWorld._41), true);
         }
         return m_pProjectile->isAlive();
     }

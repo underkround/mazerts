@@ -826,6 +826,11 @@ void UIAssetController::onActionRelease(const float frameTime)
 
 void UIAssetController::handleReleasedAsset(IAsset* instance)
 {
+    if (m_pCurrentNukeSilo && instance == m_pCurrentNukeSilo)
+    {
+        m_pCurrentNukeSilo = NULL;
+    }
+
     // check if the released asset is the one with unit camera, if any
     if(m_pUnitCarryingCamera && m_pUnitCarryingCamera->getUnit() == instance)
     {
