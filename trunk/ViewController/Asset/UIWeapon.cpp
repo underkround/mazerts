@@ -139,8 +139,10 @@ void UIWeapon::callBack()
             SoundManager::playSound(SOUND_MISSILE, 0.1f, *((D3DXVECTOR3*)&GetWorldMatrix()._41), true);
             break;
         case UNIT_TYPE_CAR:
+        case BUILDING_TYPE_GUNTOWER:
             SoundManager::playSound(SOUND_GUN, 0.1f, *((D3DXVECTOR3*)&GetWorldMatrix()._41), true);
             break;
+        case BUILDING_TYPE_CANTOWER:
         case UNIT_TYPE_SUPER:
         case UNIT_TYPE_TANK:
         default:

@@ -194,7 +194,7 @@ void UIAssetController::onButtonClick(BasicButton* pSrc)
         Console::error("Cannot build: not enough ore");
         return;
     }
-    if(!m_pCurrentPlayer->hasAsset(def->constructionRequires)) {
+    if(def->constructionRequires && !m_pCurrentPlayer->hasAsset(def->constructionRequires)) {
         Console::error("Cannot build: requirements not met");
         return;
     }
