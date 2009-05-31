@@ -1,9 +1,9 @@
 /**
  * Fog of war.
  *
- * $Revision: 292 $
- * $Date: 2009-04-05 18:58:13 +0300 (su, 05 huhti 2009) $
- * $Id: Player.h 292 2009-04-05 15:58:13Z zem $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 #ifndef __FOG_H__
 #define __FOG_H__

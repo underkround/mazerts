@@ -3,9 +3,9 @@
  *
  * Factory-class for creating particle-effects
  *
- * $Revision:$
- * $Date:$
- * $Id:$
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __PARTICLEFACTORY_H__

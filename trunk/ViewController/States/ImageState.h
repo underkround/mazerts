@@ -1,9 +1,9 @@
 /**
  * shows images (for loading screen etc)
  *
- * $Revision: 395 $
- * $Date: 2009-05-27 02:16:14 +0300 (ke, 27 touko 2009) $
- * $Id: ImageState.h 395 2009-05-26 23:16:14Z murgo $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __IMAGESTATE_H__

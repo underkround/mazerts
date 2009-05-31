@@ -1,9 +1,9 @@
 /**
  * Ore-mine is a special case building
  *
- * $Revision: 281 $
- * $Date: 2009-04-03 20:16:06 +0300 (pe, 03 huhti 2009) $
- * $Id: Unit.h 281 2009-04-03 17:16:06Z zem $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __OREMINE_H__

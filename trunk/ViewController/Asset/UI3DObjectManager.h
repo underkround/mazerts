@@ -5,9 +5,9 @@
  * Handles the creation and destruction of the 3d-representations of Assets and
  * manages the object hierarchy.
  *
- * $Revision: 242 $
- * $Date: 2009-03-31 00:27:53 +0300 (ti, 31 maalis 2009) $
- * $Id: UI3DObjectManager.h 242 2009-03-30 21:27:53Z murgo $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __UI3DOBJECTMANAGER_H__

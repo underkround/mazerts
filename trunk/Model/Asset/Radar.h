@@ -1,9 +1,9 @@
 /**
  * Default implementation of IAssetRadar.
  *
- * $Revision: 74 $
- * $Date: 2009-03-02 23:53:12 +0200 (ma, 02 maalis 2009) $
- * $Id: IAssetRadar.h 74 2009-03-02 21:53:12Z zem $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 #ifndef __RADAR_H__
 #define __RADAR_H__

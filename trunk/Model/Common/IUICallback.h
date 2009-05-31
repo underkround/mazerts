@@ -3,9 +3,9 @@
  *
  * Used to send data to UI members using function pointers, without tying Model to UI
  *
- * $Revision:$
- * $Date:$
- * $Id:$
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __IUICALLBACK_H__

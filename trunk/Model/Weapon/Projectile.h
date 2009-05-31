@@ -4,9 +4,9 @@
  * Projectile is the object that is launched by weapon, and travels to it's
  * target casting damage or creating explosioin-object to do the casting.
  *
- * $Revision:$
- * $Date:$
- * $Id:$
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __IPROJECTILE_H__

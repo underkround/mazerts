@@ -45,20 +45,23 @@ void MenuGui::create()
 
         BasicButton* bNewGame = new BasicButton(w, h, 0, m_pListener);
         bNewGame->setPosition(x, y1);
-        bNewGame->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1011));
-        bNewGame->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1012));
+        bNewGame->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1021));
+        bNewGame->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1022));
+        bNewGame->setAlphaBlending(true);
         m_pButtonPanel->addComponent(bNewGame);
 
         BasicButton* bCredits = new BasicButton(w, h, 1, m_pListener);
         bCredits->setPosition(x, y2);
-        bCredits->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1013));
-        bCredits->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1014));
+        bCredits->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1023));
+        bCredits->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1024));
+        bCredits->setAlphaBlending(true);
         m_pButtonPanel->addComponent(bCredits);
 
         BasicButton* bQuit = new BasicButton(w, h, 2, m_pListener);
         bQuit->setPosition(x, y3);
-        bQuit->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1015));
-        bQuit->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1016));
+        bQuit->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1025));
+        bQuit->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1026));
+        bQuit->setAlphaBlending(true);
         m_pButtonPanel->addComponent(bQuit);
     }
 }

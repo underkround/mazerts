@@ -3,9 +3,9 @@
  *
  * 3D-representation of model-side Projectile 
  *
- * $Revision: 242 $
- * $Date: 2009-03-31 00:27:53 +0300 (ti, 31 maalis 2009) $
- * $Id: UI3DObjectManager.h 242 2009-03-30 21:27:53Z murgo $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __UIPROJECTILE_H__

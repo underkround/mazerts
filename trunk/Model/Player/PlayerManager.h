@@ -1,9 +1,9 @@
 /**
  * Keeps track of players
  *
- * $Revision: 161 $
- * $Date: 2009-03-15 19:18:00 +0200 (su, 15 maalis 2009) $
- * $Id: Player.h 161 2009-03-15 17:18:00Z murgo $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __PLAYERMANAGER_H__

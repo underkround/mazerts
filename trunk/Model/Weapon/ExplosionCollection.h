@@ -3,9 +3,9 @@
  *
  * Keeps track of "live" explosions and handles updating them
  *
- * $Revision:$
- * $Date:$
- * $Id:$
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __EXPLOSIONCOLLECTION_H__

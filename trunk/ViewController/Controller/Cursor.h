@@ -1,9 +1,9 @@
 /**
  * Singleton Cursor-object, used to show the player where
  * the cursor is and information about pointed object
- * $Revision:$
- * $Date:$
- * $Id:$
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __CURSOR_H__

@@ -3,9 +3,9 @@
  *
  * Handles the ui 3d-representation of a single unit weapon
  *
- * $Revision: 183 $
- * $Date: 2009-03-18 13:48:39 +0200 (ke, 18 maalis 2009) $
- * $Id: UIUnit.h 183 2009-03-18 11:48:39Z zem $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __UIWEAPON_H__

@@ -3,9 +3,9 @@
  *
  * Handles AI's attacking and defending in the update method
  *
- * $Revision: 326 $
- * $Date: 2009-04-15 22:32:11 +0300 (ke, 15 huhti 2009) $
- * $Id: Target.h 326 2009-04-15 19:32:11Z ezbe $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #pragma once

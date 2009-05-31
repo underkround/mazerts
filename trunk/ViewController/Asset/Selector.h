@@ -1,9 +1,9 @@
 /**
  * Mesh and methods for selecting assets and terrain with mouse dragging
  *
- * $Revision: 218 $
- * $Date: 2009-03-26 19:36:13 +0200 (to, 26 maalis 2009) $
- * $Id: Selector.h 218 2009-03-26 17:36:13Z ezbe $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #include "d3dx9.h"

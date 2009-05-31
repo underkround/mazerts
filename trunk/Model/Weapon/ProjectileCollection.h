@@ -3,9 +3,9 @@
  *
  * Keeps track of "live" projectiles and handles updating them
  *
- * $Revision:$
- * $Date:$
- * $Id:$
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __PROJECTILECOLLECTION_H__

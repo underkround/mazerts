@@ -3,9 +3,9 @@
  *
  * UI Particle-system
  * 
- * $Revision: 181 $
- * $Date: 2009-03-18 01:12:22 +0200 (ke, 18 maalis 2009) $
- * $Id: DoubleLinkedList.h 181 2009-03-17 23:12:22Z zem $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __3DPARTICLEEMITTER_H__

@@ -4,9 +4,9 @@
  * Explosions are caused by projectiles, they are used to pass damage data to relevant units
  * and to show explosions graphically in view-side
  *
- * $Revision: 70 $
- * $Date: 2009-02-27 23:40:55 +0200 (pe, 27 helmi 2009) $
- * $Id: Damage.h 70 2009-02-27 21:40:55Z zem $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __EXPLOSION_H__

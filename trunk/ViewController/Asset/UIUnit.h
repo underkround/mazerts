@@ -3,9 +3,9 @@
  *
  * Handles the ui 3d-representation of a single unit
  *
- * $Revision: 242 $
- * $Date: 2009-03-31 00:27:53 +0300 (ti, 31 maalis 2009) $
- * $Id: UIUnit.h 242 2009-03-30 21:27:53Z murgo $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __UIUNIT_H__

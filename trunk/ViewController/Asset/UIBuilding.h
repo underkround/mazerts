@@ -1,9 +1,9 @@
 /*
  * 3D-representation of model-side building
  *
- * $Revision: 217 $
- * $Date: 2009-03-26 17:14:33 +0200 (to, 26 maalis 2009) $
- * $Id: Building.h 217 2009-03-26 15:14:33Z zem $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __UIBUILDING_H__

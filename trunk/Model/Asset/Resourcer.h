@@ -1,9 +1,9 @@
 /**
  * Resourcer-component takes care of ore transporting and telling the unit where to go
  *
- * $Revision: 281 $
- * $Date: 2009-04-03 20:16:06 +0300 (pe, 03 huhti 2009) $
- * $Id: Unit.h 281 2009-04-03 17:16:06Z zem $
+ * $Revision$
+ * $Date$
+ * $Id$
  */
 
 #ifndef __RESOURCER_H__
