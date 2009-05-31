@@ -90,8 +90,7 @@ public:
      */
     virtual HRESULT pushState(IState* pState);
 
-    void win();
-    void lose();
+    void gameover();
     void setDontClear(bool b) { m_DontClear = b; }
 
 private:

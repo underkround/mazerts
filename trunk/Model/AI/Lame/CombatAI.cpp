@@ -605,7 +605,8 @@ void CombatAI::handleCreatedAsset(IAsset* instance)
             if (m_RallyPointX != 0)
             {
                 Target t(m_RallyPointX, m_RallyPointY, false, m_TargetFlags);
-                m_pReserveGroup->setTarget(&t);
+                //m_pReserveGroup->setTarget(&t);
+                ((Unit*)instance)->getMovingLogic()->addTarget(new Target(m_RallyPointX + ((::rand() % 30) - 15), m_RallyPointY + ((::rand() % 30) - 15)));
             }
         }
     }

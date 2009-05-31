@@ -137,6 +137,12 @@ void ParticleFactory::createExplosion(const D3DXVECTOR3& pos, int size)
 
 void ParticleFactory::createFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir, float lifeTime)
 {
+    pManager->getRootObject()->AddChild(getFlame(pos, dir, lifeTime));
+}
+
+C3DParticleEmitter* ParticleFactory::getFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir, float lifeTime)
+{
+    /*
     Fog* pFog = UITerrain::getInstance()->getCurrentPlayer()->getFog();
     if (pFog->isEnabled())        
     {
@@ -146,6 +152,7 @@ void ParticleFactory::createFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir
             return;
         }
     }
+    */
 
     LPDIRECT3DTEXTURE9 pTexture = pManager->getResourceContainer()->FindTexture(g_ppTextureNames[BALLTEXTURE]); 
 
@@ -184,5 +191,5 @@ void ParticleFactory::createFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir
     //pEmitter->SetScale(TRUE);
     pEmitter->Emit(params);
 
-    pManager->getRootObject()->AddChild(pEmitter);    
+    return pEmitter;
 }

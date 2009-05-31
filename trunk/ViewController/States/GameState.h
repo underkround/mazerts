@@ -23,10 +23,11 @@
 //#include "../UIComponent/DummyComponent.h"
 //#include "../UIComponent/UIContainer.h"
 #include "../UIComponent/RootContainer.h"
+#include "../UIComponent/IButtonListener.h"
 
 class CTheApp;
 
-class GameState : public IState
+class GameState : public IState, public IButtonListener
 {
 public:
     GameState();
@@ -119,6 +120,9 @@ public:
 
     void win();
     void lose();
+    virtual void onButtonClick(BasicButton* pSrc);
+
+    virtual void onButtonAltClick(BasicButton* pSrc);
 
 private:
 
@@ -142,7 +146,7 @@ private:
      * Checks win/lose condition
      * @return false if game is over
      */
-    bool checkGameConditions(const float fFrameTime);
+    void checkGameConditions(const float fFrameTime);
 
     /**
      * Main application
@@ -202,6 +206,8 @@ private:
 
     // Player who is currently playing
     Player*             m_pCurrentPlayer;
+
+    bool                m_Finished;
 };
 
 #endif //__GAMESTATE_H__

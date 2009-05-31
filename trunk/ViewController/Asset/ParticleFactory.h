@@ -46,6 +46,7 @@ public:
      * @param lifeTime Lifetime of emitter in seconds
      */
     static void createFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir, float lifeTime);
+    static C3DParticleEmitter* getFlame(const D3DXVECTOR3& pos, const D3DXVECTOR3& dir, float lifeTime);
 
 private:
 

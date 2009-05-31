@@ -44,7 +44,7 @@
 
 // Components
 #include "../UIComponent/RootContainer.h"
-
+#include "../UIComponent/BasicButton.h"
 
 // TODO - for testing, remove
 #include "../UIComponent/GridLayout.h"
@@ -69,6 +69,7 @@ GameState::GameState()
     m_pUITerrain = NULL;
     m_pApp = NULL;
     m_Created = false;
+    m_Finished = false;
 
     // default settings
     m_KeyGenerateNewTerrain     = 57;
@@ -302,8 +303,9 @@ bool GameState::update(const float frameTime)
     m_pCurrentPlayer->getFog()->update(frameTime);
     UITerrain::getInstance()->updateFog(m_pDevice);
 
-    //Keep running
-    return checkGameConditions(frameTime);
+    //check game conditions
+    checkGameConditions(frameTime);
+    return !m_Finished;
 }
 
 
@@ -579,7 +581,7 @@ void GameState::redrawTerrain()
         pf->start();
 }
 
-bool GameState::checkGameConditions(const float fFrameTime)
+void GameState::checkGameConditions(const float fFrameTime)
 {
     if(m_bWinConditionsEnabled) {
         m_ConditionUpdateTime += fFrameTime;
@@ -611,15 +613,47 @@ bool GameState::checkGameConditions(const float fFrameTime)
             }
         }
     }
-    return true;
 }
 
 void GameState::win()
 {
-    m_pApp->win();
+    RootContainer* rc = RootContainer::getInstance();
+    const int w = 512;
+    const int h = 256;
+    const int x = (rc->getWidth() - w) / 2;
+    const int y = (rc->getHeight() - h) / 2;
+    
+    BasicButton* pButton = new BasicButton(w, h, 666, this);
+    pButton->setPosition(x, y);
+    pButton->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1018));
+    pButton->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1018));
+    pButton->setAlphaBlending(true);
+    m_pRootContainer->addComponent(pButton);
 }
 
 void GameState::lose()
 {
-    m_pApp->lose();
+    RootContainer* rc = RootContainer::getInstance();
+    const int w = 512;
+    const int h = 256;
+    const int x = (rc->getWidth() - w) / 2;
+    const int y = (rc->getHeight() - h) / 2;
+    
+    BasicButton* pButton = new BasicButton(w, h, 666, this);
+    pButton->setPosition(x, y);
+    pButton->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1019));
+    pButton->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1019));
+    pButton->setAlphaBlending(true);
+    m_pRootContainer->addComponent(pButton);
+}
+
+void GameState::onButtonClick(BasicButton* pSrc)
+{
+    m_pApp->gameover();
+   // m_Finished = true;
+}
+
+
+void GameState::onButtonAltClick(BasicButton* pSrc)
+{
 }

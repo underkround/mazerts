@@ -261,7 +261,12 @@ void CTheApp::OnFlip(void)
         for(int i=1; i <= PlayerManager::getPlayerCount();++i)
         {
             if (PlayerManager::isCreated()) {
-                _stprintf_s(text, _T("Player %d ore: %d  Energy: %d/%d"), i, PlayerManager::getInstance()->getPlayer(i)->getOre(), PlayerManager::getInstance()->getPlayer(i)->getEnergyConsumed(), PlayerManager::getInstance()->getPlayer(i)->getEnergyProduced());
+                const int consumed = PlayerManager::getInstance()->getPlayer(i)->getEnergyConsumed();
+                const int produced = PlayerManager::getInstance()->getPlayer(i)->getEnergyProduced();
+                const int total = produced - consumed;
+                char sign = '+';
+                if (total <= 0) sign = ' ';
+                _stprintf_s(text, _T("Player %d ore: %d  Energy: %c%d (%d/%d)"), i, PlayerManager::getInstance()->getPlayer(i)->getOre(), sign, total, consumed, produced);
                 DrawText(500, (60+i*10), text, PLAYERCOLORS[i]);
             }
         }
@@ -444,16 +449,9 @@ void CTheApp::handleConfig()
     SoundManager::setMusicVolume(mvol);
 }
 
-void CTheApp::win()
+void CTheApp::gameover()
 {
-    // TODO: Something proper
-    ::MessageBox(GetWindow(), _T("You won! \\o/"), _T("Congratulations!"), MB_OK);
     Close();
-}
-
-void CTheApp::lose()
-{
-    // TODO: Something proper
-    ::MessageBox(GetWindow(), _T("You lost :("), _T("Better luck next time."), MB_OK);
-    Close();
+    //m_pStates->pushTail(new ImageState(1010, 512, 128));
+    //m_pStates->pushTail(new IntroState());
 }
