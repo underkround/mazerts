@@ -19,6 +19,8 @@
 #include "../Common/Config.h"
 #include <string>
 
+#include "../Asset/RadarBuilding.h"
+
 Player::Player(const int index)
 {
     m_Index = index;
@@ -159,7 +161,13 @@ void Player::PowerSwitch(bool enable)
         {
             if(b->getEnergyConsumption() > 0)
             {
-                b->setPower(enable);
+                if(b->getDef()->tag != BUILDING_TYPE_RADAR)
+                {
+                    b->setPower(enable);
+                }
+                else {
+                    ((RadarBuilding*)b)->setPower(enable);
+                }
             }
         }
         pNode = pNode->next;

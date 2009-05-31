@@ -29,6 +29,10 @@ public:
         m_fIncomeTimer = 0.0f;
     }
 
+    inline void create()
+    {
+        Building::create();
+    }
 
     /**
      * Overridden update-method

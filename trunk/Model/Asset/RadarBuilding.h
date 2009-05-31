@@ -19,6 +19,10 @@ public:
         m_Created = false;
     }
 
+    inline void create()
+    {
+        Building::create();
+    }
 
     inline void RadarBuilding::setPower(bool active)
     {
@@ -26,14 +30,15 @@ public:
         {
             if(active)
             {
+                m_pOwner->toggleRadar(active);
                 changeState(STATE_ACTIVE);
             }
             else
             {
+                m_pOwner->toggleRadar(active);
                 changeState(STATE_DISABLED);
             }
         }
-        m_pOwner->toggleRadar(active);
     }
 
 };
