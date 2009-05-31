@@ -111,6 +111,9 @@ void CameraController::updateControls(const float frameTime)
     if(KeyboardState::keyDown[m_KeyCameraReset])
     {
         camera->setZoom(100.0f);
+        float camX = Config::getInstance()->getValueAsFloat("scenario", "camera starting position x", 127.0f);
+        float camY = Config::getInstance()->getValueAsFloat("scenario", "camera starting position y", 127.0f);
+        Camera::getCurrent()->setPosition(camX, camY, 0.0f);
         camera->setRotation(0.5f * D3DX_PI, 0.9f);
     }
 

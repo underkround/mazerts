@@ -367,53 +367,52 @@ void LameAI::HammerTime(void)
         }
         else 
         {
-
-            if(NeedMoreUnits())
-            {
-                BuildUnit(ChooseUnitToBuild());
-            }
-            else {
-                if( !HaveBuilding(BUILDING_TYPE_SCIENCE) )
-                {
-                    if( CanSupport(BUILDING_TYPE_SCIENCE) ) {
-                        BuildBuilding(BUILDING_TYPE_SCIENCE);
-                    } else {
-                        BuildBuilding(BUILDING_TYPE_PLANT);
-                    }
+            if(m_pPlayer->getOre() > 5000)
+            { //make some extra factories if we are filthy rich (it's probably caused by units stuck at factory doors :D)
+                if( CanSupport(BUILDING_TYPE_FACTORY) ) {
+                    BuildBuilding(BUILDING_TYPE_FACTORY);
+                } else {
+                    BuildBuilding(BUILDING_TYPE_PLANT);
                 }
-                else
+            }
+            else
+            {
+                if(NeedMoreUnits())
                 {
-                    if( !NeedMoreDefensiveStructures() )
+                    BuildUnit(ChooseUnitToBuild());
+                }
+                else {
+                    if( !HaveBuilding(BUILDING_TYPE_SCIENCE) )
                     {
-                        if( !HaveBuilding(BUILDING_TYPE_RADAR) )
-                        {
-                            if( CanSupport(BUILDING_TYPE_RADAR) ) {
-                                BuildBuilding(BUILDING_TYPE_RADAR);
-                            } else {
-                                BuildBuilding(BUILDING_TYPE_PLANT);
-                            }
+                        if( CanSupport(BUILDING_TYPE_SCIENCE) ) {
+                            BuildBuilding(BUILDING_TYPE_SCIENCE);
+                        } else {
+                            BuildBuilding(BUILDING_TYPE_PLANT);
                         }
-                        else 
+                    }
+                    else
+                    {
+                        if( !NeedMoreDefensiveStructures() )
                         {
-                            if(!HaveBuilding(BUILDING_TYPE_SILO))
+                            if( !HaveBuilding(BUILDING_TYPE_RADAR) )
                             {
-                                if( CanSupport(BUILDING_TYPE_SILO) ) {
-                                    BuildBuilding(BUILDING_TYPE_SILO);
+                                if( CanSupport(BUILDING_TYPE_RADAR) ) {
+                                    BuildBuilding(BUILDING_TYPE_RADAR);
                                 } else {
                                     BuildBuilding(BUILDING_TYPE_PLANT);
                                 }
                             }
                             else 
                             {
-                                if(m_pPlayer->getOre() > 4000)
-                                { //make some extra factories if we are filthy rich
-                                    if( CanSupport(BUILDING_TYPE_FACTORY) ) {
-                                        BuildBuilding(BUILDING_TYPE_FACTORY);
+                                if(!HaveBuilding(BUILDING_TYPE_SILO))
+                                {
+                                    if( CanSupport(BUILDING_TYPE_SILO) ) {
+                                        BuildBuilding(BUILDING_TYPE_SILO);
                                     } else {
                                         BuildBuilding(BUILDING_TYPE_PLANT);
                                     }
                                 }
-                                else
+                                else 
                                 {
                                     if( CanSupport(BUILDING_TYPE_BORE) ) {
                                         BuildBuilding(BUILDING_TYPE_BORE);
@@ -423,20 +422,20 @@ void LameAI::HammerTime(void)
                                 }
                             }
                         }
-                    }
-                    else 
-                    {
-                        //build base defences!
-                        /*
-                            if(!HaveBuilding(BUILDING_TYPE_GUNTOWER))
-                            {
-                                BuildBuilding(BUILDING_TYPE_GUNTOWER);
-                            }
-                            if(!HaveBuilding(BUILDING_TYPE_CANTOWER))
-                            {
-                                BuildBuilding(BUILDING_TYPE_CANTOWER);
-                            }
-                        */
+                        else 
+                        {
+                            //build base defences!
+                            /*
+                                if(!HaveBuilding(BUILDING_TYPE_GUNTOWER))
+                                {
+                                    BuildBuilding(BUILDING_TYPE_GUNTOWER);
+                                }
+                                if(!HaveBuilding(BUILDING_TYPE_CANTOWER))
+                                {
+                                    BuildBuilding(BUILDING_TYPE_CANTOWER);
+                                }
+                            */
+                        }
                     }
                 }
             }

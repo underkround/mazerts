@@ -165,7 +165,10 @@ HRESULT GameState::create(CTheApp* pApplication)
     // Camera
     Camera::create(pDevice);
     // configure the default (SphereCamera) camera
-    Camera::getCurrent()->setPosition(127.0f, 127.0f, 0.0f);
+    float camX = Config::getInstance()->getValueAsFloat("scenario", "camera starting position x", 127.0f);
+    float camY = Config::getInstance()->getValueAsFloat("scenario", "camera starting position y", 127.0f);
+    Camera::getCurrent()->setPosition(camX, camY, 0.0f);
+    Camera::getCurrent()->setRotation(0.5f * D3DX_PI, 0.9f);
 
     // Controllers
     m_UIControllers.pushHead(new UIAssetController(pDevice, &m_Selector, getCurrentPlayer()));
