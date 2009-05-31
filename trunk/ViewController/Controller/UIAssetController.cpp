@@ -194,6 +194,10 @@ void UIAssetController::onButtonClick(BasicButton* pSrc)
         Console::error("Cannot build: not enough ore");
         return;
     }
+    if(!m_pCurrentPlayer->hasAsset(def->constructionRequires)) {
+        Console::error("Cannot build: requirements not met");
+        return;
+    }
     // take the ore first to prefent the situation where there is no funds when placed
     m_CurrentBuildOreTaken = def->constructionCostOre;
     m_pCurrentPlayer->modifyOre(-m_CurrentBuildOreTaken);
