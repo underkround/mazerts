@@ -83,7 +83,7 @@ void BasicButton::onRender(LPDIRECT3DDEVICE9 pDevice)
         {
             pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
         }
-        pDevice->SetFVF(TRANSLITVERTEX::GetFVF());        
+        pDevice->SetFVF(TRANSLITVERTEX::GetFVF());
         pDevice->SetStreamSource(0, m_pBackgroundVB, 0, sizeof(TRANSLITVERTEX));
         pDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
     }

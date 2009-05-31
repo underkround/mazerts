@@ -166,13 +166,13 @@ int RootContainer::updateControls(const float frameTime)
         }
 
         // mouse release
-        if(MouseState::mouseButtonReleasedBits)
+        if(m_pFocused && MouseState::mouseButtonReleasedBits)
         {
             result = m_pFocused->processEvent(CEVENT_MOUSE_RELEASED, MouseState::mouseButtonReleasedBits);
         }
 
         // mouse idle
-        if(!MouseState::mouseMoved && MouseState::mouseIdle >= m_MouseIdleTreshold)
+        if(m_pFocused && !MouseState::mouseMoved && MouseState::mouseIdle >= m_MouseIdleTreshold)
         {
             result = m_pFocused->processEvent(CEVENT_MOUSE_IDLE, 0);
         }

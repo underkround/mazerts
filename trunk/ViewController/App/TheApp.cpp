@@ -13,6 +13,7 @@
 #include "../../Model/PathFinding/PathFinderMaster.h"
 #include "../States/GameState.h"
 #include "../States/IntroState.h"
+#include "../States/ImageState.h"
 #include "../Sound/SoundManager.h"
 
 #include "../../Model/Console.h"
@@ -28,6 +29,7 @@ CTheApp::CTheApp(void)
     handleConfig();
     m_CatchInput = false;
     ::CoInitialize(NULL);
+    m_DontClear = false;
 }
 
 
@@ -64,10 +66,12 @@ HRESULT CTheApp::OnCreate(void)
 
     if(!c.getValueAsInt("skip menu", false))
     {
+        m_pStates->pushTail(new ImageState(1010, 512, 128));
         m_pStates->pushTail(new IntroState());
     }
     if(!c.getValueAsInt("skip game", false))
     {
+        m_pStates->pushTail(new ImageState(1017, 512, 64));
         m_pStates->pushTail(new GameState());
     }
 
@@ -117,8 +121,9 @@ void CTheApp::OnFlip(void)
     LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
     // clear the background & z-buffer
-    pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFF444444, 1.0f, 0);
-
+    //pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFF444444, 1.0f, 0);
+    if (!m_DontClear)
+        pDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0xFF000000, 1.0f, 0);
     
     //Timers for profiling
     static bool timersCreated = false;
@@ -255,17 +260,17 @@ void CTheApp::OnFlip(void)
 
         for(int i=1; i <= PlayerManager::getPlayerCount();++i)
         {
-            _stprintf_s(text, _T("Player %d ore: %d  Energy: %d/%d"), i, PlayerManager::getInstance()->getPlayer(i)->getOre(), PlayerManager::getInstance()->getPlayer(i)->getEnergyConsumed(), PlayerManager::getInstance()->getPlayer(i)->getEnergyProduced());
-            DrawText(500, (60+i*10), text, PLAYERCOLORS[i]);
+            if (PlayerManager::isCreated()) {
+                _stprintf_s(text, _T("Player %d ore: %d  Energy: %d/%d"), i, PlayerManager::getInstance()->getPlayer(i)->getOre(), PlayerManager::getInstance()->getPlayer(i)->getEnergyConsumed(), PlayerManager::getInstance()->getPlayer(i)->getEnergyProduced());
+                DrawText(500, (60+i*10), text, PLAYERCOLORS[i]);
+            }
         }
 
         m_TextRow = 0;
         EndText();
 
-
         //Render state
         m_pCurrentState->render(pDevice);
-
 
         pDevice->EndScene();
     }
@@ -451,10 +456,4 @@ void CTheApp::lose()
     // TODO: Something proper
     ::MessageBox(GetWindow(), _T("You lost :("), _T("Better luck next time."), MB_OK);
     Close();
-}
-
-void CTheApp::credits()
-{
-    // TODO: Something proper
-    ::MessageBox(GetWindow(), _T("MAZE\n\nm :: murgo\na :: anthex\nz :: zemm\ne :: ezbe\n\nmusic :: deggis"), _T("Credits"), MB_OK);
 }

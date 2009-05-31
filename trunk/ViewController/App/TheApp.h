@@ -92,7 +92,7 @@ public:
 
     void win();
     void lose();
-    void credits();
+    void setDontClear(bool b) { m_DontClear = b; }
 
 private:
 
@@ -141,6 +141,8 @@ private:
 
     //Help texts
     bool m_Help;
+
+    bool m_DontClear;
 
 };
 

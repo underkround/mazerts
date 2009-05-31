@@ -129,6 +129,16 @@ public:
         return UIContainer::removeComponent(child);
     }
 
+    inline void setFocused(UIComponent* pComponent)
+    {
+        m_pFocused = pComponent;
+    }
+
+    inline void setIdleFocused(UIComponent* pComponent)
+    {
+        m_pIdleFocus = pComponent;
+    }
+
 protected:
 
     virtual void onChange(LPDIRECT3DDEVICE9 pDevice)

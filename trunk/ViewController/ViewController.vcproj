@@ -1038,6 +1038,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\States\ImageState.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\States\ImageState.h"
+					>
+				</File>
+				<File
 					RelativePath=".\States\IntroState.cpp"
 					>
 				</File>

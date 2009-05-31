@@ -11,6 +11,7 @@
 #include "../Controller/Cursor.h" // for mouse tooltip
 
 #include "../UIComponent/GridLayout.h"
+#include "RootContainer.h"
 
 UIComponent::UIComponent(const int posX, const int posY, const unsigned int width, const unsigned int height)
 {
@@ -97,6 +98,8 @@ void UIComponent::release()
     {
         m_pBackgroundTexture = NULL;
     }
+    RootContainer::getInstance()->setFocused(NULL);
+    RootContainer::getInstance()->setIdleFocused(NULL);
 }
 
 

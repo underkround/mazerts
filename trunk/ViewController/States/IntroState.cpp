@@ -514,13 +514,16 @@ void IntroState::onButtonClick(BasicButton* pSrc)
         m_NotFinished = false;
         break;
     case 1:
-        m_pApp->credits();
+        m_pMenuGui->showCredits(true);
         break;
     case 2:
         m_pApp->Close();
         break;
     case 3:
         m_Timer = 1.0f;
+        break;
+    case 4:
+        m_pMenuGui->showCredits(false);
         break;
     }
 }
