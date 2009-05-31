@@ -367,7 +367,7 @@ void LameAI::HammerTime(void)
         }
         else 
         {
-            if(m_pPlayer->getOre() > 5000)
+            if(m_pPlayer->getOre() > 5000 && FindBuildingCount(BUILDING_TYPE_FACTORY) < 5)
             { //make some extra factories if we are filthy rich (it's probably caused by units stuck at factory doors :D)
                 if( CanSupport(BUILDING_TYPE_FACTORY) ) {
                     BuildBuilding(BUILDING_TYPE_FACTORY);
