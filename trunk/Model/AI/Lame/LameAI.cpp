@@ -163,7 +163,8 @@ bool LameAI::NeedMoreUnits()
 bool LameAI::NeedMoreDefensiveStructures()
 {
     //let's not need these until they have been actually implemented
-    return false;
+    if(!(rand() % 15)) return true;
+    else return false;
 }
 
 #pragma endregion
