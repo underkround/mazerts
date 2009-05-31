@@ -84,14 +84,14 @@ bool Player::hasAsset(AssetDef* reqDef) const
         return false;
     bool found = false;
     int reqTag = reqDef->tag;
-    if(reqDef->concreteType == 2) {
+    if(reqDef->concreteType == 2) { // building
         ListNode<Building*>* node = AssetCollection::getAllBuildings()->headNode();
         while(!found && node) {
-            if(node->item->getTypeTag() == reqTag && node->item->getOwner() == this)
+            if(node->item->getTypeTag() == reqTag && node->item->getOwner() == this && node->item->getState() != IAsset::STATE_BEING_BUILT)
                 return true;
             node = node->next;
         }
-    } else if(reqDef->concreteType == 1) {
+    } else if(reqDef->concreteType == 1) { // unit
         ListNode<Unit*>* node = AssetCollection::getAllUnits()->headNode();
         while(!found && node) {
             if(node->item->getTypeTag() == reqTag && node->item->getOwner() == this)

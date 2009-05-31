@@ -72,6 +72,34 @@ void UI3DObjectManager::createBuilding(Building* pBuilding)
 
     m_RootObject.AddChild(pUIBuilding);
     m_AssetList.pushTail(pUIBuilding);
+
+    if(pBuilding->hasWeapon())
+    {
+        //Create weapon (turret), get mesh and offset accordingly
+        UIWeapon* pUIWeapon = new UIWeapon(pBuilding->getWeapon());
+        CXFileLoader::Load(g_ppBuildingMeshNames[tag][1], m_ResourceContainer, pUIWeapon);
+        D3DXMATRIX& m = pUIWeapon->GetMatrix();
+        m._41 = g_ppBuildingMeshOffsets[tag][1][0];
+        m._42 = g_ppBuildingMeshOffsets[tag][1][1];
+        m._43 = g_ppBuildingMeshOffsets[tag][1][2];
+        
+        //SetUIWeapon takes care of parenting
+        pUIBuilding->setUIWeapon(pUIWeapon);
+        //Firing callback for effects
+        pBuilding->getWeapon()->setFiringCallback((IUICallback*)pUIWeapon);
+
+        if(g_ppBuildingMeshNames[tag][2] != _T(""))
+        {
+            //Same as above for barrel
+            C3DObject* pObject = new C3DObject();
+            CXFileLoader::Load(g_ppBuildingMeshNames[tag][2], m_ResourceContainer, pObject);
+            D3DXMATRIX& m = pObject->GetMatrix();
+            m._41 = g_ppBuildingMeshOffsets[tag][2][0];
+            m._42 = g_ppBuildingMeshOffsets[tag][2][1];
+            m._43 = g_ppBuildingMeshOffsets[tag][2][2];
+            pUIWeapon->setBarrel(pObject);
+        }
+    }
 }
 
 void UI3DObjectManager::createUnit(Unit *pUnit)

@@ -185,11 +185,11 @@ static const float g_ppBuildingMeshOffsets[NUMBER_OF_BUILDINGS_WITH_MESHES][3][3
     0, 0, 0, 
 
     0, 0, 0,                //Gun tower base
-    0, 3, 0,
+    0, 0.3f, 0,
     0, 0, 0,
 
     0, 0, 0,                //Cannon tower base
-    0, 5, 0,
+    0, 0.5f, 0,
     0, 0, 0, 
 };
 

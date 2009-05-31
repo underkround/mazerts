@@ -35,8 +35,9 @@ public:
         m_Alive = true;
         m_Selected = false;
         m_pHealthBlock = NULL;
+        m_pUIWeapon = NULL;
         //Register as listener to pUnit
-        pAsset->registerListener(this);        
+        pAsset->registerListener(this);    
     }
 
     /**
