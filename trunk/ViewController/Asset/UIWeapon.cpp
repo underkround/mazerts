@@ -103,6 +103,8 @@ bool UIWeapon::Update(float fFrameTime)
     }
 
     float pitch = m_pWeapon->getBarrelPitch();
+    if (m_pWeapon->getHost()->getTypeTag() == BUILDING_TYPE_CANTOWER)
+        pitch = -m_pWeapon->getBarrelPitch();
 
     //Pitch barrel
     if(m_OldPitch != pitch)
