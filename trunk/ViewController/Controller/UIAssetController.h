@@ -139,6 +139,7 @@ private:
 
     // container holding the build buttons
     UIContainer*                m_pButtonPanel;
+    UIContainer*                m_pInstanceControlPanel;
 
     // current state of the selection
     PointerState                m_SelectionState;
@@ -182,6 +183,8 @@ private:
     IAsset*         m_pCurrentBuildAsset;
     // holds buttons for assets that are being build - for updating the buttons
     DoubleLinkedList<BasicButton*> m_ButtonsToUpdate;
+
+    BasicButton*    m_pStopButton;
 
 };
 

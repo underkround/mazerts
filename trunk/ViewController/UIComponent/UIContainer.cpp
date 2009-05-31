@@ -31,7 +31,7 @@ void UIContainer::onParentChange()
 
 int UIContainer::processEvent(int eventFlag, TCHAR arg)
 {
-    return (m_Transparent) ? STEAL_NONE : UIComponent::processEvent(eventFlag, arg);
+    return (m_Transparent || !m_Visible) ? STEAL_NONE : UIComponent::processEvent(eventFlag, arg);
 }
 
 bool UIContainer::addComponent(UIComponent* child)
@@ -53,6 +53,17 @@ bool UIContainer::addComponent(UIComponent* child)
     return true;
 }
 
+
+void UIContainer::removeAllComponents()
+{
+    ListNode<UIComponent*>* node = m_Children.headNode();
+    while(node) {
+        node->item->m_pParent = 0;
+        node = m_Children.removeGetNext(node);
+    }
+    if(m_pLayoutManager)
+        m_pLayoutManager->reLayout();
+}
 
 bool UIContainer::removeComponent(UIComponent* child)
 {

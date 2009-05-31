@@ -58,6 +58,12 @@ public:
     virtual bool removeComponent(UIComponent* child);
 
     /**
+     * Remove all components from the container (does not delete
+     * the objects).
+     */
+    virtual void removeAllComponents();
+
+    /**
      * Remove, release and delete the child component if this is
      * it's parent.
      *
@@ -99,6 +105,16 @@ public:
     DoubleLinkedList<UIComponent*>* getChildren()
     {
         return &m_Children;
+    }
+
+    bool empty() const
+    {
+        return m_Children.empty();
+    }
+
+    const int count() const
+    {
+        return m_Children.count();
     }
 
 // ===== Layout manager methods

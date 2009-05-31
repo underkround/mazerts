@@ -19,6 +19,7 @@
 
 #include "../../Model/Asset/AssetCollection.h"
 #include "../../Model/Asset/IAsset.h"
+#include "../../Model/Asset/Unit.h"
 #include "../../Model/Asset/AssetFactory.h"
 
 #include "../UIComponent/RootContainer.h"
@@ -50,21 +51,27 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     const int bcW = 2*64 + 10;
     const int bcH = 4*64 + 20;
     m_pButtonPanel = new UIContainer(bcX, bcY, bcW, bcH);
-    m_pButtonPanel->setBackground(0xFF111111);
-    m_pButtonPanel->setLayoutFlag(LAYOUT_HINT_NORESIZE);
+    m_pButtonPanel->setBackground(0xFF000000);
+    m_pButtonPanel->setLayoutFlag(LAYOUT_HINT_PACK);
     m_pButtonPanel->setLayoutManager(new GridLayout(0, 2));
     m_pButtonPanel->setTooltip("Command panel");
     MarginSet* panelSnaps = m_pButtonPanel->getSnapMargins();
     panelSnaps->left = 10;
 //    panelSnaps->bottom = 10;
-    //m_pButtonPanel->onParentChange(); // no need to call this if we add the component to the container AFTER snap settings
     rc->addComponent(m_pButtonPanel);
 
     // create the container for asset-instance spesific components
-    const int acX = bcX + bcW + 5;
-    const int acY = bcY;
-    const int acW = bcW;
-    const int acH = bcH;
+    const int ipX = bcX + bcW + 10;
+    const int ipY = bcY;
+    const int ipW = bcW;
+    const int ipH = bcH;
+    m_pInstanceControlPanel = new UIContainer(ipX, ipY, ipW, ipH);
+    m_pInstanceControlPanel->setBackground(0xFF111111);
+    m_pInstanceControlPanel->setLayoutFlag(LAYOUT_HINT_PACK);
+    m_pInstanceControlPanel->setLayoutManager(new GridLayout(0, 2));
+    m_pInstanceControlPanel->setTooltip("Asset command panel");
+//    m_pInstanceControlPanel->setVisible(false);
+    rc->addComponent(m_pInstanceControlPanel);
 
     // default setting values
     m_KeyMouseActionButton = 1;
@@ -129,6 +136,11 @@ void UIAssetController::createBuildingButton(AssetDef* pAssetDef)
     sprintf_s(nameC, "%s, cost: %d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre);
     button->setTooltip(nameC);
     m_pButtonPanel->addComponent(button);
+
+    m_pStopButton = new BasicButton(64, 64, 439857, this);
+    m_pStopButton->setTooltip("Stop");
+    m_pStopButton->setBackgroundTexture(rc->getIconTexture(_T("stop")));
+    m_pStopButton->setBackgroundTextureClicked(rc->getIconTexture(_T("alt_stop")));
 }
 
 
@@ -137,6 +149,18 @@ void UIAssetController::createBuildingButton(AssetDef* pAssetDef)
 
 void UIAssetController::onButtonClick(BasicButton* pSrc)
 {
+    // stop-command for units
+    if(pSrc == m_pStopButton) {
+        DoubleLinkedList<Unit*>* pUnitList = m_pUnitCommandDispatcher->getUnits();
+        ListNode<Unit*>* node = pUnitList->headNode();
+        while(node) {
+            if(node->item->getMovingLogic())
+                node->item->getMovingLogic()->clearTargets();
+            node = node->next;
+        }
+        return;
+    }
+    // build button
     char* msg = new char[128];
     sprintf_s(msg, 128, "button %d clicked", pSrc->getId());
     Console::debug(msg);
@@ -163,16 +187,7 @@ void UIAssetController::onButtonClick(BasicButton* pSrc)
 
 void UIAssetController::onButtonAltClick(BasicButton* pSrc)
 {
-    /* NOT IMPLEMENTED
-    char* msg = new char[128];
-    int newPerc = pSrc->getLoadingValue();
-    if(newPerc > 0) {
-        newPerc -= 5;
-        pSrc->setLoadingStatus(newPerc);
-    }
-    sprintf_s(msg, 128, "button %d alt-clicked, set loading to %d", pSrc->getId(), newPerc);
-    Console::debug(msg);
-    */
+    /* not needed with building construction */
 }
 
 
@@ -189,6 +204,8 @@ void UIAssetController::changeState(State newState)
             m_ActionState = IDLE;
             m_TempMouseX = 0;
             m_TempMouseY = 0;
+            clearSelection();
+            m_pInstanceControlPanel->removeAllComponents();
             break;
 
         case STATE_BUILDING_PLACEMENT:
@@ -450,27 +467,28 @@ void UIAssetController::onPickRelease(const float frameTime)
                 ListNode<UIAsset*>* pNode = selection->assets.headNode();
                 while(pNode)
                 {
-                   UIAsset* pAsset = pNode->item;
-                   if (pAsset->getAsset()->getAssetType() == IAsset::UNIT && m_pCurrentPlayer == pAsset->getAsset()->getOwner())
-                   {
+                    UIAsset* pAsset = pNode->item;
+                    if (pAsset->getAsset()->getAssetType() == IAsset::UNIT && m_pCurrentPlayer == pAsset->getAsset()->getOwner())
+                    {
                         if (m_SelectedAssetType != UNIT)
                             templist.release();
                         m_SelectedAssetType = UNIT;
                         templist.pushHead(pAsset);
-                   }
-                   else if ((m_SelectedAssetType == NONE || m_SelectedAssetType == ENEMY) && m_pCurrentPlayer == pAsset->getAsset()->getOwner() && pAsset->getAsset()->getAssetType() == IAsset::BUILDING)
-                   {
+                        // show stop-button for friendly asset selection
+                    }
+                    else if ((m_SelectedAssetType == NONE || m_SelectedAssetType == ENEMY) && m_pCurrentPlayer == pAsset->getAsset()->getOwner() && pAsset->getAsset()->getAssetType() == IAsset::BUILDING)
+                    {
                         if (m_SelectedAssetType != BUILDING)
                             templist.release();
                         m_SelectedAssetType = BUILDING;
                         templist.pushHead(pAsset);
-                   }
-                   else if (m_SelectedAssetType == NONE && m_pCurrentPlayer != pAsset->getAsset()->getOwner())
-                   {
-                       m_SelectedAssetType = ENEMY;
-                       templist.pushHead(pAsset);
-                   }
-                   pNode = pNode->next;
+                    }
+                    else if (m_SelectedAssetType == NONE && m_pCurrentPlayer != pAsset->getAsset()->getOwner())
+                    {
+                        m_SelectedAssetType = ENEMY;
+                        templist.pushHead(pAsset);
+                    }
+                    pNode = pNode->next;
                 }
 
                 // add the selection to units under control
@@ -479,6 +497,10 @@ void UIAssetController::onPickRelease(const float frameTime)
                 {
                     if (m_SelectedAssetType != ENEMY)
                         SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pNode->item->GetMatrix()._41, false);
+                    // show stop-button for friendly asset selection
+                    if(m_pInstanceControlPanel->empty() && m_SelectedAssetType == UNIT) {
+                        m_pInstanceControlPanel->addComponent(m_pStopButton);
+                    }
                     while(pNode)
                     {
                         UIAsset* pAsset = pNode->item;
@@ -498,6 +520,12 @@ void UIAssetController::onPickRelease(const float frameTime)
         }
 
     } // switch
+
+    if(m_SelectedUIAssets.empty()) {
+        if(!m_pInstanceControlPanel->getChildren()->empty()) {
+            m_pInstanceControlPanel->removeAllComponents();
+        }
+    }
 
     m_SelectionState = IDLE;
     m_TempMouseX = 0;
@@ -544,8 +572,12 @@ void UIAssetController::onPickButton(const float frameTime)
                 {
                     m_SelectedAssetType = ENEMY;
                 }
-                if (m_SelectedAssetType != ENEMY)
+                if (m_SelectedAssetType != ENEMY) {
                     SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pUIAsset->GetMatrix()._41, false);
+                    if(m_pInstanceControlPanel->empty() && m_SelectedAssetType == UNIT) {
+                        m_pInstanceControlPanel->addComponent(m_pStopButton);
+                    }
+                }
                 m_SelectedUIAssets.pushHead(pUIAsset);
             }
             m_SelectionState = CLICK;
