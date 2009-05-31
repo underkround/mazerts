@@ -23,6 +23,7 @@ AntinTerrainGenerator::~AntinTerrainGenerator()
 
 void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData, const unsigned short terrainSize)
 {
+    if(m_Seed == 0) m_Seed = rand();
     srand(m_Seed);
 
     //PERUNAPELTOGENERAATTORI aka. just testing algorithms - NOT an actual way to make good terrain!

@@ -248,6 +248,7 @@ void CTheApp::OnFlip(void)
             }
         }
 
+#ifdef _DEBUG
         TCHAR text[100];
         _stprintf_s(text, _T("FPS: %.2f  Frametime: %.2fms"), (1.0f / GetFrameTime()), GetFrameTime() * 1000.0f);
         DrawText(500, 0, text, 0xFFFFFFFF);
@@ -270,6 +271,20 @@ void CTheApp::OnFlip(void)
                 DrawText(500, (60+i*10), text, PLAYERCOLORS[i]);
             }
         }
+#endif
+#ifndef _DEBUG
+            if (PlayerManager::isCreated())
+            {
+                TCHAR text[100];
+                const int consumed = PlayerManager::getInstance()->getPlayer(1)->getEnergyConsumed();
+                const int produced = PlayerManager::getInstance()->getPlayer(1)->getEnergyProduced();
+                const int total = produced - consumed;
+                char sign = '+';
+                if (total <= 0) sign = ' ';
+                _stprintf_s(text, _T("Ore: %d    Energy: %c%d (%d/%d)"), PlayerManager::getInstance()->getPlayer(1)->getOre(), sign, total, consumed, produced);
+                DrawText(500, (20), text, PLAYERCOLORS[1]);
+            }
+#endif
 
         m_TextRow = 0;
         EndText();
