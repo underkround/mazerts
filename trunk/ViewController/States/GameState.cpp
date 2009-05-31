@@ -464,7 +464,7 @@ void GameState::updateControls(const float frameTime)
     }
 
     // Terrain
-
+#ifdef _DEBUG
     if(KeyboardState::keyReleased[m_KeyGenerateNewTerrain])
     {
         //The Right Way(tm) to create new terrain
@@ -496,7 +496,7 @@ void GameState::updateControls(const float frameTime)
             m_pUITerrain->setFillMode(D3DFILL_SOLID);
         }
     }
-
+#endif
     if(KeyboardState::keyReleased[m_KeyTerrainDetailUp])
     {
         unsigned char detail = m_pUITerrain->getDetailLevel();

@@ -1,0 +1,26 @@
+Hei Jani!
+
+Resoluutio ja täyden ruudun moodi vaihdetaan data/config.ini tiedostosta.
+Erilaisia skenaarioita voi myös kokeilla vaihtamalla 'scenario file' asetusta samasta tiedostosta.
+Vaihtoehtoiset skenaariot löytyvät data/scenarios/ kansiosta. Oletuksena olevasa Pentagon skenaariossa
+tekoälyvastustajia on peräti 4 mutta ne taistelevat jonkin verran toisiaankin vastaan. Jos tuntuu liian
+vaikealta skenaarioon on helppo kokeilla lisätä omia yksiköitä ;)
+
+
+Vaikka peli onkin hyvin reaaliaikastategioiden perinteitä kunnioittava käyttöliittymältään niin tässä kuitenkin
+varulta pikaohjeet pelin pelaamiseen:
+
+Peliä ohjataan hiirellä, pelialuetta voi kiskoa hiiren oikealla napilla, kameraa kääntää keskinapilla.
+Yksiköitä ja rakennuksia valitaan vasemmalla napilla. Ruudun vasemmassa laidassa on rakennuspainikkeet,
+klikkaa haluaamaasi talon kuvaa ja aseta talo kartalle. Osalla rakennuksista ja yksiköistä on omia
+nappejaan jotka tulevat näkyviin niiden ollessa valittuna, esimerkiksi yksiköiden liikkumisen voi
+pysäyttää stop napista. Sotatehtaan valitsemalla saat näkyviin listan yksiköistä joita tehtaassa voi
+rakentaa, näiden yksiköiden tuotantoa voi ketjuttaa useamman jonoon.
+
+Kaivosautosi keräävät kaivoksesta malmia joka toimii pelin rahayksikkönä. Osa rakennuksista vaatii
+toimiakseen sähköä jota saa sähkövoimaloista, huolehdi että sinulla on riittävästi sähköä tai
+rakennuksesi muuttuvat harmaiksi ja lakkaavat suorittamasta toimintojaan.
+
+Jos haluaa huijata tai debug-tiedot kiinnostaa, f1 avaa debug-konsolin jossa saattaa olla jotain
+mielenkiintoista, ja f2 avaa interaktiivisen konsolin johon voit kirjoittaa help jos haluat tietää
+toimivat komennot.
