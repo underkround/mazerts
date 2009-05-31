@@ -91,8 +91,8 @@ void MenuGui::showCredits(const bool show)
 
         BasicButton* bCredits = new BasicButton(w, h, 4, m_pListener);
         bCredits->setPosition(x, y);
-        bCredits->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1021));
-        bCredits->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1021));
+        bCredits->setBackgroundTexture(RootContainer::getInstance()->getIconTexture(1020));
+        bCredits->setBackgroundTextureClicked(RootContainer::getInstance()->getIconTexture(1020));
         bCredits->setAlphaBlending(true);
         m_pButtonPanel->addComponent(bCredits);
     }
