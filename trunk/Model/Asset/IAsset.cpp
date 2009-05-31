@@ -194,6 +194,9 @@ const float IAsset::modifyHitpoints(const float amount)
     else if(m_State == STATE_BEING_BUILT && m_Hitpoints == m_Def.maxHitpoints)
     {
         changeState(STATE_ACTIVE);
+        //we enable minimap here if we just built a radar
+        if(m_Def.tag == BUILDING_TYPE_RADAR)
+            m_pOwner->toggleRadar(true);
         //to reduce update overload, this is the optimal place to recalculate energy consumption
         //another place is whenever building gets destroyed
         m_pOwner->CalculateEnergyBalance();

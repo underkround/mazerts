@@ -253,7 +253,10 @@ void UITerrain::render(LPDIRECT3DDEVICE9 pDevice)
         pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     }
 
-    m_MiniMap.render(pDevice, m_pPixelTexture);
+    if(m_pCurrentPlayer->hasRadar())
+    {
+        m_MiniMap.render(pDevice, m_pPixelTexture);
+    }
 }
 
 HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer, bool enableMinimap)

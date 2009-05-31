@@ -10,6 +10,7 @@
 
 #include "IUIController.h"
 #include "../Camera/Camera.h"
+#include "../../Model/Player/Player.h"
 
 #define KEYBOARD_CAMSPEED 60.0f
 #define MOUSE_CAMSPEED 0.01f
@@ -32,6 +33,8 @@ public:
      */
     virtual void loadConfigurations();
 
+    inline void setCurrentPlayer(Player* player) { m_pCurrentPlayer = player; }
+
 private:
 
     int m_KeyCameraPanUp;
@@ -53,6 +56,8 @@ private:
     float m_ModifyMouseRotationX;
     float m_ModifyMouseRotationY;
     float m_ModifyMouseZoom;
+
+    Player* m_pCurrentPlayer;
 
 };
 

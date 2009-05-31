@@ -497,6 +497,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Asset\RadarBuilding.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Asset\Resourcer.cpp"
 					>
 				</File>

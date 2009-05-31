@@ -173,7 +173,10 @@ HRESULT GameState::create(CTheApp* pApplication)
     // Controllers
     m_UIControllers.pushHead(new UIAssetController(pDevice, &m_Selector, getCurrentPlayer()));
     m_UIControllers.pushHead(new SoundController());
-    m_UIControllers.pushHead(new CameraController());
+    CameraController* cam = new CameraController();
+    //camera needs to know current player to get it's radar status
+    cam->setCurrentPlayer(m_pCurrentPlayer);
+    m_UIControllers.pushHead(cam);
 
     // Load configurations for the controllers
     ListNode<IUIController*>* node = m_UIControllers.headNode();
@@ -265,8 +268,11 @@ bool GameState::update(const float frameTime)
 
     //Update UITerrain & minimap
     m_pUITerrain->update();
-    m_pUITerrain->getMiniMap()->updateAssets(m_pManager->getAssetList(), frameTime);
-    m_pUITerrain->getMiniMap()->updateCamera(m_pDevice);
+    if(m_pCurrentPlayer->hasRadar())
+    {
+        m_pUITerrain->getMiniMap()->updateAssets(m_pManager->getAssetList(), frameTime);
+        m_pUITerrain->getMiniMap()->updateCamera(m_pDevice);
+    }
 
     //CURSOR-TEST, REMOVE
     if(MouseState::mouseButton[0])

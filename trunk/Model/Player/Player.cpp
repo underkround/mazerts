@@ -36,6 +36,7 @@ Player::Player(const int index)
     m_Ore = 0;
     m_EnergyConsumed = 0;
     m_EnergyProduced = 0;
+    m_bHasRadar = false;
 
     //HACK: make all players AI except first one
     Config* c = Config::getInstance();

@@ -15,6 +15,7 @@ class Unit;
 class Building;
 class OreMine;
 class MoneyPlant;
+class RadarBuilding;
 class Player;
 
 class AssetFactory
@@ -104,6 +105,11 @@ public:
      * ore to it's owner by itself
      */
     static MoneyPlant* createDeepBoreMine(Player* owner, short positionX, short positionY);
+
+    /**
+     * Creates radar building that has ability to enable/disable player minimap
+     */
+    static RadarBuilding* createRadarBuilding(Player* owner, short positionX, short positionY);
 
 private:
 

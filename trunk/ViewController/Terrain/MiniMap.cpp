@@ -22,10 +22,11 @@ MiniMap::MiniMap()
 
     m_UpdateCounter = 100.0f;
 
-    //Sleeve-defaults
-    setSize(300);
-    m_Position.x = 10;
-    m_Position.y = 10;
+    Config* co = Config::getInstance();
+
+    setSize( co->getValueAsInt("minimap size", 300) );
+    m_Position.x = co->getValueAsInt("minimap horizontal position", 10);
+    m_Position.y = co->getValueAsInt("minimap vertical position", 10);
 
     setUpdateInterval(1.0f);
     

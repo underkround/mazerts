@@ -122,7 +122,10 @@ void CameraController::updateControls(const float frameTime)
     //move camera by minimap clicks
     if(MouseState::mouseButtonReleased[m_KeyMouseMinimapButton])
     {
-        UITerrain::getInstance()->getMiniMap()->moveCameraOnClick();
+        if(m_pCurrentPlayer->hasRadar())
+        {
+            UITerrain::getInstance()->getMiniMap()->moveCameraOnClick();
+        }
     }
 
 

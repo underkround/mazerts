@@ -13,6 +13,7 @@
 #include "Building.h"
 #include "OreMine.h"
 #include "MoneyPlant.h"
+#include "RadarBuilding.h"
 #include "GroundMovingLogic.h"
 #include "Radar.h"
 #include "../Weapon/Weapon.h"
@@ -152,6 +153,9 @@ IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX,
     if(assetType == BUILDING_TYPE_BORE)
         return createDeepBoreMine(owner, positionX, positionY);
 
+    if(assetType == BUILDING_TYPE_RADAR)
+        return createRadarBuilding(owner, positionX, positionY);
+
     // general Units and Buildings
     switch(def->concreteType)
     {
@@ -200,6 +204,26 @@ MoneyPlant* AssetFactory::createDeepBoreMine(Player* owner, short positionX, sho
         return NULL; // type is not building
 
     MoneyPlant* b = new MoneyPlant((AssetDef&)(*def));
+    b->setOwner(owner);
+    b->forcePosition(positionX, positionY);
+
+    setRadar(b);
+
+    b->create();
+    return b;
+}
+
+RadarBuilding* AssetFactory::createRadarBuilding(Player* owner, short positionX, short positionY)
+{
+    // TODO: What to do if there's already unit / building?
+    DefManager* dm = DefManager::getInstance();
+    AssetDef* def = dm->getAssetDef(BUILDING_TYPE_RADAR);
+    if(!def)
+        return NULL; // invalid asset type
+    if(def->concreteType != 2)
+        return NULL; // type is not building
+
+    RadarBuilding* b = new RadarBuilding((AssetDef&)(*def));
     b->setOwner(owner);
     b->forcePosition(positionX, positionY);
 

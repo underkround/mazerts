@@ -57,6 +57,9 @@ public:
 		return !(m_Enemies & p->getId()) ? true : false;
 	}
 
+    inline const bool hasRadar() { return m_bHasRadar; }
+    inline void toggleRadar(bool setting) { m_bHasRadar = setting; }
+
 	inline const int getOre() { return m_Ore; }
 	inline void setOre(const int amount) { m_Ore = amount; }
     inline void modifyOre(const int amount) { m_Ore += amount; }
@@ -105,6 +108,8 @@ private:
 	int			m_EnergyConsumed; // amount of energy consumed
 
 	int			m_Ore; // amount of "money"
+
+    bool        m_bHasRadar;
 
     Fog*		m_pFog; // FOG OF WAR!! This is a pointer because of initialization order.
 
