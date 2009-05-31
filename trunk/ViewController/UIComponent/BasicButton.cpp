@@ -23,6 +23,9 @@ BasicButton::BasicButton(const int width, const int height, const int buttonId, 
     m_LayoutFlags = LAYOUT_HINT_ASPECTRATIO;
 
     m_pRandomObject = 0;
+
+    //kiitos jussi kun muistit alusta muuttujasi, myöhästyi palautus tunnilla <3 <3 <3
+    m_Enabled = true;
 }
 
 
