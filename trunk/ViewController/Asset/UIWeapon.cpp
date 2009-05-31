@@ -130,6 +130,22 @@ void UIWeapon::callBack()
     {
         m_pFireEmitter->Emit(m_EmitParams);
 
-        SoundManager::playSound(SOUND_SHOOT, 0.1f, *((D3DXVECTOR3*)&GetWorldMatrix()._41), true);
+        // Dirty hack
+        switch (m_pWeapon->getHost()->getTypeTag())
+        {
+        case BUILDING_TYPE_SILO:
+        case UNIT_TYPE_LAUNCHER:
+        case UNIT_TYPE_NUKER:
+            SoundManager::playSound(SOUND_MISSILE, 0.1f, *((D3DXVECTOR3*)&GetWorldMatrix()._41), true);
+            break;
+        case UNIT_TYPE_CAR:
+            SoundManager::playSound(SOUND_GUN, 0.1f, *((D3DXVECTOR3*)&GetWorldMatrix()._41), true);
+            break;
+        case UNIT_TYPE_SUPER:
+        case UNIT_TYPE_TANK:
+        default:
+            SoundManager::playSound(SOUND_CANNON, 0.1f, *((D3DXVECTOR3*)&GetWorldMatrix()._41), true);
+            break;
+        }
     }
 }

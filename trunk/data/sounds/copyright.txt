@@ -1,5 +1,8 @@
-Explosion on pöllitty täältä:
-http://simplythebest.net/sounds/WAV/sound_effects_WAV/miscellaneous_wavs_2.html
-sen pitäisi olla public domain
+Some sound sources:
 
-Shoot*.wav on varastettuja, (ainakin) ne pitää vaihtaa.
+http://simplythebest.net/sounds/WAV/sound_effects_WAV/miscellaneous_wavs_2.html
+http://www.soundsnap.com/
+
+All of them should be usable.
+
+Other sounds are self made.

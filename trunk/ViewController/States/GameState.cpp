@@ -595,7 +595,7 @@ void GameState::checkGameConditions(const float fFrameTime)
             while (pNode)
             {
                 Building* b = pNode->item;
-                if (m_pCurrentPlayer->isEnemy(b->getOwner()))
+                if (m_pCurrentPlayer->isEnemy(b->getOwner()) && b->getOwner()->getIndex() != 0)
                 {
                     ++enemyBuildings;
                 }
