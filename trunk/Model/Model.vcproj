@@ -317,6 +317,14 @@
 				Name="Weapon"
 				>
 				<File
+					RelativePath=".\Weapon\ControlledWeapon.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Weapon\ControlledWeapon.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Weapon\Damage.h"
 					>
 				</File>

@@ -17,6 +17,7 @@
 #include "GroundMovingLogic.h"
 #include "Radar.h"
 #include "../Weapon/Weapon.h"
+#include "../Weapon/ControlledWeapon.h"
 #include "Resourcer.h"
 #include "../Player/PlayerManager.h"
 
@@ -283,6 +284,9 @@ bool AssetFactory::setWeapon(IAsset* a)
     {
     case 1:
         a->setWeapon(new Weapon((WeaponDef&)(*def)));
+        break;
+    case 2:
+        a->setWeapon(new ControlledWeapon((WeaponDef&)(*def)));
         break;
     default:
         return false;

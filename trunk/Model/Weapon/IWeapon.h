@@ -38,8 +38,9 @@ public:
      */
     enum Type
     {
-        DEFAULT     = 1 << 0,   // the default weapon (Weapon.h)
-        TYPE_END    = 1 << 1    // remember to advance the shift when adding new concrete type
+        DEFAULT         = 1 << 0,   // the default weapon (Weapon.h)
+        USER_CONTROLLED = 1 << 1,   // user controlled weapon (ControlledWeapon.h)
+        TYPE_END        = 1 << 2    // remember to advance the shift when adding new concrete type
     };
 
     IWeapon(Type concreteType, WeaponDef& def) : m_ConcreteType(concreteType), m_Def(def)
@@ -140,6 +141,11 @@ public:
      * Returns the barrel pitch (for shell-firing weapons)
      */
     inline const float getBarrelPitch() const { return m_BarrelPitch; }
+
+    /**
+     * returns percentage of reloading (return value should be around from 0.0f to 1.0f )
+     */
+    inline const float getLoadingPercentage() const { return m_ReloadTimer / m_Def.reloadTime; }
 
 protected:
 

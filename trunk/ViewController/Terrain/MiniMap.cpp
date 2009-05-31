@@ -25,8 +25,8 @@ MiniMap::MiniMap()
     Config* co = Config::getInstance();
 
     setSize( co->getValueAsInt("minimap size", 300) );
-    m_Position.x = co->getValueAsInt("minimap horizontal position", 10);
-    m_Position.y = co->getValueAsInt("minimap vertical position", 10);
+    m_Position.x = co->getValueAsFloat("minimap horizontal position", 10.0f);
+    m_Position.y = co->getValueAsFloat("minimap vertical position", 10.0f);
 
     setUpdateInterval(1.0f);
     

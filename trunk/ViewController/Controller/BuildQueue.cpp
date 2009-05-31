@@ -96,6 +96,11 @@ int BuildQueue::getCount(const int assetTag)
 
 void BuildQueue::update(bool updateVisual)
 {
+    if(!m_pAsset)
+    {
+        return;
+    }
+
     if(m_pAsset->getState() != IAsset::STATE_ACTIVE)
         return;
     // update current

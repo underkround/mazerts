@@ -26,15 +26,14 @@ public:
         {
             if(active)
             {
-                m_pOwner->toggleRadar(true);
                 changeState(STATE_ACTIVE);
             }
             else
             {
-                m_pOwner->toggleRadar(false);
                 changeState(STATE_DISABLED);
             }
         }
+        m_pOwner->toggleRadar(active);
     }
 
 };
