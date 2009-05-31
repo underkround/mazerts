@@ -29,6 +29,8 @@ public:
     virtual void update(const float deltaT);
 
     virtual bool release();
+
+    virtual void setTarget(Target* pTarget);
     
 private:
  

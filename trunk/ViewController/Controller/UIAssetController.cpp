@@ -20,6 +20,7 @@
 #include "../../Model/Asset/AssetCollection.h"
 #include "../../Model/Asset/IAsset.h"
 #include "../../Model/Asset/Unit.h"
+#include "../../Model/Asset/Building.h"
 #include "../../Model/Asset/AssetFactory.h"
 
 #include "../UIComponent/RootContainer.h"
@@ -111,6 +112,7 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_pCurrentBuildAsset = 0;
 
     m_pCurrentBuildQueue = 0;
+    m_pCurrentNukeSilo = NULL;
 }
 
 
@@ -143,6 +145,12 @@ void UIAssetController::createBuildingButton(AssetDef* pAssetDef)
     m_pStopButton->setTooltip("Stop");
     m_pStopButton->setBackgroundTexture(rc->getIconTexture(_T("stop")));
     m_pStopButton->setBackgroundTextureClicked(rc->getIconTexture(_T("alt_stop")));
+
+    m_pNukeButton = new BasicButton(64, 64, 666, this);
+    m_pNukeButton->setTooltip("Armageddon");
+    m_pNukeButton->setBackgroundTexture(rc->getIconTexture(_T("8")));
+    m_pNukeButton->setEnabled(false);
+    m_pNukeButton->setBackgroundTextureClicked(rc->getIconTexture(_T("alt_8")));
 }
 
 
@@ -162,6 +170,15 @@ void UIAssetController::onButtonClick(BasicButton* pSrc)
         }
         return;
     }
+
+    if (pSrc->getId() == 666)
+    {
+        // launch nuke
+        m_pSelector->setState(Selector::SELECTOR_NUKE);
+        changeState(STATE_NUKE);
+        return;
+    }
+
     // build button
     char* msg = new char[128];
     sprintf_s(msg, 128, "button %d clicked", pSrc->getId());
@@ -218,8 +235,11 @@ void UIAssetController::changeState(State newState)
             m_pCurrentBuildButton = 0;
             break;
 
+        case STATE_NUKE:
+            m_pSelector->setState(Selector::SELECTOR_NORMAL);
+//            m_pCurrentNukeSilo = NULL;
+            break;
     }
-
     // begin new state
     m_State = newState;
     switch(m_State) {
@@ -250,6 +270,10 @@ void UIAssetController::changeState(State newState)
             m_pSelector->setSize(D3DXVECTOR2(m_pCurrentBuildAssetDef->width, m_pCurrentBuildAssetDef->height));
             break;
 
+        case STATE_NUKE:
+            //clearSelection();
+            m_pSelector->setState(Selector::SELECTOR_NUKE);
+            break;
     }
 }
 
@@ -325,6 +349,22 @@ void UIAssetController::updateControls(const float frameTime)
         }
     }
 
+    // update nuke button
+    if (m_pCurrentNukeSilo)
+    {
+        int percentage = (int)(m_pCurrentNukeSilo->getWeapon()->getLoadingPercentage() * 100);
+        if (percentage < 1)
+        {
+            m_pNukeButton->setLoadingStatus(100);
+            m_pNukeButton->setEnabled(true);
+        }
+        else
+        {
+            m_pNukeButton->setLoadingStatus(percentage);
+            m_pNukeButton->setEnabled(false);
+        }
+    }
+
     bool pickModifier = (!m_KeyPickModifier || KeyboardState::keyDown[m_KeyPickModifier]) ? true : false;
     bool actionModifier = (!m_KeyActionModifier || KeyboardState::keyDown[m_KeyActionModifier]) ? true : false;
 
@@ -348,9 +388,10 @@ void UIAssetController::updateControls(const float frameTime)
             break;
 
         // =====
+        case STATE_NUKE:
         case STATE_BUILDING_PLACEMENT:
             // sanity check
-            if(!m_pCurrentBuildButton || !m_pCurrentBuildAssetDef) {
+            if(m_State == STATE_BUILDING_PLACEMENT && (!m_pCurrentBuildButton || !m_pCurrentBuildAssetDef)) {
                 changeState(STATE_ASSET_CONTROL);
                 break;
             }
@@ -376,8 +417,9 @@ void UIAssetController::updateControls(const float frameTime)
                 }
                 // cancel build state with secondary mouse button
                 changeState(STATE_ASSET_CONTROL);
+                setNukeSilo(NULL);
                 break;
-            } else if(MouseState::mouseButtonReleased[MouseState::mouseFirstButton]) {
+            } else if(MouseState::mouseButtonReleased[MouseState::mouseFirstButton] && m_State == STATE_BUILDING_PLACEMENT) {
                 // placement made
                 if(m_pSelector->isBuildable()) {
                     D3DXVECTOR2 bpos = m_pSelector->getBuildingPoint();
@@ -397,6 +439,15 @@ void UIAssetController::updateControls(const float frameTime)
                     break;
                 }
                 // @TODO ??
+            } else if(MouseState::mouseButtonReleased[MouseState::mouseFirstButton] && m_State == STATE_NUKE) {
+                if (m_pCurrentNukeSilo != NULL)
+                {
+                    IWeapon* pWeapon = m_pCurrentNukeSilo->getWeapon();
+                    pWeapon->setTarget(new Target((unsigned short)m_pSelector->getNukePoint().x, (unsigned short)m_pSelector->getNukePoint().y));
+                }
+                changeState(STATE_ASSET_CONTROL);
+                setNukeSilo(NULL);
+                break;
             }
 
             break;
@@ -523,9 +574,15 @@ void UIAssetController::onPickRelease(const float frameTime)
                     else if(m_SelectedAssetType == BUILDING && pNode->item) {
                         if(pNode->item->getAsset()->getDef()->isfactory) {
                             setupBuildQueue(pNode->item->getAsset());
+                        } else if (pNode->item->getAsset()->getTypeTag() == BUILDING_TYPE_SILO) {
+                            // show nuke
+                            m_pInstanceControlPanel->removeAllComponents();
+                            m_pInstanceControlPanel->addComponent(m_pNukeButton);
+                            setNukeSilo((Building*)pNode->item);
                         } else {
                             m_pInstanceControlPanel->removeAllComponents();
                             m_pCurrentBuildQueue = 0;
+                            setNukeSilo(NULL);
                         }
                     }
 
@@ -612,7 +669,12 @@ void UIAssetController::onPickButton(const float frameTime)
                     else if(m_SelectedAssetType == BUILDING) {
                         if(pUIAsset->getAsset()->getDef()->isfactory)
                             setupBuildQueue(pUIAsset->getAsset());
-                        else
+                        else if (pUIAsset->getAsset()->getTypeTag() == BUILDING_TYPE_SILO) {
+                            // show nuke
+                            m_pInstanceControlPanel->removeAllComponents();
+                            m_pInstanceControlPanel->addComponent(m_pNukeButton);
+                            setNukeSilo((Building*)pUIAsset->getAsset());
+                        } else
                             m_pInstanceControlPanel->removeAllComponents();
                     }
 

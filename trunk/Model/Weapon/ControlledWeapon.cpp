@@ -48,3 +48,19 @@ bool ControlledWeapon::release()
 {
     return true;
 }
+
+void ControlledWeapon::setTarget(Target* pTarget)
+{
+    if(m_pTarget)
+    {
+        delete m_pTarget;
+        m_pTarget = NULL;
+    }
+
+    pTarget->setRange(m_Def.range - 2.0f);
+    m_pTarget = pTarget;
+    if(m_pHost->getAssetType() == IAsset::UNIT)
+    {
+        ((Unit*)m_pHost)->getMovingLogic()->addTarget(new Target(*pTarget));
+    }
+}

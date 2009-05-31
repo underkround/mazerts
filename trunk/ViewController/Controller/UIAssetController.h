@@ -33,7 +33,8 @@ public:
     enum State
     {
         STATE_ASSET_CONTROL = 0,
-        STATE_BUILDING_PLACEMENT
+        STATE_BUILDING_PLACEMENT,
+        STATE_NUKE
     };
 
     enum PointerState
@@ -99,6 +100,8 @@ public:
 
     void toggleFirstPersonCamera();
     void UIAssetController::toggleFirstPersonCamera(UIUnit* pUnit);
+
+    inline void setNukeSilo(Building* pSilo) { m_pCurrentNukeSilo = pSilo; }
 
 private:
 
@@ -191,9 +194,13 @@ private:
     DoubleLinkedList<BasicButton*> m_ButtonsToUpdate;
 
     BasicButton*    m_pStopButton;
+    BasicButton*    m_pNukeButton;
 
     map<IAsset*,BuildQueue*> m_BuildQueues;
     BuildQueue*     m_pCurrentBuildQueue;
+
+    Building*       m_pCurrentNukeSilo;
+
 };
 
 #endif // __UIASSETCONTROLLER_H__

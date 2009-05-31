@@ -23,7 +23,8 @@ public:
     enum SelectorState
     {
         SELECTOR_NORMAL,                //For normal selections
-        SELECTOR_BUILDINGPLACEMENT      //For placing buildings
+        SELECTOR_BUILDINGPLACEMENT,     //For placing buildings
+        SELECTOR_NUKE                   //For launching nuke
     };
 
     /**
@@ -104,7 +105,7 @@ public:
      * In SELECTOR_NORMAL-state, first call sets the start
      * point, after that the call moves end point, until buttonUp
      * is called (this is used for area selection)
-     * In SELECTOR_BUILDINGPLACEMENT-state, the call sets the
+     * In SELECTOR_BUILDINGPLACEMENT-state (and nuke), the call sets the
      * position of the center point for selector
      * @param point Point grid square xy-coordinates as D3DXVECTOR2
      */
@@ -127,16 +128,16 @@ public:
             }
             else
             {
-                m_Point1 = point;            
+                m_Point1 = point;
                 m_FirstSet = true;
             }
-            
+
             if(updateGrid)
             {
                 update();
             }
         }
-        else if(m_SelectorState == SELECTOR_BUILDINGPLACEMENT)
+        else if(m_SelectorState == SELECTOR_BUILDINGPLACEMENT || m_SelectorState == SELECTOR_NUKE)
         {
             m_Render = true;
             m_Point1 = point;
@@ -154,6 +155,18 @@ public:
         if(m_SelectorState == SELECTOR_BUILDINGPLACEMENT)
         {
             return D3DXVECTOR2(m_Point1.x - (m_BuildingPlacementSize.x * 0.5f), m_Point1.y - (m_BuildingPlacementSize.y * 0.5f));
+        }
+        return D3DXVECTOR2(0, 0);
+    }
+
+    /**
+     * getBuildingPoint for nukes
+     */
+    inline D3DXVECTOR2 getNukePoint()
+    {
+        if(m_SelectorState == SELECTOR_NUKE)
+        {
+            return D3DXVECTOR2(m_Point1.x, m_Point1.y);
         }
         return D3DXVECTOR2(0, 0);
     }

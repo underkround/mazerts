@@ -38,15 +38,18 @@ void IWeapon::fire()
         pProjectile = new Projectile(m_Def, m_pTarget->getTargetAsset()->getCenterGridX(),
                                m_pTarget->getTargetAsset()->getCenterGridY(), this);
     }
-    else if(m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
+//    else if(m_pTarget->isFlag(Target::TGTFLAG_FORCEATTACK))
+    else
     {
         pProjectile = new Projectile(m_Def, m_pTarget->getTargetX(), m_pTarget->getTargetY(), this);
     }
+    /*
     else
     {
         delete m_pTarget;
         m_pTarget = NULL;
     }
+    */
     
     ProjectileCollection::addProjectile(pProjectile);
 

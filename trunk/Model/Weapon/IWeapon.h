@@ -124,7 +124,7 @@ public:
      * Set the target to weapon, destroying the old target in the process, if any
      * @param pTarget Pointer to Target
      */
-    void setTarget(Target* pTarget);
+    virtual void setTarget(Target* pTarget);
 
     /**
      * Set callback-object to UI-side, callBack() gets called when the weapon fires

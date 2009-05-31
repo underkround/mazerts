@@ -178,6 +178,17 @@ HRESULT Selector::update()
             baseColor.a = 1.0f;
         }
     }
+    else if(m_SelectorState == SELECTOR_NUKE)
+    {
+        width = 1.0f / SELECTOR_SIZE;
+        height = 1.0f / SELECTOR_SIZE;
+        m_mWorld._41 = m_Point1.x;
+        m_mWorld._42 = m_Point1.y;
+        baseColor.r = 1.0f;
+        baseColor.g = 0.0f;
+        baseColor.b = 0.0f;
+        baseColor.a = 1.0f;
+    }
     else
     {
         //"Should never happen" ;)
@@ -225,7 +236,7 @@ HRESULT Selector::update()
                     pVertices[loc].z = 0;
                 }
                 
-                if(m_SelectorState == SELECTOR_NORMAL)
+                if(m_SelectorState == SELECTOR_NORMAL || m_SelectorState == SELECTOR_NUKE)
                 {
                     pVertices[loc].dwColor = baseColor;
                 }

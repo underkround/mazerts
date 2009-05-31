@@ -264,7 +264,7 @@ D3DXVECTOR3* TerrainIntersection::getCollisionPoint(DoubleLinkedList<INDICES*>* 
     {
         INDICES* sq = squares->popHead();
 
-        if(sq->x >= 0 && sq->y >= 0 && sq->y < maxSize && sq->y < maxSize)
+        if(sq->x >= 0 && sq->y >= 0 && sq->x < maxSize && sq->y < maxSize)
         {
             V1.x = (float)sq->x;
             V1.y = (float)sq->y;
