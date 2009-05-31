@@ -2,6 +2,7 @@
 #include "Terrain.h"
 #include <stdlib.h>
 #include <cmath>
+#include <ctime>
 
 #ifndef PI
 #define PI 3.141592653589793238462f
@@ -23,7 +24,7 @@ AntinTerrainGenerator::~AntinTerrainGenerator()
 
 void AntinTerrainGenerator::generateHeightmap(unsigned char** ppVertexHeightData, const unsigned short terrainSize)
 {
-    if(m_Seed == 0) m_Seed = rand();
+    if(m_Seed == 0) srand(time(0));
     srand(m_Seed);
 
     //PERUNAPELTOGENERAATTORI aka. just testing algorithms - NOT an actual way to make good terrain!
