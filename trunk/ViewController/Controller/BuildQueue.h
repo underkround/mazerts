@@ -33,13 +33,6 @@ public:
      */
     int getCount(int assetTag);
 
-    BuildTask* getCurrentTask()
-    {
-        return m_Queue.peekHead();
-    }
-
-    void add(BuildTask* pTask);
-
     void update(bool updateVisual);
 
     BasicButton* getButton(const int buttonId);
@@ -60,13 +53,19 @@ public:
 
 private:
 
+    bool add(AssetDef* pAssetDef);
+
+    bool cancel(AssetDef* pAssetDef);
+
     void createBuildingButton(AssetDef* pAssetDef);
 
     unsigned short                  m_PosX;
     unsigned short                  m_PosY;
 
     IAsset*                         m_pAsset;
-    DoubleLinkedList<BuildTask*>    m_Queue;
+
+    IAsset*                         m_pCurrentBuild;
+    DoubleLinkedList<AssetDef*>     m_Queue;
     DoubleLinkedList<BasicButton*>  m_Buttons;
 
     int                             m_CacheTmp;
