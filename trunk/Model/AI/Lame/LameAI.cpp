@@ -425,7 +425,7 @@ void LameAI::HammerTime(void)
                         else 
                         {
                             //build base defences!
-                            /*
+                            
                                 if(!HaveBuilding(BUILDING_TYPE_GUNTOWER))
                                 {
                                     BuildBuilding(BUILDING_TYPE_GUNTOWER);
@@ -434,7 +434,7 @@ void LameAI::HammerTime(void)
                                 {
                                     BuildBuilding(BUILDING_TYPE_CANTOWER);
                                 }
-                            */
+                            
                         }
                     }
                 }
