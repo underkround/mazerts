@@ -40,19 +40,23 @@ public:
 
     void add(BuildTask* pTask);
 
-    void update();
+    void update(bool updateVisual);
 
     BasicButton* getButton(const int buttonId);
 
     void fillPanel(UIContainer* pPanel);
-
-    void clearPanel(UIContainer* pPanel);
 
 // ===== Listener methods
 
     virtual void handleAssetStateChange(IAsset* pAsset, IAsset::State newState);
 
     virtual void handleAssetReleased(IAsset* pAsset);
+
+// ===== IButtonListener methods
+
+    virtual void onButtonClick(BasicButton* pSrc);
+
+    virtual void onButtonAltClick(BasicButton* pSrc);
 
 private:
 

@@ -52,6 +52,7 @@ void BuildQueue::createBuildingButton(AssetDef* pAssetDef)
     // tooltip
     sprintf_s(nameC, "%s, cost: %d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre);
     button->setTooltip(nameC);
+    m_Buttons.pushHead(button);
 }
 
 void BuildQueue::fillPanel(UIContainer* pPanel)
@@ -59,15 +60,6 @@ void BuildQueue::fillPanel(UIContainer* pPanel)
     ListNode<BasicButton*>* node = m_Buttons.headNode();
     while(node) {
         pPanel->addComponent(node->item);
-        node = node->next;
-    }
-}
-
-void BuildQueue::clearPanel(UIContainer* pPanel)
-{
-    ListNode<BasicButton*>* node = m_Buttons.headNode();
-    while(node) {
-        pPanel->removeComponent(node->item);
         node = node->next;
     }
 }
@@ -99,7 +91,7 @@ void BuildQueue::add(BuildTask* pTask)
     m_Queue.pushTail(pTask);
 }
 
-void BuildQueue::update()
+void BuildQueue::update(bool updateVisual)
 {
     if(m_Queue.empty())
         return;
@@ -117,7 +109,7 @@ void BuildQueue::update()
         return;
     }
     // we have task that's running, update the visual (button) status if changed
-    if(m_CacheTmp != current->getStatusPercentage()) {
+    if(updateVisual && m_CacheTmp != current->getStatusPercentage()) {
         getButton(current->getAssetTag())->setLoadingStatus(current->getStatusPercentage());
         m_CacheTmp = current->getStatusPercentage();
     }
@@ -134,4 +126,13 @@ BasicButton* BuildQueue::getButton(const int buttonId)
         node = node->next;
     }
     return 0;
+}
+
+
+void BuildQueue::onButtonClick(BasicButton* pSrc)
+{
+}
+
+void BuildQueue::onButtonAltClick(BasicButton* pSrc)
+{
 }

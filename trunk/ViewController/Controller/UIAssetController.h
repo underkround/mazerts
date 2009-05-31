@@ -22,6 +22,8 @@
 //#include "BuildButtonWrapper.h"
 #include "BuildQueue.h"
 
+#include <map>
+
 #include "d3d9.h"
 
 class UIAssetController : public IUIController, public IAssetCollectionListener, public IButtonListener
@@ -101,6 +103,10 @@ public:
 private:
 
     void changeState(State newState);
+
+    void setupBuildQueue(IAsset* selectedAsset);
+
+    void createBuildQueue(IAsset* pAsset);
 
 // ===== HUD control
 
@@ -186,6 +192,8 @@ private:
 
     BasicButton*    m_pStopButton;
 
+    map<IAsset*,BuildQueue*> m_BuildQueues;
+    BuildQueue*     m_pCurrentBuildQueue;
 };
 
 #endif // __UIASSETCONTROLLER_H__

@@ -109,6 +109,8 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_pCurrentBuildAssetDef = 0;
     m_pCurrentBuildButton = 0;
     m_pCurrentBuildAsset = 0;
+
+    m_pCurrentBuildQueue = 0;
 }
 
 
@@ -295,6 +297,15 @@ void UIAssetController::release()
 
 void UIAssetController::updateControls(const float frameTime)
 {
+    // update build queues
+    map<IAsset*,BuildQueue*>::iterator p;
+    for(p = m_BuildQueues.begin(); p != m_BuildQueues.end(); p++) {
+        if(p->second == m_pCurrentBuildQueue)
+            p->second->update(true); // visible queue, update logic & visual
+        else
+            p->second->update(false); // non-visible queue, update only logic
+    }
+
     // @TODO: update build status to buttons
     if(!m_ButtonsToUpdate.empty()) {
         IAsset* asset;
@@ -470,16 +481,22 @@ void UIAssetController::onPickRelease(const float frameTime)
                     UIAsset* pAsset = pNode->item;
                     if (pAsset->getAsset()->getAssetType() == IAsset::UNIT && m_pCurrentPlayer == pAsset->getAsset()->getOwner())
                     {
-                        if (m_SelectedAssetType != UNIT)
+                        if (m_SelectedAssetType != UNIT) {
                             templist.release();
+                            m_pInstanceControlPanel->removeAllComponents();
+                            m_pCurrentBuildQueue = 0;
+                        }
                         m_SelectedAssetType = UNIT;
                         templist.pushHead(pAsset);
                         // show stop-button for friendly asset selection
                     }
                     else if ((m_SelectedAssetType == NONE || m_SelectedAssetType == ENEMY) && m_pCurrentPlayer == pAsset->getAsset()->getOwner() && pAsset->getAsset()->getAssetType() == IAsset::BUILDING)
                     {
-                        if (m_SelectedAssetType != BUILDING)
+                        if (m_SelectedAssetType != BUILDING) {
                             templist.release();
+                            m_pInstanceControlPanel->removeAllComponents();
+                            m_pCurrentBuildQueue = 0;
+                        }
                         m_SelectedAssetType = BUILDING;
                         templist.pushHead(pAsset);
                     }
@@ -497,10 +514,21 @@ void UIAssetController::onPickRelease(const float frameTime)
                 {
                     if (m_SelectedAssetType != ENEMY)
                         SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pNode->item->GetMatrix()._41, false);
+
                     // show stop-button for friendly asset selection
                     if(m_pInstanceControlPanel->empty() && m_SelectedAssetType == UNIT) {
                         m_pInstanceControlPanel->addComponent(m_pStopButton);
                     }
+                    // show build menu for factories
+                    else if(m_SelectedAssetType == BUILDING && pNode->item) {
+                        if(pNode->item->getAsset()->getDef()->isfactory) {
+                            setupBuildQueue(pNode->item->getAsset());
+                        } else {
+                            m_pInstanceControlPanel->removeAllComponents();
+                            m_pCurrentBuildQueue = 0;
+                        }
+                    }
+
                     while(pNode)
                     {
                         UIAsset* pAsset = pNode->item;
@@ -562,6 +590,7 @@ void UIAssetController::onPickButton(const float frameTime)
                 {
                     m_pUnitCommandDispatcher->addUnit((Unit*)pUIAsset->getAsset());
                     m_SelectedAssetType = UNIT;
+                    m_pInstanceControlPanel->removeAllComponents();
                 }
                 else if (pUIAsset->getAsset()->getAssetType() == IAsset::BUILDING && pUIAsset->getAsset()->getOwner() == m_pCurrentPlayer)
                 {
@@ -574,9 +603,19 @@ void UIAssetController::onPickButton(const float frameTime)
                 }
                 if (m_SelectedAssetType != ENEMY) {
                     SoundManager::playSound(SOUND_YES, 0.1f, *(D3DXVECTOR3*)&pUIAsset->GetMatrix()._41, false);
+
+                    // show stop button for units
                     if(m_pInstanceControlPanel->empty() && m_SelectedAssetType == UNIT) {
                         m_pInstanceControlPanel->addComponent(m_pStopButton);
                     }
+                    // show build menu for factories
+                    else if(m_SelectedAssetType == BUILDING) {
+                        if(pUIAsset->getAsset()->getDef()->isfactory)
+                            setupBuildQueue(pUIAsset->getAsset());
+                        else
+                            m_pInstanceControlPanel->removeAllComponents();
+                    }
+
                 }
                 m_SelectedUIAssets.pushHead(pUIAsset);
             }
@@ -753,46 +792,61 @@ void UIAssetController::handleReleasedAsset(IAsset* instance)
 
 void UIAssetController::toggleFirstPersonCamera()
 {
-                // disable unit camera
-                if(m_pUnitCarryingCamera)
-                {
-                    if(Camera::countStack())
-                    {
-                        //Camera::popTop();
-                        Camera::pop(&m_UnitCamera);
-                    }
-                    m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
-                    m_UnitCamera.detach();
-                    m_pUnitCarryingCamera = NULL;
-                }
-                // enable unit camera
-                else if(!m_SelectedUIAssets.empty() && m_SelectedAssetType == UNIT)
-                {
-                    m_pUnitCarryingCamera = (UIUnit*)m_SelectedUIAssets.peekHead();
-                    m_UnitCamera.attach(m_pUnitCarryingCamera);
-                    Camera::pushTop(&m_UnitCamera);
-                }
+    // disable unit camera
+    if(m_pUnitCarryingCamera)
+    {
+        if(Camera::countStack())
+        {
+            //Camera::popTop();
+            Camera::pop(&m_UnitCamera);
+        }
+        m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
+        m_UnitCamera.detach();
+        m_pUnitCarryingCamera = NULL;
+    }
+    // enable unit camera
+    else if(!m_SelectedUIAssets.empty() && m_SelectedAssetType == UNIT)
+    {
+        m_pUnitCarryingCamera = (UIUnit*)m_SelectedUIAssets.peekHead();
+        m_UnitCamera.attach(m_pUnitCarryingCamera);
+        Camera::pushTop(&m_UnitCamera);
+    }
 }
 
 void UIAssetController::toggleFirstPersonCamera(UIUnit* pUnit)
 {
-                // disable unit camera
-                if(m_pUnitCarryingCamera)
-                {
-                    if(Camera::countStack())
-                    {
-                        //Camera::popTop();
-                        Camera::pop(&m_UnitCamera);
-                    }
-                    m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
-                    m_UnitCamera.detach();
-                    m_pUnitCarryingCamera = NULL;
-                }
-                // enable unit camera
-                else
-                {
-                    m_pUnitCarryingCamera = pUnit;
-                    m_UnitCamera.attach(m_pUnitCarryingCamera);
-                    Camera::pushTop(&m_UnitCamera);
-                }
+    // disable unit camera
+    if(m_pUnitCarryingCamera)
+    {
+        if(Camera::countStack())
+        {
+            //Camera::popTop();
+            Camera::pop(&m_UnitCamera);
+        }
+        m_pUnitCarryingCamera->RemoveChild(&m_UnitCamera);
+        m_UnitCamera.detach();
+        m_pUnitCarryingCamera = NULL;
+    }
+    // enable unit camera
+    else
+    {
+        m_pUnitCarryingCamera = pUnit;
+        m_UnitCamera.attach(m_pUnitCarryingCamera);
+        Camera::pushTop(&m_UnitCamera);
+    }
+}
+
+
+void UIAssetController::setupBuildQueue(IAsset* pAsset) {
+    m_pInstanceControlPanel->removeAllComponents();
+    // check if queue is already made
+    BuildQueue* queue = m_BuildQueues[pAsset];
+    if(!queue) {
+        queue = new BuildQueue(pAsset);
+        m_BuildQueues[pAsset] = queue;
+    }
+    // setup buttons from queue
+    queue->fillPanel(m_pInstanceControlPanel);
+    // set as current (for ui-updates)
+    m_pCurrentBuildQueue = queue;
 }

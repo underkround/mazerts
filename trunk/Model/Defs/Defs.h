@@ -121,6 +121,7 @@ struct AssetDef //: public BaseDef
     unsigned char height;
 
     bool anonymous; // player cannot own (added in late phase, not supported everywhere)
+    bool isfactory; // hint for ui to search for build options - not needed by building, but ui won't show up =P
 
     // definitions for energy and resource
     int constructionCostOre;

@@ -112,6 +112,7 @@ bool DefManager::loadAssetDef(int tag)
 
     // load values
     d->anonymous            = c->getValueAsBool(    tags, "asset anonymous", false);
+    d->isfactory            = c->getValueAsBool(    tags, "asset isfactory", false);
 
     d->constructionCostEnergy = c->getValueAsInt(   tags, "asset construction cost energy", 0);
     d->constructionCostOre  = c->getValueAsInt(     tags, "asset construction cost ore", 10);
