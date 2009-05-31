@@ -512,7 +512,6 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
         if(CanIAffordToBuild(unittype))
         {
             // find factories TODO this is debug/test/stuff
-            /*
             ListNode<Building*>* pNode = AssetCollection::getAllBuildings()->headNode();
             Building** factories = new Building*[100];
             int count = 0;
@@ -526,14 +525,14 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
                         ++count;
                     }
                 }
-
                 pNode = pNode->next;
             }
-            */
-            Building* factory = m_OwnBuildings[BUILDING_TYPE_FACTORY];
-            if (factory)
-            {
-                AssetFactory::createUnit(m_pPlayer, unittype, factory);
+            if(count > 0) {
+                Building* factory = factories[(rand() % count)];
+                if (factory)
+                {
+                    AssetFactory::createUnit(m_pPlayer, unittype, factory);
+                }
             }
 
         }
