@@ -8,6 +8,7 @@
 #include "../../Model/Asset/Building.h"
 #include "../../Model/Common/DoubleLinkedList.h"
 #include "../../Model/Console.h"
+#include "../../Model/Defs/DefManager.h"
 
 //it seems these need to be redeclared here, god knows why (and devil won't tell)
 TCHAR GameConsole::m_arrMessage[128];
@@ -78,6 +79,8 @@ poor \t everyone loses all resources\n \
 nolimits \t set all AI build limits to 100000\n \
 recalc \t force power consumption recalculation\n \
 suicide \t kill player 1\n \
+fog \t toggle fog for player 1\n \
+quick \t build items faster\n \
 \n"),
                      _T("game console commands"),
                      NULL);
@@ -149,6 +152,19 @@ suicide \t kill player 1\n \
         for(int i=1;i<PlayerManager::getPlayerCount() + 1;++i)
         {
             PlayerManager::getInstance()->getPlayer(i)->CalculateEnergyBalance();
+        }
+    }
+    if(!_tcscmp(m_arrMessage, _T("fog")))
+    {
+        PlayerManager::getInstance()->getPlayer(1)->getFog()->setEnabled(!PlayerManager::getInstance()->getPlayer(1)->getFog()->isEnabled());
+    }
+    if(!_tcscmp(m_arrMessage, _T("quick")))
+    {
+        ListNode<AssetDef*>* pNode = DefManager::getInstance()->getAssetDefNode();
+        while (pNode)
+        {
+            pNode->item->constructionTime = 1.0f;
+            pNode = pNode->next;
         }
     }
     if(!_tcscmp(m_arrMessage, _T("suicide")))

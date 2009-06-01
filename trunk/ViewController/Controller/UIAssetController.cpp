@@ -590,7 +590,7 @@ void UIAssetController::onPickRelease(const float frameTime)
                             // show nuke
                             m_pInstanceControlPanel->removeAllComponents();
                             m_pInstanceControlPanel->addComponent(m_pNukeButton);
-                            setNukeSilo((Building*)pNode->item);
+                            setNukeSilo((Building*)pNode->item->getAsset());
                         } else {
                             m_pInstanceControlPanel->removeAllComponents();
                             m_pCurrentBuildQueue = 0;
