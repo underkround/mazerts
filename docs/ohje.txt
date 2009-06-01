@@ -24,3 +24,8 @@ rakennuksesi muuttuvat harmaiksi ja lakkaavat suorittamasta toimintojaan.
 Jos haluaa huijata tai debug-tiedot kiinnostaa, f1 avaa debug-konsolin jossa saattaa olla jotain
 mielenkiintoista, ja f2 avaa interaktiivisen konsolin johon voit kirjoittaa help jos haluat tiet‰‰
 toimivat komennot.
+
+Tunnetut bugit:
+1) Taloista ei n‰e mit‰ pystyy kyseisell‰ hetkell‰ rakentamaan
+2) Ohjukset lent‰v‰t kuin katapultilla ammuttuna (t‰m‰ on kyll‰ feature)
+3) Talojen valintakursori ei p‰ivity oikein taloja vaihdettaessa
