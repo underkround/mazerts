@@ -88,10 +88,7 @@ public:
 
 // ===== AssetCollectionListener methods
 
-    virtual void handleCreatedAsset(IAsset* instance)
-    {
-        // not needed
-    }
+    virtual void handleCreatedAsset(IAsset* instance);
 
     /**
      * Check if we have released asset selected
@@ -124,6 +121,8 @@ private:
     void onActionButton(const float frameTime);
 
     void onActionRelease(const float frameTime);
+
+    void updateBuildButtons();
 
 // ===== Members
 
@@ -192,6 +191,7 @@ private:
     IAsset*         m_pCurrentBuildAsset;
     // holds buttons for assets that are being build - for updating the buttons
     DoubleLinkedList<BasicButton*> m_ButtonsToUpdate;
+    DoubleLinkedList<BasicButton*> m_BuildingButtons;
 
     BasicButton*    m_pStopButton;
     BasicButton*    m_pNukeButton;

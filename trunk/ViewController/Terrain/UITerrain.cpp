@@ -284,7 +284,7 @@ HRESULT UITerrain::create(LPDIRECT3DDEVICE9 pDevice, Player* pCurrentPlayer, boo
 
     //MaxVertexIndex limit calculated based on terrain- and patch size 
     //(the single-buffer method still uses 16bit index offsets, so there's some overhead)
-    if(caps.MaxVertexIndex < (DWORD)((PATCHSIZE+1) * patches * (PATCHSIZE+1) * patches))
+    if(caps.MaxVertexIndex < 100000)//(DWORD)((PATCHSIZE+1) * patches * (PATCHSIZE+1) * patches))
     {
         pInstance->m_MultiBufferRender = true;
     }

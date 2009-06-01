@@ -106,6 +106,17 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
         node = node->next;
     }
 
+    m_pStopButton = new BasicButton(64, 64, 439857, this);
+    m_pStopButton->setTooltip("Stop");
+    m_pStopButton->setBackgroundTexture(rc->getIconTexture(_T("stop")));
+    m_pStopButton->setBackgroundTextureClicked(rc->getIconTexture(_T("alt_stop")));
+
+    m_pNukeButton = new BasicButton(64, 64, 666, this);
+    m_pNukeButton->setTooltip("Armageddon");
+    m_pNukeButton->setBackgroundTexture(rc->getIconTexture(_T("8")));
+    m_pNukeButton->setEnabled(false);
+    m_pNukeButton->setBackgroundTextureClicked(rc->getIconTexture(_T("alt_8")));
+
     m_CurrentBuildOreTaken = 0;
     m_pCurrentBuildAssetDef = 0;
     m_pCurrentBuildButton = 0;
@@ -113,6 +124,8 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
 
     m_pCurrentBuildQueue = 0;
     m_pCurrentNukeSilo = NULL;
+
+    updateBuildButtons();
 }
 
 
@@ -127,6 +140,7 @@ void UIAssetController::createBuildingButton(AssetDef* pAssetDef)
     BasicButton* button = new BasicButton(64, 64, pAssetDef->tag, this);
     RootContainer* rc = RootContainer::getInstance();
     // hax for speed
+    // DISABLED: random object is used to store asset instance being built
     //button->setRandomObject(pAssetDef);
     // primary texture
     button->setBackgroundTexture(rc->getIconTexture(pAssetDef->tag));
@@ -140,17 +154,7 @@ void UIAssetController::createBuildingButton(AssetDef* pAssetDef)
     sprintf_s(nameC, "%s, cost: %d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre);
     button->setTooltip(nameC);
     m_pButtonPanel->addComponent(button);
-
-    m_pStopButton = new BasicButton(64, 64, 439857, this);
-    m_pStopButton->setTooltip("Stop");
-    m_pStopButton->setBackgroundTexture(rc->getIconTexture(_T("stop")));
-    m_pStopButton->setBackgroundTextureClicked(rc->getIconTexture(_T("alt_stop")));
-
-    m_pNukeButton = new BasicButton(64, 64, 666, this);
-    m_pNukeButton->setTooltip("Armageddon");
-    m_pNukeButton->setBackgroundTexture(rc->getIconTexture(_T("8")));
-    m_pNukeButton->setEnabled(false);
-    m_pNukeButton->setBackgroundTextureClicked(rc->getIconTexture(_T("alt_8")));
+    m_BuildingButtons.pushHead(button);
 }
 
 
@@ -180,9 +184,6 @@ void UIAssetController::onButtonClick(BasicButton* pSrc)
     }
 
     // build button
-    char* msg = new char[128];
-    sprintf_s(msg, 128, "button %d clicked", pSrc->getId());
-    Console::debug(msg);
     // check for insufficient funds
     /*
     AssetDef* def = (AssetDef*)pSrc->getRandomObject();
@@ -835,6 +836,11 @@ void UIAssetController::onActionRelease(const float frameTime)
 }
 
 
+void UIAssetController::handleCreatedAsset(IAsset* instance)
+{
+    updateBuildButtons();
+}
+
 
 void UIAssetController::handleReleasedAsset(IAsset* instance)
 {
@@ -888,6 +894,7 @@ void UIAssetController::handleReleasedAsset(IAsset* instance)
         m_pCurrentBuildQueue = 0;
         m_pInstanceControlPanel->removeAllComponents();
     }
+    updateBuildButtons();
 }
 
 void UIAssetController::toggleFirstPersonCamera()
@@ -949,4 +956,27 @@ void UIAssetController::setupBuildQueue(IAsset* pAsset) {
     queue->fillPanel(m_pInstanceControlPanel);
     // set as current (for ui-updates)
     m_pCurrentBuildQueue = queue;
+}
+
+
+void UIAssetController::updateBuildButtons()
+{
+    ListNode<BasicButton*>* node = m_BuildingButtons.headNode();
+    DefManager* man = DefManager::getInstance();
+    while(node) {
+        AssetDef* def = man->getAssetDef(node->item->getId());
+        if(def) {
+            if(!def->constructionRequires || m_pCurrentPlayer->hasAsset(def->constructionRequires)) {
+                node->item->setEnabled(true);
+                node->item->setBackground(0xFFFFFFFF);
+            } else {
+                node->item->setEnabled(false);
+                node->item->setBackground(0xFF555555);
+            }
+        } else {
+            node->item->setEnabled(false);
+            node->item->setBackground(0xFF555555);
+        }
+        node = node->next;
+    }
 }
