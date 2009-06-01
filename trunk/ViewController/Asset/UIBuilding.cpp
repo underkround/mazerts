@@ -69,9 +69,7 @@ void UIBuilding::handleAssetStateChange(IAsset* pAsset, IAsset::State newState)
         {
             GetMeshDataArray()[i].pMaterial = m_ppOriginalMaterials[i];
         }
-    }
-
-    if (newState == IAsset::STATE_ACTIVE)
+    } else if (newState == IAsset::STATE_ACTIVE)
     {
         if (UITerrain::getInstance()->getCurrentPlayer() == pAsset->getOwner())
             SoundManager::playSound(SOUND_CONSTRUCTION_COMPLETE, 0.01f, *(D3DXVECTOR3*)pAsset->getPosition(), false);
