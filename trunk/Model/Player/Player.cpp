@@ -157,16 +157,19 @@ void Player::PowerSwitch(bool enable)
     while(pNode)
     {
         Building* b = (Building*)pNode->item;
-        if(b->getOwner()->getId() == m_Id && b->getState() != IAsset::STATE_DESTROYED)
+        if(b)
         {
-            if(b->getEnergyConsumption() > 0)
+            if(b->getOwner()->getId() == m_Id && b->getState() != IAsset::STATE_DESTROYED)
             {
-                if(b->getDef()->tag != BUILDING_TYPE_RADAR)
+                if(b->getEnergyConsumption() > 0)
                 {
-                    b->setPower(enable);
-                }
-                else {
-                    ((RadarBuilding*)b)->setPower(enable);
+                    if(b->getDef()->tag != BUILDING_TYPE_RADAR)
+                    {
+                        b->setPower(enable);
+                    }
+                    else {
+                        ((RadarBuilding*)b)->setPower(enable);
+                    }
                 }
             }
         }
