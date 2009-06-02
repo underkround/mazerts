@@ -31,12 +31,12 @@ public:
             if(active)
             {
                 m_pOwner->toggleRadar(active);
-                changeState(STATE_ACTIVE);
+                changeState(IAsset::STATE_ACTIVE);
             }
             else
             {
                 m_pOwner->toggleRadar(active);
-                changeState(STATE_DISABLED);
+                changeState(IAsset::STATE_DISABLED);
             }
         }
     }

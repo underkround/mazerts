@@ -65,7 +65,7 @@ void LameAI::LoadConfigFromFile(void)
         tmp->cost = c.getValueAsInt(convertToString(units[i]), "asset construction cost ore", 10);
         tmp->eType = (UNIT_TYPE)units[i];
         tmp->bOffensive = (c.getValueAsInt(convertToString(units[i]), "asset weapon tag", 0) > 0) ? true : false;
-        tmp->bAdvanced = c.getValueAsBool(convertToString(units[i]), "asset advanced", false);
+        tmp->bAdvanced = (c.getValueAsInt(convertToString(units[i]), "asset construction requires", 0) == 57) ? true : false;
         m_vUnits.push_back(tmp);
     }
     int buildings[9] = {52, 53, 54, 55, 56,

@@ -188,14 +188,14 @@ const float IAsset::modifyHitpoints(const float amount)
     // if our hitpoints reached zero, we are dead and enter destroyed state
     if(m_Hitpoints <= 0)
     {
-        changeState(STATE_DESTROYED);
+        changeState(IAsset::STATE_DESTROYED);
         m_Hitpoints = 0; // prevent the hitpoints to go below 0
     }
     // if we are in the state of being build and our hitpoints reach max,
     // we are ready and enter to active state
     else if(m_State == STATE_BEING_BUILT && m_Hitpoints == m_Def.maxHitpoints)
     {
-        changeState(STATE_ACTIVE);
+        changeState(IAsset::STATE_ACTIVE);
         //we enable minimap here if we just built a radar
         if(m_Def.tag == BUILDING_TYPE_RADAR)
             m_pOwner->toggleRadar(true);

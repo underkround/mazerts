@@ -123,11 +123,14 @@ bool Player::CalculateEnergyBalance(void)
     ListNode<Building*>* pNode = buildings->headNode();
     while(pNode)
     {
-        if(pNode->item->getOwner()->getId() == m_Id)
+        if(pNode->item)
         {
-            if(pNode->item->getState() != IAsset::STATE_BEING_BUILT && pNode->item->getState() != IAsset::STATE_DESTROYED ) {
-                produced += pNode->item->getEnergyProduction();
-                consumed += pNode->item->getEnergyConsumption();
+            if(pNode->item->getOwner()->getId() == m_Id)
+            {
+                if(pNode->item->getState() != IAsset::STATE_BEING_BUILT && pNode->item->getState() != IAsset::STATE_DESTROYED ) {
+                    produced += pNode->item->getEnergyProduction();
+                    consumed += pNode->item->getEnergyConsumption();
+                }
             }
         }
         pNode = pNode->next;

@@ -100,7 +100,7 @@ char Unit::update(const float deltaT)
         // if we are paralyzed, we reduce the counter
         m_ParalyzeTimer -= deltaT;
         if(m_ParalyzeTimer <= 0)
-            changeState(STATE_ACTIVE);
+            changeState(IAsset::STATE_ACTIVE);
         break;
 
     /*

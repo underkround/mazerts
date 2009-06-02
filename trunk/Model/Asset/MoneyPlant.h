@@ -59,7 +59,7 @@ public:
             break;
 
         case STATE_PARALYZED:
-            changeState(STATE_ACTIVE);
+            changeState(IAsset::STATE_ACTIVE);
             break;
 
         case STATE_DISABLED:

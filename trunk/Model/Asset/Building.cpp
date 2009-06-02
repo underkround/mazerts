@@ -110,7 +110,7 @@ char Building::update(const float deltaT)
         break;
 
     case STATE_PARALYZED:
-        changeState(STATE_ACTIVE);
+        changeState(IAsset::STATE_ACTIVE);
         break;
 
     case STATE_DISABLED:
@@ -152,8 +152,8 @@ void Building::setPower(bool active)
     if(m_State == STATE_ACTIVE || m_State == STATE_DISABLED)
     {
         if(active)
-            changeState(STATE_ACTIVE);
+            changeState(IAsset::STATE_ACTIVE);
         else
-            changeState(STATE_DISABLED);
+            changeState(IAsset::STATE_DISABLED);
     }
 }
