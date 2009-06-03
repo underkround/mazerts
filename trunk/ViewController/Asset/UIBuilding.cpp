@@ -23,19 +23,16 @@ UIBuilding::UIBuilding(Building* pBuilding) : UIAsset(pBuilding)
     m_mLocal._43 = Terrain::getInstance()->getTerrainHeight((const short)m_mLocal._41, (const short)m_mLocal._42) * -UITerrain::HEIGHTFACTOR;
 
     m_Powered = true;
-
-    int i = GetMeshDataArray().size();
-    m_ppOriginalMaterials = new D3DMATERIAL9*[i];
+    m_ppOriginalMaterials = NULL;
 }
 
 UIBuilding::~UIBuilding()
 {
-    /*
     if (m_ppOriginalMaterials) {
-        delete [] m_ppOriginalMaterials;
+//        delete [] m_ppOriginalMaterials;
+        delete m_ppOriginalMaterials;
         m_ppOriginalMaterials = NULL;
     }
-    */
 }
 
 void UIBuilding::setBaseMaterial(D3DMATERIAL9* pBaseMaterial, D3DMATERIAL9* pDisabledMaterial)
@@ -55,21 +52,26 @@ void UIBuilding::handleAssetStateChange(IAsset* pAsset, IAsset::State newState)
         //disable power
         m_Powered = false;
         // change into disabled material
-        /*for (unsigned int i = 0; i < GetMeshDataArray().size(); i++)
+        if (!m_ppOriginalMaterials) 
+        {
+            m_ppOriginalMaterials = new D3DMATERIAL9*[GetMeshDataArray().size()];
+        }
+
+        for (unsigned int i = 0; i < GetMeshDataArray().size(); i++)
         {
             m_ppOriginalMaterials[i] = GetMeshDataArray()[i].pMaterial;
             GetMeshDataArray()[i].pMaterial = m_pDisabledMaterial;
-        }*/
+        }
     }
     else if (newState == IAsset::STATE_ACTIVE && !m_Powered)
     {
         // enable power
         m_Powered = true;
         // change into enabled material
-        /*for (unsigned int i = 0; i < GetMeshDataArray().size(); i++)
+        for (unsigned int i = 0; i < GetMeshDataArray().size(); i++)
         {
             GetMeshDataArray()[i].pMaterial = m_ppOriginalMaterials[i];
-        }*/
+        }
     }
     else if (newState == IAsset::STATE_ACTIVE)
     {

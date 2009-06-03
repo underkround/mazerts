@@ -1006,7 +1006,7 @@ float UITerrain::calculateTriangleHeightAt(float x, float y)
 {
 
     //Sanity check
-    if(x < 0 || y < 0 || x > m_Size || y > m_Size)
+    if(x < 0 || y < 0 || x > m_Size - 1|| y > m_Size - 1)
     {
         return 0;
     }
