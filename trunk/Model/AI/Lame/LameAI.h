@@ -223,7 +223,6 @@ private:
     float m_fUpdateInterval;
     int m_UnitLimit;
     int m_BuildingLimit;
-    int m_iDebug;
 
     DoubleLinkedList<Building*> m_OwnBuildingList;
     map<int, Building*> m_OwnBuildings;

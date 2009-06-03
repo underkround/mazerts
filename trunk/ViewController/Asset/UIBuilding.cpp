@@ -52,24 +52,26 @@ void UIBuilding::handleAssetStateChange(IAsset* pAsset, IAsset::State newState)
 {
     if (newState == IAsset::STATE_DISABLED && m_Powered)
     {
+        //disable power
         m_Powered = false;
         // change into disabled material
-        for (unsigned int i = 0; i < GetMeshDataArray().size(); i++)
+        /*for (unsigned int i = 0; i < GetMeshDataArray().size(); i++)
         {
             m_ppOriginalMaterials[i] = GetMeshDataArray()[i].pMaterial;
             GetMeshDataArray()[i].pMaterial = m_pDisabledMaterial;
-        }
+        }*/
     }
     else if (newState == IAsset::STATE_ACTIVE && !m_Powered)
     {
         // enable power
         m_Powered = true;
         // change into enabled material
-        for (unsigned int i = 0; i < GetMeshDataArray().size(); i++)
+        /*for (unsigned int i = 0; i < GetMeshDataArray().size(); i++)
         {
             GetMeshDataArray()[i].pMaterial = m_ppOriginalMaterials[i];
-        }
-    } else if (newState == IAsset::STATE_ACTIVE)
+        }*/
+    }
+    else if (newState == IAsset::STATE_ACTIVE)
     {
         if (UITerrain::getInstance()->getCurrentPlayer() == pAsset->getOwner())
             SoundManager::playSound(SOUND_CONSTRUCTION_COMPLETE, 0.01f, *(D3DXVECTOR3*)pAsset->getPosition(), false);

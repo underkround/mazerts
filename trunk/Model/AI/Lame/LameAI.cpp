@@ -494,7 +494,6 @@ void LameAI::BuildBuilding(BUILDING_TYPE building)
             }
             //run out of tries
             //AssetFactory::createBuilding(PlayerManager::getInstance()->getPlayer(0), BUILDING_TYPE_RADAR, 10, 10);
-            ++m_iDebug;
         }
     }
     else {
