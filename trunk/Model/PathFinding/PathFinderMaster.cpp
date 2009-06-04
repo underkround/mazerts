@@ -121,7 +121,7 @@ void PathFinderMaster::run()
 }
 
 //Static
-PathAgent* PathFinderMaster::findPath(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size)
+PathAgent* PathFinderMaster::findPath(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size, bool priorize)
 {
     //CanPath-check  DEBUG, "real" canPath is still in the works
     /*if(!pInstance->m_ppCanPath[y / CANPATH_BLOCKS][x / CANPATH_BLOCKS])
@@ -131,8 +131,15 @@ PathAgent* PathFinderMaster::findPath(unsigned short x, unsigned short y, unsign
 
     PathFinder* pFinder = new PathFinder(x, y, goalX, goalY, size);
     if(pFinder->isInitialized())
-    {        
-        pInstance->pushWaitingFinderNode(pFinder);
+    {
+        if(!priorize)
+        {
+            pInstance->pushWaitingFinderNode(pFinder);            
+        }
+        else
+        {
+            pInstance->priorizeWaitingFinderNode(pFinder);
+        }
         return pFinder->getPathAgent();
     }
     else
@@ -187,6 +194,34 @@ void PathFinderMaster::pushWaitingFinderNode(PathFinder* pFinder)
             m_pWaitingNodeEnd->pNext = pNode;
             pNode->pPrev = m_pWaitingNodeEnd;
             m_pWaitingNodeEnd = pNode;
+        }
+        else
+        {
+            //This one becomes the start and end of the list
+            m_pWaitingNodeStart = new PathFinderNode();
+            m_pWaitingNodeStart->pFinder = pFinder;
+            m_pWaitingNodeEnd = m_pWaitingNodeStart;
+        }
+
+        m_WaitingNodes++;
+    }
+    pthread_mutex_unlock(m_pWaitListMutex);
+}
+
+void PathFinderMaster::priorizeWaitingFinderNode(PathFinder* pFinder)
+{
+    pthread_mutex_lock(m_pWaitListMutex);
+    //The block is here just to show that this part is inside mutex
+    {
+        if(m_pWaitingNodeStart && m_pWaitingNodeEnd)
+        {
+            //Add the new node in back of the list
+            PathFinderNode* pNode = new PathFinderNode();
+            pNode->pFinder = pFinder;
+
+            m_pWaitingNodeStart->pPrev = pNode;
+            pNode->pNext = m_pWaitingNodeStart;
+            m_pWaitingNodeStart = pNode;
         }
         else
         {

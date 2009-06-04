@@ -47,32 +47,40 @@ public:
         Fog* pFog = UITerrain::getInstance()->getCurrentPlayer()->getFog();        
         SetVisible(!pFog->isEnabled() || pFog->isVisibleCoord((int)m_mWorld._41, (int)m_mWorld._42));
 
-        float t = m_pProjectile->getFlightT();
-
-        //let's not spin the simple balls
-        if(m_pProjectile->getConcreteType() != Projectile::SHELL)
+        if(IsVisible())
         {
-            D3DXMATRIX mTemp;
-            D3DXMatrixIdentity(&mTemp);
-            D3DXMatrixRotationYawPitchRoll( &mTemp,
-                                            0.0f,
-                                            0.1f,
-                                            0.1f
-                                           );
-            D3DXMatrixMultiply(&m_mWorld, &mTemp, &m_mWorld);
-        }
+            float t = m_pProjectile->getFlightT();
 
-        m_mWorld._41 = m_Origin.x + m_Target.x * t;
-        m_mWorld._42 = m_Origin.y + m_Target.y * t;
-        m_mWorld._43 = m_Origin.z + m_Target.z * t - sin(t * D3DX_PI) * m_FlyHeight;
+            m_mWorld._41 = m_Origin.x + m_Target.x * t;
+            m_mWorld._42 = m_Origin.y + m_Target.y * t;
+            m_mWorld._43 = m_Origin.z + m_Target.z * t - sin(t * D3DX_PI) * m_FlyHeight;
 
-        if(!m_pProjectile->isAlive())
-        {
-            //Play sound
-            if (m_pProjectile->getConcreteType() == Projectile::ICBM)
-                SoundManager::playSound(SOUND_NUKE, 0.01f, *((D3DXVECTOR3*)&m_mWorld._41), true);
-            else
-                SoundManager::playSound(SOUND_EXPLOSION, 0.01f, *((D3DXVECTOR3*)&m_mWorld._41), true);
+            //Only rotate other than shells
+            if(m_pProjectile->getConcreteType() != Projectile::SHELL)
+            {
+                float nt = t + 0.01f;
+                float nx = m_Origin.x + m_Target.x * nt;
+                float ny = m_Origin.y + m_Target.y * nt;
+                float nz = m_Origin.z + m_Target.z * nt - sin(nt * D3DX_PI) * m_FlyHeight;
+                D3DXVECTOR3 forward(nx - m_mWorld._41, ny - m_mWorld._42, nz - m_mWorld._43);
+                D3DXVec3Normalize(&forward, &forward);
+                D3DXVECTOR3 up(forward.z, forward.x, -forward.y);
+                D3DXVECTOR3 right;
+                D3DXVec3Cross(&right, &up, &forward);
+                D3DXVec3Cross(&up, &right, &forward);
+                (*(D3DXVECTOR3*)&m_mWorld._11) = right;
+                (*(D3DXVECTOR3*)&m_mWorld._21) = forward;
+                (*(D3DXVECTOR3*)&m_mWorld._31) = up;
+            }
+
+            if(!m_pProjectile->isAlive())
+            {
+                //Play sound
+                if (m_pProjectile->getConcreteType() == Projectile::ICBM)
+                    SoundManager::playSound(SOUND_NUKE, 0.01f, *((D3DXVECTOR3*)&m_mWorld._41), true);
+                else
+                    SoundManager::playSound(SOUND_EXPLOSION, 0.01f, *((D3DXVECTOR3*)&m_mWorld._41), true);
+            }
         }
         return m_pProjectile->isAlive();
     }

@@ -329,12 +329,11 @@ public:
 // MISC
 
     /**
-     * HandleDamage
-     * @param x X-position to cause the damage in
-     * @param y Y-position to cause the damage in
-     * @param damage Amount of damage to cause
+     * @param x X-position to create the crater in
+     * @param y Y-position to create the crater in
+     * @param radius Radius of the crater
      */
-    void handleDamage(const unsigned short x, const unsigned short y, float damage);
+    void createCrater(const unsigned short x, const unsigned short y, short radius);
 
     /**
      * Sync the given vector's z-component to match the current level of the

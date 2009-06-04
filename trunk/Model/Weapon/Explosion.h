@@ -54,9 +54,10 @@ public:
                 pNode = pNode->next;
             }
         }
-        //else
+        
+        if(m_Damage > 1000)
         {
-            pTerrain->handleDamage(m_PositionX, m_PositionY, m_Damage);
+            pTerrain->createCrater(m_PositionX, m_PositionY, damageRange); 
         }
     }
 

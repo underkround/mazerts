@@ -18,12 +18,13 @@ public:
     {
         m_Created = false;
         m_unitExtractionPointX = getDef()->gridEntrancePointX;
-        m_unitExtractionPointY = getDef()->gridEntrancePointY - 6;
+        m_unitExtractionPointY = getDef()->gridEntrancePointY - 10;
     }
 
     inline void create()
     {
         Building::create();
+        setExtractionPoint((unsigned short)m_Position.x + getDef()->gridEntrancePointX, (unsigned short)m_Position.y + getDef()->gridEntrancePointY - 10);
     }
 
     inline void setExtractionPoint(unsigned short  x, unsigned short  y) { m_unitExtractionPointX = x; m_unitExtractionPointY = y; }

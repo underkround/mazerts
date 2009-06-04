@@ -84,11 +84,12 @@ public:
      * @param goalX Goal X-tilecoordinate
      * @param goalY Goal Y-tilecoordinate
      * @param size Size of the path (size * size tiles)
+     * @param priorize If set to true, the find-request will be placed first in queue
      * @return PathAgent-instance, that can be used to query for path searching state and 
                pathdata once it's found   NOTE: The caller of this method must take care 
                of destroying the PathAgent! Path data will be destroyed along with the agent
      */
-    static PathAgent* findPath(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size);
+    static PathAgent* findPath(unsigned short x, unsigned short y, unsigned short goalX, unsigned short goalY, unsigned char size, bool priorize = false);
 
     /**
      * Cancels all current PathFinders and destroys them
@@ -174,6 +175,12 @@ private:
      * @param pFinder Pointer to PathFinder to add
      */
     void pushWaitingFinderNode(PathFinder* pFinder);
+    
+    /**
+     * Pushes a new pathfinder to the start of waiting list
+     * @param pFinder Pointer to PathFinder to add
+     */
+    void priorizeWaitingFinderNode(PathFinder* pFinder);
 
     /**
      * Pops a pathfindernode from the start of waiting list

@@ -486,22 +486,20 @@ void Terrain::smoothMap(int smoothPasses)
     m_ChangeCounter++;
 }
 
-void Terrain::handleDamage(const unsigned short x, const unsigned short y, float damage)
+void Terrain::createCrater(const unsigned short x, const unsigned short y, short radius)
 {
-    if(m_ppVertexHeightData[y][x] > 10 && damage > 1000)
-    {
-        const float sizeFactor = damage / 1000.0f;
-        const int craterRad = (int)(7 * sizeFactor);
-        const int craterDepth = (int)(10 * sizeFactor);
+    if(m_ppVertexHeightData[y][x] > 10)
+    {        
+        const int craterDepth = (int)radius * 1.5f;
 
-        unsigned short cornerX = x - craterRad;
-        unsigned short cornerY = y - craterRad;
+        unsigned short cornerX = x - radius;
+        unsigned short cornerY = y - radius;
                 
-        int craterRadSquared = craterRad*craterRad;
+        int craterRadSquared = radius * radius;
         //unsigned char hitHeight = m_ppVertexHeightData[y][x];
-        for(int i = 0; i < (2 * craterRad); i++)
+        for(int i = 0; i < (2 * radius); i++)
         {
-            for(int j = 0; j < (2 * craterRad); j++)
+            for(int j = 0; j < (2 * radius); j++)
             {
                 unsigned short curX = cornerX + j;
                 unsigned short curY = cornerY + i;

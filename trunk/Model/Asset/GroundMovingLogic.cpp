@@ -271,7 +271,8 @@ UI3DDebug::addSphere((float)tmpX, (float)tmpY, (float)UITerrain::getInstance()->
     m_pAgent = PathFinderMaster::getInstance()->findPath(   (unsigned short)m_pUnit->getPosition()->x,
                                                             (unsigned short)m_pUnit->getPosition()->y,
                                                             m_TargetX, m_TargetY,
-                                                            m_pUnit->getWidth()); //TODO: NOTE: Remember to set the widht & height of unit to same value!
+                                                            m_pUnit->getWidth(), //NOTE: Remember to set the widht & height of unit to same value!
+                                                            (m_pUnit->getOwner()->getIndex() == 1)); //Priorize human player pathfinders
     
     //If no agent is found, there is no path (goal is same as start location or goal is unpassable)
     if(m_pAgent != NULL)
@@ -701,7 +702,7 @@ bool GroundMovingLogic::squareAvailability()
             {
                 //Only own units can be told to move
                 if(pNode->item->getOwner() == m_pUnit->getOwner())
-                {                    
+                {
                     //Only non-moving (no movinglogic-target) are told to move
                     Target* unitTarget = pNode->item->getMovingLogic()->getTarget();
                     if(unitTarget == NULL)// || !unitTarget->isFlag(Target::TGTFLAG_MAKEWAY))//Check if the target already has a MAKEWAY-priority target
@@ -713,8 +714,56 @@ bool GroundMovingLogic::squareAvailability()
                         
                         float minDist = (float)(pNode->item->getWidth() + m_pUnit->getWidth());
                         Vector3 posDiff = *pNode->item->getPosition() - *pos;
+                            
                         //Normalize position difference to use it as direction vector between units
                         posDiff.normalize();
+
+                        //Prevent units from getting stuck to each other
+                        float distSquared = posDiff.dotProduct(posDiff);
+                        if(distSquared < (minDist * minDist))
+                        {
+                            float terrainSize = (float)Terrain::getInstance()->getSize() - 1;
+
+                            //Move the units away from each other                            
+                            pos->subtract(&(posDiff * 0.5f));
+                            Vector3* tempPos = pNode->item->getPosition();
+                            tempPos->add(&(posDiff * 0.5f));
+
+                            //Keep units inside game area
+                            if(pos->x < 0)
+                            {
+                                pos->x = 0;
+                            }
+                            else if(pos->x + m_pUnit->getWidth() > terrainSize)
+                            {
+                                pos->x = terrainSize;
+                            }
+                            if(pos->y < 0)
+                            {
+                                pos->y = 0;
+                            }
+                            else if(pos->y + m_pUnit->getHeight() > terrainSize)
+                            {
+                                pos->y = terrainSize;
+                            }                           
+                            if(tempPos->x < 0)
+                            {
+                                tempPos->x = 0;
+                            }
+                            else if(tempPos->x + pNode->item->getWidth() > terrainSize)
+                            {
+                                tempPos->x = terrainSize;
+                            }
+                            if(tempPos->y < 0)
+                            {
+                                tempPos->y = 0;
+                            }
+                            else if(tempPos->y + pNode->item->getHeight() > terrainSize)
+                            {
+                                tempPos->y = terrainSize;
+                            }
+
+                        }
 
                         //Take normal vector from unit direction and selected avoidance target moving direction
                         //based on which side of the current path the unit is
