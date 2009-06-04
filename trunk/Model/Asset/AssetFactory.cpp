@@ -32,6 +32,11 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, sho
 
 Unit* AssetFactory::createUnit(Player* owner, int unitType, Building* building)
 {
+    return createUnit(owner, unitType, building, false);
+}
+
+Unit* AssetFactory::createUnit(Player* owner, int unitType, Building* building, bool free)
+{
     Unit* u = NULL;
 
     //check if factory is empty
@@ -46,7 +51,7 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, Building* building)
                     unitType,
                     building->getGridX() + building->getDef()->gridEntrancePointX,
                     building->getGridY() + building->getDef()->gridEntrancePointY,
-                    false);
+                    free);
         //give newly created unit orders to drive out (weaponless units know by themselves what to do)
         if(u->hasWeapon())
         u->getMovingLogic()->addTarget( new Target( ((WarFactory*)building)->getExtractionPointX(),
@@ -54,8 +59,11 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, Building* building)
                                                     false,
                                                     0)
                                        );
+        if(!free)
+        {
+            owner->modifyOre(-u->getDef()->constructionCostOre); //where actually should the player be charged for purchase?
+        }
     }
-
 
     return u;
 }

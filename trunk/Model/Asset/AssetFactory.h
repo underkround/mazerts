@@ -73,6 +73,11 @@ public:
                             int unitType,
                             Building* building);
 
+    static Unit* createUnit(Player* owner,
+                            int unitType,
+                            Building* building,
+                            bool free);
+
     /**
      * Creates new building, sets the parameters against buildingType
      * @return pointer to new Building instance
