@@ -121,7 +121,7 @@ bool BuildTask::execute()
     if(!canAfford())
         return false;
     // create the asset
-    m_pAsset = AssetFactory::createAsset(m_pPlayer, m_pAssetDef->tag, m_PosX, m_PosY, true);
+    m_pAsset = AssetFactory::createAsset(m_pPlayer, m_pAssetDef->tag, m_PosX, m_PosY);
     if(!m_pAsset)
         return false;
     // reduce ore

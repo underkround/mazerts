@@ -25,17 +25,8 @@
 #include "../Defs/DefManager.h"
 #include "../Defs/Defs.h"
 
-Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, short positionY)
-{
-    return createUnit(owner, unitType, positionX, positionY, false);
-}
 
 Unit* AssetFactory::createUnit(Player* owner, int unitType, Building* building)
-{
-    return createUnit(owner, unitType, building, false);
-}
-
-Unit* AssetFactory::createUnit(Player* owner, int unitType, Building* building, bool free)
 {
     Unit* u = NULL;
 
@@ -50,8 +41,8 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, Building* building, 
         u = createUnit( owner,
                     unitType,
                     building->getGridX() + building->getDef()->gridEntrancePointX,
-                    building->getGridY() + building->getDef()->gridEntrancePointY,
-                    free);
+                    building->getGridY() + building->getDef()->gridEntrancePointY
+                    );
         //give newly created unit orders to drive out (weaponless units know by themselves what to do)
         if(u->hasWeapon())
         u->getMovingLogic()->addTarget( new Target( ((WarFactory*)building)->getExtractionPointX(),
@@ -59,16 +50,12 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, Building* building, 
                                                     false,
                                                     0)
                                        );
-        if(!free)
-        {
-            owner->modifyOre(-u->getDef()->constructionCostOre); //where actually should the player be charged for purchase?
-        }
     }
 
     return u;
 }
 
-Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, short positionY, bool free)
+Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, short positionY)
 {
     // TODO: What to do if there's already unit / building?
     DefManager* dm = DefManager::getInstance();
@@ -90,20 +77,10 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, short positionX, sho
 
     u->create();
 
-    if(!free)
-    {
-        owner->modifyOre(-u->getDef()->constructionCostOre); //where actually should the player be charged for purchase?
-    }
-
     return u;
 }
 
 Building* AssetFactory::createBuilding(Player* owner, int buildingType, short positionX, short positionY)
-{
-    return createBuilding(owner, buildingType, positionX, positionY, false);
-}
-
-Building* AssetFactory::createBuilding(Player* owner, int buildingType, short positionX, short positionY, bool free)
 {
     // TODO: What to do if there's already unit / building?
     DefManager* dm = DefManager::getInstance();
@@ -137,25 +114,14 @@ Building* AssetFactory::createBuilding(Player* owner, int buildingType, short po
         createUnit( owner,
                     UNIT_TYPE_MINER,
                     positionX + b->getDef()->gridEntrancePointX,
-                    positionY + b->getDef()->gridEntrancePointY,
-                    true);
-    }
-
-    if(!free)
-    {
-        //where actually should the player be charged for purchase?
-        owner->modifyOre(-b->getDef()->constructionCostOre);
+                    positionY + b->getDef()->gridEntrancePointY
+                    );
     }
 
     return b;
 }
 
 IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX, short positionY)
-{
-    return createAsset(owner, assetType, positionX, positionY, false);
-}
-
-IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX, short positionY, bool free)
 {
     // TODO: What to do if there's already unit / building?
     AssetDef* def = DefManager::getInstance()->getAssetDef(assetType);
@@ -177,9 +143,9 @@ IAsset* AssetFactory::createAsset(Player* owner, int assetType, short positionX,
     switch(def->concreteType)
     {
     case 1:
-        return createUnit(owner, assetType, positionX, positionY, free);
+        return createUnit(owner, assetType, positionX, positionY);
     case 2:
-        return createBuilding(owner, assetType, positionX, positionY, free);
+        return createBuilding(owner, assetType, positionX, positionY);
     default:
         return NULL;
     }

@@ -153,7 +153,15 @@ void UIAssetController::createBuildingButton(AssetDef* pAssetDef)
     MultiByteToWideChar(CP_ACP, 0, nameC, -1, nameWTF, 10);
     button->setBackgroundTextureClicked(rc->getIconTexture(nameWTF));
     // tooltip
-    sprintf_s(nameC, "%s, cost: %d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre);
+    int consume = pAssetDef->energyConsumption;
+    int produce = pAssetDef->energyProduction;
+    int energy = produce - consume;
+    if(energy > 0) {
+        sprintf_s(nameC, "%s, cost: %d energy: +%d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre, energy);
+    }
+    else {
+        sprintf_s(nameC, "%s, cost: %d energy: %d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre, energy);
+    }
     button->setTooltip(nameC);
     m_pButtonPanel->addComponent(button);
     m_BuildingButtons.pushHead(button);
@@ -439,7 +447,7 @@ void UIAssetController::updateControls(const float frameTime)
                 if(m_pSelector->isBuildable()) {
                     D3DXVECTOR2 bpos = m_pSelector->getBuildingPoint();
                     // @TODO: assetfactory->create
-                    IAsset* newAsset = AssetFactory::createAsset(m_pCurrentPlayer, m_pCurrentBuildAssetDef->tag, (short)bpos.x, (short)bpos.y, true);
+                    IAsset* newAsset = AssetFactory::createAsset(m_pCurrentPlayer, m_pCurrentBuildAssetDef->tag, (short)bpos.x, (short)bpos.y);
                     if(newAsset) {
                         m_pCurrentBuildButton->setEnabled(false);
                         m_pCurrentBuildButton->setRandomObject(newAsset);

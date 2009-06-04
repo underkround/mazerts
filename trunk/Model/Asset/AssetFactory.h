@@ -35,20 +35,6 @@ public:
                                 short positionX,
                                 short positionY);
 
-        /**
-     * Creates new asset based on given type and sets the parameters based
-     * on it
-     * @param free if true, builds asset without taking payment for it
-     *             please note that we don't care here if player can afford
-     *             this asset or not, we just reduce it's cost
-     * @return pointer to new Asset instance
-     */
-    static IAsset* createAsset( Player* owner,
-                                int assetType,
-                                short positionX,
-                                short positionY,
-                                bool free);
-
     /**
      * Creates new unit, sets the parameters against unitType
      * @return pointer to new Unit instance
@@ -63,20 +49,10 @@ public:
      * @param free if true, builds unit without taking payment for it
      * @return pointer to new Unit instance
      */
-    static Unit* createUnit(Player* owner,
-                            int unitType,
-                            short positionX,
-                            short positionY,
-                            bool free);
 
     static Unit* createUnit(Player* owner,
                             int unitType,
                             Building* building);
-
-    static Unit* createUnit(Player* owner,
-                            int unitType,
-                            Building* building,
-                            bool free);
 
     /**
      * Creates new building, sets the parameters against buildingType
@@ -86,17 +62,6 @@ public:
                                     int buildingType,
                                     short positionX,
                                     short positionY);
-
-    /**
-     * Creates new building, sets the parameters against buildingType
-     * @param free if true, builds building without taking payment for it
-     * @return pointer to new Building instance
-     */
-    static Building* createBuilding(Player* owner,
-                                    int buildingType,
-                                    short positionX,
-                                    short positionY,
-                                    bool free);
 
     /**
      * Creates new ore mine, this is a special case building which should never be

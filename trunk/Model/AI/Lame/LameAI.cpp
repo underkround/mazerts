@@ -5,6 +5,7 @@
 #include "../../Terrain/Terrain.h"
 #include "../../Asset/Unit.h"
 #include "../../Asset/Building.h"
+#include "../../Defs/Defs.h"
 #include "../../Defs/DefManager.h"
 #include "../../Console.h"
 
@@ -531,7 +532,11 @@ void LameAI::BuildUnit(UNIT_TYPE unittype)
                 Building* factory = factories[(rand() % count)];
                 if (factory)
                 {
-                    AssetFactory::createUnit(m_pPlayer, unittype, factory);
+                    if(AssetFactory::createUnit(m_pPlayer, unittype, factory))
+                    {
+                        AssetDef* assdef = DefManager::getInstance()->getAssetDef(unittype);
+                        m_pPlayer->modifyOre(-assdef->constructionCostOre);
+                    }
                 }
             }
 

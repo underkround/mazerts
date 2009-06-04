@@ -165,7 +165,7 @@ void BuildQueue::update(bool updateVisual)
                     }
                     else 
                     {
-                        m_pCurrentBuild = AssetFactory::createAsset(m_pAsset->getOwner(), top->tag, m_PosX, m_PosY, true);
+                        m_pCurrentBuild = AssetFactory::createAsset(m_pAsset->getOwner(), top->tag, m_PosX, m_PosY);
                     }
                     getButton(top->tag)->clearLoading();
                     m_Queue.popHead();
