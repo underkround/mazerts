@@ -45,14 +45,16 @@ public:
     inline bool Update(float fFrametime)
     {
         Fog* pFog = UITerrain::getInstance()->getCurrentPlayer()->getFog();        
+
+        float t = m_pProjectile->getFlightT();
+
+        m_mWorld._41 = m_Origin.x + m_Target.x * t;
+        m_mWorld._42 = m_Origin.y + m_Target.y * t;
+
         SetVisible(!pFog->isEnabled() || pFog->isVisibleCoord((int)m_mWorld._41, (int)m_mWorld._42));
 
         if(IsVisible())
         {
-            float t = m_pProjectile->getFlightT();
-
-            m_mWorld._41 = m_Origin.x + m_Target.x * t;
-            m_mWorld._42 = m_Origin.y + m_Target.y * t;
             m_mWorld._43 = m_Origin.z + m_Target.z * t - sin(t * D3DX_PI) * m_FlyHeight;
 
             //Only rotate other than shells

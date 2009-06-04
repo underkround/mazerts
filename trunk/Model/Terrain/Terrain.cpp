@@ -490,7 +490,7 @@ void Terrain::createCrater(const unsigned short x, const unsigned short y, short
 {
     if(m_ppVertexHeightData[y][x] > 10)
     {        
-        const int craterDepth = (int)radius * 1.5f;
+        const int craterDepth = (int)(radius * 1.5f);
 
         unsigned short cornerX = x - radius;
         unsigned short cornerY = y - radius;
