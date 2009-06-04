@@ -14,6 +14,7 @@
 #include "OreMine.h"
 #include "MoneyPlant.h"
 #include "RadarBuilding.h"
+#include "WarFactory.h"
 #include "GroundMovingLogic.h"
 #include "Radar.h"
 #include "../Weapon/Weapon.h"
@@ -48,8 +49,8 @@ Unit* AssetFactory::createUnit(Player* owner, int unitType, Building* building)
                     false);
         //give newly created unit orders to drive out (weaponless units know by themselves what to do)
         if(u->hasWeapon())
-        u->getMovingLogic()->addTarget( new Target( building->getDef()->gridEntrancePointX,
-                                                    building->getDef()->gridEntrancePointY - 6,
+        u->getMovingLogic()->addTarget( new Target( ((WarFactory*)building)->getExtractionPointX(),
+                                                    ((WarFactory*)building)->getExtractionPointY(),
                                                     false,
                                                     0)
                                        );
@@ -104,7 +105,14 @@ Building* AssetFactory::createBuilding(Player* owner, int buildingType, short po
     if(def->concreteType != 2)
         return NULL; // type is not building
 
-    Building* b = new Building((AssetDef&)(*def));
+    Building* b = NULL;
+    if(buildingType != BUILDING_TYPE_FACTORY)
+    {
+        b = new Building((AssetDef&)(*def));
+    }
+    else {
+        b = new WarFactory((AssetDef&)(*def));
+    }
     b->setOwner(owner);
     b->forcePosition(positionX, positionY);
 

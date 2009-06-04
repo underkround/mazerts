@@ -158,15 +158,14 @@ void BuildQueue::update(bool updateVisual)
             DoubleLinkedList<IAsset*>* list = new DoubleLinkedList<IAsset*>();
             AssetCollection::getAssetsAt(list, m_PosX-2, m_PosY-2, top->width+4, top->height+4);
             if(list->empty() || (list->count() == 1 && list->peekHead() == m_pAsset)) {
-                m_pCurrentBuild = AssetFactory::createAsset(m_pAsset->getOwner(), top->tag, m_PosX, m_PosY, true);
-                if(m_pCurrentBuild) {
-                    if(m_pCurrentBuild->getAssetType() == IAsset::UNIT) {
-                        Unit* u = (Unit*)m_pCurrentBuild;
-                        if(u->getMovingLogic()) {
-                            // go away when finished
-                            // @TODO: make this better!
-                            u->getMovingLogic()->addTarget(new Target(m_pAsset->getCenterGridX(), m_pAsset->getGridY() - u->getHeight(), false));
-                        }
+                if(top->tag) {
+                    if(top->concreteType == 1)
+                    {
+                        m_pCurrentBuild = AssetFactory::createUnit(m_pAsset->getOwner(), top->tag, (Building*)m_pAsset);
+                    }
+                    else 
+                    {
+                        m_pCurrentBuild = AssetFactory::createAsset(m_pAsset->getOwner(), top->tag, m_PosX, m_PosY, true);
                     }
                     getButton(top->tag)->clearLoading();
                     m_Queue.popHead();

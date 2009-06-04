@@ -30,7 +30,7 @@ IAsset::IAsset(const Type assetType, AssetDef& def) : m_ConcreteType (assetType)
     m_Direction.z = 0;
     //
     m_Hitpoints = 1;
-    m_State = STATE_BEING_BUILT;
+    m_State = IAsset::STATE_BEING_BUILT;
     // components
     m_pOwner = NULL;
     m_pWeapon = NULL;

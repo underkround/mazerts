@@ -24,6 +24,7 @@ enum SoundTypes
     SOUND_CANNON,
     SOUND_MISSILE,
     SOUND_NUKE,
+    SOUND_EXTRACTION_POINT_SET,
     __END = 0xff
 };
 

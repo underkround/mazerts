@@ -524,6 +524,10 @@
 					RelativePath=".\Asset\Unit.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Asset\WarFactory.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Command"

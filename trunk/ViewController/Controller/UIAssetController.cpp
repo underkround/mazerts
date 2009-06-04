@@ -22,6 +22,8 @@
 #include "../../Model/Asset/Unit.h"
 #include "../../Model/Asset/Building.h"
 #include "../../Model/Asset/AssetFactory.h"
+//for extraction point setting
+#include "../../Model/Asset/WarFactory.h"
 
 #include "../UIComponent/RootContainer.h"
 #include "../UIComponent/GridLayout.h"
@@ -830,6 +832,41 @@ void UIAssetController::onActionRelease(const float frameTime)
                 SoundManager::playSound(SOUND_AKNOWLEDGEMENT, 0.1f, *((D3DXVECTOR3*)m_pUnitCommandDispatcher->getUnits()->headNode()->item->getPosition()), false);
                 delete hitSquare;
             }
+        }
+    }
+    //hack to enable exit points for war factories
+    if(m_SelectionState == IDLE && m_SelectedUIAssets.count() == 1)
+    {
+        if(!m_KeyActionWhileDragging && m_ActionState == DRAG)
+        {
+            m_ActionState = IDLE;
+            return; // action not allowed when dragging
+        }
+
+        if(m_SelectedUIAssets.peekHead()->getAsset()->getDef()->tag == BUILDING_TYPE_FACTORY)
+        {
+            //find where we clicked
+            D3DXMATRIX matProj, matView;
+            D3DXVECTOR3 rayOrigin, rayDir;
+            m_pDevice->GetTransform(D3DTS_PROJECTION, &matProj);
+            m_pDevice->GetTransform(D3DTS_VIEW, &matView);
+            MouseState::transformTo3D(matView, matProj, rayOrigin, rayDir);
+
+            //convert click to terrain coordinates
+            D3DXVECTOR3* hitSquare = TerrainIntersection::pickTerrain(rayOrigin, rayDir);
+            if(hitSquare)
+            {
+                unsigned short targetX = (unsigned short)hitSquare->x;
+                unsigned short targetY = (unsigned short)hitSquare->y;
+                m_pUnitCommandDispatcher->getTarget()->setTarget(targetX, targetY, false);
+                m_pUnitCommandDispatcher->dispatch(KeyboardState::keyDown[m_KeyQueueCommands]);
+
+                //give coordinates to building
+                ((WarFactory*)m_SelectedUIAssets.peekHead()->getAsset())->setExtractionPoint(targetX, targetY);
+                SoundManager::playSound(SOUND_EXTRACTION_POINT_SET, 0.6f);
+                delete hitSquare;
+            }
+
         }
     }
     m_ActionState = IDLE;

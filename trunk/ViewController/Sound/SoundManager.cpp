@@ -46,7 +46,8 @@ HRESULT SoundManager::create(IApplication* pApp)
         {_T("..//data//sounds//ready2.wav"), SOUND_READY},
         {_T("..//data//sounds//yes1.wav"), SOUND_YES},
         {_T("..//data//sounds//yes2.wav"), SOUND_YES},
-        {_T("..//data//sounds//yes3.wav"), SOUND_YES}
+        {_T("..//data//sounds//yes3.wav"), SOUND_YES},
+        {_T("..//data//sounds//pointset.wav"), SOUND_EXTRACTION_POINT_SET}
     };
 
     pInstance->m_MusicMap[MUSIC_BACKGROUND] = _T("..//data//music//music.mp3");

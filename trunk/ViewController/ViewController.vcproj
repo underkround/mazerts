@@ -433,6 +433,10 @@
 					RelativePath="..\Model\Asset\Unit.h"
 					>
 				</File>
+				<File
+					RelativePath="..\Model\Asset\WarFactory.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Command"
