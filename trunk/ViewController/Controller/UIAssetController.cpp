@@ -113,6 +113,11 @@ UIAssetController::UIAssetController(const LPDIRECT3DDEVICE9 pDevice, Selector* 
     m_pStopButton->setBackgroundTexture(rc->getIconTexture(_T("stop")));
     m_pStopButton->setBackgroundTextureClicked(rc->getIconTexture(_T("alt_stop")));
 
+    m_pWorkButton = new BasicButton(64, 64, 216542, this);
+    m_pWorkButton->setTooltip("Back to work");
+    m_pWorkButton->setBackgroundTexture(rc->getIconTexture(_T("work")));
+    m_pWorkButton->setBackgroundTextureClicked(rc->getIconTexture(_T("alt_work")));
+
     m_pNukeButton = new BasicButton(64, 64, 666, this);
     m_pNukeButton->setTooltip("Armageddon");
     m_pNukeButton->setBackgroundTexture(rc->getIconTexture(_T("8")));
@@ -157,10 +162,10 @@ void UIAssetController::createBuildingButton(AssetDef* pAssetDef)
     int produce = pAssetDef->energyProduction;
     int energy = produce - consume;
     if(energy > 0) {
-        sprintf_s(nameC, "%s, cost: %d energy: +%d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre, energy);
+        sprintf_s(nameC, "%s\ncost: %d\nenergy: +%d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre, energy);
     }
     else {
-        sprintf_s(nameC, "%s, cost: %d energy: %d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre, energy);
+        sprintf_s(nameC, "%s\ncost: %d\nenergy: %d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre, energy);
     }
     button->setTooltip(nameC);
     m_pButtonPanel->addComponent(button);

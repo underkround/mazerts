@@ -194,6 +194,7 @@ private:
     DoubleLinkedList<BasicButton*> m_BuildingButtons;
 
     BasicButton*    m_pStopButton;
+    BasicButton*    m_pWorkButton;
     BasicButton*    m_pNukeButton;
 
     map<IAsset*,BuildQueue*> m_BuildQueues;

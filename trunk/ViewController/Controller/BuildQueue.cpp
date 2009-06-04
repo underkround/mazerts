@@ -57,7 +57,7 @@ void BuildQueue::createBuildingButton(AssetDef* pAssetDef)
     MultiByteToWideChar(CP_ACP, 0, nameC, -1, nameWTF, 10);
     button->setBackgroundTextureClicked(rc->getIconTexture(nameWTF));
     // tooltip
-    sprintf_s(nameC, "%s, cost: %d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre);
+    sprintf_s(nameC, "%s\ncost: %d", pAssetDef->name.c_str(), pAssetDef->constructionCostOre);
     button->setTooltip(nameC);
     button->setRandomObject(pAssetDef);
     m_Buttons.pushHead(button);
