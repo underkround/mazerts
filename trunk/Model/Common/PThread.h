@@ -13,8 +13,10 @@
  * $Id$
  */
 
+//#pragma comment(lib,"pthreadVC2.lib")
 #pragma comment(lib,"pthreadVC2.lib")
-#include <pthread.h>
+//#include "pthread.h"
+#include "../ExternalLibs/pthread.h"
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 /* IF YOU ARE HERE BECAUSE OF MISSING pthread.h -LIBRARY (Windows):

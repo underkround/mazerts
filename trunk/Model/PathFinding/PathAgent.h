@@ -12,7 +12,7 @@
 #ifndef __PATHAGENT_H__
 #define __PATHAGENT_H__
 
-#include <pthread.h>
+#include "../Common/pthread.h"
 #include "IPathFinder.h"
 
 class PathAgent

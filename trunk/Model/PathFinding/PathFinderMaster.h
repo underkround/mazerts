@@ -13,9 +13,10 @@
 #ifndef __PATHFINDERMASTER_H__
 #define __PATHFINDERMASTER_H__
 
-#include <pthread.h>
+//#include "../Common/pthread.h"
+#include "../ExternalLibs/pthread.h"
 
-#include "../Common/PThread.h"
+#include "../ExternalLibs/PThread.h"
 #include "PathFinder.h"
 #include "PathAgent.h"
 
