@@ -2,7 +2,7 @@
 
 ![mazeRTS](https://github.com/zemm/mazerts/raw/master/mazerts.png)
 
-[Kuvia kehityksen varrelta](http://ezbe.iio6s.info/kuvat/)
+[Kuvia kehityksen varrelta](http://ezbe.underkround.fi/kuvat/)
 
 [Imusta peli tästä](https://github.com/downloads/zemm/mazerts/mazerts_bin_478.zip)
 
