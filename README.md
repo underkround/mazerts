@@ -81,7 +81,7 @@ Pelissä on joitakin dokumentoimattomia debug-näppäimiä, hitaammille koneille
 	</tr>
 	<tr>
 		<td>Raskas heitin (Nuke cannon)</td>
-		<td><img class="icon" style="max-width:128px;width:128px;height:128px" src="https://github.com/zemm/mazerts/raw/master/icons/icon_5.png" alt="icon" /></td>
+		<td style="width:130px;"><img class="icon" style="max-width:128px;width:128px;height:128px" src="https://github.com/zemm/mazerts/raw/master/icons/icon_5.png" alt="icon" /></td>
 		<td>Suuritulivoimainen mutta helposti särkyvä pitkän kantaman ase. Vaatii Tiedekeskuksen</td>
 	</tr>
 </table>
