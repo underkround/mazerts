@@ -1,7 +1,7 @@
 
 # MAZERTS
 
-![mazeRTS](mazerts.png)
+![mazeRTS](http://zemm.github.com/mazerts/mazerts.png)
 
 [Kuvia kehityksen varrelta](http://ezbe.iio6s.info/kuvat/)
 
@@ -57,32 +57,32 @@ Pelissä on joitakin dokumentoimattomia debug-näppäimiä, hitaammille koneille
 <table>
 	<tr>
 		<td>Taisteluauto (Combat Car)</td>
-		<td>![icon](readme/icon_1.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_1.png" alt="icon" /></td>
 		<td>Heikko mutta nopea auto tiedustelukäyttöön.</td>
 	</tr>
 	<tr>
 		<td>Tankki (Tank)</td>
-		<td>![icon](readme/icon_2.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_2.png" alt="icon" /></td>
 		<td>Armeijasi perustyökalu.</td>
 	</tr>
 	<tr>
 		<td>Raketinheitinauto (Missile Tank)</td>
-		<td>![icon](readme/icon_4.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_4.png" alt="icon" /></td>
 		<td>Hitaasti siirtyvä pitkän kantaman ase.</td>
 	</tr>
 	<tr>
 		<td>Kaivoskuorma-auto (Mining truck)</td>
-		<td>![icon](readme/icon_6.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_6.png" alt="icon" /></td>
 		<td>Aseeton ajoneuvo malmin louhintaan.</td>
 	</tr>
 	<tr>
 		<td>Supertankki (Super Tank)</td>
-		<td>![icon](readme/icon_3.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_3.png" alt="icon" /></td>
 		<td>Sitkeä ja tulivoimainen. Vaatii Tiedekeskus-rakennuksen</td>
 	</tr>
 	<tr>
 		<td>Raskas heitin (Nuke cannon)</td>
-		<td>![icon](readme/icon_5.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_5.png" alt="icon" /></td>
 		<td>Suuritulivoimainen mutta helposti särkyvä pitkän kantaman ase. Vaatii Tiedekeskuksen</td>
 	</tr>
 </table>
@@ -93,47 +93,47 @@ Pelissä on joitakin dokumentoimattomia debug-näppäimiä, hitaammille koneille
 <table>
 	<tr>
 		<td>Voimala (Power Plant)</td>
-		<td>![icon](readme/icon_54.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_54.png" alt="icon" /></td>
 		<td>Useimmat rakennukset tarvitsevat sähköä toimiakseen, tämä voimala tuottaa sitä.</td>
 	</tr>
 	<tr>
 		<td>Käsittelylaitos (Resource Yard)</td>
-		<td>![icon](readme/icon_53.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_53.png" alt="icon" /></td>
 		<td>Jalostaa kaivoksesta louhutun malmin rahaksi. Käsittelylaitoksen rakentaminen pelin alkumetreillä on ensiarvoisen tärkeää, jotta saat lisää resursseja.</td>
 	</tr>
 	<tr>
 		<td>Tehdas (War Factory)</td>
-		<td>![icon](readme/icon_52.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_52.png" alt="icon" /></td>
 		<td>Valmistaa erilaisia yksiköitä.</td>
 	</tr>
 	<tr>
 		<td>Tutka-asema (Radar building)</td>
-		<td>![icon](readme/icon_56.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_56.png" alt="icon" /></td>
 		<td>Kun rakennat tutka-aseman saat käyttöösi hyödyllisen tutkanäkymän josta näet koko taistelukentän kerralla, jos vain sähkön tuotantosi riittää.</td>
 	</tr>
 	<tr>
 		<td>Tiedekeskus (Science Building)</td>
-		<td>![icon](readme/icon_57.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_57.png" alt="icon" /></td>
 		<td>Jotta voit rakentaa kehittyneemmän teknologian rakennuksia ja yksiköitä tarvitset ensin tiedekeskuksen.</td>
 	</tr>
 	<tr>
 		<td>Tykkitorni (Gun tower)</td>
-		<td>![icon](readme/icon_59.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_59.png" alt="icon" /></td>
 		<td>Pienitehoinen tykkitorni puolustuksen tueksi.</td>
 	</tr>
 	<tr>
 		<td>Kaivos (Deep Bore Mine)</td>
-		<td>![icon](readme/icon_55.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_55.png" alt="icon" /></td>
 		<td>Malmin louhiminen syvältä maan sisältä on hidasta puuhaa mutta jos vihollinen estää pääsyn pinnalla oleviin kaivoksiin se saattaa olla välttämätöntä. Tällainen kaivos tuottaa hitaasti malmia, jos vain sähköä on riittävästi saatavilla. Vaatii Tiedekeskuksen.</td>
 	</tr>
 	<tr>
 		<td>Isompi tykkitorni (Cannon tower)</td>
-		<td>![icon](readme/icon_60.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_60.png" alt="icon" /></td>
 		<td>Parempi tykkitorni puolustuksen tueksi. Vaatii Tiedekeskuksen</td>
 	</tr>
 	<tr>
 		<td>Ohjussiilo (Nuke Silo)</td>
-		<td>![icon](readme/icon_58.png)</td>
+		<td><img class="icon" src="http://zemm.github.com/mazerts/icons/icon_58.png" alt="icon" /></td>
 		<td>Hidas ja kallis mutta erittäin tuhovoimainen joukkotuhoase joka jättää jälkeensä pelkkiä savuavia kraatereita. Siilolla täytyy ampua itse valitsemalla siilo, ja näkyviin ilmestyvän napin klikkaamisen jälkeen voit valita mihin kohtaan siilo ampuu, ampumisen jälkeen siilon täytyy latautua uudelleen (latautuminen näkyy napissa). Vaatii Tiedekeskuksen.</td>
 	</tr>
 </table>
