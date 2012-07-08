@@ -1,10 +1,10 @@
 # MAZERTS
 
-![mazeRTS](http://zemm.github.com/mazerts/mazerts.png)
+![mazeRTS](https://github.com/zemm/mazerts/raw/master/mazerts.png)
 
 [Kuvia kehityksen varrelta](http://ezbe.iio6s.info/kuvat/)
 
-Imusta peli tästä
+[Imusta peli tästä](https://github.com/downloads/zemm/mazerts/mazerts_bin_478.zip)
 
 Jos peli valittaa dll:stä, hae Visual C++ 2008 Runtimes [täältä](http://www.microsoft.com/downloads/details.aspx?FamilyID=9b2da534-3e03-4391-8a4d-074b9f2bc1bf&displaylang=en). Jos tämän jälkeen jotain vielä puuttuu, on kyseessä luultavasti DirectX runtimet: [täältä](http://www.microsoft.com/downloads/details.aspx?FamilyId=2DA43D38-DB71-4C1B-BC6A-9B6652CD92A3&displaylang=en)
 
