@@ -55,8 +55,8 @@ Pelissä on joitakin dokumentoimattomia debug-näppäimiä, hitaammille koneille
 
 <table>
 	<tr>
-		<td>Taisteluauto (Combat Car)</td>
-		<td><img class="icon" style="max-width:128px;width:128px;height:128px" src="https://github.com/zemm/mazerts/raw/master/icons/icon_1.png" alt="icon" /></td>
+		<td style="width:210px;">Taisteluauto (Combat Car)</td>
+		<td style="width:130px;"><img class="icon" style="max-width:128px;width:128px;height:128px" src="https://github.com/zemm/mazerts/raw/master/icons/icon_1.png" alt="icon" /></td>
 		<td>Heikko mutta nopea auto tiedustelukäyttöön.</td>
 	</tr>
 	<tr>
@@ -81,7 +81,7 @@ Pelissä on joitakin dokumentoimattomia debug-näppäimiä, hitaammille koneille
 	</tr>
 	<tr>
 		<td>Raskas heitin (Nuke cannon)</td>
-		<td style="width:130px;"><img class="icon" style="max-width:128px;width:128px;height:128px" src="https://github.com/zemm/mazerts/raw/master/icons/icon_5.png" alt="icon" /></td>
+		<td><img class="icon" style="max-width:128px;width:128px;height:128px" src="https://github.com/zemm/mazerts/raw/master/icons/icon_5.png" alt="icon" /></td>
 		<td>Suuritulivoimainen mutta helposti särkyvä pitkän kantaman ase. Vaatii Tiedekeskuksen</td>
 	</tr>
 </table>
@@ -91,8 +91,8 @@ Pelissä on joitakin dokumentoimattomia debug-näppäimiä, hitaammille koneille
 
 <table>
 	<tr>
-		<td>Voimala (Power Plant)</td>
-		<td><img class="icon" style="max-width:128px;width:128px;height:128px" src="https://github.com/zemm/mazerts/raw/master/icons/icon_54.png" alt="icon" /></td>
+		<td style="width:210px;">Voimala (Power Plant)</td>
+		<td style="width:130px;"><img class="icon" style="max-width:128px;width:128px;height:128px" src="https://github.com/zemm/mazerts/raw/master/icons/icon_54.png" alt="icon" /></td>
 		<td>Useimmat rakennukset tarvitsevat sähköä toimiakseen, tämä voimala tuottaa sitä.</td>
 	</tr>
 	<tr>
