@@ -1,0 +1,39 @@
+
+# /docs/
+/docs/Thumbs.db
+
+# /docs/ai/
+/docs/ai/Thumbs.db
+
+# /textures/
+/textures/Thumbs.db
+
+# /textures/icons/
+/textures/icons/*.db
+
+# /trunk/
+/trunk/mazerts.suo
+/trunk/Debug
+/trunk/mazerts.ncb
+/trunk/Release
+
+# /trunk/Model/
+/trunk/Model/Debug
+/trunk/Model/Release
+/trunk/Model/*.user
+
+# /trunk/ViewController/
+/trunk/ViewController/Debug
+/trunk/ViewController/ViewController.vcproj.EZBE-UBERDESKTO.Esa.user
+/trunk/ViewController/Release
+/trunk/ViewController/ViewController.vcproj.Dominion.murgo.user
+/trunk/ViewController/data
+
+# /trunk/data/
+/trunk/data/local.ini
+
+# /trunk/data/icons/
+/trunk/data/icons/*.db
+
+# /trunk/data/textures/
+/trunk/data/textures/*.db
